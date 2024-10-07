@@ -1,0 +1,24 @@
+{
+  "name": "veiviserbygger",
+  "version": "1.0.0",
+  "description": "Wizard builder for Losen ===",
+  "main": "index.js",
+  "scripts": {
+    "predev": "JAVA_TOOL_OPTIONS='-Xmx4g' firebase emulators:start",
+    "dev": "",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/behalf-no/veiviserbygger.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/behalf-no/veiviserbygger/issues"
+  },
+  "homepage": "https://github.com/behalf-no/veiviserbygger#readme",
+  "volta": {
+    "node": "20.18.0"
+  }
+}
