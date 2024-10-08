@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["setInterval(() => console.log('hepp'), 2000)\n"],
+  "mappings": ";AAAA,YAAY,MAAM,QAAQ,IAAI,MAAM,GAAG,GAAI;",
+  "names": []
+}

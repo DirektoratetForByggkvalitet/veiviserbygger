@@ -1,0 +1,1 @@
+export type Floppo = {a: 1}

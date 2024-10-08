@@ -4,8 +4,9 @@
   "description": "Wizard builder for Losen ===",
   "main": "index.js",
   "scripts": {
-    "predev": "JAVA_TOOL_OPTIONS='-Xmx4g' firebase emulators:start",
-    "dev": "",
+    "emulators": "JAVA_TOOL_OPTIONS='-Xmx4g' firebase emulators:start",
+    "build": "turbo build",
+    "dev": "npm run emulators & turbo dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,5 +21,17 @@
   "homepage": "https://github.com/behalf-no/veiviserbygger#readme",
   "volta": {
     "node": "20.18.0"
-  }
+  },
+  "devDependencies": {
+    "turbo": "^2.1.3"
+  },
+  "packageManager": "npm@10.0.0",
+  "engines": {
+    "node": "20.x",
+    "npm": "10.x"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }
