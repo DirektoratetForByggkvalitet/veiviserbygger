@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "Monorepo"
+    },
+    {
+      "path": "apps/api",
+      "name": "API"
+    },
+    {
+      "path": "packages/eslint-config-custom",
+      "name": "ESLint Config"
+    },
+    {
+      "path": "packages/types",
+      "name": "TS types"
+    }
+  ]
+}

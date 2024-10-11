@@ -5,7 +5,15 @@
   "main": "index.js",
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "lint": "eslint . && prettier . --check"
+  },
   "devDependencies": {
-    "typescript": "^5"
+    "eslint-config-custom": "*",
+    "typescript": "^4"
+  },
+  "dependencies": {
+    "losen": "*",
+    "zod": "*"
   }
 }

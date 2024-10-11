@@ -6,11 +6,18 @@
     "build": "esbuild ./src/index.ts --bundle --platform=node --sourcemap --outdir=build --loader:.node=file",
     "watch": "npm run build -- --watch=forever",
     "start": "node build/index.js",
-    "dev": "npm run watch & nodemon --watch build --exec npm start"
+    "dev": "npm run watch & nodemon --watch build --exec npm start",
+    "lint": "eslint . && prettier . --check",
+    "test": "dotenv -e ../../.env -c ci jest -- --coverage --forceExit",
+    "test:clear-cache": "jest --clearCache",
+    "test:watch": "npm run test -- --watch --coverage=false"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.0",
-    "types": "*"
+    "types": "*",
+    "losen": "*",
+    "zod": "*"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -20,7 +27,7 @@
     "eslint-config-custom": "*",
     "jest": "^29.7.0",
     "nodemon": "^3.1.7",
-    "typescript": "^5.6.2"
+    "typescript": "^4.6.2"
   },
   "author": "",
   "license": "ISC",
