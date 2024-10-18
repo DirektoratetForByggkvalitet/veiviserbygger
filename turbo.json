@@ -1,6 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
   "tasks": {
+    "lint": { "outputs": [] },
+    "lint:fix": { "outputs": [] },
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
@@ -8,10 +11,15 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
-    "lint": {},
+    "//#emulators": {
+      "cache": false,
+      "interactive": true
+    },
     "dev": {
-      "persistent": false,
-      "cache": false
+      "dependsOn": ["//#emulators"],
+      "cache": false,
+      "persistent": true,
+      "interactive": true
     }
   }
 }

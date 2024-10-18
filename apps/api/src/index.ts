@@ -1,3 +1,8 @@
+require('dotenv').config({
+  path: ['.env.local', '.env.development', '.env'],
+  debug: process.env.NODE_ENV === 'production',
+})
+
 import express from 'express'
 import setupServer from './server'
 

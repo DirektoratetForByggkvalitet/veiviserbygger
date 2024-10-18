@@ -34,7 +34,7 @@ export default function setupServer(
     app.use(handler)
   }
 
-  const { PORT = 3001 } = process.env
+  const { PORT = 4000 } = process.env
 
   app.get('/', (_, res) => {
     res.send('👀')
