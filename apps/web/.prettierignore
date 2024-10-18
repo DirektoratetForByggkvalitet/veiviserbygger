@@ -1,0 +1,10 @@
+/.husky
+/.next
+/.vercel
+/node_modules
+.eslintrc
+package*.json
+dist
+.prettierrc
+.github
+coverage

@@ -1,0 +1,54 @@
+{
+  "name": "web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "echo \"Serve properly with either vercel or an nginx server\"",
+    "test": "jest --coverage",
+    "test:watch": "npm test -- --watchAll",
+    "lint": "eslint . && prettier . --check",
+    "lint:fix": "prettier . --write"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router": "^6.27.0",
+    "react-router-dom": "^6.27.0",
+    "shared": "*",
+    "types": "*"
+  },
+  "devDependencies": {
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.2",
+    "eslint-config-custom": "*",
+    "jest": "^29.7.0",
+    "sass": "^1.80.2",
+    "typescript": "^4.6.2",
+    "vite": "^5.4.9"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "coverageReporters": [
+      "text",
+      "json",
+      "json-summary",
+      "lcov",
+      [
+        "text",
+        {
+          "file": "coverage.txt"
+        }
+      ]
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  }
+}

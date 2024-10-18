@@ -9,6 +9,10 @@
       "name": "API"
     },
     {
+      "path": "apps/web",
+      "name": "Web"
+    },
+    {
       "path": "packages/eslint-config-custom",
       "name": "ESLint Config"
     },
