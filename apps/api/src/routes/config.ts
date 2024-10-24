@@ -13,7 +13,7 @@ export const configRouter = (di: DependencyContainer) => {
    * Exposes all env variables prefixed with PUBLIC_ as constants and feature flags as environment variables
    * starting with `FEATURE_FLAG_` and having a value of `1` or `0`.
    */
-  router.get<'', undefined, Requests['/config']['GET']['response']>('', (req, res) => {
+  router.get<'', undefined, Requests['/config']['GET']['response']>('', async (req, res) => {
     if (!config) {
       config = Object.keys(process.env)
         .filter((k) => k.match(exposePattern))

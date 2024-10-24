@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
-import { getConstant } from "./lib/config"
+import { useConstant } from "./hooks/config"
 
 export default function App() {
+  const heyHoConstant = useConstant('HEY_HO')
+
   return <div>
     HIP HOP
-    {getConstant('HEY_HO')}
+    {heyHoConstant}
   </div>
 }
