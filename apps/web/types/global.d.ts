@@ -1,7 +1,6 @@
 // import type { Pool } from 'pg'
 // import type { RedisClientType } from '@redis/client'
 import { Requests } from 'types'
-import { RequestHandler } from 'express'
 
 declare global {
   /**
