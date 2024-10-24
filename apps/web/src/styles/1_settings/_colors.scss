@@ -1,0 +1,33 @@
+$colors: (
+    primary: (
+        base: #3a8ff4,
+    ),
+    neutral: (
+        light: #f8f8f8,
+        base: #e7e7e7,
+        dark: #878787,
+        xdark: #111111,
+    ),
+);
+
+$color-light: #ffffff;
+$color-dark: color(neutral, xdark);
+
+// Specific colors.
+// Variables are there to be reused, so being  to specific or creating to many will create the opposite situation
+$color-background: color(neutral, light);
+
+$color-text: $color-dark;
+$color-muted: color(neutral, dark);
+
+$color-notification: #f06565;
+$color-info: #fcdb81;
+
+$color-links: $color-text;
+$color-links--hover: $color-text;
+
+$color-outline: rgba(#99d6ea, 0.6);
+$color-backdrop: color(primary, light);
+
+$color-warning: #f06565;
+$color-success: #81d459;

@@ -1,0 +1,22 @@
+:root {
+    // Spacings
+    --spacing: 20px;
+    --spacing--small: 16px;
+    --spacing--large: 42px;
+    --margin: 26px;
+    --gutter: 18px;
+
+    @include min-width(md) {
+        --spacing: 30px;
+        --spacing--small: 20px;
+        --margin: 30px;
+        --gutter: 30px;
+    }
+
+    @include min-width(lg) {
+        --spacing: 40px;
+        --spacing--small: 25px;
+        --header-height: 82px;
+        --spacing--large: 80px;
+    }
+}

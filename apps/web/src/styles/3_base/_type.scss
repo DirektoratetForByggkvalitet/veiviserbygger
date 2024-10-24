@@ -1,0 +1,40 @@
+h1,
+h2,
+h3 {
+    // @include hyphens;
+    @include font(base, bold);
+    text-wrap: pretty;
+    margin: 0;
+}
+
+h1 {
+    @include font-size(title);
+}
+
+h2 {
+    @include font-size(sub-title);
+}
+
+h3 {
+    @include font-size(base);
+}
+
+p {
+    margin: 0;
+}
+
+strong {
+    font: inherit;
+    font-weight: bold;
+}
+
+em {
+    font: inherit;
+    font-weight: inherit;
+    font-style: italic;
+}
+
+th,
+td {
+    text-wrap: balance;
+}

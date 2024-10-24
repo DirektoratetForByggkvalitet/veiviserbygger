@@ -1,0 +1,89 @@
+$breakpoints: (
+    xs: 410px,
+    sm: 620px,
+    md: 760px,
+    lg: 1160px,
+    xl: 1520px,
+);
+
+// Grids max-width
+$container-base: getStrippedPxSizeInRem(1220px);
+$container-width: (
+    base: makeContainerSize(12),
+    medium: makeContainerSize(10),
+    tight: makeContainerSize(7),
+    xtight: makeContainerSize(6),
+);
+
+// Spacing
+$spacing: var(--spacing);
+$spacing--xsmall: 10px; // TODO: Use css-variable for this also?
+$spacing--small: var(--spacing--small);
+$spacing--large: var(--spacing--large);
+
+// Margins is used only for the page margins
+$margin: var(--margin);
+$gutter: var(--gutter);
+$indention: 1.1em;
+
+// Heights
+$header-height: var(--header-height);
+$cover-height: var(--cover-height);
+
+// Borders and strokes
+$border-width: 1px;
+$border-width--large: 3px;
+$border-radius--small: 4px;
+$border-radius: 8px;
+$border-style: $border-width solid color(neutral);
+$border-style--strong: $border-width solid currentColor;
+
+$shadow: 0 0 44px rgba(black, 0.05), 0 0 3px rgba(black, 0.01);
+$shadow--strong: 0 0 44px rgba(black, 0.2), 0 0 8px rgba(black, 0.02), 0 0 1px rgba(black, 0.01);
+
+// Actions
+$action-xsmall: 26px;
+$action-small: 34px;
+
+// Form
+$form-height: 78px;
+$form-spacing: 18px;
+
+$input-padding-y: 20px;
+$input-padding-x: $spacing--small;
+$input-label-gap: 8px;
+
+// Z-index levels
+$level-1: 10;
+$level-2: 20;
+$level-3: 30;
+$level-4: 40;
+
+// Icon strokes
+$icon-stroke: 1.2;
+
+// Better easings
+$ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
+$ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+
+$ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+$ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+$ease-in-quart: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+
+$ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+$ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+$ease-in-cubic: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+
+$ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+$ease-in-out-quint--custom: cubic-bezier(0.86, 0, 0.4, 1);
+
+$ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$ease-in-quad: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+$ease-in-out-quad: cubic-bezier(0.45, 0, 0.55, 1);
+
+$ease-out-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$ease-out-back--subtle: cubic-bezier(0.175, 0.885, 0.32, 1.17);
+
+// Muted sections
+$muted-opacity: 0.1;
+$muted-transition: opacity 500ms $ease-out-quart;

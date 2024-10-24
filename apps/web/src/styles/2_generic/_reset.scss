@@ -1,0 +1,230 @@
+// Let’s make the box model all nice and sweet
+* {
+    margin: 0;
+    padding: 0;
+
+    &,
+    &:before,
+    &:after {
+        box-sizing: border-box;
+    }
+}
+
+html {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+::selection {
+    color: $color-background;
+    background: black;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+article,
+aside,
+figcaption,
+figure,
+footer,
+header,
+main,
+nav,
+section {
+    display: block;
+}
+
+a {
+    font-family: inherit;
+    text-decoration: none;
+    background: transparent;
+
+    &:active,
+    &:hover {
+        outline: 0; // Improve readability when focused and also mouse hovered in all browsers.
+    }
+}
+
+dl,
+dt,
+address,
+time,
+dd,
+cite {
+    font-weight: inherit;
+    font-style: inherit;
+}
+
+ol,
+ul,
+li {
+    list-style: none;
+}
+
+img,
+svg {
+    display: block;
+    border: 0;
+    max-width: 100%;
+    height: auto;
+}
+
+// 100% button reset
+button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+// Address inconsistent `text-transform` inheritance for `button` and `select`.
+button,
+select {
+    font-family: inherit;
+    text-transform: none;
+}
+
+// Remove inner padding and border in Firefox 4+.
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+// Disabled shouldn't have pointer as cursor
+*[disabled] {
+    cursor: default;
+}
+
+// Address Firefox 4+ setting `line-height` on `input` using `!important` in the UA stylesheet.
+input {
+    line-height: normal;
+}
+
+// Reset text fields
+textarea,
+input {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    outline: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+}
+
+input::-ms-clear {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+textarea {
+    font-family: inherit;
+    overflow: auto;
+    resize: none;
+    word-wrap: break-word;
+}
+
+// Firefox reset
+input:required,
+input:invalid {
+    box-shadow: none;
+}
+
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+// Go away...
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+}
+
+// Radio and checkbox reset
+input[type='checkbox'],
+input[type='radio'] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+// Correct overflow not hidden in IE 9/10/11.
+svg:not(:root) {
+    overflow: hidden;
+}
+
+// Table reset
+// table, caption, tbody, tfoot, thead, tr, th, td {
+//     margin: 0;
+//     padding: 0;
+//     border: 0;
+//     font-size: 100%;
+//     text-align: inherit;
+//     font: inherit;
+//     vertical-align: baseline;
+// }
+
+// table {
+//     border-collapse: collapse;
+//     border-spacing: 0;
+// }
+
+// Select resets
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    &::-ms-expand {
+        // Hide the arrow in IE10 and up
+        display: none;
+    }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+// Media query to target Firefox only
+@-moz-document url-prefix() {
+    // Firefox hack to hide the arrow
+    .select {
+        select {
+            text-indent: 0.01px;
+            text-overflow: '';
+            padding-right: 1rem;
+        }
+
+        // <option> elements inherit styles from <select>, so reset them.
+        option {
+            background-color: white;
+        }
+    }
+}
+
+strong,
+em {
+    font-weight: bold;
+    font-style: normal;
+}

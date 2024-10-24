@@ -1,0 +1,391 @@
+@use 'sass:math';
+
+// Colors
+@function color($color-name, $color-variant: 'base') {
+    @return map-get(map-get($colors, $color-name), $color-variant);
+}
+
+// Add percentage of white to a color
+@function tint($color, $percent) {
+    @return mix(white, $color, $percent);
+}
+
+// Add percentage of black to a color
+@function shade($color, $percent) {
+    @return mix(black, $color, $percent);
+}
+
+// Strip units from number
+@function strip-unit($number) {
+    @if type-of($number) == 'number' and not unitless($number) {
+        @return math.div($number, $number * 0 + 1);
+    }
+
+    @return $number;
+}
+
+// Font family and weights
+@mixin font($font-family: base, $weight: null) {
+    $family: map-get($fonts, $font-family);
+    @if $weight {
+        @if map-has-key($family, $weight) {
+            $f-weight: map-get($family, $weight);
+
+            @if (length($f-weight) > 1) {
+                font-family: nth($f-weight, 2), map-get($family, fallback);
+                font-weight: nth($f-weight, 1);
+            } @else {
+                font-family: map-get($family, font), map-get($family, fallback);
+                font-weight: $f-weight;
+            }
+        } @else {
+            font-family: map-get($family, font), map-get($family, fallback);
+        }
+    } @else {
+        font-family: map-get($family, font), map-get($family, fallback);
+    }
+}
+
+// Font-size clamp-builder
+// Calculation from: https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/
+@function clampBuilder($minFontSize, $maxFontSize) {
+    // From viewport
+    $minWidthPx: strip-unit(map-get($breakpoints, sm));
+    // To viewport
+    $maxWidthPx: strip-unit(map-get($breakpoints, xl));
+
+    // Combine with base font size (px)
+    $minWidth: math.div($minWidthPx, $font-size-base);
+    $maxWidth: math.div($maxWidthPx, $font-size-base);
+
+    // Create the scale between min and max
+    $slope: math.div(($maxFontSize - $minFontSize), ($maxWidth - $minWidth));
+    $yAxisIntersection: -$minWidth * $slope + $minFontSize;
+    // Scss hack:
+    $plus: '+';
+
+    @return clamp(
+        #{$minFontSize}rem,
+        #{$yAxisIntersection}rem #{$plus} #{$slope * 100}vw,
+        #{$maxFontSize}rem
+    );
+}
+
+// Get size from px to rem without units
+@function getStrippedPxSizeInRem($size) {
+    @return strip-unit(math.div($size, $font-size-base));
+}
+
+@mixin font-size($size: base, $skip-line-height: false) {
+    $sizes: map-get($font-sizes, $size);
+
+    @if map-has-key($sizes, base) and map-has-key($sizes, to) {
+        // Convert to rem (without unit)
+        $base: getStrippedPxSizeInRem(map-get($sizes, base));
+        $to: getStrippedPxSizeInRem(map-get($sizes, to));
+
+        // Build the clamp..
+        $font-size: clampBuilder($base, $to);
+
+        // Set the base font-size as fallback
+        font-size: #{$base}rem;
+
+        @supports (font-size: $font-size) {
+            font-size: $font-size;
+        }
+    } @else {
+        // If only base is set
+        $base: getStrippedPxSizeInRem(map-get($sizes, base));
+        font-size: #{$base}rem;
+    }
+
+    // Set the line height
+    @if (map-has-key($sizes, line-height) and not $skip-line-height) {
+        $line-height: map-get($sizes, line-height);
+        line-height: $line-height;
+    }
+}
+
+// Input placeholder
+@mixin input-placeholder {
+    &:-moz-placeholder {
+        @content;
+    }
+    &::-moz-placeholder {
+        @content;
+    }
+    &:-ms-input-placeholder {
+        @content;
+    }
+    &::-webkit-input-placeholder {
+        @content;
+    }
+    &::placeholder {
+        @content;
+    }
+}
+
+// Media queries
+@mixin min-width($name) {
+    @if not map-has-key($breakpoints, $name) {
+        @media (min-width: $name) {
+            @content;
+        }
+    } @else {
+        @media (min-width: map-get($breakpoints, $name)) {
+            @content;
+        }
+    }
+}
+
+@mixin max-width($name) {
+    @if not map-has-key($breakpoints, $name) {
+        @media (max-width: ($name - 1)) {
+            @content;
+        }
+    } @else {
+        @media (max-width: (map-get($breakpoints, $name) - 1)) {
+            @content;
+        }
+    }
+}
+
+// Full-width
+@mixin full-width {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+// No select
+@mixin no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+
+    -webkit-user-drag: none;
+    -moz-user-drag: none;
+    user-drag: none;
+}
+
+// Screenreaders only
+@mixin screenreaders-only($breakpoint: null) {
+    @if ($breakpoint != null) {
+        @include min-width($breakpoint) {
+            position: absolute;
+            overflow: hidden;
+            width: 1px;
+            height: 1px;
+        }
+    } @else {
+        position: absolute;
+        overflow: hidden;
+        width: 1px;
+        height: 1px;
+    }
+}
+
+// Hyphens: use with care...
+@mixin hyphens {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+@mixin text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+// Create container size based on 24 grid
+@function makeContainerSize($units: 12) {
+    @return calc(#{math.div($container-base, 12) * $units}rem + (var(--margin) * 2));
+}
+
+// Make container
+@mixin container($size: base) {
+    width: 100%;
+    max-width: map-get($container-width, $size);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: $margin;
+    padding-right: $margin;
+}
+
+@mixin uppercase {
+    @include font(base, normal);
+    text-transform: uppercase;
+}
+
+/*********************************/
+/*          ANIMATIONS           */
+/*********************************/
+
+// Animation delay for childs
+@mixin animation-delay($count, $delay, $initial: 0, $start: 1, $child: false) {
+    @if ($child) {
+        #{$child} {
+            animation-delay: (($count + 1) * $delay) + $initial;
+        }
+
+        @for $i from $start through $count {
+            &:nth-child(#{$i}) #{$child} {
+                animation-delay: ($i * $delay) + $initial;
+            }
+        }
+    } @else {
+        animation-delay: (($count + 1) * $delay) + $initial;
+
+        @for $i from $start through $count {
+            &:nth-child(#{$i}) {
+                animation-delay: ($i * $delay) + $initial;
+            }
+        }
+    }
+}
+
+// Transition delay for childs
+@mixin transition-delay($count, $delay, $initial: 0, $start: 1, $child: false) {
+    @if ($child) {
+        #{$child} {
+            transition-delay: (($count + 1) * $delay) + $initial;
+        }
+
+        @for $i from $start through $count {
+            &:nth-child(#{$i}) #{$child} {
+                transition-delay: ($i * $delay) + $initial;
+            }
+        }
+    } @else {
+        transition-delay: (($count + 1) * $delay) + $initial;
+
+        @for $i from $start through $count {
+            &:nth-child(#{$i}) {
+                transition-delay: ($i * $delay) + $initial;
+            }
+        }
+    }
+}
+
+// Enter and exit animation helpers
+@mixin page-enter {
+    [data-page-state='entering'] & {
+        @content;
+    }
+}
+
+@mixin page-waiting {
+    [data-page-state='waiting'] & {
+        @content;
+    }
+}
+
+@mixin entering($is-wrapper: false) {
+    @if ($is-wrapper) {
+        &[data-animation='entering'] {
+            @content;
+        }
+    } @else {
+        [data-animation='entering'] & {
+            @content;
+        }
+    }
+}
+
+@mixin exiting($is-wrapper: false) {
+    @if ($is-wrapper) {
+        &[data-animation='exiting'] {
+            @content;
+        }
+    } @else {
+        [data-animation='exiting'] & {
+            @content;
+        }
+    }
+}
+
+// links
+@mixin underline($strong: false, $color-override: false, $offset-additions: 0) {
+    $offset: 0.1em + $offset-additions;
+    $thickness: 1px;
+    $color: rgba($color-text, 0.2);
+    $bg: $color-background;
+    text-decoration: underline;
+
+    @if ($strong) {
+        $color: currentColor;
+    }
+
+    @if ($color-override) {
+        $color: $color-override;
+    }
+
+    text-decoration-thickness: 1px;
+    text-underline-offset: $offset;
+    // text-decoration-skip-ink: none;
+    text-decoration-skip: none;
+    text-decoration-color: $color;
+
+    @if not($strong) {
+        &:hover,
+        &:focus:focus-visible {
+            text-decoration-color: currentColor;
+        }
+    }
+}
+
+@mixin genre {
+    @include font(meta, normal);
+    @include font-size(small);
+    display: block;
+    margin-bottom: calc(#{$spacing--small} * 0.65); // Optical
+}
+
+@mixin overflow-scroll {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    // -ms-overflow-style: none;
+    // scrollbar-width: none;
+
+    // &::-webkit-scrollbar {
+    //     display: none;
+    // }
+}
+
+@mixin overflow-scroll-y {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overscroll-behavior: contain;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+// Negative css-variable
+@function invert($variable) {
+    @return calc(#{$variable} * -1);
+}
+
+@mixin skeleton($bg: $color-background, $bg-shade: darken($color-background, 5%), $speed: 800ms) {
+    background: linear-gradient(to right, $bg-shade, $bg, $bg-shade), $bg-shade;
+    background-repeat: repeat-y;
+    background-size: 320px 500px;
+    background-position: 0 0;
+    animation: shine $speed infinite;
+
+    @keyframes shine {
+        to {
+            background-position: 100% 0, 0 0;
+        }
+    }
+}

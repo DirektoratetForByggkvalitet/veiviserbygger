@@ -1,0 +1,45 @@
+$font-base-fallback:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
+    sans-serif;
+$font-header-fallback: Georgia, Times, serif;
+
+$fonts: (
+    base: (
+        font: 'Diatype',
+        fallback: $font-base-fallback,
+        light: 300,
+        normal: normal,
+        bold: bold,
+    ),
+);
+
+// HTML font size (in px)
+$font-size-base: 20;
+
+// The differnt sizes (in px). It will be converted to rem
+$font-sizes: (
+    base: (
+        base: 16px,
+        to: 16px,
+        line-height: 1.35,
+    ),
+    sub-title: (
+        base: 25px,
+        to: 36px,
+        line-height: 1.25,
+    ),
+    title: (
+        base: 32px,
+        to: 37px,
+        line-height: 1.2,
+    ),
+);

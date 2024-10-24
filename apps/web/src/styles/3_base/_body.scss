@@ -1,0 +1,27 @@
+body {
+    // Type
+    @include font(base, normal);
+    @include font-size(base);
+    position: relative;
+
+    color: $color-text;
+    font-style: normal;
+
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-variant-ligatures: contextual;
+    text-rendering: optimizeLegibility;
+
+    background-color: $color-background;
+
+    &.block-scrolling {
+        overflow: hidden;
+        overscroll-behavior: contain;
+    }
+
+    // &:has(.menu-expanded) {
+    //     @include max-width(md) {
+    //         overflow: hidden;
+    //     }
+    // }
+}

@@ -1,0 +1,14 @@
+a {
+    cursor: pointer;
+
+    color: inherit;
+
+    &:not([class]) {
+        @include underline;
+    }
+
+    &:hover,
+    &:focus {
+        color: inherit;
+    }
+}
