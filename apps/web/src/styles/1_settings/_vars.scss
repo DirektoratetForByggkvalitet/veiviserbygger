@@ -10,9 +10,7 @@ $breakpoints: (
 $container-base: getStrippedPxSizeInRem(1220px);
 $container-width: (
     base: makeContainerSize(12),
-    medium: makeContainerSize(10),
-    tight: makeContainerSize(7),
-    xtight: makeContainerSize(6),
+    tight: makeContainerSize(6),
 );
 
 // Spacing
@@ -32,35 +30,18 @@ $cover-height: var(--cover-height);
 
 // Borders and strokes
 $border-width: 1px;
-$border-width--large: 3px;
-$border-radius--small: 4px;
 $border-radius: 8px;
 $border-style: $border-width solid color(neutral);
-$border-style--strong: $border-width solid currentColor;
 
-$shadow: 0 0 44px rgba(black, 0.05), 0 0 3px rgba(black, 0.01);
-$shadow--strong: 0 0 44px rgba(black, 0.2), 0 0 8px rgba(black, 0.02), 0 0 1px rgba(black, 0.01);
-
-// Actions
-$action-xsmall: 26px;
-$action-small: 34px;
-
-// Form
-$form-height: 78px;
-$form-spacing: 18px;
-
-$input-padding-y: 20px;
-$input-padding-x: $spacing--small;
-$input-label-gap: 8px;
+$shadow:
+    0 0 44px rgba(black, 0.05),
+    0 0 3px rgba(black, 0.01);
 
 // Z-index levels
 $level-1: 10;
 $level-2: 20;
 $level-3: 30;
 $level-4: 40;
-
-// Icon strokes
-$icon-stroke: 1.2;
 
 // Better easings
 $ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
@@ -83,7 +64,3 @@ $ease-in-out-quad: cubic-bezier(0.45, 0, 0.55, 1);
 
 $ease-out-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 $ease-out-back--subtle: cubic-bezier(0.175, 0.885, 0.32, 1.17);
-
-// Muted sections
-$muted-opacity: 0.1;
-$muted-transition: opacity 500ms $ease-out-quart;

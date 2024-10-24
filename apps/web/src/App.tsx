@@ -8,7 +8,8 @@ export default function App() {
   return (
     <div>
       <h1>Velkommen til internett. Vi tar det herifra</h1>
-      <Icon name="Search" />
+      <Icon name="ArrowRight" />
+      <Icon name="ArrowLeft" />
       {heyHoConstant}
     </div>
   )
