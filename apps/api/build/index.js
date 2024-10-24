@@ -21505,7 +21505,7 @@ var require_application = __commonJS({
   "../../node_modules/express/lib/application.js"(exports2, module2) {
     "use strict";
     var finalhandler = require_finalhandler();
-    var Router = require_router();
+    var Router2 = require_router();
     var methods = require_methods();
     var middleware = require_init();
     var query = require_query();
@@ -21570,7 +21570,7 @@ var require_application = __commonJS({
     };
     app2.lazyrouter = function lazyrouter() {
       if (!this._router) {
-        this._router = new Router({
+        this._router = new Router2({
           caseSensitive: this.enabled("case sensitive routing"),
           strict: this.enabled("strict routing")
         });
@@ -23433,7 +23433,7 @@ var require_express = __commonJS({
     var mixin = require_merge_descriptors();
     var proto = require_application();
     var Route = require_route();
-    var Router = require_router();
+    var Router2 = require_router();
     var req = require_request();
     var res = require_response();
     exports2 = module2.exports = createApplication;
@@ -23456,7 +23456,7 @@ var require_express = __commonJS({
     exports2.request = req;
     exports2.response = res;
     exports2.Route = Route;
-    exports2.Router = Router;
+    exports2.Router = Router2;
     exports2.json = bodyParser2.json;
     exports2.query = require_query();
     exports2.raw = bodyParser2.raw;
@@ -24034,7 +24034,7 @@ var require_main = __commonJS({
         return { parsed: parsedAll };
       }
     }
-    function config(options) {
+    function config2(options) {
       if (_dotenvKey(options).length === 0) {
         return DotenvModule.configDotenv(options);
       }
@@ -24101,7 +24101,7 @@ var require_main = __commonJS({
       configDotenv,
       _configVault,
       _parseVault,
-      config,
+      config: config2,
       decrypt,
       parse,
       populate
@@ -24118,10 +24118,10 @@ var require_main = __commonJS({
 });
 
 // src/index.ts
-var import_express2 = __toESM(require_express2());
+var import_express3 = __toESM(require_express2());
 
 // src/server.ts
-var import_express = __toESM(require_express2());
+var import_express2 = __toESM(require_express2());
 var import_cors = __toESM(require_lib3());
 
 // src/constants.ts
@@ -24129,22 +24129,53 @@ var IS_JEST = process.env.JEST_WORKER_ID !== void 0 || process.env.TS_JEST !== v
 
 // src/server.ts
 var bodyParser = __toESM(require_body_parser());
+
+// src/routes/config.ts
+var import_express = __toESM(require_express2());
+var exposePattern = /^(FEATURE_FLAG|PUBLIC)_(.*)/;
+var config;
+var configRouter = (di) => {
+  const router = (0, import_express.Router)();
+  router.get("", (req, res) => {
+    if (!config) {
+      config = Object.keys(process.env).filter((k) => k.match(exposePattern)).reduce((acc, key) => {
+        const [type, name] = key.match(exposePattern)?.slice(1) ?? [];
+        return {
+          ...acc,
+          flags: {
+            ...acc?.flags ?? {},
+            ...type === "FEATURE_FLAG" ? { [name]: process.env[key] === "1" } : {}
+          },
+          constants: {
+            ...acc?.constants ?? {},
+            ...type === "PUBLIC" ? { [name]: process.env[key] } : {}
+          }
+        };
+      }, {});
+    }
+    res.json(config);
+  });
+  return router;
+};
+
+// src/server.ts
 var server;
-function setupServer(app2, config) {
-  for (const handler of config?.beforeRequestHandlers || []) {
+function setupServer(app2, config2) {
+  for (const handler of config2?.beforeRequestHandlers || []) {
     app2.use(handler);
   }
   app2.use((0, import_cors.default)({ origin: "*" }));
   app2.use(bodyParser.json({ limit: "200mb" }));
-  app2.use((0, import_express.json)());
-  for (const handler of config?.beforeRoutes || []) {
+  app2.use((0, import_express2.json)());
+  for (const handler of config2?.beforeRoutes || []) {
     app2.use(handler);
   }
   const { PORT = 4e3 } = process.env;
   app2.get("/", (_, res) => {
     res.send("\u{1F440}");
   });
-  for (const handler of config?.afterRoutes || []) {
+  app2.use("/config", configRouter(config2.dependencies));
+  for (const handler of config2?.afterRoutes || []) {
     app2.use(handler);
   }
   return {
@@ -24160,7 +24191,7 @@ function setupServer(app2, config) {
     stop: async () => {
       await server?.close();
       !IS_JEST && console.log("Closed http server");
-      config?.onStop?.();
+      config2?.onStop?.();
       server = void 0;
     }
   };
@@ -24168,9 +24199,10 @@ function setupServer(app2, config) {
 
 // src/index.ts
 require_main().config({
-  path: [".env.local", ".env.dev", ".env"]
+  path: [".env.local", ".env.development", ".env"],
+  debug: process.env.NODE_ENV === "production"
 });
-var app = (0, import_express2.default)();
+var app = (0, import_express3.default)();
 (async () => {
   const server2 = await setupServer(app, { dependencies: {} });
   server2.start();

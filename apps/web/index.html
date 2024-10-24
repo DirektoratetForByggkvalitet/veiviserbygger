@@ -5,6 +5,15 @@
     <link rel="icon" type="image/svg+xml" href="/src/assets/icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Veiviserbyggeren</title>
+    <script type="text/javascript">
+        try {
+            fetch('/api/config').then(res => res.json()).then(config => {
+                window.config = config;
+            });
+        } catch(e) {
+            console.log(e.message);
+        }
+    </script>
   </head>
   <body>
     <div id="root"></div>

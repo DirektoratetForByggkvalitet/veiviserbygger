@@ -9,6 +9,7 @@ import cors from 'cors'
 import { IS_JEST } from './constants'
 import { Server } from 'http'
 import * as bodyParser from 'body-parser'
+import { configRouter } from './routes/config'
 
 let server: Server | undefined
 
@@ -39,6 +40,8 @@ export default function setupServer(
   app.get('/', (_, res) => {
     res.send('👀')
   })
+
+  app.use('/config', configRouter(config.dependencies))
 
   for (const handler of config?.afterRoutes || []) {
     app.use(handler)

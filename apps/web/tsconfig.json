@@ -22,7 +22,7 @@
   "ts-node": {
     "esm": true
   },
-  "include": ["src", "api"],
+  "include": ["src", "api", "types"],
   "exclude": ["node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
