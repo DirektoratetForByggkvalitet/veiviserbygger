@@ -1,13 +1,15 @@
-import { getConstant } from '@/lib/config'
-
 import Icon from '@/components/Icon'
 
+import { useConstant } from './hooks/config'
+
 export default function App() {
+  const heyHoConstant = useConstant('HEY_HO')
+
   return (
     <div>
       <h1>Velkommen til internett. Vi tar det herifra</h1>
       <Icon name="Search" />
-      {getConstant('HEY_HO')}
+      {heyHoConstant}
     </div>
   )
 }
