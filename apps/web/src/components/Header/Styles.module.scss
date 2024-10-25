@@ -1,0 +1,21 @@
+@use '@/styles/_helpers' as *;
+
+.header {
+    $this: &;
+    @include font-size(base);
+    display: flex;
+    align-items: center;
+    height: $header-height;
+    padding-left: $margin;
+    padding-right: $margin;
+
+    border-bottom: $border-style;
+
+    &__name {
+        @include font-size(base);
+    }
+
+    &__toggle {
+        margin-right: $spacing--xsmall;
+    }
+}

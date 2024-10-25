@@ -6,17 +6,18 @@
     --margin: 26px;
     --gutter: 18px;
 
+    --header-height: 58px;
+
     @include min-width(md) {
         --spacing: 30px;
         --spacing--small: 20px;
-        --margin: 30px;
-        --gutter: 30px;
+        --margin: 20px;
+        --gutter: 40px;
     }
 
     @include min-width(lg) {
         --spacing: 40px;
         --spacing--small: 25px;
-        --header-height: 82px;
         --spacing--large: 80px;
     }
 }

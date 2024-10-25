@@ -27,9 +27,14 @@ $font-size-base: 20;
 
 // The differnt sizes (in px). It will be converted to rem
 $font-sizes: (
-    base: (
+    small: (
         base: 16px,
         to: 16px,
+        line-height: 1.3,
+    ),
+    base: (
+        base: 17px,
+        to: 18px,
         line-height: 1.35,
     ),
     sub-title: (
