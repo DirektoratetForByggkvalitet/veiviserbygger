@@ -1,0 +1,15 @@
+{
+  "name": "emulators",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "cleanup": "lsof -t -i:9099 -i:8080 -i:9199 -i:4004 -i:4400 -i:4500 -i:9150 | xargs kill -9",
+    "dev": "npm run cleanup && firebase emulators:start --export-on-exit=data --import=data"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "firebase-tools": "^13.23.0"
+  }
+}

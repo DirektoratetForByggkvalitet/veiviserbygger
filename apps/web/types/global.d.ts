@@ -14,8 +14,4 @@ declare global {
     // postgres: Pool
     // redis?: RedisClientType
   }
-
-  interface Window {
-    config: Requests['/config']['GET']['response'] | undefined
-  }
 }
