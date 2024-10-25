@@ -11,15 +11,9 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
-    "//#emulators": {
-      "cache": false,
-      "interactive": true
-    },
     "dev": {
-      "dependsOn": ["//#emulators"],
       "cache": false,
-      "persistent": true,
-      "interactive": true
+      "persistent": true
     }
   }
 }

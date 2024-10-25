@@ -6,8 +6,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => {
   const env = mode === 'development' ? loadEnv(mode, process.cwd(), '') : {}
 
-  console.log(env)
-
   return {
     clearScreen: false,
     logLevel: 'info',
