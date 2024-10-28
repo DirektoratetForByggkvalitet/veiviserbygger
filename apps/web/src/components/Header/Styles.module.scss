@@ -6,16 +6,25 @@
     display: flex;
     align-items: center;
     height: $header-height;
-    padding-left: $margin;
+    // padding-left: $margin;
     padding-right: $margin;
 
     border-bottom: $border-style;
+    background-color: $color-light;
 
     &__name {
         @include font-size(base);
     }
 
     &__toggle {
-        margin-right: $spacing--xsmall;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 0 $spacing--small 1px; // 1px = Optical centering
+    }
+
+    &__actions {
+        margin-left: auto;
     }
 }

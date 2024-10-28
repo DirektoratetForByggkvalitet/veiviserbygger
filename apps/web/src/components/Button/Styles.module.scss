@@ -1,0 +1,33 @@
+@use '@/styles/_helpers' as *;
+
+.button {
+    $this: &;
+    @include font-size(small);
+    display: inline-flex;
+    padding: 11px 18px;
+    border-radius: $border-radius;
+    background-color: color(neutral);
+
+    &:hover,
+    &:focus:focus-visible {
+        background-color: shade(color(neutral), 4%);
+    }
+
+    &--primary {
+        color: $color-light;
+        background-color: color(primary);
+
+        &:hover,
+        &:focus:focus-visible {
+            background-color: shade(color(primary), 4%);
+        }
+    }
+
+    // &--small {
+    //     // TODO: Do we really need this?
+    // }
+
+    // &--large {
+    //     // TODO: Do we really need this?
+    // }
+}

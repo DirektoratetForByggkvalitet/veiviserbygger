@@ -1,23 +1,21 @@
 :root {
     // Spacings
     --spacing: 20px;
-    --spacing--small: 16px;
-    --spacing--large: 42px;
-    --margin: 26px;
-    --gutter: 18px;
+    --spacing--small: 15px;
+    --spacing--large: 40px;
+    --margin: 15px;
+    --gutter: 20px;
 
-    --header-height: 58px;
+    --header-height: 60px;
 
     @include min-width(md) {
         --spacing: 30px;
         --spacing--small: 20px;
-        --margin: 20px;
         --gutter: 40px;
     }
 
     @include min-width(lg) {
         --spacing: 40px;
-        --spacing--small: 25px;
         --spacing--large: 80px;
     }
 }
