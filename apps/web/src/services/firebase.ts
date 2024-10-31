@@ -2,7 +2,6 @@ import { FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import { connectFirestoreEmulator, Firestore, getFirestore } from 'firebase/firestore'
 import { getConfig } from '../services/api'
-import { createContext, useContext } from 'react'
 
 /**
  * Set up and return a Firebase app with the given configuration. Should be called once per app,

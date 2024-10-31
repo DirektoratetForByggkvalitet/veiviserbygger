@@ -1,6 +1,7 @@
 $colors: (
     primary: (
-        base: #3a8ff4,
+        // base: #3a8ff4,
+        base: darken(#3a8ff4, 8%),
     ),
     neutral: (
         light: #f8f8f8,
