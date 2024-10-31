@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <Meta title="Velkommen til internett. Vi tar det herfra" />
+      <Meta title="Velkommen til login siden våres. Du tar det herfra" />
 
       {user ? (
         <>

@@ -1,9 +1,11 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import App from './App'
-import ConfigProvider from './components/ConfigProvider'
-import FirebaseProvider from './components/FirebaseProvider'
+
+import App from '@/App'
+import ConfigProvider from '@/context/ConfigProvider'
+import FirebaseProvider from '@/context/FirebaseProvider'
+
 import './styles/styles.scss'
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

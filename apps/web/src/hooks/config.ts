@@ -1,4 +1,4 @@
-import { ConfigContext } from '@/components/ConfigProvider'
+import { ConfigContext } from '@/context/ConfigProvider'
 import { useContext } from 'react'
 
 export default function useConfig() {

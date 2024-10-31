@@ -1,8 +1,9 @@
-import { AuthContext, FirebaseContext } from '@/components/FirebaseProvider'
+import { AuthContext, FirebaseContext } from '@/context/FirebaseProvider'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { useCallback, useContext } from 'react'
 
 export default function useAuth() {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { auth } = useContext(FirebaseContext)!
   const user = useContext(AuthContext)
 
