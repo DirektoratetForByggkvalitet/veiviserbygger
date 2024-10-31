@@ -2,9 +2,9 @@
 
 .button {
     $this: &;
-    @include font-size(small);
+    @include font-size(base);
     display: inline-flex;
-    padding: 11px 18px;
+    padding: 14px 24px;
     border-radius: $border-radius;
     background-color: color(neutral);
 
@@ -23,9 +23,10 @@
         }
     }
 
-    // &--small {
-    //     // TODO: Do we really need this?
-    // }
+    &--small {
+        @include font-size(small);
+        padding: 11px 18px;
+    }
 
     // &--large {
     //     // TODO: Do we really need this?

@@ -1,0 +1,168 @@
+@use '@/styles/helpers.scss' as *;
+
+.dropdown {
+    $this: &;
+    display: block;
+    margin-bottom: $spacing--small;
+
+    &__trigger {
+        @include font-size(base);
+        position: relative;
+        display: grid;
+        border: $border-style;
+        text-align: left;
+        width: 100%;
+        background-color: $color-light;
+
+        &:hover {
+            border-color: shade(color(neutral), 6%);
+
+            #{$this}__label {
+                color: shade($color-muted, 20%);
+            }
+        }
+
+        &--expanded {
+            z-index: $level-3 + 1;
+
+            border-radius: 2px;
+            box-shadow: 0 0 0 1px color(primary);
+
+            &,
+            &:hover {
+                border-color: color(primary);
+            }
+
+            #{$this}__label {
+                color: $color-text;
+            }
+        }
+    }
+
+    &__label {
+        @include font-size(small);
+        color: $color-muted;
+        padding: $form-padding-y $form-padding-x 3px;
+    }
+
+    &__value {
+        border-radius: 0;
+        padding: 3px $form-padding-x $form-padding-y;
+        background-color: transparent;
+
+        @include input-placeholder {
+            color: $color-muted;
+        }
+    }
+
+    &__icon {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        top: 0;
+        right: 0;
+        height: 100%;
+        padding-right: $form-padding-x;
+    }
+
+    &__animation {
+        position: relative;
+
+        &--expanded {
+            z-index: $level-3;
+        }
+    }
+
+    &__options {
+        @include font-size(small);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        color: $color-text;
+        border: $border-style;
+        border-radius: 2px;
+        background-color: $color-light;
+
+        max-height: min(50vh, 600px);
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        @include overflow-scroll;
+        overscroll-behavior: contain;
+    }
+
+    &__wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: auto;
+        outline: 0;
+        z-index: 2;
+        width: 100%;
+        box-shadow: 0 6px 12px rgba(black, 0.05);
+
+        @include entering {
+            animation: enter 300ms $ease-out-quart both;
+        }
+
+        @include exiting {
+            animation: exit 300ms $ease-in-out-quint--custom forwards;
+        }
+
+        &--left {
+            transform-origin: left center;
+        }
+
+        &--right {
+            transform-origin: right center;
+            left: auto;
+            right: 0;
+        }
+
+        &--above {
+            margin-top: 0;
+            top: auto;
+            bottom: 0;
+        }
+    }
+
+    &__option {
+        @include font-size(small);
+        white-space: nowrap;
+        text-align: left;
+        padding: $form-padding-y $form-padding-x;
+
+        &:not(:last-child) {
+            border-bottom: $border-style--weak;
+        }
+
+        &:hover,
+        &:focus:focus-visible,
+        &--selected {
+            color: $color-text;
+            background-color: color(neutral);
+        }
+    }
+}
+
+@keyframes enter {
+    from {
+        box-shadow: 0 0 0 rgba(black, 0);
+        clip-path: inset(-20px -20px 100% -20px);
+    }
+
+    to {
+        clip-path: inset(-20px -20px -20px -20px);
+    }
+}
+
+@keyframes exit {
+    from {
+        clip-path: inset(-20px -20px -20px -20px);
+    }
+
+    to {
+        box-shadow: 0 0 0 rgba(black, 0);
+        clip-path: inset(-20px -20px 100% -20px);
+    }
+}

@@ -3,14 +3,16 @@ import { useState } from 'react'
 import useAuth from '@/hooks/auth'
 
 import Button from '@/components/Button'
+import Checkbox from '@/components/Checkbox'
 import Container from '@/components/Container'
+import Dropdown from '@/components/Dropdown'
 import Input from '@/components/Input'
 import Meta from '@/components/Meta'
 
 export default function LoginPage() {
   const { user, signUp, login, logout } = useAuth()
   const [error, setError] = useState<string>()
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '', check: false, color: '' })
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -20,7 +22,7 @@ export default function LoginPage() {
     }
   }
 
-  const handleChange = (field: keyof typeof form) => (value: string) => {
+  const handleChange = (field: keyof typeof form) => (value: string | boolean) => {
     setForm({ ...form, [field]: value })
   }
 
@@ -34,7 +36,7 @@ export default function LoginPage() {
           <p>Hei, {user.email}</p>
         </>
       ) : (
-        <h1>Utlogga</h1>
+        <h1>Login</h1>
       )}
 
       {!user ? (
@@ -53,6 +55,24 @@ export default function LoginPage() {
             onChange={handleChange('password')}
             label="Passord"
           />
+
+          <Checkbox label="Ja, eller nei" onChange={handleChange('check')} checked={form.check} />
+
+          <Dropdown
+            label="Velg farge"
+            value={form.color}
+            options={[
+              { label: 'Blå', value: 'blue' },
+              { label: 'Gul', value: 'yellow' },
+              { label: 'Hund', value: 'dog' },
+              { label: 'Katt', value: 'cat' },
+              { label: 'Hus', value: 'house' },
+              { label: 'Fly', value: 'plain' },
+              { label: 'Sko', value: 'shoes' },
+            ]}
+            onChange={handleChange('color')}
+          />
+
           <Button type="submit" primary>
             Logg inn
           </Button>

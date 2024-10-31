@@ -10,7 +10,6 @@ $font-base-fallback:
     Droid Sans,
     Helvetica Neue,
     sans-serif;
-$font-header-fallback: Georgia, Times, serif;
 
 $fonts: (
     base: (
@@ -43,7 +42,7 @@ $font-sizes: (
         line-height: 1.25,
     ),
     title: (
-        base: 32px,
+        base: 28px,
         to: 37px,
         line-height: 1.2,
     ),

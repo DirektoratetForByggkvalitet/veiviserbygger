@@ -11,13 +11,13 @@ interface Props {
   primary?: boolean
   onClick?: () => void
   // full?: boolean
-  // size?: 'small' | 'large'
+  size?: 'small' | 'large'
 }
 
-export default function Button({ children, type = 'button', primary, onClick }: Props) {
+export default function Button({ children, type = 'button', primary, onClick, size }: Props) {
   // TODO: Link button as well
   return (
-    <button {...bem('', { primary })} type={type} onClick={onClick}>
+    <button {...bem('', { primary, [size ?? '']: size })} type={type} onClick={onClick}>
       {children}
     </button>
   )

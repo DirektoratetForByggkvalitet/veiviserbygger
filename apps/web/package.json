@@ -22,6 +22,7 @@
     "react-helmet": "^6.1.0",
     "react-router": "^6.27.0",
     "react-router-dom": "^6.27.0",
+    "react-transition-group": "^4.4.5",
     "shared": "*",
     "types": "*"
   },
@@ -29,6 +30,7 @@
     "@types/lodash": "^4.17.12",
     "@types/react-dom": "^18.3.1",
     "@types/react-helmet": "^6.1.11",
+    "@types/react-transition-group": "^4.4.11",
     "@vitejs/plugin-react": "^4.3.2",
     "eslint-config-custom": "*",
     "jest": "^29.7.0",

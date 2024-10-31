@@ -1,0 +1,110 @@
+@use '@/styles/helpers.scss' as *;
+
+.checkbox {
+    $this: &;
+    $size: 30px;
+    $icon-strok-length: 22.627416610717773;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0 0 $spacing--small;
+
+    @include no-select;
+
+    &__label {
+        @include font(base, normal);
+        @include font-size(small);
+        margin-top: 3px;
+        flex-grow: 2;
+    }
+
+    &__indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: $size;
+        height: $size;
+        margin-right: 10px;
+        border-radius: 0;
+        border: $border-style;
+        background-color: $color-light;
+    }
+
+    &__icon {
+        margin-left: 1px;
+
+        path {
+            stroke-dasharray: $icon-strok-length;
+            stroke-dashoffset: -$icon-strok-length;
+            transition: stroke-dashoffset 200ms $ease-in-out-quint--custom;
+        }
+    }
+
+    &__input {
+        position: absolute;
+        opacity: 0;
+
+        &:checked + #{$this}__indicator {
+            path {
+                stroke-dashoffset: 0;
+                transition: stroke-dashoffset 300ms $ease-out-quart;
+            }
+        }
+
+        &:focus:focus-visible ~ #{$this}__indicator {
+            box-shadow: 0 0 0 1px black;
+        }
+    }
+
+    &--toggle {
+        #{$this}__icon {
+            position: relative;
+            transform: translateX(-(($size * 0.5) + 8px));
+            opacity: 0;
+
+            transition:
+                transform 300ms $ease-in-out-quint--custom,
+                opacity 500ms $ease-in-out-quint--custom;
+        }
+
+        #{$this}__indicator {
+            position: relative;
+            width: $size * 2 - 8px;
+            color: $color-text;
+            border-radius: $size;
+            border-color: color(neutral, light);
+            background-color: $color-light;
+
+            &:before {
+                content: '';
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                height: $size - 6px;
+                width: $size - 6px;
+                border-radius: 50%;
+                background-color: color(primary);
+                opacity: 0.65;
+
+                transition:
+                    transform 300ms $ease-in-out-quint--custom,
+                    opacity 200ms $ease-in-out-quint--custom;
+            }
+        }
+
+        #{$this}__input:checked {
+            & + #{$this}__indicator {
+                &:before {
+                    opacity: 1;
+                    transform: translateX(calc(100% - 2px));
+                }
+            }
+
+            & + #{$this}__indicator #{$this}__icon {
+                opacity: 1;
+                transform: translateX(($size * 0.5) - 3px);
+            }
+        }
+    }
+}

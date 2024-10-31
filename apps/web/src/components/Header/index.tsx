@@ -16,7 +16,9 @@ export default function Header() {
       <h1 {...bem('name')}>Losen</h1>
 
       <nav {...bem('actions')}>
-        <Button primary>Publiser</Button>
+        <Button primary size="small">
+          Publiser
+        </Button>
       </nav>
     </header>
   )

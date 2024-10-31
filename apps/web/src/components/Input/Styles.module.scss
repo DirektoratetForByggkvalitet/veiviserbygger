@@ -8,6 +8,14 @@
     margin-bottom: $spacing--small;
     background-color: $color-light;
 
+    &:hover {
+        border-color: shade(color(neutral), 6%);
+
+        #{$this}__label {
+            color: shade($color-muted, 20%);
+        }
+    }
+
     &:focus-within {
         border-radius: 2px;
         border-color: color(primary);
