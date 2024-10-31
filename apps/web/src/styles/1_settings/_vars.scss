@@ -10,7 +10,7 @@ $breakpoints: (
 $container-base: getStrippedPxSizeInRem(1220px);
 $container-width: (
     base: makeContainerSize(12),
-    tight: makeContainerSize(6),
+    tight: makeContainerSize(5),
 );
 
 // Spacing
@@ -18,6 +18,10 @@ $spacing: var(--spacing);
 $spacing--xsmall: 10px; // TODO: Use css-variable for this also?
 $spacing--small: var(--spacing--small);
 $spacing--large: var(--spacing--large);
+
+// Form stuff
+$form-padding-y: 18px;
+$form-padding-x: 20px;
 
 // Margins is used only for the page margins
 $margin: var(--margin);

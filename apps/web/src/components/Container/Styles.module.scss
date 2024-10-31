@@ -1,0 +1,11 @@
+@use '@/styles/helpers.scss' as *;
+
+.container {
+    @include container;
+
+    @each $key, $size in $container-width {
+        &--#{$key} {
+            @include container($key);
+        }
+    }
+}

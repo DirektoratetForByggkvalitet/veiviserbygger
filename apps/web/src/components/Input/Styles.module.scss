@@ -1,0 +1,36 @@
+@use '@/styles/helpers.scss' as *;
+
+.input {
+    $this: &;
+    @include font-size(base);
+    display: grid;
+    border: $border-style;
+    margin-bottom: $spacing--small;
+    background-color: $color-light;
+
+    &:focus-within {
+        border-radius: 2px;
+        border-color: color(primary);
+        box-shadow: 0 0 0 1px color(primary);
+
+        #{$this}__label {
+            color: $color-text;
+        }
+    }
+
+    &__label {
+        @include font-size(small);
+        color: $color-muted;
+        padding: $form-padding-y $form-padding-x 3px;
+    }
+
+    &__input {
+        border-radius: 0;
+        padding: 3px $form-padding-x $form-padding-y;
+        background-color: transparent;
+
+        @include input-placeholder {
+            color: $color-muted;
+        }
+    }
+}

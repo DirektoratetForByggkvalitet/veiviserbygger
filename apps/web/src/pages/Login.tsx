@@ -2,6 +2,9 @@ import { useState } from 'react'
 
 import useAuth from '@/hooks/auth'
 
+import Button from '@/components/Button'
+import Container from '@/components/Container'
+import Input from '@/components/Input'
 import Meta from '@/components/Meta'
 
 export default function LoginPage() {
@@ -17,13 +20,12 @@ export default function LoginPage() {
     }
   }
 
-  const handleChange =
-    (field: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setForm({ ...form, [field]: event.target.value })
-    }
+  const handleChange = (field: keyof typeof form) => (value: string) => {
+    setForm({ ...form, [field]: value })
+  }
 
   return (
-    <>
+    <Container size="tight">
       <Meta title="Velkommen til login siden våres. Du tar det herfra" />
 
       {user ? (
@@ -34,23 +36,26 @@ export default function LoginPage() {
       ) : (
         <h1>Utlogga</h1>
       )}
+
       {!user ? (
         <form onSubmit={handleSubmit}>
-          <input
+          <Input
             type="email"
             name="email"
             value={form.email}
             onChange={handleChange('email')}
-            placeholder="E-post"
+            label="E-post"
           />
-          <input
+          <Input
             type="password"
             name="password"
             value={form.password}
             onChange={handleChange('password')}
-            placeholder="Passord"
+            label="Passord"
           />
-          <button type="submit">Logg inn</button>
+          <Button type="submit" primary>
+            Logg inn
+          </Button>
 
           {error === 'auth/user-not-found' ? (
             <p>
@@ -64,6 +69,6 @@ export default function LoginPage() {
       ) : (
         <button onClick={logout}>Logg ut</button>
       )}
-    </>
+    </Container>
   )
 }
