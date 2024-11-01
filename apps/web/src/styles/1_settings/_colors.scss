@@ -17,6 +17,7 @@ $color-dark: color(neutral, xdark);
 // Specific colors.
 // Variables are there to be reused, so being  to specific or creating to many will create the opposite situation
 $color-background: color(neutral, light);
+$color-backdrop: rgba(white, 0.8);
 
 $color-text: $color-dark;
 $color-muted: color(neutral, dark);
