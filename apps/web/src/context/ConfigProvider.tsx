@@ -6,7 +6,6 @@ type Config = Awaited<ReturnType<typeof getConfig>> | null
 type EnvVar = { key: string; optional?: boolean }
 
 const emulatorEnvVars: EnvVar[] = [
-  { key: 'FIREBASE_API_KEY' },
   { key: 'FIREBASE_EMULATOR_AUTH_HOST' },
   { key: 'FIREBASE_EMULATOR_FIRESTORE_HOST' },
   { key: 'FIREBASE_EMULATOR_FIRESTORE_PORT', optional: true }

@@ -9,7 +9,11 @@ import { getConfig } from '../services/api'
  */
 export function getFirebaseApp(options: Awaited<ReturnType<typeof getConfig>>) {
   const firebaseConfig: FirebaseOptions = {
-    apiKey: options?.constants?.FIREBASE_API_KEY ?? '',
+    ...(
+      options?.constants?.FIREBASE_EMULATOR_AUTH_HOST
+      ? { apiKey: 'not-a-real-key' }
+      : { apiKey: options?.constants?.FIREBASE_API_KEY ?? '' }
+    ),
     appId: options?.constants?.FIREBASE_APP_ID ?? '',
     authDomain: options?.constants?.FIREBASE_AUTH_DOMAIN ?? '',
     projectId: options?.constants?.FIREBASE_PROJECT_ID ?? '',
