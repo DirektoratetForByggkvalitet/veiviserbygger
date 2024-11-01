@@ -2,10 +2,43 @@ import { getConfig } from "@/services/api";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { Requests } from "types";
 
-export const ConfigContext = createContext<Requests['/config']['GET']['response'] | null>(null)
+type Config = Awaited<ReturnType<typeof getConfig>> | null
+type EnvVar = { key: string; optional?: boolean }
+
+const emulatorEnvVars: EnvVar[] = [
+  { key: 'FIREBASE_API_KEY' },
+  { key: 'FIREBASE_EMULATOR_AUTH_HOST' },
+  { key: 'FIREBASE_EMULATOR_FIRESTORE_HOST' },
+  { key: 'FIREBASE_EMULATOR_FIRESTORE_PORT', optional: true }
+]
+
+const prodEnvVars: EnvVar[] = [
+  { key: 'FIREBASE_API_KEY' },
+  { key: 'FIREBASE_APP_ID' },
+  { key: 'FIREBASE_AUTH_DOMAIN' },
+  { key: 'FIREBASE_PROJECT_ID' },
+  { key: 'FIREBASE_STORAGE_BUCKET' },
+  { key: 'FIREBASE_MESSAGING_SENDER_ID' },
+]
+
+function configOk(envVars: { key: string; optional?: boolean }[], config: Config) {
+  return envVars.every(({ key, optional }) => !!config?.constants?.[key] || optional)
+}
+
+export const ConfigContext = createContext<Config>(null)
+
+function ConfigStatus({ configKey, optional, config }: { configKey: string, optional: boolean, config: Config }) {
+  return <>
+    <span>
+      {!!config?.constants?.[configKey] && '✅'}
+      {!config?.constants?.[configKey] && !optional && '❌'}
+    </span>
+    {configKey} {optional ? '(optional)' : ''}
+  </>
+}
 
 export default function ConfigProvider({ children }: { children: ReactNode }) {
-  const [config, setConfig] = useState<Awaited<ReturnType<typeof getConfig>>>()
+  const [config, setConfig] = useState<Config>()
   const [error, setError] = useState<Error>()
 
   useEffect(() => {
@@ -18,6 +51,29 @@ export default function ConfigProvider({ children }: { children: ReactNode }) {
 
   if (!config) {
     return <div>Loading...</div>
+  }
+
+  if (!configOk(emulatorEnvVars, config) && !configOk(prodEnvVars, config)) {
+    return <div>
+      <h1>Missing environmental variables</h1>
+      <p>Depending you're in development or production you either need to set env vars for running towards an emulator or towards a production Firebase account.</p>
+      <p>You need to set these env vars in the environment of you API. In local dev that would be <code>apps/api/.env.development</code> while in production it would be by setting environment variables.</p>
+
+      <h2>Emulator</h2>
+      <ul>
+        {emulatorEnvVars.map(({ key, optional }) => (
+          <li key={key}><ConfigStatus configKey={key} optional={!!optional} config={config} /></li>
+        ))}
+      </ul>
+
+      <h2>Production</h2>
+      <ul>
+        {prodEnvVars.map(({ key, optional }) => (
+          <li key={key}><ConfigStatus configKey={key} optional={!!optional} config={config} /></li>
+        ))}
+      </ul>
+    </div>
+
   }
 
   return (

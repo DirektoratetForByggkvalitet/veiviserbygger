@@ -17,10 +17,10 @@ export function getFirebaseApp(options: Awaited<ReturnType<typeof getConfig>>) {
     messagingSenderId: options?.constants?.FIREBASE_MESSAGING_SENDER_ID ?? '',
   }
 
-  if (!firebaseConfig.apiKey || !firebaseConfig.appId) {
-    console.warn('Missing Firebase config')
-    return
-  }
+  // if (!firebaseConfig.apiKey || !firebaseConfig.appId) {
+  //   console.warn('Missing Firebase config')
+  //   return
+  // }
 
   const app = initializeApp(firebaseConfig)
   let auth: Auth
