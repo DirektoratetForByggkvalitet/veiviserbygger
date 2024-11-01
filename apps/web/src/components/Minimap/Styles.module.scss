@@ -1,0 +1,50 @@
+@use '@/styles/_helpers' as *;
+
+.minimap {
+    $this: &;
+    display: flex;
+    height: calc(100vh - #{$header-height});
+
+    &__title {
+        @include font(base, bold);
+        @include font-size(small, true);
+        line-height: 1;
+        margin-bottom: $spacing--small;
+    }
+
+    &__page {
+        cursor: pointer;
+        width: 300px;
+        padding: $spacing--small $margin;
+
+        &:not(:last-child) {
+            border-right: $border-style;
+        }
+
+        &:hover {
+            background-color: color(neutral);
+        }
+    }
+
+    &__sub-title {
+        @include font(base, normal);
+        @include font-size(xsmall);
+    }
+
+    &__item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 10px 11px;
+        border: $border-style;
+        background-color: $color-light;
+        margin-bottom: 6px;
+    }
+
+    &__icon {
+        text-align: right;
+        flex-shrink: 0;
+        width: 20px;
+    }
+}

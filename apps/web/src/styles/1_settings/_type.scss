@@ -26,6 +26,11 @@ $font-size-base: 20;
 
 // The differnt sizes (in px). It will be converted to rem
 $font-sizes: (
+    xsmall: (
+        base: 14px,
+        to: 14px,
+        line-height: 1.25,
+    ),
     small: (
         base: 16px,
         to: 16px,
