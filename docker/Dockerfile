@@ -11,10 +11,15 @@ RUN apk add nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
 # Copy the package.json and package-lock.json to install dependencies
-COPY ../package.json ../package-lock.json ./
+COPY ../package*.json ./
+
+# Copy the package.json for the different apps
+RUN mkdir -p apps/web apps/api
+COPY ../apps/web/package.json apps/web/
+COPY ../apps/api/package.json apps/api/
 
 # Install all dependencies for the monorepo
-RUN npm install
+RUN npm ci
 
 # Copy the rest of the project files
 COPY .. .

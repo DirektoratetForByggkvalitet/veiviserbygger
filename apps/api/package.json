@@ -13,6 +13,7 @@
     "test:watch": "npm run test -- --watch --coverage=false"
   },
   "dependencies": {
+    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
@@ -21,9 +22,10 @@
     "zod": "*"
   },
   "devDependencies": {
+    "@types/body-parser": "^1",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
-    "@types/node": "^22.7.5",
+    "@types/node": "^22.8.6",
     "esbuild": "^0.24.0",
     "eslint-config-custom": "*",
     "jest": "^29.7.0",
