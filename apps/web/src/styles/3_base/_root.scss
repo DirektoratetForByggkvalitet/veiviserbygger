@@ -7,11 +7,13 @@
     --gutter: 20px;
 
     --header-height: 60px;
+    --menu-width: 100%;
 
     @include min-width(md) {
         --spacing: 30px;
         --spacing--small: 20px;
         --gutter: 40px;
+        --menu-width: 440px;
     }
 
     @include min-width(lg) {

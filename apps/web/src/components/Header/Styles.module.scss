@@ -3,6 +3,7 @@
 .header {
     $this: &;
     @include font-size(base);
+    position: relative;
     display: flex;
     align-items: center;
     height: $header-height;
@@ -26,5 +27,11 @@
 
     &__actions {
         margin-left: auto;
+    }
+
+    &--open {
+        position: sticky;
+        top: 0;
+        z-index: $level-4;
     }
 }
