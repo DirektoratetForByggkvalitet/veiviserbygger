@@ -30,7 +30,12 @@ export default function Menu() {
   }, [open])
 
   return (
-    <Transition updateKey={open.toString()} {...bem('')} enter={300} exit={300}>
+    <Transition
+      updateKey={open.toString()}
+      {...bem('', '', open ? 'overlay' : undefined)}
+      enter={300}
+      exit={300}
+    >
       {open && (
         <>
           <nav {...bem('content')} ref={menuRef} tabIndex={0}>

@@ -19,9 +19,8 @@ body {
         overscroll-behavior: contain;
     }
 
-    // &:has(.menu-expanded) {
-    //     @include max-width(md) {
-    //         overflow: hidden;
-    //     }
-    // }
+    &:has(.overlay) {
+        overflow: hidden;
+        overscroll-behavior: contain;
+    }
 }

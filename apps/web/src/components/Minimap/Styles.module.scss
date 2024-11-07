@@ -13,15 +13,24 @@
 
     &__page {
         cursor: pointer;
-        width: 300px;
+        width: clamp(200px, 19vw, 300px);
         padding: $spacing--small $margin;
 
         &:not(:last-child) {
             border-right: $border-style;
         }
 
-        &:hover {
+        &:hover,
+        &:focus:focus-visible {
             background-color: color(neutral, light);
+        }
+
+        &--selected {
+            &,
+            &:hover,
+            &:focus:focus-visible {
+                background-color: color(neutral);
+            }
         }
     }
 
@@ -38,10 +47,14 @@
         gap: 10px;
         align-items: flex-start;
         justify-content: space-between;
-        padding: 10px 11px;
+        padding: 8px;
         border: $border-style;
         background-color: $color-light;
         margin-bottom: 6px;
+
+        @include min-width(md) {
+            padding: 12px;
+        }
     }
 
     &__icon {

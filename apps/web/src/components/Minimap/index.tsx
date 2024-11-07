@@ -46,11 +46,26 @@ const TEST = [
   },
 ]
 
-export default function Minimap() {
+interface Props {
+  onClick: (id: string) => void
+  selected?: string | null
+}
+
+export default function Minimap({ onClick, selected }: Props) {
+  const handlePageClick = (id: string) => () => {
+    onClick(id)
+  }
+
   return (
     <ul {...bem('')}>
       {TEST.map((item, index) => (
-        <li key={item.id} {...bem('page')}>
+        <li
+          key={item.id}
+          {...bem('page', { selected: item.id === selected })}
+          role="button"
+          onClick={handlePageClick(item.id)}
+          tabIndex={0}
+        >
           <h2 {...bem('title')}>
             {index + 1}. {item.title}
           </h2>

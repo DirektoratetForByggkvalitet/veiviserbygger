@@ -8,12 +8,17 @@
 
     --header-height: 60px;
     --menu-width: 100%;
+    --panel-width: 100%;
 
     @include min-width(md) {
         --spacing: 30px;
         --spacing--small: 20px;
         --gutter: 40px;
         --menu-width: 440px;
+        // --panel-width: calc(100% - 300px);
+        --panel-width: 50%;
+
+        --margin: 16px;
     }
 
     @include min-width(lg) {
