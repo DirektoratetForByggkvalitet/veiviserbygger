@@ -2,8 +2,10 @@ import { useAtom } from 'jotai'
 import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
+import useAuth from '@/hooks/auth'
 import menuState from '@/store/menu'
 
+import Button from '@/components/Button'
 import Icon from '@/components/Icon'
 import Transition from '@/components/Transition'
 
@@ -12,6 +14,8 @@ import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
 export default function Menu() {
+  const { logout } = useAuth()
+
   const menuRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useAtom(menuState)
 
@@ -46,6 +50,8 @@ export default function Menu() {
               <Icon name="Plus" />
               <span {...bem('label')}>Ny veiviser</span>
             </Link>
+
+            <Button onClick={logout}>Logg inn i ut</Button>
           </nav>
 
           <button type="button" aria-label="Lukk meny" {...bem('backdrop')} onClick={closeMenu} />

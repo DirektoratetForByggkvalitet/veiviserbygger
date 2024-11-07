@@ -4,7 +4,8 @@ $colors: (
         base: darken(#3a8ff4, 8%),
     ),
     neutral: (
-        light: #f8f8f8,
+        xlight: #f8f8f8,
+        light: shade(#f8f8f8, 3%),
         base: #e7e7e7,
         dark: #878787,
         xdark: #111111,
@@ -16,7 +17,7 @@ $color-dark: color(neutral, xdark);
 
 // Specific colors.
 // Variables are there to be reused, so being  to specific or creating to many will create the opposite situation
-$color-background: color(neutral, light);
+$color-background: color(neutral, xlight);
 $color-backdrop: rgba(white, 0.8);
 
 $color-text: $color-dark;
