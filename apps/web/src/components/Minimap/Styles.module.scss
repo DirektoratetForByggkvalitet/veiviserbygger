@@ -14,14 +14,16 @@
     &__title {
         @include font(base, bold);
         @include font-size(small, 1);
-        margin-bottom: $spacing--small;
+        display: flex;
+        align-items: center;
+        height: $header-height;
     }
 
     &__page {
         cursor: pointer;
         width: var(--minimap-page-width);
         flex-shrink: 0;
-        padding: $spacing--small $margin;
+        padding: 0 $margin;
 
         &:not(:last-child) {
             border-right: $border-style;
@@ -36,7 +38,7 @@
             &,
             &:hover,
             &:focus:focus-visible {
-                background-color: color(neutral);
+                background-color: color(primary, light);
             }
         }
     }

@@ -2,7 +2,7 @@ $colors: (
     primary: (
         // base: #3a8ff4,
         base: darken(#3a8ff4, 8%),
-        light: tint(#3a8ff4, 70%),
+        light: mix(#3a8ff4, #f8f8f8, 15%),
     ),
     neutral: (
         xlight: #f8f8f8,

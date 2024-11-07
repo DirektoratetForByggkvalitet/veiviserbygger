@@ -4,18 +4,17 @@
     $this: &;
     @include font-size(base);
 
-    &__content {
+    &__panel {
         position: fixed;
         display: flex;
         gap: $spacing--xsmall;
-        padding: $margin;
         flex-direction: column;
         right: 0;
         top: $header-height;
         bottom: 0;
         width: $panel-width;
         z-index: $level-4 - 1;
-        border-right: $border-style;
+        border-left: $border-style;
         background-color: $color-light;
         box-shadow: $shadow;
 
@@ -28,6 +27,32 @@
         }
 
         outline: 0;
+    }
+
+    &__content {
+        padding: $margin;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: $header-height;
+        border-bottom: $border-style;
+    }
+
+    &__title {
+        @include font(base, normal);
+        @include font-size(base);
+        padding: 0 $margin;
+    }
+
+    &__close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-self: stretch;
+        padding: 0 $margin;
     }
 
     &__backdrop {

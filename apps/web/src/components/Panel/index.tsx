@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useRef } from 'react'
 
+import Icon from '@/components/Icon'
 import Transition from '@/components/Transition'
 
 import useKeyPress from '@/hooks/useKeyPress'
@@ -13,14 +14,15 @@ interface Props {
   open: boolean
   onClose: () => void
   backdrop?: boolean
+  title: string
 }
 
-export default function Panel({ children, open, onClose, backdrop = true }: Props) {
-  const contentRef = useRef<HTMLDivElement>(null)
+export default function Panel({ children, open, onClose, backdrop = true, title }: Props) {
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (open && contentRef.current) {
-      contentRef.current.focus()
+    if (open && panelRef.current) {
+      panelRef.current.focus()
     }
   }, [open])
 
@@ -39,9 +41,16 @@ export default function Panel({ children, open, onClose, backdrop = true }: Prop
     >
       {open && (
         <>
-          <div {...bem('content')} ref={contentRef} tabIndex={0}>
-            {children}
-          </div>
+          <aside {...bem('panel')} ref={panelRef} tabIndex={0}>
+            <header {...bem('header')}>
+              <h2 {...bem('title')}>{title}</h2>
+              <button type="button" {...bem('close')} onClick={onClose}>
+                <Icon name="X" />
+              </button>
+            </header>
+
+            <div {...bem('content')}>{children}</div>
+          </aside>
 
           {backdrop && (
             <button type="button" aria-label="Lukk panel" {...bem('backdrop')} onClick={onClose} />

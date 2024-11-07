@@ -27,4 +27,8 @@
         --spacing: 40px;
         --spacing--large: 80px;
     }
+
+    @include min-width(xl) {
+        --panel-width: calc(100% - (var(--minimap-page-width) * 2));
+    }
 }

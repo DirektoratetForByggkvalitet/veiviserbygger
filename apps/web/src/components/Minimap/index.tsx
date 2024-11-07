@@ -114,7 +114,8 @@ export default function Minimap({ onClick, selected }: Props) {
       const selectedElement = document.getElementById(`page-${selected}`)
 
       if (selectedElement) {
-        contentRef.current.scrollTo({ left: selectedElement.offsetLeft, behavior: 'smooth' })
+        const diff = Math.abs(selectedElement.offsetWidth - contentRef.current.offsetWidth)
+        contentRef.current.scrollTo({ left: selectedElement.offsetLeft - diff, behavior: 'smooth' })
       }
     }
   }, [selected])
