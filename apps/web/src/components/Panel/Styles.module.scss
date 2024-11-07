@@ -20,11 +20,11 @@
         box-shadow: $shadow;
 
         @include entering {
-            animation: enter 300ms $ease-out-quart backwards;
+            animation: enter 500ms $ease-out-quart backwards;
         }
 
         @include exiting {
-            animation: exit 300ms $ease-in-out-quint--custom forwards;
+            animation: exit 500ms $ease-in-out-quint--custom forwards;
         }
 
         outline: 0;
@@ -40,11 +40,11 @@
         background-color: rgba(white, 0.4);
 
         @include entering {
-            animation: fade-in 300ms $ease-out-quart backwards;
+            animation: fade-in 500ms $ease-out-quart backwards;
         }
 
         @include exiting {
-            animation: fade-out 300ms $ease-in-out-quint--custom forwards;
+            animation: fade-out 500ms $ease-in-out-quint--custom forwards;
         }
     }
 }

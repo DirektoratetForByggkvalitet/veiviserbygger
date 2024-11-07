@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDraggable } from 'react-use-draggable-scroll'
 
 // import Button from '@/components/Button'
@@ -10,50 +10,60 @@ const bem = BEMHelper(styles)
 
 const TEST = [
   {
-    id: '123123',
+    id: '1223123',
     title: 'Startside',
-    content: [{ title: 'Veileder for mikrohus', type: null }],
+    content: [{ id: '1', title: 'Veileder for mikrohus', type: null }],
   },
   {
     id: '12323123',
     title: 'Bruksområde',
     content: [
-      { title: 'Skal noen bo eller overnatte i Mikrohuset?', type: 'stop' },
-      { title: 'Hva skal mikrohuset brukes til?', type: 'stop' },
+      { id: '2', title: 'Skal noen bo eller overnatte i Mikrohuset?', type: 'stop' },
+      { id: '3', title: 'Hva skal mikrohuset brukes til?', type: 'stop' },
     ],
   },
   {
     id: '44423',
     title: 'Plassering',
     content: [
-      { title: 'Er bygningen frittliggende?', type: 'stop' },
-      { title: 'Blir de minst 8 meter fra mikrohuset til nærmeste bygning?', type: 'continue' },
-      { title: 'Skal mikrohuset ha en permantent plassering?', type: 'continue' },
+      { id: '4', title: 'Er bygningen frittliggende?', type: 'stop' },
+      {
+        id: '5',
+        title: 'Blir de minst 8 meter fra mikrohuset til nærmeste bygning?',
+        type: 'continue',
+      },
+      { id: '6', title: 'Skal mikrohuset ha en permantent plassering?', type: 'continue' },
     ],
   },
   {
     id: '4442123',
     title: 'Bygningen',
     content: [
-      { title: 'Hvor stort bruksareal (BRA) får mikrohuset?', type: 'stop' },
-      { title: 'Blir mikrohuset høyere enn 4,5 m over bakken?', type: 'stop' },
-      { title: 'Skal mikrohuset ha mer en én etasje?', type: 'stop' },
-      { title: 'Skal mikrohuset ha kjeller?', type: 'stop' },
-      { title: 'Skal bygningen ha pipe eller skorstein?', type: 'continue' },
+      { id: '7', title: 'Hvor stort bruksareal (BRA) får mikrohuset?', type: 'stop' },
+      { id: '8', title: 'Blir mikrohuset høyere enn 4,5 m over bakken?', type: 'stop' },
+      { id: '9', title: 'Skal mikrohuset ha mer en én etasje?', type: 'stop' },
+      { id: '10', title: 'Skal mikrohuset ha kjeller?', type: 'stop' },
+      { id: '11', title: 'Skal bygningen ha pipe eller skorstein?', type: 'continue' },
     ],
   },
   {
     id: '114442123',
     title: 'Hovedfunksjoner',
-    content: [{ title: 'Har mikrohuset alle hovedfunksjoner på inngangsplanet?', type: 'stop' }],
+    content: [
+      { id: '12', title: 'Har mikrohuset alle hovedfunksjoner på inngangsplanet?', type: 'stop' },
+    ],
   },
   {
-    id: '22',
+    id: '221',
     title: 'Reguleringsplan',
     content: [
-      { title: 'Finnes det en reguleringsplan for eiendommen?', type: 'continue' },
-      { title: 'Hva er eiendommen regulert til?', type: 'continue' },
-      { title: 'Er det lov å sette opp enda en boenhet på eiendommen?', type: 'continue' },
+      { id: '13', title: 'Finnes det en reguleringsplan for eiendommen?', type: 'continue' },
+      { id: '14', title: 'Hva er eiendommen regulert til?', type: 'continue' },
+      {
+        id: '15',
+        title: 'Er det lov å sette opp enda en boenhet på eiendommen?',
+        type: 'continue',
+      },
     ],
   },
   {
@@ -61,6 +71,7 @@ const TEST = [
     title: 'Grad av utnytting',
     content: [
       {
+        id: '16',
         title: 'Har eiendommen stort nok areal til bygningen du ønsker å sette opp?',
         type: 'continue',
       },
@@ -71,6 +82,7 @@ const TEST = [
     title: 'Flom og skred',
     content: [
       {
+        id: '17',
         title: 'Skal du bygge i et flom- eller skredutsatt område?',
         type: 'continue',
       },
@@ -81,6 +93,7 @@ const TEST = [
     title: 'Andre begrensninger',
     content: [
       {
+        id: '18',
         title: 'Begrenser kommunale planer eller andre horhold hva du kan bygge?',
         type: 'stop',
       },
@@ -96,9 +109,19 @@ interface Props {
 export default function Minimap({ onClick, selected }: Props) {
   const contentRef = useRef<any>(null)
 
+  useEffect(() => {
+    if (selected && contentRef.current) {
+      const selectedElement = document.getElementById(`page-${selected}`)
+
+      if (selectedElement) {
+        contentRef.current.scrollTo({ left: selectedElement.offsetLeft, behavior: 'smooth' })
+      }
+    }
+  }, [selected])
+
   const { events } = useDraggable(contentRef, {
     applyRubberBandEffect: true,
-    decayRate: 0.94, // 6%
+    decayRate: 0.95, // 5%
     safeDisplacement: 30, // px
   })
 
@@ -107,7 +130,7 @@ export default function Minimap({ onClick, selected }: Props) {
   }
 
   return (
-    <ul {...bem('')} ref={contentRef} {...events}>
+    <ul {...bem('', { selected })} ref={contentRef} {...events}>
       {TEST.map((item, index) => (
         <li
           key={item.id}
@@ -115,6 +138,7 @@ export default function Minimap({ onClick, selected }: Props) {
           role="button"
           onClick={handlePageClick(item.id)}
           tabIndex={0}
+          id={`page-${item.id}`}
         >
           <h2 {...bem('title')}>
             {index + 1}. {item.title}
@@ -123,7 +147,7 @@ export default function Minimap({ onClick, selected }: Props) {
           <ul {...bem('content')}>
             {item.content.map((content) => {
               return (
-                <li {...bem('item')}>
+                <li {...bem('item')} key={content.id}>
                   <h3 {...bem('sub-title')}>{content.title}</h3>
 
                   <span {...bem('icon')}>

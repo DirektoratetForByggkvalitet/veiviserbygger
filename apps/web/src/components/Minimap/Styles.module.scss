@@ -7,6 +7,8 @@
     height: calc(100vh - #{$header-height});
     overflow: auto;
 
+    transition: width 500ms $ease-in-out-quint--custom;
+
     @include no-select;
 
     &__title {
@@ -53,13 +55,13 @@
         gap: 8px;
         align-items: flex-start;
         justify-content: space-between;
-        padding: 8px;
+        padding: 7px 8px;
         border: $border-style;
         background-color: $color-light;
         margin-bottom: 4px;
 
         @include min-width(md) {
-            padding: 12px;
+            padding: 10px 12px;
         }
     }
 
@@ -67,5 +69,11 @@
         text-align: right;
         flex-shrink: 0;
         width: 20px;
+    }
+
+    &--selected {
+        width: calc(100% - var(--panel-width));
+
+        transition: none;
     }
 }

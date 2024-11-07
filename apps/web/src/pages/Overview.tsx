@@ -18,7 +18,7 @@ export default function HomePage() {
   return (
     <>
       <Meta title="Velkommen til internett. Vi tar det herfra" />
-      <Panel open={!!selected} onClose={handleClose}>
+      <Panel open={!!selected} onClose={handleClose} backdrop={false}>
         Velkommen til internett. Vi tar det herfra!
       </Panel>
       <Minimap onClick={handleSelect} selected={selected} />

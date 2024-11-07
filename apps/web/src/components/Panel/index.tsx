@@ -12,9 +12,10 @@ interface Props {
   children: ReactNode
   open: boolean
   onClose: () => void
+  backdrop?: boolean
 }
 
-export default function Panel({ children, open, onClose }: Props) {
+export default function Panel({ children, open, onClose, backdrop = true }: Props) {
   const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -33,8 +34,8 @@ export default function Panel({ children, open, onClose }: Props) {
     <Transition
       updateKey={open.toString()}
       {...bem('', '', open ? 'overlay' : undefined)}
-      enter={300}
-      exit={300}
+      enter={500}
+      exit={500}
     >
       {open && (
         <>
@@ -42,7 +43,9 @@ export default function Panel({ children, open, onClose }: Props) {
             {children}
           </div>
 
-          <button type="button" aria-label="Lukk panel" {...bem('backdrop')} onClick={onClose} />
+          {backdrop && (
+            <button type="button" aria-label="Lukk panel" {...bem('backdrop')} onClick={onClose} />
+          )}
         </>
       )}
     </Transition>
