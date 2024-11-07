@@ -12,7 +12,7 @@
     @include no-select;
 
     &__title {
-        @include font(base, bold);
+        @include font(base, normal);
         @include font-size(small, 1);
         display: flex;
         align-items: center;
@@ -39,7 +39,12 @@
             &:hover,
             &:focus:focus-visible {
                 background-color: color(primary, light);
+                border-color: color(primary, light);
             }
+        }
+
+        &:has(+ #{$this}__page--selected) {
+            border-color: color(primary, light);
         }
     }
 

@@ -2,7 +2,6 @@
 
 .panel {
     $this: &;
-    @include font-size(base);
 
     &__panel {
         position: fixed;
@@ -14,7 +13,7 @@
         bottom: 0;
         width: $panel-width;
         z-index: $level-4 - 1;
-        border-left: $border-style;
+        // border-left: $border-style;
         background-color: $color-light;
         box-shadow: $shadow;
 
