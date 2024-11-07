@@ -76,7 +76,7 @@
     @return strip-unit(math.div($size, $font-size-base));
 }
 
-@mixin font-size($size: base, $skip-line-height: false) {
+@mixin font-size($size: base, $custom-line-height: false) {
     $sizes: map-get($font-sizes, $size);
 
     @if map-has-key($sizes, base) and map-has-key($sizes, to) {
@@ -100,9 +100,13 @@
     }
 
     // Set the line height
-    @if (map-has-key($sizes, line-height) and not $skip-line-height) {
+    @if (map-has-key($sizes, line-height) and not $custom-line-height) {
         $line-height: map-get($sizes, line-height);
         line-height: $line-height;
+    }
+
+    @if ($custom-line-height and is-int($custom-line-height)) {
+        line-height: $custom-line-height;
     }
 }
 
@@ -341,13 +345,6 @@
     }
 }
 
-@mixin genre {
-    @include font(meta, normal);
-    @include font-size(small);
-    display: block;
-    margin-bottom: calc(#{$spacing--small} * 0.65); // Optical
-}
-
 @mixin overflow-scroll {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
@@ -385,7 +382,22 @@
 
     @keyframes shine {
         to {
-            background-position: 100% 0, 0 0;
+            background-position:
+                100% 0,
+                0 0;
         }
+    }
+}
+
+@mixin line-clamp($lines) {
+    line-clamp: $lines;
+
+    @supports (display: -webkit-box) {
+        display: -webkit-box;
+        overflow: hidden;
+        padding-top: 0.1em; // Fix for special letters
+        padding-bottom: 0.1em; // Fix for special letters
+        -webkit-line-clamp: $lines;
+        -webkit-box-orient: vertical;
     }
 }
