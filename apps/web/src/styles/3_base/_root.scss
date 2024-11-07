@@ -10,6 +10,8 @@
     --menu-width: 100%;
     --panel-width: 100%;
 
+    --minimap-page-width: 270px;
+
     @include min-width(md) {
         --spacing: 30px;
         --spacing--small: 20px;

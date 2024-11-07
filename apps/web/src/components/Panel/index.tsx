@@ -2,6 +2,8 @@ import { type ReactNode, useEffect, useRef } from 'react'
 
 import Transition from '@/components/Transition'
 
+import useKeyPress from '@/hooks/useKeyPress'
+
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
@@ -20,6 +22,12 @@ export default function Panel({ children, open, onClose }: Props) {
       contentRef.current.focus()
     }
   }, [open])
+
+  useKeyPress((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      onClose()
+    }
+  }, [])
 
   return (
     <Transition

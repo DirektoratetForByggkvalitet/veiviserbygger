@@ -11,6 +11,7 @@ body {
     -webkit-font-smoothing: antialiased;
     font-variant-ligatures: contextual;
     text-rendering: optimizeLegibility;
+    // font-feature-settings: 'ss03' 1;
 
     background-color: $color-background;
 

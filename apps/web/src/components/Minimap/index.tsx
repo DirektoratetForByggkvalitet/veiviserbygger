@@ -1,3 +1,6 @@
+import { useRef } from 'react'
+import { useDraggable } from 'react-use-draggable-scroll'
+
 // import Button from '@/components/Button'
 import { IconContinue, IconStop } from '@/components/Icon'
 
@@ -44,6 +47,45 @@ const TEST = [
     title: 'Hovedfunksjoner',
     content: [{ title: 'Har mikrohuset alle hovedfunksjoner på inngangsplanet?', type: 'stop' }],
   },
+  {
+    id: '22',
+    title: 'Reguleringsplan',
+    content: [
+      { title: 'Finnes det en reguleringsplan for eiendommen?', type: 'continue' },
+      { title: 'Hva er eiendommen regulert til?', type: 'continue' },
+      { title: 'Er det lov å sette opp enda en boenhet på eiendommen?', type: 'continue' },
+    ],
+  },
+  {
+    id: '323',
+    title: 'Grad av utnytting',
+    content: [
+      {
+        title: 'Har eiendommen stort nok areal til bygningen du ønsker å sette opp?',
+        type: 'continue',
+      },
+    ],
+  },
+  {
+    id: '3232',
+    title: 'Flom og skred',
+    content: [
+      {
+        title: 'Skal du bygge i et flom- eller skredutsatt område?',
+        type: 'continue',
+      },
+    ],
+  },
+  {
+    id: '32321',
+    title: 'Andre begrensninger',
+    content: [
+      {
+        title: 'Begrenser kommunale planer eller andre horhold hva du kan bygge?',
+        type: 'stop',
+      },
+    ],
+  },
 ]
 
 interface Props {
@@ -52,12 +94,20 @@ interface Props {
 }
 
 export default function Minimap({ onClick, selected }: Props) {
+  const contentRef = useRef<any>(null)
+
+  const { events } = useDraggable(contentRef, {
+    applyRubberBandEffect: true,
+    decayRate: 0.94, // 6%
+    safeDisplacement: 30, // px
+  })
+
   const handlePageClick = (id: string) => () => {
     onClick(id)
   }
 
   return (
-    <ul {...bem('')}>
+    <ul {...bem('')} ref={contentRef} {...events}>
       {TEST.map((item, index) => (
         <li
           key={item.id}
