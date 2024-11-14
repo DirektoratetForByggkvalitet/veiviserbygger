@@ -1,0 +1,19 @@
+@use '@/styles/helpers.scss' as *;
+
+.form {
+    $this: &;
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        gap: $spacing--small;
+    }
+
+    &__split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: $gutter;
+        width: 100%;
+    }
+}

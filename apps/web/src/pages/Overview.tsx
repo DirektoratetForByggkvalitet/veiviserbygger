@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import Editor from '@/components/Editor'
+import Form from '@/components/Form'
 import Input from '@/components/Input'
 import Meta from '@/components/Meta'
 import Minimap, { type MinimapData } from '@/components/Minimap'
@@ -118,8 +119,14 @@ export default function HomePage() {
     <>
       <Meta title="Velkommen til internett. Vi tar det herfra" />
       <Panel open={!!(selected && data)} onClose={handleClose} backdrop={false} title={panelTitle}>
-        <Input label="Tittel" />
-        <Editor label="Innhold" />
+        <Form>
+          <Form.Split>
+            <Input label="Tittel" />
+          </Form.Split>
+          <Form.Split>
+            <Editor label="Innhold" />
+          </Form.Split>
+        </Form>
       </Panel>
       <Minimap onClick={handleSelect} selected={selected} data={DUMMY_DATA} />
     </>

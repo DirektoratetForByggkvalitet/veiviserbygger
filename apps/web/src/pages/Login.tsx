@@ -3,9 +3,8 @@ import { useState } from 'react'
 import useAuth from '@/hooks/auth'
 
 import Button from '@/components/Button'
-import Checkbox from '@/components/Checkbox'
 import Container from '@/components/Container'
-import Dropdown from '@/components/Dropdown'
+import Form from '@/components/Form'
 import Input from '@/components/Input'
 import Meta from '@/components/Meta'
 
@@ -29,18 +28,11 @@ export default function LoginPage() {
   return (
     <Container size="tight">
       <Meta title="Velkommen til login siden våres. Du tar det herfra" />
-
-      {user ? (
-        <>
-          <h1>Innlogga</h1>
-          <p>Hei, {user.email}</p>
-        </>
-      ) : (
-        <h1>Login</h1>
-      )}
-
+      <br />
+      <h1>Login</h1>
+      <br />
       {!user ? (
-        <form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit}>
           <Input
             type="email"
             name="email"
@@ -56,23 +48,6 @@ export default function LoginPage() {
             label="Passord"
           />
 
-          <Checkbox label="Ja, eller nei" onChange={handleChange('check')} checked={form.check} />
-
-          <Dropdown
-            label="Velg farge"
-            value={form.color}
-            options={[
-              { label: 'Blå', value: 'blue' },
-              { label: 'Gul', value: 'yellow' },
-              { label: 'Hund', value: 'dog' },
-              { label: 'Katt', value: 'cat' },
-              { label: 'Hus', value: 'house' },
-              { label: 'Fly', value: 'plain' },
-              { label: 'Sko', value: 'shoes' },
-            ]}
-            onChange={handleChange('color')}
-          />
-
           <Button type="submit" primary>
             Logg inn
           </Button>
@@ -85,7 +60,7 @@ export default function LoginPage() {
               </button>
             </p>
           ) : null}
-        </form>
+        </Form>
       ) : (
         <button onClick={logout}>Logg ut</button>
       )}

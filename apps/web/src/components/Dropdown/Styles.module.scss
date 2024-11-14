@@ -3,7 +3,7 @@
 .dropdown {
     $this: &;
     display: block;
-    margin-bottom: $spacing--small;
+    width: 100%;
 
     &__trigger {
         @include font-size(base);

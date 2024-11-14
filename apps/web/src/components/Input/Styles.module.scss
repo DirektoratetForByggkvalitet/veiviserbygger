@@ -4,8 +4,8 @@
     $this: &;
     @include font-size(base);
     display: grid;
+    width: 100%;
     border: $border-style;
-    margin-bottom: $spacing--small;
     background-color: $color-light;
 
     &:hover {

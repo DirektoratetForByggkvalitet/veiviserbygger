@@ -9,6 +9,7 @@
     height: $header-height;
     // padding-left: $margin;
     padding-right: $margin;
+    z-index: $level-3;
 
     border-bottom: $border-style;
     background-color: $color-light;
@@ -32,6 +33,5 @@
     &--open {
         position: sticky;
         top: 0;
-        z-index: $level-4;
     }
 }
