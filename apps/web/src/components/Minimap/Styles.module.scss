@@ -19,6 +19,10 @@
         height: $header-height;
     }
 
+    &__title-text {
+        @include text-overflow;
+    }
+
     &__page {
         cursor: pointer;
         width: var(--minimap-page-width);
@@ -66,6 +70,7 @@
         border: $border-style;
         background-color: $color-light;
         margin-bottom: 4px;
+        border-radius: 6px;
 
         @include min-width(md) {
             padding: 10px 12px;

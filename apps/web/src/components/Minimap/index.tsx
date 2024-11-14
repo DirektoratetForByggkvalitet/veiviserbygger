@@ -5,8 +5,8 @@ import { useDraggable } from 'react-use-draggable-scroll'
 import { IconContinue, IconStop } from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
-import styles from './Styles.module.scss'
 import { Wizard } from '@/types'
+import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
 interface Props {
@@ -50,8 +50,10 @@ export default function Minimap({ onClick, selected, data }: Props) {
           tabIndex={0}
           id={`page-${item.id}`}
         >
-          <h2 {...bem('title')}>
-            {index + 1}. {item.heading}
+          <h2 {...bem('title')} title={`${index + 1}. ${item.heading}`}>
+            <span {...bem('title-text')}>
+              {index + 1}. {item.heading}
+            </span>
           </h2>
           {item.children && (
             <ul {...bem('content')}>
