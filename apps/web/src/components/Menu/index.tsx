@@ -6,7 +6,10 @@ import useAuth from '@/hooks/auth'
 import menuState from '@/store/menu'
 
 import Button from '@/components/Button'
+import Editor from '@/components/Editor'
+import Form from '@/components/Form'
 import Icon from '@/components/Icon'
+import Input from '@/components/Input'
 import Modal from '@/components/Modal'
 import Transition from '@/components/Transition'
 
@@ -72,8 +75,17 @@ export default function Menu() {
         )}
       </Transition>
 
-      <Modal title="Ny veiviser" expanded={modal} onClose={toggleModal(false)}>
-        Hej grabban
+      <Modal title="Ny veiviser" expanded={modal} onClose={toggleModal(false)} preventClickOutside>
+        <Form>
+          <Input
+            label="Tittel"
+            value=""
+            onChange={() => {
+              console.log('Hej')
+            }}
+          />
+          <Editor label="Innhold" />
+        </Form>
       </Modal>
     </>
   )

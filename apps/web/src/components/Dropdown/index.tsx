@@ -15,11 +15,12 @@ import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
 interface Props {
-  label: string
+  label?: string
   icon?: keyof typeof icons
   value?: string
   position?: 'above' | 'below'
   direction?: 'left' | 'right'
+  simple?: boolean
   options: Array<{
     value: string
     label: string
@@ -36,6 +37,7 @@ export default function Dropdown({
   direction = 'left',
   position = 'below',
   onChange,
+  simple,
 }: Props) {
   const location = useLocation()
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -89,14 +91,14 @@ export default function Dropdown({
   const valueString = options.find((option) => option.value === value)?.label ?? value
 
   return (
-    <div {...bem('')} ref={wrapperRef}>
+    <div {...bem('', { simple })} ref={wrapperRef}>
       <button
         type="button"
         {...bem('trigger', { expanded, label: !!label })}
         onClick={triggerClick}
         ref={triggerRef}
       >
-        <span {...bem('label')}>{label}</span>
+        {label && <span {...bem('label')}>{label}</span>}
         <span {...bem('value')}>{valueString || ' '}</span>
 
         <span {...bem('icon')}>{icon ? <Icon name={icon} /> : <Icon name="ChevronDown" />}</span>

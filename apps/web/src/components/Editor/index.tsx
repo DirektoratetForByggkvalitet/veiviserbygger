@@ -1,6 +1,7 @@
 import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 
+import Dropdown from '@/components/Dropdown'
 import Icon from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
@@ -69,17 +70,70 @@ function MenuBar() {
     return null
   }
 
+  const textStyle =
+    (editor.isActive('paragraph') && 'p') ||
+    (editor.isActive('heading', { level: 1 }) && 'h1') ||
+    (editor.isActive('heading', { level: 2 }) && 'h2') ||
+    (editor.isActive('heading', { level: 3 }) && 'h3') ||
+    undefined
+  const textStyles = [
+    {
+      value: 'p',
+      label: 'Paragraph',
+    },
+    {
+      label: 'H1',
+      value: 'h1',
+    },
+    {
+      label: 'H2',
+      value: 'h2',
+    },
+    {
+      label: 'H3',
+      value: 'h3',
+    },
+  ]
+
+  const handleStyleChange = (value: string) => {
+    switch (value) {
+      case 'p':
+        return editor.chain().focus().setParagraph().run()
+      case 'h1':
+        return editor.chain().focus().toggleHeading({ level: 1 }).run()
+      case 'h2':
+        return editor.chain().focus().toggleHeading({ level: 2 }).run()
+      case 'h3':
+        return editor.chain().focus().toggleHeading({ level: 3 }).run()
+    }
+  }
+
+  const toggle = (value: string) => () => {
+    switch (value) {
+      case 'bold':
+        return editor.chain().focus().toggleBold().run()
+      case 'italic':
+        return editor.chain().focus().toggleItalic().run()
+      case 'bulletList':
+        return editor.chain().focus().toggleBulletList().run()
+      case 'orderedList':
+        return editor.chain().focus().toggleOrderedList().run()
+    }
+  }
+
   return (
     <div {...bem('menu')}>
       <button
-        onClick={() => editor.chain().focus().toggleBold().run()}
+        type="button"
+        onClick={toggle('bold')}
         disabled={!editor.can().chain().focus().toggleBold().run()}
         {...bem('control', { active: editor.isActive('bold') })}
       >
         <Icon name="Bold" />
       </button>
       <button
-        onClick={() => editor.chain().focus().toggleItalic().run()}
+        type="button"
+        onClick={toggle('italic')}
         disabled={!editor.can().chain().focus().toggleItalic().run()}
         {...bem('control', { active: editor.isActive('italic') })}
       >
@@ -89,13 +143,15 @@ function MenuBar() {
       <hr {...bem('separator')} />
 
       <button
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        type="button"
+        onClick={toggle('bulletList')}
         {...bem('control', { active: editor.isActive('bulletList') })}
       >
         <Icon name="List" />
       </button>
       <button
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        type="button"
+        onClick={toggle('orderedList')}
         {...bem('control', { active: editor.isActive('orderedList') })}
       >
         <Icon name="ListOrdered" />
@@ -103,31 +159,7 @@ function MenuBar() {
 
       <hr {...bem('separator')} />
 
-      <button
-        onClick={() => editor.chain().focus().setParagraph().run()}
-        {...bem('control', { active: editor.isActive('paragraph') })}
-      >
-        P
-      </button>
-
-      <button
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        {...bem('control', { active: editor.isActive('heading', { level: 1 }) })}
-      >
-        H1
-      </button>
-      <button
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        {...bem('control', { active: editor.isActive('heading', { level: 2 }) })}
-      >
-        H2
-      </button>
-      <button
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        {...bem('control', { active: editor.isActive('heading', { level: 3 }) })}
-      >
-        H3
-      </button>
+      <Dropdown value={textStyle} options={textStyles} onChange={handleStyleChange} simple />
     </div>
   )
 }

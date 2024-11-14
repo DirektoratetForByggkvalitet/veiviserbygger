@@ -95,10 +95,10 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: auto;
         outline: 0;
         z-index: 2;
         width: 100%;
+        min-width: fit-content;
         box-shadow: 0 6px 12px rgba(black, 0.05);
 
         @include entering {
@@ -141,6 +141,27 @@
         &--selected {
             color: $color-text;
             background-color: color(neutral);
+        }
+    }
+
+    &--simple {
+        width: fit-content;
+
+        #{$this}__trigger {
+            @include font-size(small);
+            display: flex;
+            align-items: center;
+            border: none;
+            width: auto;
+            height: 100%;
+        }
+
+        #{$this}__value {
+            padding: 0 20px 0 6px;
+        }
+
+        #{$this}__icon {
+            padding: 0;
         }
     }
 }
