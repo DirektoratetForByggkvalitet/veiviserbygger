@@ -7,6 +7,7 @@ A [https://github.com/Direktoratetforbyggkvalitet/losen](losen) compliant wizard
 > If you're starting the project for the first time there are a few thing you'll need to set up:
 >
 > 1. A working node runtime. [`Volta ⚡️`](https://volta.sh/) is recommended for a hassle free dev life if you're juggling more than a single project
+> 2. [Java JDK](https://jdk.java.net/) version 11 or higher installed. This is needed for the [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite).
 
 ```sh
 $ npm i
