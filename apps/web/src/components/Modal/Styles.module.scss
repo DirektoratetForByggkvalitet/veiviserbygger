@@ -1,0 +1,151 @@
+@use '@/styles/helpers.scss' as *;
+
+.modal {
+    $this: &;
+    $close: 50px;
+    --max-width: 30rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: $level-4 + 1;
+    padding: min(60px, #{$margin}) $margin;
+
+    @include overflow-scroll-y;
+
+    &__content {
+        padding: $margin;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: $header-height;
+        border-bottom: $border-style;
+    }
+
+    &__title {
+        @include font(base, normal);
+        @include font-size(base);
+        padding: 0 $margin;
+    }
+
+    &__close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-self: stretch;
+        padding: 0 $margin;
+    }
+
+    &__wrapper {
+        position: relative;
+        width: 100%;
+        max-width: var(--max-width);
+        z-index: 3;
+        outline: 0;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    &__box {
+        color: $color-text;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        border: $border-style;
+        background-color: $color-light;
+        box-shadow: $shadow;
+    }
+
+    &__hidden-close {
+        position: absolute;
+        width: 0;
+        height: 0;
+        flex-grow: 0;
+    }
+
+    &__backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        background-color: rgba($color-background, 0.8);
+        outline: none;
+
+        animation: fade-in 500ms $ease-out-quad both;
+
+        &--animate-out {
+            animation: fade-out 700ms $ease-in-out-quint--custom forwards;
+        }
+
+        &--prevent-close {
+            cursor: default;
+        }
+    }
+
+    &--entering {
+        #{$this}__box {
+            will-change: clip-path, box-shadow, transform, opacity;
+            animation: enter 400ms $ease-in-out-quint--custom both;
+            animation-delay: 100ms;
+        }
+    }
+
+    &--exiting {
+        #{$this}__box {
+            will-change: clip-path, box-shadow, transform, opacity;
+            animation: exit 400ms $ease-in-out-quint--custom both;
+        }
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes enter {
+    0% {
+        clip-path: inset(0 0 100% 0);
+        box-shadow: none;
+        transform: translateY(70%);
+    }
+
+    30% {
+        box-shadow: none;
+    }
+
+    to {
+        clip-path: inset(-50px -50px -50px -50px);
+        box-shadow: $shadow;
+    }
+}
+
+@keyframes exit {
+    from {
+        clip-path: inset(-50px -50px -50px -50px);
+        box-shadow: $shadow;
+    }
+
+    to {
+        clip-path: inset(0 0 100% 0);
+        box-shadow: none;
+        transform: translateY(70%);
+    }
+}

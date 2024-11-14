@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import useAuth from '@/hooks/auth'
@@ -7,6 +7,7 @@ import menuState from '@/store/menu'
 
 import Button from '@/components/Button'
 import Icon from '@/components/Icon'
+import Modal from '@/components/Modal'
 import Transition from '@/components/Transition'
 
 import BEMHelper from '@/lib/bem'
@@ -15,6 +16,7 @@ const bem = BEMHelper(styles)
 
 export default function Menu() {
   const { logout } = useAuth()
+  const [modal, setModal] = useState(false)
 
   const menuRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useAtom(menuState)
@@ -29,39 +31,50 @@ export default function Menu() {
     }
   }, [open])
 
+  const toggleModal = (value: boolean) => () => {
+    setModal(value)
+    closeMenu()
+  }
+
   return (
-    <Transition
-      updateKey={open.toString()}
-      {...bem('', '', open ? 'overlay' : undefined)}
-      enter={300}
-      exit={300}
-    >
-      {open && (
-        <>
-          <nav {...bem('content')} ref={menuRef} tabIndex={0}>
-            <Link to="/" {...bem('item')}>
-              <span {...bem('label')}>Bruksendring</span>
-            </Link>
-            <Link to="/" {...bem('item')}>
-              <span {...bem('label')}>Mikrohus som helårsbolig</span>
-            </Link>
-            <Link to="/" {...bem('item')}>
-              <span {...bem('label')}>Erklæring om ansvarsrett</span>
-            </Link>
-            <Link to="/" {...bem('item')}>
-              <span {...bem('label')}>Hvor stort kan du bygge?</span>
-            </Link>
-            <Link to="/" {...bem('item', 'new')}>
-              <Icon name="Plus" />
-              <span {...bem('label')}>Ny veiviser</span>
-            </Link>
+    <>
+      <Transition
+        updateKey={open.toString()}
+        {...bem('', '', open ? 'overlay' : undefined)}
+        enter={300}
+        exit={300}
+      >
+        {open && (
+          <>
+            <nav {...bem('content')} ref={menuRef} tabIndex={0}>
+              <Link to="/" {...bem('item')}>
+                <span {...bem('label')}>Bruksendring</span>
+              </Link>
+              <Link to="/" {...bem('item')}>
+                <span {...bem('label')}>Mikrohus som helårsbolig</span>
+              </Link>
+              <Link to="/" {...bem('item')}>
+                <span {...bem('label')}>Erklæring om ansvarsrett</span>
+              </Link>
+              <Link to="/" {...bem('item')}>
+                <span {...bem('label')}>Hvor stort kan du bygge?</span>
+              </Link>
+              <button {...bem('item', 'new')} onClick={toggleModal(true)}>
+                <Icon name="Plus" />
+                <span {...bem('label')}>Ny veiviser</span>
+              </button>
 
-            <Button onClick={logout}>Logg inn i ut</Button>
-          </nav>
+              <Button onClick={logout}>Logg inn i ut</Button>
+            </nav>
 
-          <button type="button" aria-label="Lukk meny" {...bem('backdrop')} onClick={closeMenu} />
-        </>
-      )}
-    </Transition>
+            <button type="button" aria-label="Lukk meny" {...bem('backdrop')} onClick={closeMenu} />
+          </>
+        )}
+      </Transition>
+
+      <Modal title="Ny veiviser" expanded={modal} onClose={toggleModal(false)}>
+        Hej grabban
+      </Modal>
+    </>
   )
 }
