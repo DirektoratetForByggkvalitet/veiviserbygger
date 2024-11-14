@@ -6,22 +6,13 @@ import { IconContinue, IconStop } from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
+import { Wizard } from '@/types'
 const bem = BEMHelper(styles)
-
-export type MinimapData = {
-  id: string
-  title: string
-  content: {
-    id: string
-    title: string
-    type: 'stop' | 'continue' | null
-  }[]
-}[]
 
 interface Props {
   onClick: (id: string) => void
   selected?: string | null
-  data: MinimapData
+  data: Wizard
 }
 
 export default function Minimap({ onClick, selected, data }: Props) {
@@ -60,23 +51,24 @@ export default function Minimap({ onClick, selected, data }: Props) {
           id={`page-${item.id}`}
         >
           <h2 {...bem('title')}>
-            {index + 1}. {item.title}
+            {index + 1}. {item.heading}
           </h2>
+          {item.children && (
+            <ul {...bem('content')}>
+              {item.children.map((content) => {
+                return (
+                  <li {...bem('item')} key={content.id}>
+                    <h3 {...bem('sub-title')}>{content.heading}</h3>
 
-          <ul {...bem('content')}>
-            {item.content.map((content) => {
-              return (
-                <li {...bem('item')} key={content.id}>
-                  <h3 {...bem('sub-title')}>{content.title}</h3>
-
-                  <span {...bem('icon')}>
-                    {content.type === 'continue' && <IconContinue />}
-                    {content.type === 'stop' && <IconStop />}
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
+                    <span {...bem('icon')}>
+                      {content.flow === 'continue' && <IconContinue />}
+                      {content.flow === 'stop' && <IconStop />}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
         </li>
       ))}
     </ul>
