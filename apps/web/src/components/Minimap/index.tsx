@@ -5,7 +5,7 @@ import { useDraggable } from 'react-use-draggable-scroll'
 import { IconContinue, IconStop } from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
-import { Wizard } from '@/types'
+import { Wizard, PageChildren } from '@/types'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
@@ -39,6 +39,31 @@ export default function Minimap({ onClick, selected, data }: Props) {
     onClick(id)
   }
 
+  const renderItem = (content: PageChildren) => {
+    switch (content.type) {
+      case 'Text':
+      case 'Radio':
+      case 'Checkbox':
+      case 'Select':
+      case 'Input':
+      case 'Number':
+        return (
+          <li {...bem('item')} key={content.id}>
+            <h3 {...bem('sub-title')}>{content.heading || content.text}</h3>
+
+            <span {...bem('icon')}>
+              {content.flow === 'continue' && <IconContinue />}
+              {content.flow === 'stop' && <IconStop />}
+            </span>
+          </li>
+        )
+      case 'Branch':
+        return <li {...bem('item', 'branch')} key={content.id}></li>
+      default:
+        return null
+    }
+  }
+
   return (
     <ul {...bem('', { selected })} ref={contentRef} {...events}>
       {data.map((item, index) => (
@@ -58,16 +83,7 @@ export default function Minimap({ onClick, selected, data }: Props) {
           {item.children && (
             <ul {...bem('content')}>
               {item.children.map((content) => {
-                return (
-                  <li {...bem('item')} key={content.id}>
-                    <h3 {...bem('sub-title')}>{content.heading}</h3>
-
-                    <span {...bem('icon')}>
-                      {content.flow === 'continue' && <IconContinue />}
-                      {content.flow === 'stop' && <IconStop />}
-                    </span>
-                  </li>
-                )
+                return renderItem(content)
               })}
             </ul>
           )}

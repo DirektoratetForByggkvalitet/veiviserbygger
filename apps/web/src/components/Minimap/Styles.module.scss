@@ -75,6 +75,9 @@
         @include min-width(md) {
             padding: 9px 12px;
         }
+        &--branch {
+            padding: 2px;
+        }
     }
 
     &__icon {
