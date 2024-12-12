@@ -5,7 +5,7 @@ import { useCallback, useContext } from 'react'
 export default function useAuth() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { auth } = useContext(FirebaseContext)!
-  const user = useContext(AuthContext)
+  const { user, loading } = useContext(AuthContext)
 
   const signUp = useCallback(
     (email: string, password: string) => {
@@ -41,5 +41,5 @@ export default function useAuth() {
     return signOut(auth)
   }, [auth, user])
 
-  return { user, login, signUp, logout }
+  return { user, login, signUp, logout, loading }
 }

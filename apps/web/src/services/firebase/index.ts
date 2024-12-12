@@ -1,7 +1,23 @@
 import { FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
-import { connectFirestoreEmulator, Firestore, getFirestore } from 'firebase/firestore'
-import { getConfig } from '../services/api'
+import {
+  collection,
+  CollectionReference,
+  connectFirestoreEmulator,
+  doc,
+  DocumentReference,
+  Firestore,
+  getDoc,
+  getDocs,
+  getFirestore,
+  onSnapshot,
+  query,
+  QueryFieldFilterConstraint,
+  where,
+} from 'firebase/firestore'
+import { getConfig } from '../api'
+import { converter, dataPoint } from './utils/db'
+import { Wizard, WizardVersion } from './types'
 
 /**
  * Set up and return a Firebase app with the given configuration. Should be called once per app,
@@ -9,11 +25,9 @@ import { getConfig } from '../services/api'
  */
 export function getFirebaseApp(options: Awaited<ReturnType<typeof getConfig>>) {
   const firebaseConfig: FirebaseOptions = {
-    ...(
-      options?.constants?.FIREBASE_EMULATOR_AUTH_HOST
+    ...(options?.constants?.FIREBASE_EMULATOR_AUTH_HOST
       ? { apiKey: 'not-a-real-key' }
-      : { apiKey: options?.constants?.FIREBASE_API_KEY ?? '' }
-    ),
+      : { apiKey: options?.constants?.FIREBASE_API_KEY ?? '' }),
     appId: options?.constants?.FIREBASE_APP_ID ?? '',
     authDomain: options?.constants?.FIREBASE_AUTH_DOMAIN ?? '',
     projectId: options?.constants?.FIREBASE_PROJECT_ID ?? '',
@@ -51,4 +65,29 @@ export function getFirebaseApp(options: Awaited<ReturnType<typeof getConfig>>) {
   }
 
   return { app, auth, firestore }
+}
+
+export async function getDocuments(
+  ref: CollectionReference,
+  constraint?: QueryFieldFilterConstraint,
+) {
+  if (constraint) {
+    const res = query(ref, constraint)
+    return await getDocs(res)
+  }
+
+  return await getDocs(ref)
+}
+
+export async function getDocument(ref: DocumentReference, id: string) {
+  const doc = await getDoc(ref)
+  return doc.data()
+}
+
+export async function getWizardsRef() {
+  return dataPoint<Wizard>('wizards')
+}
+
+export function getWizardVersionRef(id: string, version: string) {
+  return doc(dataPoint<WizardVersion>('wizards', id, 'versions'), version)
 }

@@ -37,6 +37,7 @@ export default function HomePage() {
               }}
             />
           </Form.Split>
+
           <Form.Split>
             <Editor label="Innhold" />
           </Form.Split>

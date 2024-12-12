@@ -1,21 +1,29 @@
-import { getFirebaseApp } from '@/services/firebase'
 import { onAuthStateChanged, User } from 'firebase/auth'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { ConfigContext } from './ConfigProvider'
+import { getFirebaseApp } from '@/services/firebase'
 
-export const FirebaseContext = createContext<ReturnType<typeof getFirebaseApp>>(undefined)
-export const AuthContext = createContext<User | null>(null)
+export const FirebaseContext = createContext<ReturnType<typeof getFirebaseApp> | undefined>(undefined)
+export const AuthContext = createContext<{ loading: boolean, user: User | null }>({ loading: true, user: null })
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const [loading, setLoading] = useState(true)
   const { auth } = useContext(FirebaseContext)!
   const [user, setUser] = useState<User | null>(null)
 
+  function handleAuthStateChanged(user: User | null) {
+    // set the user in the context
+    setUser(user)
+
+    // if we're currently in a loading state, set it to false
+    loading && setLoading(false)
+  }
+
   useEffect(() => {
-    onAuthStateChanged(auth, setUser)
+    onAuthStateChanged(auth, handleAuthStateChanged)
   }, [])
 
-  return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>
 }
 
 export default function FirebaseProvider({ children }: { children: React.ReactNode }) {
