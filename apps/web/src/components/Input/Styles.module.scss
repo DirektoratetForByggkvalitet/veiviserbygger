@@ -41,4 +41,8 @@
             color: $color-muted;
         }
     }
+
+    &__input:-webkit-autofill {
+        -webkit-background-clip: text; // Remove blue backgrunds in Chrome for saved passwords
+    }
 }
