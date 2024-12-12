@@ -7,6 +7,8 @@
     padding: 14px 24px;
     border-radius: $border-radius;
     background-color: color(neutral);
+    align-items: center;
+    justify-content: center;
 
     &:hover,
     &:focus:focus-visible {

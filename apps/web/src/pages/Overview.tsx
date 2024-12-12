@@ -1,11 +1,12 @@
 import { useState } from 'react'
 
-import Editor from '@/components/Editor'
 import Form from '@/components/Form'
 import Input from '@/components/Input'
 import Meta from '@/components/Meta'
 import Minimap from '@/components/Minimap'
 import Panel from '@/components/Panel'
+import Button from '@/components/Button'
+import Content from '@/components/Content'
 import DUMMY_DATA from '@/dummy_data'
 
 export default function HomePage() {
@@ -38,9 +39,8 @@ export default function HomePage() {
             />
           </Form.Split>
 
-          <Form.Split>
-            <Editor label="Innhold" />
-          </Form.Split>
+          {data?.content?.map((node) => <Content key={node.id} type={node.type} data={node} />)}
+          <Button type="button">Legg til innhold</Button>
         </Form>
       </Panel>
       <Minimap onClick={handleSelect} selected={selected} data={DUMMY_DATA} />

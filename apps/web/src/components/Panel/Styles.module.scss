@@ -16,6 +16,7 @@
         // border-left: $border-style;
         background-color: $color-light;
         box-shadow: $shadow;
+        overflow: auto;
 
         @include entering {
             animation: enter 500ms $ease-out-quart backwards;

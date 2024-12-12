@@ -1,0 +1,33 @@
+@use '@/styles/helpers.scss' as *;
+
+.page-node {
+    $this: &;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing--small;
+    width: 100%;
+    border: $border-style;
+    padding: $spacing--small;
+    margin-bottom: $spacing--small;
+    background-color: color(neutral, xlight);
+
+    &__title {
+        @include font-size(base);
+    }
+
+    &__sub-title {
+        @include font-size(base);
+        font-weight: normal;
+    }
+
+    &__options {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing--small;
+    }
+
+    &__option {
+        display: flex;
+        gap: 0;
+    }
+}
