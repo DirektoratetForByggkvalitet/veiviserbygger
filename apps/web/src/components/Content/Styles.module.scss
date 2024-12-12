@@ -11,8 +11,14 @@
     margin-bottom: $spacing--small;
     background-color: color(neutral, xlight);
 
+    &__header {
+        display: flex;
+        gap: 0;
+    }
+
     &__title {
         @include font-size(base);
+        flex-grow: 2;
     }
 
     &__sub-title {
@@ -23,6 +29,11 @@
     &__options {
         display: flex;
         flex-direction: column;
+        gap: $spacing--small;
+    }
+
+    &__grid {
+        display: flex;
         gap: $spacing--small;
     }
 
