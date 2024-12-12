@@ -5,7 +5,7 @@ import { useDraggable } from 'react-use-draggable-scroll'
 import { IconContinue, IconStop } from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
-import { Wizard, PageChildren } from '@/types'
+import { Wizard, PageContent } from '@/types'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
@@ -39,7 +39,7 @@ export default function Minimap({ onClick, selected, data }: Props) {
     onClick(id)
   }
 
-  const renderItem = (content: PageChildren) => {
+  const renderItem = (content: PageContent) => {
     switch (content.type) {
       case 'Text':
       case 'Radio':
@@ -80,9 +80,9 @@ export default function Minimap({ onClick, selected, data }: Props) {
               {index + 1}. {item.heading}
             </span>
           </h2>
-          {item.children && (
+          {item.content && (
             <ul {...bem('content')}>
-              {item.children.map((content) => {
+              {item.content.map((content) => {
                 return renderItem(content)
               })}
             </ul>

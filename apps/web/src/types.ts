@@ -28,7 +28,6 @@ export type Answer = {
   id: string
   type: 'Answer'
   heading: string
-  value: string
 }
 
 export type Content = {
@@ -105,7 +104,7 @@ export type Branch = {
   id: string
   type: 'Branch'
   test: Expression
-  children: (Information | Error | SimpleResult)[]
+  content: (Information | Error | SimpleResult)[]
 }
 
 export type Intro = {
@@ -113,7 +112,7 @@ export type Intro = {
   type: 'Intro'
   heading: string
   lead?: string // HTML
-  children?: Text[]
+  content?: Text[]
 }
 
 export type Result = {
@@ -122,10 +121,19 @@ export type Result = {
   heading: string
   lead?: string // HTML
   show?: Expression
-  children?: Text[]
+  content?: Text[]
 }
 
-export type PageChildren = Text | Radio | Checkbox | Select | Input | NumberInput | Branch
+export type PageContent =
+  | Text
+  | Radio
+  | Checkbox
+  | Select
+  | Input
+  | NumberInput
+  | Branch
+  | Error
+  | Information
 
 export type Page = {
   id: string
@@ -133,7 +141,7 @@ export type Page = {
   heading: string
   lead?: string // HTML
   show?: Expression
-  children?: PageChildren[]
+  content?: PageContent[]
 }
 
 export type Wizard = (Intro | Page | Result)[]

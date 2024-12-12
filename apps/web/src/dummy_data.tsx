@@ -6,7 +6,7 @@ const DUMMY_DATA: Wizard = [
     type: 'Intro',
     heading: 'Mikrohus som helårsbolig',
     lead: 'Ta vår veiviser for å finne ut om mikrohuset er omfattet av forenklingene.',
-    children: [
+    content: [
       {
         id: '1',
         type: 'Text',
@@ -18,7 +18,7 @@ const DUMMY_DATA: Wizard = [
     id: '2',
     type: 'Page',
     heading: 'Bruksområde',
-    children: [
+    content: [
       {
         id: 'inhabited',
         type: 'Radio',
@@ -29,13 +29,11 @@ const DUMMY_DATA: Wizard = [
             id: 'inhabited.yes',
             type: 'Answer',
             heading: 'Ja, noen skal bo eller overnatte i mikrohuset',
-            value: 'yes',
           },
           {
             id: 'inhabited.no',
             type: 'Answer',
             heading: 'Nei, ingen skal bo eller overnatte i mikrohuset',
-            value: 'no',
           },
         ],
       },
@@ -47,7 +45,7 @@ const DUMMY_DATA: Wizard = [
           operator: 'eq',
           value: 'no',
         },
-        children: [
+        content: [
           {
             id: 'notInhabitedNotCoveredError',
             type: 'Error',
@@ -73,25 +71,21 @@ const DUMMY_DATA: Wizard = [
             id: 'microhouseUsage.allYear',
             type: 'Answer',
             heading: 'Helårsbolig',
-            value: 'allYear',
           },
           {
             id: 'microhouseUsage.cabin',
             type: 'Answer',
             heading: 'Fritidsbolig (hytte)',
-            value: 'cabin',
           },
           {
             id: 'microhouseUsage.caravan',
             type: 'Answer',
             heading: 'Campingvogn',
-            value: 'caravan',
           },
           {
             id: 'microhouseUsage.other',
             type: 'Answer',
             heading: 'Noe annet',
-            value: 'other',
           },
         ],
       },
@@ -103,7 +97,7 @@ const DUMMY_DATA: Wizard = [
           operator: 'eq',
           value: 'cabin',
         },
-        children: [
+        content: [
           {
             id: 'cabinNotCoveredError',
             type: 'Error',
@@ -126,7 +120,7 @@ const DUMMY_DATA: Wizard = [
           operator: 'eq',
           value: 'caravan',
         },
-        children: [
+        content: [
           {
             id: 'caravanNotCoveredError',
             type: 'Error',
@@ -149,7 +143,7 @@ const DUMMY_DATA: Wizard = [
           operator: 'eq',
           value: 'other',
         },
-        children: [
+        content: [
           {
             id: 'otherNotCoveredError',
             type: 'Error',
@@ -170,7 +164,7 @@ const DUMMY_DATA: Wizard = [
     id: '44423',
     type: 'Page',
     heading: 'Plassering',
-    children: [
+    content: [
       { id: '4', type: 'Radio', heading: 'Er bygningen frittliggende?', flow: 'stop' },
       {
         id: '5',
@@ -190,7 +184,7 @@ const DUMMY_DATA: Wizard = [
     id: '4442123',
     type: 'Page',
     heading: 'Bygningen',
-    children: [
+    content: [
       {
         id: '7',
         type: 'Radio',
@@ -217,7 +211,7 @@ const DUMMY_DATA: Wizard = [
     id: '114442123',
     type: 'Page',
     heading: 'Hovedfunksjoner',
-    children: [
+    content: [
       {
         id: '12',
         type: 'Radio',
@@ -230,7 +224,7 @@ const DUMMY_DATA: Wizard = [
     id: '221',
     type: 'Page',
     heading: 'Reguleringsplan',
-    children: [
+    content: [
       {
         id: '13',
         type: 'Radio',
@@ -250,7 +244,7 @@ const DUMMY_DATA: Wizard = [
     id: '323',
     type: 'Page',
     heading: 'Grad av utnytting',
-    children: [
+    content: [
       {
         id: '16',
         type: 'Radio',
@@ -263,7 +257,7 @@ const DUMMY_DATA: Wizard = [
     id: '3232',
     type: 'Page',
     heading: 'Flom og skred',
-    children: [
+    content: [
       {
         id: '17',
         type: 'Radio',
@@ -276,7 +270,7 @@ const DUMMY_DATA: Wizard = [
     id: '32321',
     type: 'Page',
     heading: 'Andre begrensninger',
-    children: [
+    content: [
       {
         id: '18',
         type: 'Radio',
@@ -289,7 +283,7 @@ const DUMMY_DATA: Wizard = [
     id: '32322',
     type: 'Result',
     heading: 'Mikrohuset er omfattet av forenklingene og du kan søke og bygge selv!',
-    children: [
+    content: [
       {
         id: '',
         type: 'Text',
@@ -302,7 +296,7 @@ const DUMMY_DATA: Wizard = [
     type: 'Result',
     heading:
       'Mikrohuset er omfattet av forenklingene og du må ha profesjonelle i hele byggeprosessen',
-    children: [
+    content: [
       {
         id: '',
         type: 'Text',

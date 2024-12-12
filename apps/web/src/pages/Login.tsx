@@ -27,7 +27,7 @@ export default function LoginPage() {
 
   return (
     <Container size="tight">
-      <Meta title="Velkommen til login siden våres. Du tar det herfra" />
+      <Meta title="Losen Veiviserbygger" />
       <br />
       <h1>Login</h1>
       <br />

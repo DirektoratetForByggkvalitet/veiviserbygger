@@ -25,13 +25,13 @@ export default function HomePage() {
 
   return (
     <>
-      <Meta title="Velkommen til internett. Vi tar det herfra" />
+      <Meta title="Losen Veiviserbygger" />
       <Panel open={!!(selected && data)} onClose={handleClose} backdrop={false} title={panelTitle}>
         <Form>
           <Form.Split>
             <Input
               label="Tittel"
-              value=""
+              value={data?.heading || ''}
               onChange={() => {
                 console.log('Hej')
               }}
