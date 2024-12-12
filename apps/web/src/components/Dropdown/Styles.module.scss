@@ -47,7 +47,7 @@
 
     &__value {
         border-radius: 0;
-        padding: 3px $form-padding-x $form-padding-y;
+        padding: $form-padding-y $form-padding-x $form-padding-y;
         background-color: transparent;
 
         @include input-placeholder {
