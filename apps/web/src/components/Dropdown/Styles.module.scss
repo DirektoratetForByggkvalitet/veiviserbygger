@@ -37,6 +37,10 @@
                 color: $color-text;
             }
         }
+
+        &--iconOnly {
+            border: 1px solid red;
+        }
     }
 
     &__label {
@@ -144,7 +148,8 @@
         }
     }
 
-    &--simple {
+    &--simple,
+    &--iconOnly {
         width: fit-content;
 
         #{$this}__trigger {
@@ -162,6 +167,25 @@
 
         #{$this}__icon {
             padding: 0;
+        }
+    }
+
+    &--iconOnly {
+        #{$this}__trigger {
+            justify-content: center;
+            height: 35px;
+            width: 35px;
+            border-radius: 50%;
+            background-color: color(neutral, xlight);
+        }
+
+        #{$this}__trigger:hover,
+        #{$this}__trigger:focus {
+            background-color: color(neutral, light);
+        }
+
+        #{$this}__icon {
+            position: static;
         }
     }
 }

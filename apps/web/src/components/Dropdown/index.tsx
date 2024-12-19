@@ -21,6 +21,8 @@ interface Props {
   position?: 'above' | 'below'
   direction?: 'left' | 'right'
   simple?: boolean
+  hideLabel?: boolean
+  iconOnly?: boolean
   options: Array<{
     value: string
     label: string
@@ -37,6 +39,8 @@ export default function Dropdown({
   direction = 'left',
   position = 'below',
   onChange,
+  hideLabel,
+  iconOnly,
   simple,
 }: Props) {
   const location = useLocation()
@@ -91,15 +95,16 @@ export default function Dropdown({
   const valueString = options.find((option) => option.value === value)?.label ?? value
 
   return (
-    <div {...bem('', { simple })} ref={wrapperRef}>
+    <div {...bem('', { simple, iconOnly })} ref={wrapperRef}>
       <button
         type="button"
         {...bem('trigger', { expanded, label: !!label })}
         onClick={triggerClick}
+        aria-label={label}
         ref={triggerRef}
       >
-        {label && <span {...bem('label')}>{label}</span>}
-        <span {...bem('value')}>{valueString || ' '}</span>
+        {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
+        {!iconOnly && <span {...bem('value')}>{valueString || ' '}</span>}
 
         <span {...bem('icon')}>{icon ? <Icon name={icon} /> : <Icon name="ChevronDown" />}</span>
       </button>
