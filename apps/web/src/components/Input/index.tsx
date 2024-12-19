@@ -8,6 +8,7 @@ interface Props {
   label: string
   type?: HTMLInputTypeAttribute
   value: string
+  header?: boolean
   placeholder?: string
   id?: string
   name?: string
@@ -16,14 +17,14 @@ interface Props {
   onChange: (value: string) => void
 }
 
-export default function Input({ label, type = 'text', onChange, ...props }: Props) {
+export default function Input({ label, type = 'text', header, onChange, ...props }: Props) {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
     onChange(value)
   }
 
   return (
-    <label {...bem('')}>
+    <label {...bem('', { header })}>
       <span {...bem('label')}>{label}</span>
       <input {...props} type={type} {...bem('input')} onChange={handleChange} />
     </label>
