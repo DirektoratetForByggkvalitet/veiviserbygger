@@ -2,34 +2,76 @@
 
 .page-node {
     $this: &;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing--small;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+        'header header header'
+        'main main main'
+        'aside aside aside';
     width: 100%;
     border: $border-style;
-    padding: $spacing--small;
     margin-bottom: $spacing--small;
-    background-color: color(neutral, xlight);
-
+    background-color: $color-light;
+    @include min-width(lg) {
+        grid-template-areas:
+            'header header header'
+            'main main aside';
+    }
     &__header {
+        grid-area: header;
         display: flex;
-        gap: 0;
+        align-items: center;
+        gap: $spacing--xsmall;
+        padding: $spacing--small;
+        border-bottom: $border-style;
+    }
+
+    &__header-icon {
+        color: $color-muted;
+    }
+
+    &__main,
+    &__aside {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing--small;
+        padding: $spacing--small;
+    }
+
+    &__main {
+        grid-area: main;
+    }
+
+    &__aside {
+        grid-area: aside;
+        @include min-width(lg) {
+            border-left: $border-style;
+        }
     }
 
     &__title {
-        @include font-size(base);
+        @include font-size(small);
+        color: $color-muted;
+        font-weight: normal;
         flex-grow: 2;
     }
 
     &__sub-title {
-        @include font-size(base);
+        @include font-size(small);
+        color: $color-muted;
         font-weight: normal;
+    }
+
+    &__description {
+        color: $color-muted;
+        margin-bottom: $spacing;
     }
 
     &__options {
         display: flex;
         flex-direction: column;
-        gap: $spacing--small;
+        gap: 0;
     }
 
     &__grid {
@@ -38,7 +80,22 @@
     }
 
     &__option {
+        position: relative;
         display: flex;
         gap: 0;
+    }
+
+    &__option:not(:first-child) > * {
+        border-top: none;
+    }
+
+    &__option-actions {
+        position: absolute;
+        top: $spacing--small;
+        right: $spacing--small;
+    }
+
+    &__field-list > *:not(:first-child) {
+        border-top: none;
     }
 }

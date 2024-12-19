@@ -4,9 +4,12 @@ import Editor from '@/components/Editor'
 import Button from '@/components/Button'
 import Dropdown from '@/components/Dropdown'
 import Checkbox from '@/components/Checkbox'
+import Icon from '@/components/Icon'
+import { icons } from 'lucide-react'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
+import { ReactNode } from 'react'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -35,59 +38,106 @@ export default function Content({ type, data }: Props) {
     },
   ]
 
+  const Header = ({ title, icon }: { title: string; icon: keyof typeof icons }) => (
+    <header {...bem('header')}>
+      <Icon name={icon} size="20" {...bem('header-icon')} />
+      <h2 {...bem('title')}>{title}</h2>
+      <Dropdown icon="Ellipsis" direction="right" options={contentActions} iconOnly />
+    </header>
+  )
+
+  const Main = ({ children }: { children: ReactNode }) => <div {...bem('main')}>{children}</div>
+
+  const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
+
   const nodes: any = {
     Text: (data: any) => {
       return (
         <>
-          <h2 {...bem('title')}>Tekst</h2>
-          <Input
-            label="Tittel"
-            value={data?.heading || ''}
-            onChange={() => {
-              console.log('Hej')
-            }}
-          />
-          <Editor label="Innhold" value={data?.text} />
+          <Header title="Tekst" icon="Text" />
+          <Main>
+            <Input
+              label="Tittel"
+              value={data?.heading || ''}
+              onChange={() => {
+                console.log('Hej')
+              }}
+            />
+            <Editor label="Innhold" value={data?.text} />
+          </Main>
           {/* TODO: summary, details, show */}
         </>
       )
     },
     Radio: (data: any) => {
+      const optionActions = [
+        {
+          value: '0',
+          label: 'Gir negativt resultat',
+          onClick: () => console.log(''),
+        },
+        {
+          value: '1',
+          label: 'Gir ekstra informasjon',
+          onClick: () => console.log(''),
+        },
+        {
+          value: '2',
+          label: 'Slett',
+          onClick: () => console.log(''),
+        },
+      ]
       return (
         <>
-          <div {...bem('header')}>
-            <h2 {...bem('title')}>Spørsmål </h2>
-            <Dropdown icon="Ellipsis" direction="right" options={contentActions} simple />
-          </div>
-          <Input
-            label="Tittel"
-            value={data?.heading || ''}
-            onChange={() => {
-              console.log('Hej')
-            }}
-          />
-          <Editor label="Innhold" value={data?.text} />
-          <h3 {...bem('sub-title')}>Svaralternativ</h3>
-          <ul {...bem('options')}>
-            {data?.options &&
-              data?.options.map((option: Answer) => (
-                <li key={option.id} {...bem('option')}>
-                  <Input
-                    label="Svar"
-                    value={option?.heading || ''}
-                    onChange={() => {
-                      console.log('Hej')
-                    }}
-                  />
-                  {/* TODO: Dropdown menu with actions "Slett", "Avslutt veiviseren ved valg", "Gi informasjon ved valg"  */}
-                </li>
-              ))}
-          </ul>
-          <Button type="button">Legg til svaralternativ</Button>
-          {/* TODO: summary, details, show */}
-          <h3 {...bem('sub-title')}>Valg</h3>
-          <div {...bem('grid')}>
+          <Header title="Spørsmål" icon="Diamond" />
+          <Main>
+            <Input
+              label="Tittel"
+              value={data?.heading || ''}
+              onChange={() => {
+                console.log('Hej')
+              }}
+              header
+            />
+            <Editor label="Innhold" value={data?.text} />
+            <h3 {...bem('sub-title')}>Svaralternativer</h3>
+            <ul {...bem('options')}>
+              {data?.options &&
+                data?.options.map((option: Answer) => (
+                  <li key={option.id} {...bem('option')}>
+                    <Input
+                      label="Svar"
+                      value={option?.heading || ''}
+                      onChange={() => {
+                        console.log('Hej')
+                      }}
+                    />
+                    <div {...bem('option-actions')}>
+                      <Dropdown
+                        icon="Ellipsis"
+                        direction="right"
+                        options={optionActions}
+                        iconOnly
+                      />
+                    </div>
+                    {/* TODO: Dropdown menu with actions "Slett", "Gir negativt resultat", "Gir ekstra informasjon"  */}
+                  </li>
+                ))}
+            </ul>
+            <Button type="button" subtle size="small">
+              Legg til svaralternativ
+            </Button>
+          </Main>
+          <Aside>
+            {/* TODO: summary, details, show */}
+            <p {...bem('description')}>
+              Dette er et flervalgspørsmål vi stiller brukeren som de kan svare på. Avhengig av hva
+              de svarer kan vi respondere med resultater eller informasjon.
+            </p>
+            <h3 {...bem('sub-title')}>Visningsinstillinger</h3>
             <Dropdown
+              label="Spørsmålstype"
+              hideLabel
               value={'Radio'}
               options={[
                 {
@@ -104,54 +154,88 @@ export default function Content({ type, data }: Props) {
                 },
               ]}
             />
-            <Checkbox
-              label="Grid"
-              checked={data?.grid}
-              onChange={() => {
-                console.log('Hej')
-              }}
-            />
-            <Checkbox
-              label="Valgfritt"
-              checked={data?.optional}
-              onChange={() => {
-                console.log('Hej')
-              }}
-            />
-            <Checkbox
-              label="Alle påkrevd"
-              checked={data?.allMandatory}
-              onChange={() => {
-                console.log('Hej')
-              }}
-            />
-          </div>
+            <div {...bem('field-list')}>
+              <Checkbox
+                label="Grid"
+                checked={data?.grid}
+                onChange={() => {
+                  console.log('Hej')
+                }}
+              />
+              <Checkbox
+                label="Valgfritt"
+                checked={data?.optional}
+                onChange={() => {
+                  console.log('Hej')
+                }}
+              />
+              <Checkbox
+                label="Alle påkrevd"
+                checked={data?.allMandatory}
+                onChange={() => {
+                  console.log('Hej')
+                }}
+              />
+            </div>
+          </Aside>
         </>
       )
     },
     Branch: (data: any) => {
+      const titlePresets: any = {
+        NegativeResult: {
+          title: 'Negativt resultat',
+          icon: 'TriangleAlert',
+          description:
+            'Gir et negativt resultat hvor brukeren ikke kan fortsette i veiviseren, men går videre til en resultatside.',
+        },
+        ExtraInformation: {
+          title: 'Ekstra informasjon',
+          icon: 'Info',
+          description:
+            'Gir ekstra informasjon til brukeren, mens brukeren får mulighet til å fortsette veiviseren. Ekstra informasjon blir gjentatt på resultatsider.',
+        },
+        NewQuestions: {
+          title: 'Nye spørsmål',
+          icon: 'Option',
+          description: 'Viser et nytt spørsmål som ikke tidligere var synlig.',
+        },
+      }
       return (
         <>
-          <div {...bem('header')}>
-            <h2 {...bem('title')}>Branch </h2>
-            <Dropdown icon="Ellipsis" direction="right" options={contentActions} simple />
-          </div>
-          {data?.content?.map((child: PageContent) => (
-            <>{(nodes[child.type] || nodes.Fallback)(child)}</>
-          ))}
+          <Header
+            title={titlePresets[data.preset]?.title || 'Branch'}
+            icon={titlePresets[data.preset]?.icon || 'option'}
+          />
+          <Main>
+            {data?.content?.map((child: PageContent) => (
+              <>{(nodes[child.type] || nodes.Fallback)(child)}</>
+            ))}
+          </Main>
+          <Aside>
+            <p {...bem('description')}>
+              {titlePresets[data.preset]?.description ||
+                'Viser innhold avhengig av et tidligere valg.'}
+            </p>
+            <h3 {...bem('sub-title')}>Vises hvis</h3>
+            <p>
+              Hvis {data.test.field} {data.test.operator} {data.test.value}
+              {/* TODO */}
+            </p>
+          </Aside>
         </>
       )
     },
     Error: (data: any) => {
       return (
         <>
-          <h2 {...bem('title')}>Resultatboks </h2>
           <Input
             label="Tittel"
             value={data?.heading || ''}
             onChange={() => {
               console.log('Hej')
             }}
+            header
           />
           <Editor label="Innhold" value={data?.text} />
         </>
@@ -160,10 +244,6 @@ export default function Content({ type, data }: Props) {
     Information: (data: any) => {
       return (
         <>
-          <div {...bem('header')}>
-            <h2 {...bem('title')}>Gi informasjon </h2>
-            <Dropdown icon="Ellipsis" direction="right" options={contentActions} simple />
-          </div>
           <Input
             label="Tittel"
             value={data?.heading || ''}
@@ -178,10 +258,9 @@ export default function Content({ type, data }: Props) {
     Result: (data: any) => {
       return (
         <>
-          <h2 {...bem('title')}>Resultat </h2>
           <Input
-            label="Tittel"
-            value={data?.title || ''}
+            label="Resultatside tittel"
+            value={data?.heading || ''}
             onChange={() => {
               console.log('Hej')
             }}
