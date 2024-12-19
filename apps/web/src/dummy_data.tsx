@@ -40,6 +40,7 @@ const DUMMY_DATA: Wizard = [
       {
         id: 'notInhabitedNotCoveredBranch',
         type: 'Branch',
+        preset: 'NegativeResult',
         test: {
           field: 'inhabited',
           operator: 'eq',
@@ -92,6 +93,7 @@ const DUMMY_DATA: Wizard = [
       {
         id: 'cabinNotCovered',
         type: 'Branch',
+        preset: 'NegativeResult',
         test: {
           field: 'usage',
           operator: 'eq',
@@ -115,6 +117,7 @@ const DUMMY_DATA: Wizard = [
       {
         id: 'caravanNotCoveredE',
         type: 'Branch',
+        preset: 'NegativeResult',
         test: {
           field: 'usage',
           operator: 'eq',
@@ -138,6 +141,7 @@ const DUMMY_DATA: Wizard = [
       {
         id: 'otherNotCovered',
         type: 'Branch',
+        preset: 'NegativeResult',
         test: {
           field: 'usage',
           operator: 'eq',

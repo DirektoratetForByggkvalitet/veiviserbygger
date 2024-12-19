@@ -103,6 +103,7 @@ export type SimpleResult = {
 export type Branch = {
   id: string
   type: 'Branch'
+  preset: 'NegativeResult' | 'ExtraInformation' | 'NewQuestions'
   test: Expression
   content: (Information | Error | SimpleResult)[]
 }
