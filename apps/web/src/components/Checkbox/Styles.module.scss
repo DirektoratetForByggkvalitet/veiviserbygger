@@ -8,12 +8,14 @@
     align-items: center;
     width: 100%;
     cursor: pointer;
+    border: $border-style;
+    padding: $spacing--small;
 
     @include no-select;
 
     &__label {
         @include font(base, normal);
-        @include font-size(small);
+        @include font-size(base);
         margin-top: 3px;
         flex-grow: 2;
     }
