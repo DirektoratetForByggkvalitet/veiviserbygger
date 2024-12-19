@@ -30,6 +30,14 @@
         padding: 11px 18px;
     }
 
+    &--subtle {
+        background-color: color(neutral, xlight);
+        &:hover,
+        &:focus:focus-visible {
+            background-color: color(neutral, light);
+        }
+    }
+
     // &--large {
     //     // TODO: Do we really need this?
     // }

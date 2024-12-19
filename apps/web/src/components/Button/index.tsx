@@ -9,15 +9,23 @@ interface Props {
   children: ReactNode
   type?: 'button' | 'submit'
   primary?: boolean
+  subtle?: boolean
   onClick?: () => void
   // full?: boolean
   size?: 'small' | 'large'
 }
 
-export default function Button({ children, type = 'button', primary, onClick, size }: Props) {
+export default function Button({
+  children,
+  type = 'button',
+  primary,
+  subtle,
+  onClick,
+  size,
+}: Props) {
   // TODO: Link button as well
   return (
-    <button {...bem('', { primary, [size ?? '']: size })} type={type} onClick={onClick}>
+    <button {...bem('', { primary, subtle, [size ?? '']: size })} type={type} onClick={onClick}>
       {children}
     </button>
   )
