@@ -8,9 +8,13 @@ import Panel from '@/components/Panel'
 import Button from '@/components/Button'
 import Content from '@/components/Content'
 import DUMMY_DATA from '@/dummy_data'
+import useWizard from '@/hooks/useWizard'
+import { useParams } from 'react-router'
 
 export default function HomePage() {
   const [selected, setSelected] = useState<string | null>(null)
+  const { wizardId, version } = useParams<{ wizardId?: string, version?: string }>()
+  const { versions, activeVersion } = useWizard(wizardId, version)
 
   const handleSelect = (id: string) => {
     setSelected((value) => (value === id ? null : id))
@@ -40,10 +44,12 @@ export default function HomePage() {
           </Form.Split>
 
           {data?.content?.map((node) => <Content key={node.id} type={node.type} data={node} />)}
+
           <Button type="button">Legg til innhold</Button>
         </Form>
       </Panel>
-      <Minimap onClick={handleSelect} selected={selected} data={DUMMY_DATA} />
+
+      {wizardId ? <Minimap onClick={handleSelect} selected={selected} data={DUMMY_DATA} /> : null}
     </>
   )
 }

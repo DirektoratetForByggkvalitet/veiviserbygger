@@ -1,23 +1,47 @@
-import { getWizardVersionRef } from '@/services/firebase'
-import { WizardVersion } from '@/services/firebase/types'
+import { getWizardVersionRef, getWizardVersionsRef } from '@/services/firebase'
+import { WizardVersion, WrappedWithId } from '@/services/firebase/types'
 import { onSnapshot } from 'firebase/firestore'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
+import useFirebase from './useFirebase'
 
-export default function useWizard(id: string, version: string) {
-  const wizardRef = useMemo(() => getWizardVersionRef(id, version), [id, version])
+export default function useWizard(id?: string, version?: string) {
+  const { firestore } = useFirebase()
+
+  const [wizardVersions, setWizardVersions] = useState<WrappedWithId<WizardVersion>[]>()
   const [wizardVersionData, setWizardVersionData] = useState<WizardVersion>()
 
   useEffect(() => {
-    const unsubWizardVersion = onSnapshot(wizardRef, (snapshot) => {
-      setWizardVersionData(snapshot.data())
-    })
+    const unsubWizardVersions = id
+      ? onSnapshot(getWizardVersionsRef(firestore, id), (snapshot) => {
+          setWizardVersions(
+            snapshot.docs.map((doc) => ({
+              id: doc.id,
+              data: doc.data(),
+            })),
+          )
+        })
+      : undefined
 
     return () => {
-      unsubWizardVersion()
+      unsubWizardVersions?.()
     }
-  }, [wizardRef])
+  }, [id])
+
+  useEffect(() => {
+    const unsubVersion =
+      id && version
+        ? onSnapshot(getWizardVersionRef(firestore, id, version), (snapshot) => {
+            setWizardVersionData(snapshot.data())
+          })
+        : undefined
+
+    return () => {
+      unsubVersion?.()
+    }
+  }, [id, version])
 
   return {
-    wizardVersion: wizardVersionData,
+    versions: wizardVersions,
+    activeVersion: wizardVersionData,
   }
 }

@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai'
-import { useEffect, useRef, useState } from 'react'
+import { FormEventHandler, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import useAuth from '@/hooks/auth'
@@ -15,17 +15,34 @@ import Transition from '@/components/Transition'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
+import useWizards from '@/hooks/useWizards'
+import NewWizard from '../NewWizard'
 const bem = BEMHelper(styles)
 
 export default function Menu() {
   const { logout } = useAuth()
   const [modal, setModal] = useState(false)
+  const [open, setOpen] = useAtom(menuState)
+  const [newWizard, setNewWizard] = useState<{ title: string }>({ title: '' })
+  const { wizards } = useWizards(open)
 
   const menuRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useAtom(menuState)
+
+  const resetModal = () => {
+    setNewWizard({ title: '' })
+  }
 
   const closeMenu = () => {
     setOpen(false)
+  }
+
+  const createWizard: FormEventHandler = (e) => {
+    e.preventDefault()
+
+
+
+    console.log('Creating wizard', newWizard)
+    toggleModal(false)()
   }
 
   useEffect(() => {
@@ -37,6 +54,7 @@ export default function Menu() {
   const toggleModal = (value: boolean) => () => {
     setModal(value)
     closeMenu()
+    resetModal()
   }
 
   return (
@@ -50,18 +68,12 @@ export default function Menu() {
         {open && (
           <>
             <nav {...bem('content')} ref={menuRef} tabIndex={0}>
-              <Link to="/" {...bem('item')}>
-                <span {...bem('label')}>Bruksendring</span>
-              </Link>
-              <Link to="/" {...bem('item')}>
-                <span {...bem('label')}>Mikrohus som helårsbolig</span>
-              </Link>
-              <Link to="/" {...bem('item')}>
-                <span {...bem('label')}>Erklæring om ansvarsrett</span>
-              </Link>
-              <Link to="/" {...bem('item')}>
-                <span {...bem('label')}>Hvor stort kan du bygge?</span>
-              </Link>
+              {wizards?.map((wizard) => (
+                <Link key={wizard.id} to={`/wizard/${wizard.id}${wizard.data.publishedVersion ? `/${wizard.data.publishedVersion}` : ''}`} {...bem('item')}>
+                  <span {...bem('label')}>{wizard.data.title}{!wizard.data.publishedVersion ? ' (ikke publisert)' : ''}</span>
+                </Link>
+              ))}
+
               <button {...bem('item', 'new')} onClick={toggleModal(true)}>
                 <Icon name="Plus" />
                 <span {...bem('label')}>Ny veiviser</span>
@@ -75,18 +87,7 @@ export default function Menu() {
         )}
       </Transition>
 
-      <Modal title="Ny veiviser" expanded={modal} onClose={toggleModal(false)} preventClickOutside>
-        <Form>
-          <Input
-            label="Tittel"
-            value=""
-            onChange={() => {
-              console.log('Hej')
-            }}
-          />
-          <Editor label="Innhold" />
-        </Form>
-      </Modal>
+      <NewWizard open={modal} toggleModal={toggleModal} />
     </>
   )
 }

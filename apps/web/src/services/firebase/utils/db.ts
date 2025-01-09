@@ -1,4 +1,4 @@
-import { collection, getFirestore, QueryDocumentSnapshot } from 'firebase/firestore'
+import { collection, Firestore, getFirestore, QueryDocumentSnapshot } from 'firebase/firestore'
 
 export function converter<T = any>() {
   return {
@@ -7,8 +7,6 @@ export function converter<T = any>() {
   }
 }
 
-export function dataPoint<T extends {}>(...collectionPath: string[]) {
-  const db = getFirestore()
-
+export function dataPoint<T extends {}>(db: Firestore, ...collectionPath: string[]) {
   return collection(db, collectionPath[0], ...collectionPath.slice(1)).withConverter(converter<T>())
 }

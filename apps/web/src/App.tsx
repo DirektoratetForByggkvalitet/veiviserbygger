@@ -11,8 +11,6 @@ import Loader from './components/Loader'
 export default function App() {
   const { user, loading } = useAuth()
 
-  console.log(user)
-
   if (loading) {
     return <Loader />
   }
@@ -25,8 +23,8 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </> :
           <>
-            {/* <Route path="/" element={<Overview />} /> */}
-            <Route path="/:wizardId?/:version?" element={<Overview />} />
+            <Route path="/" element={<Overview />} />
+            <Route path="/wizard/:wizardId?/:version?" element={<Overview />} />
           </>}
       </Routes>
     </Page>
