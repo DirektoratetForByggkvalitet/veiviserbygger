@@ -5,14 +5,14 @@ import { useDraggable } from 'react-use-draggable-scroll'
 import { IconContinue, IconStop } from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
-import { Wizard, PageContent } from '@/types'
 import styles from './Styles.module.scss'
+import { PageContent, WizardVersion } from 'types'
 const bem = BEMHelper(styles)
 
 interface Props {
   onClick: (id: string) => void
   selected?: string | null
-  data: Wizard
+  data: WizardVersion
 }
 
 export default function Minimap({ onClick, selected, data }: Props) {
@@ -37,6 +37,10 @@ export default function Minimap({ onClick, selected, data }: Props) {
 
   const handlePageClick = (id: string) => () => {
     onClick(id)
+  }
+
+  const handleAddPage = () => {
+    console.log('Add page')
   }
 
   const renderItem = (content: PageContent) => {
@@ -66,7 +70,7 @@ export default function Minimap({ onClick, selected, data }: Props) {
 
   return (
     <ul {...bem('', { selected })} ref={contentRef} {...events}>
-      {data.map((item, index) => (
+      {data?.pages?.map((item, index) => (
         <li
           key={item.id}
           {...bem('page', { selected: item.id === selected })}
@@ -89,6 +93,9 @@ export default function Minimap({ onClick, selected, data }: Props) {
           )}
         </li>
       ))}
+      <li {...bem('page')} role="button" onClick={handleAddPage}>
+        <h2 {...bem('title')}>Legg til side +</h2>
+      </li>
     </ul>
   )
 }

@@ -1,6 +1,5 @@
-import { getConfig } from "@/services/api";
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { Requests } from "types";
+import { getConfig } from '@/services/api'
+import { createContext, ReactNode, useEffect, useState } from 'react'
 
 type Config = Awaited<ReturnType<typeof getConfig>> | null
 type EnvVar = { key: string; optional?: boolean }
@@ -8,7 +7,7 @@ type EnvVar = { key: string; optional?: boolean }
 const emulatorEnvVars: EnvVar[] = [
   { key: 'FIREBASE_EMULATOR_AUTH_HOST' },
   { key: 'FIREBASE_EMULATOR_FIRESTORE_HOST' },
-  { key: 'FIREBASE_EMULATOR_FIRESTORE_PORT', optional: true }
+  { key: 'FIREBASE_EMULATOR_FIRESTORE_PORT', optional: true },
 ]
 
 const prodEnvVars: EnvVar[] = [
@@ -26,14 +25,24 @@ function configOk(envVars: { key: string; optional?: boolean }[], config: Config
 
 export const ConfigContext = createContext<Config>(null)
 
-function ConfigStatus({ configKey, optional, config }: { configKey: string, optional: boolean, config: Config }) {
-  return <>
-    <span>
-      {!!config?.constants?.[configKey] && '✅'}
-      {!config?.constants?.[configKey] && !optional && '❌'}
-    </span>
-    {configKey} {optional ? '(optional)' : ''}
-  </>
+function ConfigStatus({
+  configKey,
+  optional,
+  config,
+}: {
+  configKey: string
+  optional: boolean
+  config: Config
+}) {
+  return (
+    <>
+      <span>
+        {!!config?.constants?.[configKey] && '✅'}
+        {!config?.constants?.[configKey] && !optional && '❌'}
+      </span>
+      {configKey} {optional ? '(optional)' : ''}
+    </>
+  )
 }
 
 export default function ConfigProvider({ children }: { children: ReactNode }) {
@@ -53,31 +62,39 @@ export default function ConfigProvider({ children }: { children: ReactNode }) {
   }
 
   if (!configOk(emulatorEnvVars, config) && !configOk(prodEnvVars, config)) {
-    return <div>
-      <h1>Missing environmental variables</h1>
-      <p>Depending you're in development or production you either need to set env vars for running towards an emulator or towards a production Firebase account.</p>
-      <p>You need to set these env vars in the environment of you API. In local dev that would be <code>apps/api/.env.development</code> while in production it would be by setting environment variables.</p>
+    return (
+      <div>
+        <h1>Missing environmental variables</h1>
+        <p>
+          Depending you're in development or production you either need to set env vars for running
+          towards an emulator or towards a production Firebase account.
+        </p>
+        <p>
+          You need to set these env vars in the environment of you API. In local dev that would be{' '}
+          <code>apps/api/.env.development</code> while in production it would be by setting
+          environment variables.
+        </p>
 
-      <h2>Emulator</h2>
-      <ul>
-        {emulatorEnvVars.map(({ key, optional }) => (
-          <li key={key}><ConfigStatus configKey={key} optional={!!optional} config={config} /></li>
-        ))}
-      </ul>
+        <h2>Emulator</h2>
+        <ul>
+          {emulatorEnvVars.map(({ key, optional }) => (
+            <li key={key}>
+              <ConfigStatus configKey={key} optional={!!optional} config={config} />
+            </li>
+          ))}
+        </ul>
 
-      <h2>Production</h2>
-      <ul>
-        {prodEnvVars.map(({ key, optional }) => (
-          <li key={key}><ConfigStatus configKey={key} optional={!!optional} config={config} /></li>
-        ))}
-      </ul>
-    </div>
-
+        <h2>Production</h2>
+        <ul>
+          {prodEnvVars.map(({ key, optional }) => (
+            <li key={key}>
+              <ConfigStatus configKey={key} optional={!!optional} config={config} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
   }
 
-  return (
-    <ConfigContext.Provider value={config}>
-      {children}
-    </ConfigContext.Provider>
-  )
+  return <ConfigContext.Provider value={config}>{children}</ConfigContext.Provider>
 }

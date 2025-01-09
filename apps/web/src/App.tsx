@@ -3,8 +3,6 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import Login from '@/pages/Login'
 import Overview from '@/pages/Overview'
 
-import Page from '@/components/Page'
-
 import useAuth from '@/hooks/auth'
 import Loader from './components/Loader'
 
@@ -16,17 +14,18 @@ export default function App() {
   }
 
   return (
-    <Page>
-      <Routes>
-        {!user ? <>
+    <Routes>
+      {!user ? (
+        <>
           <Route path="/" element={<Login />} />
           <Route path="*" element={<Navigate to="/" />} />
-        </> :
-          <>
-            <Route path="/" element={<Overview />} />
-            <Route path="/wizard/:wizardId?/:version?" element={<Overview />} />
-          </>}
-      </Routes>
-    </Page>
+        </>
+      ) : (
+        <>
+          <Route path="/" element={<Overview />} />
+          <Route path="/wizard/:wizardId?/:versionId?" element={<Overview />} />
+        </>
+      )}
+    </Routes>
   )
 }

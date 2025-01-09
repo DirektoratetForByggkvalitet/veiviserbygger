@@ -9,7 +9,11 @@ import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
-export default function Header() {
+type Props = {
+  title?: string
+}
+
+export default function Header({ title = 'Losen' }: Props) {
   const [open, setOpen] = useAtom(menuState)
 
   const toggleMenu = () => {
@@ -22,7 +26,7 @@ export default function Header() {
         <IconMenu />
       </button>
 
-      <h1 {...bem('name')}>Losen</h1>
+      <h1 {...bem('name')}>{title}</h1>
 
       <nav {...bem('actions')}>
         <Button primary size="small">

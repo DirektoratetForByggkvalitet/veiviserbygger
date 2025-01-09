@@ -2,24 +2,16 @@ import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
   addDoc,
-  collection,
-  CollectionReference,
   connectFirestoreEmulator,
   doc,
   DocumentReference,
   Firestore,
   getDoc,
-  getDocs,
   getFirestore,
-  onSnapshot,
-  query,
-  QueryFieldFilterConstraint,
-  updateDoc,
-  where,
 } from 'firebase/firestore'
 import { getConfig } from '../api'
-import { converter, dataPoint } from './utils/db'
-import { Wizard, WizardVersion } from './types'
+import { dataPoint } from './utils/db'
+import { Wizard, WizardVersion } from 'types'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -93,7 +85,7 @@ export function getFirebaseApp(
 //   return await getDocs(ref)
 // }
 
-export async function getDocument(ref: DocumentReference, id: string) {
+export async function getDocument(ref: DocumentReference) {
   const doc = await getDoc(ref)
   return doc.data()
 }

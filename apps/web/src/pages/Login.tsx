@@ -7,6 +7,7 @@ import Container from '@/components/Container'
 import Form from '@/components/Form'
 import Input from '@/components/Input'
 import Meta from '@/components/Meta'
+import Page from '@/components/Page'
 
 export default function LoginPage() {
   const { user, signUp, login, logout } = useAuth()
@@ -26,44 +27,46 @@ export default function LoginPage() {
   }
 
   return (
-    <Container size="tight">
-      <Meta title="Losen Veiviserbygger" />
-      <br />
-      <h1>Login</h1>
-      <br />
-      {!user ? (
-        <Form onSubmit={handleSubmit}>
-          <Input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange('email')}
-            label="E-post"
-          />
-          <Input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange('password')}
-            label="Passord"
-          />
+    <Page>
+      <Container size="tight">
+        <Meta title="Losen Veiviserbygger" />
+        <br />
+        <h1>Login</h1>
+        <br />
+        {!user ? (
+          <Form onSubmit={handleSubmit}>
+            <Input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange('email')}
+              label="E-post"
+            />
+            <Input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange('password')}
+              label="Passord"
+            />
 
-          <Button type="submit" primary>
-            Logg inn
-          </Button>
+            <Button type="submit" primary>
+              Logg inn
+            </Button>
 
-          {error === 'auth/user-not-found' ? (
-            <p>
-              Brukeren finnes inn.{' '}
-              <button onClick={() => signUp(form.email, form.password)}>
-                Registrér ny bruker i stedet
-              </button>
-            </p>
-          ) : null}
-        </Form>
-      ) : (
-        <button onClick={logout}>Logg ut</button>
-      )}
-    </Container>
+            {error === 'auth/user-not-found' ? (
+              <p>
+                Brukeren finnes inn.{' '}
+                <button onClick={() => signUp(form.email, form.password)}>
+                  Registrér ny bruker i stedet
+                </button>
+              </p>
+            ) : null}
+          </Form>
+        ) : (
+          <button onClick={logout}>Logg ut</button>
+        )}
+      </Container>
+    </Page>
   )
 }

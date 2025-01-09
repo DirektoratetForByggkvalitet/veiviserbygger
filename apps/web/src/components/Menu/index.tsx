@@ -1,16 +1,12 @@
 import { useAtom } from 'jotai'
-import { FormEventHandler, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import useAuth from '@/hooks/auth'
 import menuState from '@/store/menu'
 
 import Button from '@/components/Button'
-import Editor from '@/components/Editor'
-import Form from '@/components/Form'
 import Icon from '@/components/Icon'
-import Input from '@/components/Input'
-import Modal from '@/components/Modal'
 import Transition from '@/components/Transition'
 
 import BEMHelper from '@/lib/bem'
@@ -23,26 +19,12 @@ export default function Menu() {
   const { logout } = useAuth()
   const [modal, setModal] = useState(false)
   const [open, setOpen] = useAtom(menuState)
-  const [newWizard, setNewWizard] = useState<{ title: string }>({ title: '' })
   const { wizards } = useWizards(open)
 
   const menuRef = useRef<HTMLDivElement>(null)
 
-  const resetModal = () => {
-    setNewWizard({ title: '' })
-  }
-
   const closeMenu = () => {
     setOpen(false)
-  }
-
-  const createWizard: FormEventHandler = (e) => {
-    e.preventDefault()
-
-
-
-    console.log('Creating wizard', newWizard)
-    toggleModal(false)()
   }
 
   useEffect(() => {
@@ -54,7 +36,6 @@ export default function Menu() {
   const toggleModal = (value: boolean) => () => {
     setModal(value)
     closeMenu()
-    resetModal()
   }
 
   return (
@@ -69,8 +50,15 @@ export default function Menu() {
           <>
             <nav {...bem('content')} ref={menuRef} tabIndex={0}>
               {wizards?.map((wizard) => (
-                <Link key={wizard.id} to={`/wizard/${wizard.id}${wizard.data.publishedVersion ? `/${wizard.data.publishedVersion}` : ''}`} {...bem('item')}>
-                  <span {...bem('label')}>{wizard.data.title}{!wizard.data.publishedVersion ? ' (ikke publisert)' : ''}</span>
+                <Link
+                  key={wizard.id}
+                  to={`/wizard/${wizard.id}${wizard.data.publishedVersion ? `/${wizard.data.publishedVersion}` : ''}`}
+                  {...bem('item')}
+                >
+                  <span {...bem('label')}>
+                    {wizard.data.title}
+                    {!wizard.data.publishedVersion ? ' (ikke publisert)' : ''}
+                  </span>
                 </Link>
               ))}
 

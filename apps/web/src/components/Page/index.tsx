@@ -10,12 +10,13 @@ const bem = BEMHelper(styles)
 
 interface Props {
   children: ReactNode
+  title?: string
 }
 
-export default function Page({ children }: Props) {
+export default function Page({ children, title }: Props) {
   return (
     <main {...bem('')}>
-      <Header />
+      <Header title={title} />
       <Menu />
       {children}
     </main>

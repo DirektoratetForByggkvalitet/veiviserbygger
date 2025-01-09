@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Requests } from 'types'
+import { Requests } from 'types/requests'
 
 const instance = axios.create({
   baseURL: '/api/',

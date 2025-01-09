@@ -1,8 +1,9 @@
-import { Wizard } from '@/types'
+import { WizardVersion } from 'types'
 
-const DUMMY_DATA: Wizard = [
+const DUMMY_DATA: NonNullable<WizardVersion['pages']> = [
   {
     id: '1',
+    order: 1,
     type: 'Intro',
     heading: 'Mikrohus som helårsbolig',
     lead: 'Ta vår veiviser for å finne ut om mikrohuset er omfattet av forenklingene.',
@@ -15,6 +16,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 2,
     id: '2',
     type: 'Page',
     heading: 'Bruksområde',
@@ -165,6 +167,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 3,
     id: '44423',
     type: 'Page',
     heading: 'Plassering',
@@ -185,6 +188,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 3,
     id: '4442123',
     type: 'Page',
     heading: 'Bygningen',
@@ -212,6 +216,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 4,
     id: '114442123',
     type: 'Page',
     heading: 'Hovedfunksjoner',
@@ -225,6 +230,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 5,
     id: '221',
     type: 'Page',
     heading: 'Reguleringsplan',
@@ -245,6 +251,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 6,
     id: '323',
     type: 'Page',
     heading: 'Grad av utnytting',
@@ -258,6 +265,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 7,
     id: '3232',
     type: 'Page',
     heading: 'Flom og skred',
@@ -271,6 +279,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 8,
     id: '32321',
     type: 'Page',
     heading: 'Andre begrensninger',
@@ -284,6 +293,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 9,
     id: '32322',
     type: 'Result',
     heading: 'Mikrohuset er omfattet av forenklingene og du kan søke og bygge selv!',
@@ -296,6 +306,7 @@ const DUMMY_DATA: Wizard = [
     ],
   },
   {
+    order: 10,
     id: '32323',
     type: 'Result',
     heading:

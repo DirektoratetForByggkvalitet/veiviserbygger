@@ -10,7 +10,7 @@ declare global {
     /**
      * Middleware to check if the request has a valid JWT
      */
-    // checkJwt: RequestHandler
+    checkJwt: RequestHandler
     // postgres: Pool
     // redis?: RedisClientType
   }

@@ -1,8 +1,8 @@
-import { getWizardsRef, getWizardVersionRef } from '@/services/firebase'
-import { Wizard, WizardVersion, WrappedWithId } from '@/services/firebase/types'
+import { getWizardsRef } from '@/services/firebase'
 import { onSnapshot } from 'firebase/firestore'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useFirebase from './useFirebase'
+import { Wizard, WrappedWithId } from 'types'
 
 export default function useWizards(open: boolean) {
   const { firestore } = useFirebase()

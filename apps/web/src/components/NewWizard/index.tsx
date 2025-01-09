@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react"
-import Button from "../Button"
-import Editor from "../Editor"
-import Form from "../Form"
-import Input from "../Input"
-import Modal from "../Modal"
-import { createWizard } from "@/services/firebase"
-import useFirebase from "@/hooks/useFirebase"
-import { useNavigate } from "react-router"
+import { useEffect, useState } from 'react'
+import Button from '../Button'
+import Editor from '../Editor'
+import Form from '../Form'
+import Input from '../Input'
+import Modal from '../Modal'
+import { createWizard } from '@/services/firebase'
+import useFirebase from '@/hooks/useFirebase'
+import { useNavigate } from 'react-router'
 
 type Props = {
   open: boolean
@@ -20,9 +20,12 @@ export default function NewWizard({ open, toggleModal }: Props) {
   const navigate = useNavigate()
   const { firestore } = useFirebase()
 
-  useEffect(() => () => {
-    setNewWizard(defaultState)
-  }, [])
+  useEffect(
+    () => () => {
+      setNewWizard(defaultState)
+    },
+    [],
+  )
 
   const close = () => {
     setNewWizard(defaultState)
@@ -44,7 +47,7 @@ export default function NewWizard({ open, toggleModal }: Props) {
         <Input
           label="Tittel"
           value={newWizard?.title || ''}
-          onChange={title => setNewWizard(v => ({ ...v, title }))}
+          onChange={(title) => setNewWizard((v) => ({ ...v, title }))}
         />
 
         <Editor label="Innhold" />

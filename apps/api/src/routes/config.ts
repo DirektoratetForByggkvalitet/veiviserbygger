@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Requests } from 'types'
+import { Requests } from 'types/requests'
 
 const exposePattern = /^(FEATURE_FLAG|PUBLIC)_(.*)/
 
@@ -28,7 +28,7 @@ export const configRouter = (di: DependencyContainer) => {
             },
             constants: {
               ...(acc?.constants ?? {}),
-              ...(type === 'PUBLIC' ? { [name]: process.env[key]! } : {}),
+              ...(type === 'PUBLIC' ? { [name]: process.env[key] || '' } : {}),
             },
           }
         }, {})

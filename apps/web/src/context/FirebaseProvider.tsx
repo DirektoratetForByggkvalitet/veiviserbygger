@@ -4,11 +4,14 @@ import { ConfigContext } from './ConfigProvider'
 import { getFirebaseApp } from '@/services/firebase'
 
 export const FirebaseContext = createContext<ReturnType<typeof getFirebaseApp>>(null as any)
-export const AuthContext = createContext<{ loading: boolean, user: User | null }>({ loading: true, user: null })
+export const AuthContext = createContext<{ loading: boolean; user: User | null }>({
+  loading: true,
+  user: null,
+})
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
-  const { auth } = useContext(FirebaseContext)!
+  const { auth } = useContext(FirebaseContext) || {}
   const [user, setUser] = useState<User | null>(null)
 
   function handleAuthStateChanged(user: User | null) {
