@@ -149,6 +149,7 @@
     }
 
     &--simple,
+    &--sentence,
     &--iconOnly {
         width: fit-content;
 
@@ -167,6 +168,37 @@
 
         #{$this}__icon {
             padding: 0;
+        }
+    }
+
+    &--sentence {
+        #{$this}__trigger {
+            @include font-size(small);
+            border-radius: $border-radius;
+            background-color: color(neutral, xlight);
+            padding: 4px 4px;
+            height: 35px;
+        }
+
+        #{$this}__trigger:hover,
+        #{$this}__trigger:focus {
+            background-color: color(neutral, light);
+        }
+
+        #{$this}__label {
+            color: color(neutral, light);
+        }
+
+        #{$this}__value {
+            max-width: 250px;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 24px 0 6px;
+        }
+
+        #{$this}__icon {
+            padding-right: 8px;
         }
     }
 
