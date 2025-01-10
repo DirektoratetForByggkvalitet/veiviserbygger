@@ -70,8 +70,18 @@ export default function HomePage() {
           </Form>
         </Panel>
 
-        {wizardId ? <Minimap onClick={handleSelect} selected={selected} data={DUMMY_DATA} /> : null}
-        {/* {wizardId ? <Minimap onClick={handleSelect} selected={selected} data={version?.pages || []} /> : null} */}
+        {/* {wizardId ? (
+          <Minimap onClick={handleSelect} selected={selected} data={version || {}} />
+        ) : null} */}
+        {wizardId && versionId ? (
+          <Minimap
+            wizardId={wizardId}
+            versionId={versionId}
+            onClick={handleSelect}
+            selected={selected}
+            data={{ pages: DUMMY_DATA }}
+          />
+        ) : null}
       </Page>
     </>
   )
