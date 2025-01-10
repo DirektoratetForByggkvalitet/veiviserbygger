@@ -1,3 +1,5 @@
+import type { Timestamp } from 'firebase/firestore'
+
 export type WrappedWithId<T> = { id: string; data: T }
 
 export type Ordered<T> = T & { order: number }
@@ -166,6 +168,8 @@ export type Wizard = {
 
 export type WizardVersion = {
   title?: string
+  publishedFrom?: Timestamp
+  publishedTo?: Timestamp
   pages?: Ordered<WizardPage>[]
 }
 

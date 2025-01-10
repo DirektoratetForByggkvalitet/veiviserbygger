@@ -10,10 +10,14 @@
   },
   "devDependencies": {
     "eslint-config-custom": "*",
+    "firebase": "*",
     "typescript": "^4"
   },
   "dependencies": {
     "losen": "*",
     "zod": "*"
+  },
+  "peerDependencies": {
+    "firebase": "^11.1.0"
   }
 }
