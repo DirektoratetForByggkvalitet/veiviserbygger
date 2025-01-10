@@ -4,6 +4,7 @@ import Editor from '@/components/Editor'
 import Button from '@/components/Button'
 import Dropdown from '@/components/Dropdown'
 import Checkbox from '@/components/Checkbox'
+import Expression from '@/components/Expression'
 import Icon from '@/components/Icon'
 import { icons } from 'lucide-react'
 
@@ -15,9 +16,10 @@ const bem = BEMHelper(styles)
 type Props = {
   type: PageContent['type']
   data: PageContent
+  allNodes: PageContent[]
 }
 
-export default function Content({ type, data }: Props) {
+export default function Content({ type, data, allNodes }: Props) {
   if (!data) return null
 
   const contentActions = [
@@ -42,7 +44,7 @@ export default function Content({ type, data }: Props) {
     <header {...bem('header')}>
       <Icon name={icon} size="20" {...bem('header-icon')} />
       <h2 {...bem('title')}>{title}</h2>
-      <Dropdown icon="Ellipsis" direction="right" options={contentActions} iconOnly />
+      <Dropdown icon="Ellipsis" direction="right" options={contentActions} label="Valg" iconOnly />
     </header>
   )
 
@@ -117,6 +119,7 @@ export default function Content({ type, data }: Props) {
                         icon="Ellipsis"
                         direction="right"
                         options={optionActions}
+                        label="Valg"
                         iconOnly
                       />
                     </div>
@@ -208,19 +211,18 @@ export default function Content({ type, data }: Props) {
             icon={titlePresets[data.preset]?.icon || 'option'}
           />
           <Main>
-            {data?.content?.map((child: PageContent) => (
-              <>{(nodes[child.type] || nodes.Fallback)(child)}</>
+            <h3 {...bem('sub-title')}>Vises hvis følgende er sant</h3>
+            <Expression expression={data.test} nodes={allNodes} />
+            {data?.content?.map((child: PageContent, index: number) => (
+              <div {...bem('inline-main')} key={child.id || index}>
+                {(nodes[child.type] || nodes.Fallback)(child)}
+              </div>
             ))}
           </Main>
           <Aside>
             <p {...bem('description')}>
               {titlePresets[data.preset]?.description ||
                 'Viser innhold avhengig av et tidligere valg.'}
-            </p>
-            <h3 {...bem('sub-title')}>Vises hvis</h3>
-            <p>
-              Hvis {data.test.field} {data.test.operator} {data.test.value}
-              {/* TODO */}
             </p>
           </Aside>
         </>

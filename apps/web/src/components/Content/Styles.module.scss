@@ -32,7 +32,8 @@
     }
 
     &__main,
-    &__aside {
+    &__aside,
+    &__inline-main {
         display: flex;
         flex-direction: column;
         gap: $spacing--small;
@@ -48,6 +49,10 @@
         @include min-width(lg) {
             border-left: $border-style;
         }
+    }
+
+    &__inline-main {
+        padding: 0;
     }
 
     &__title {

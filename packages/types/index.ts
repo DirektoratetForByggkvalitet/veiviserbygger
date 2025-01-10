@@ -4,7 +4,7 @@ export type Ordered<T> = T & { order: number }
 
 export type Awaited<T> = T extends PromiseLike<infer U> ? U : T
 
-export type Expression = {
+export type SimpleExpression = {
   field: string
   operator:
     | 'gt'
@@ -19,8 +19,16 @@ export type Expression = {
     | 'isnot'
     | 'required'
   value?: string | number | boolean
-  errorMessage?: string
+  // errorMessage?: string Trenger vi denne?
 }
+
+export type ComplexExpression = {
+  type: 'and' | 'or'
+  clauses: Expression[]
+  // errorMessage?: string Trenger vi denne?
+}
+
+export type Expression = SimpleExpression | ComplexExpression
 
 type WithValidator = {
   // Denne er mer kompleks i losen, tror vi kan forenkle denne i første runde og kun bruke den for input

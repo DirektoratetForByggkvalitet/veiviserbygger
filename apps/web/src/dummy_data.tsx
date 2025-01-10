@@ -28,12 +28,12 @@ const DUMMY_DATA: NonNullable<WizardVersion['pages']> = [
         flow: 'stop',
         options: [
           {
-            id: 'inhabited.yes',
+            id: 'yes',
             type: 'Answer',
             heading: 'Ja, noen skal bo eller overnatte i mikrohuset',
           },
           {
-            id: 'inhabited.no',
+            id: 'no',
             type: 'Answer',
             heading: 'Nei, ingen skal bo eller overnatte i mikrohuset',
           },
@@ -64,29 +64,29 @@ const DUMMY_DATA: NonNullable<WizardVersion['pages']> = [
         ],
       },
       {
-        id: '3',
+        id: 'usage',
         type: 'Radio',
         heading: 'Hva skal mikrohuset brukes til?',
         text: 'Det har ikke noe å si om mikrohuset er forankret i bakken, står på tilhenger eller har hjul.',
         flow: 'stop',
         options: [
           {
-            id: 'microhouseUsage.allYear',
+            id: 'allYear',
             type: 'Answer',
             heading: 'Helårsbolig',
           },
           {
-            id: 'microhouseUsage.cabin',
+            id: 'cabin',
             type: 'Answer',
             heading: 'Fritidsbolig (hytte)',
           },
           {
-            id: 'microhouseUsage.caravan',
+            id: 'caravan',
             type: 'Answer',
             heading: 'Campingvogn',
           },
           {
-            id: 'microhouseUsage.other',
+            id: 'other',
             type: 'Answer',
             heading: 'Noe annet',
           },
@@ -97,9 +97,33 @@ const DUMMY_DATA: NonNullable<WizardVersion['pages']> = [
         type: 'Branch',
         preset: 'NegativeResult',
         test: {
-          field: 'usage',
-          operator: 'eq',
-          value: 'cabin',
+          type: 'and',
+          clauses: [
+            {
+              field: 'usage',
+              operator: 'eq',
+              value: 'cabin',
+            },
+            {
+              type: 'or',
+              clauses: [
+                {
+                  field: 'inhabited',
+                  operator: 'neq',
+                  value: 'inhabited.yes',
+                },
+                {
+                  field: 'usage',
+                  operator: 'eq',
+                  value: 'cabin',
+                },
+              ],
+            },
+            {
+              field: 'inhabited',
+              operator: 'not',
+            },
+          ],
         },
         content: [
           {

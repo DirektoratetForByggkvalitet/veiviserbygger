@@ -1,5 +1,5 @@
 import { useState } from 'react'
-
+import { PageContent } from '@/types'
 import Form from '@/components/Form'
 import Input from '@/components/Input'
 import Meta from '@/components/Meta'
@@ -64,7 +64,16 @@ export default function HomePage() {
               />
             </Form.Split>
 
-            {data?.content?.map((node) => <Content key={node.id} type={node.type} data={node} />)}
+            {data?.content?.map((node) => (
+              <Content
+                key={node.id}
+                type={node.type}
+                data={node}
+                allNodes={
+                  data?.content as PageContent[] /* TODO: Alle tilgjengelige nodes i wizard */
+                }
+              />
+            ))}
 
             <Button type="button">Legg til innhold</Button>
           </Form>
