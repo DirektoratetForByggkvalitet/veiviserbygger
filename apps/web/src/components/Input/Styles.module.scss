@@ -49,4 +49,21 @@
     &--header #{$this}__input {
         font-weight: bold;
     }
+
+    &--sentence {
+        @include font-size(small);
+        border: none;
+        border-radius: $border-radius;
+        background-color: color(neutral, xlight);
+        padding: 4px 4px;
+        height: 35px;
+        width: auto;
+        &:hover,
+        &:focus {
+            background-color: color(neutral, light);
+        }
+        #{$this}__input {
+            min-width: 0;
+        }
+    }
 }

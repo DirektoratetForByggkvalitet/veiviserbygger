@@ -14,19 +14,35 @@ interface Props {
   name?: string
   required?: boolean
   autoFocus?: boolean
+  hideLabel?: boolean
+  sentence?: boolean
   onChange: (value: string) => void
 }
 
-export default function Input({ label, type = 'text', header, onChange, ...props }: Props) {
+export default function Input({
+  label,
+  type = 'text',
+  header,
+  onChange,
+  hideLabel,
+  sentence,
+  ...props
+}: Props) {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
     onChange(value)
   }
 
   return (
-    <label {...bem('', { header })}>
-      <span {...bem('label')}>{label}</span>
-      <input {...props} type={type} {...bem('input')} onChange={handleChange} />
+    <label {...bem('', { header, sentence })}>
+      {!hideLabel && <span {...bem('label')}>{label}</span>}
+      <input
+        {...props}
+        type={type}
+        {...bem('input')}
+        onChange={handleChange}
+        aria-label={(hideLabel && label) || undefined}
+      />
     </label>
   )
 }
