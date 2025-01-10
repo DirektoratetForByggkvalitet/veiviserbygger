@@ -7,16 +7,21 @@ import { IconContinue, IconStop } from '@/components/Icon'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { PageContent, WizardVersion } from 'types'
+import useFirebase from '@/hooks/useFirebase'
+import { addPage } from '@/services/firebase'
 const bem = BEMHelper(styles)
 
 interface Props {
   onClick: (id: string) => void
   selected?: string | null
   data: WizardVersion
+  wizardId: string
+  versionId: string
 }
 
-export default function Minimap({ onClick, selected, data }: Props) {
+export default function Minimap({ onClick, selected, data, wizardId, versionId }: Props) {
   const contentRef = useRef<any>(null)
+  const { firestore } = useFirebase()
 
   useEffect(() => {
     if (selected && contentRef.current) {
@@ -40,7 +45,7 @@ export default function Minimap({ onClick, selected, data }: Props) {
   }
 
   const handleAddPage = () => {
-    console.log('Add page')
+    addPage(firestore, wizardId, versionId, {})
   }
 
   const renderItem = (content: PageContent) => {

@@ -2,16 +2,19 @@ import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
   addDoc,
+  arrayUnion,
   connectFirestoreEmulator,
   doc,
   DocumentReference,
   Firestore,
   getDoc,
   getFirestore,
+  runTransaction,
 } from 'firebase/firestore'
 import { getConfig } from '../api'
 import { dataPoint } from './utils/db'
-import { Wizard, WizardVersion } from 'types'
+import { Wizard, WizardPage, WizardVersion } from 'types'
+import { uniqueId } from 'lodash'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -36,7 +39,7 @@ export function getFirebaseApp(
       : { apiKey: options?.constants?.FIREBASE_API_KEY ?? '' }),
     appId: options?.constants?.FIREBASE_APP_ID ?? '',
     authDomain: options?.constants?.FIREBASE_AUTH_DOMAIN ?? '',
-    projectId: options?.constants?.FIREBASE_PROJECT_ID ?? '',
+    projectId: options?.constants?.FIREBASE_PROJECT_ID ?? 'veiviserbygger',
     storageBucket: options?.constants?.FIREBASE_STORAGE_BUCKET ?? '',
     messagingSenderId: options?.constants?.FIREBASE_MESSAGING_SENDER_ID ?? '',
   }
@@ -107,4 +110,24 @@ export async function createWizard(db: Firestore, data: Wizard) {
   const newVersion = await addDoc(getWizardVersionsRef(db, newDocRef.id), {})
 
   return { id: newDocRef.id, versionId: newVersion.id }
+}
+
+export async function addPage(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  page: Partial<WizardPage>,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getWizardVersionRef(db, wizardId, versionId)
+
+    await transaction.update(
+      ref,
+      `pages`,
+      arrayUnion({
+        ...page,
+        id: uniqueId(),
+      }),
+    )
+  })
 }
