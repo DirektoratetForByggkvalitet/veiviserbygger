@@ -32,9 +32,9 @@ export default function HomePage() {
 
   console.log(version, versions)
 
-  const versionsOptions = versions?.map((version) => ({
+  const versionsOptions = versions?.map((version, index) => ({
     value: version.id,
-    label: `Versjon: ${version.id}`,
+    label: `Versjon ${index + 1}`,
     onClick: () => navigate(`/wizard/${wizardId}/${version.id}`),
   }))
 
