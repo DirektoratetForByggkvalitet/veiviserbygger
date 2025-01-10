@@ -27,7 +27,11 @@
     }
 
     &__actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin-left: auto;
+        gap: $spacing--small;
     }
 
     &--open {

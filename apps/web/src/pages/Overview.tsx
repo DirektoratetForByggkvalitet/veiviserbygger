@@ -32,19 +32,15 @@ export default function HomePage() {
 
   console.log(version, versions)
 
+  const versionsOptions = versions?.map((version) => ({
+    value: version.id,
+    label: `Versjon: ${version.id}`,
+    onClick: () => navigate(`/wizard/${wizardId}/${version.id}`),
+  }))
+
   return (
     <>
-      {versions?.map((version) => (
-        <Button
-          key={version.id}
-          type="button"
-          onClick={() => navigate(`/wizard/${wizardId}/${version.id}`)}
-        >
-          {version.id}
-        </Button>
-      ))}
-
-      <Page title={wizard?.data?.title}>
+      <Page title={wizard?.data?.title} versions={versionsOptions} version={versionId}>
         <Meta title="Losen Veiviserbygger" />
 
         <Panel

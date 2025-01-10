@@ -14,7 +14,13 @@ import styles from './Styles.module.scss'
 
 const bem = BEMHelper(styles)
 
-interface Props {
+export type DropdownOptions = Array<{
+  value: string
+  label: string
+  onClick?: () => void
+}>
+
+type Props = {
   label?: string
   icon?: keyof typeof icons
   value?: string
@@ -24,11 +30,7 @@ interface Props {
   simple?: boolean
   hideLabel?: boolean
   iconOnly?: boolean
-  options: Array<{
-    value: string
-    label: string
-    onClick?: () => void
-  }>
+  options: DropdownOptions
   onChange?: (value: string) => void
 }
 
