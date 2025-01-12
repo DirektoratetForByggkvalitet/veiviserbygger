@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import Button from '../Button'
-import Editor from '../Editor'
 import Form from '../Form'
 import Input from '../Input'
 import Modal from '../Modal'

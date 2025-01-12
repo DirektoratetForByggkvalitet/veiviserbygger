@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PageContent } from '@/types'
+import { PageContent } from 'types'
 import { useSetAtom } from 'jotai'
 import Form from '@/components/Form'
 import Input from '@/components/Input'
@@ -65,7 +65,7 @@ export default function HomePage() {
           <Form>
             <Form.Split>
               <Input
-                label="Tittel"
+                label="Sidetittel"
                 value={data?.heading || ''}
                 onChange={() => {
                   console.log('Hej')

@@ -1,4 +1,4 @@
-import { PageContent, Answer } from '@/types'
+import { PageContent, Answer } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
 import Button from '@/components/Button'

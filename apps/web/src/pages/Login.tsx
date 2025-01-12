@@ -31,7 +31,7 @@ export default function LoginPage() {
       <Container size="tight">
         <Meta title="Losen Veiviserbygger" />
         <br />
-        <h1>Login</h1>
+        <h1>Logg inn</h1>
         <br />
         {!user ? (
           <Form onSubmit={handleSubmit}>
@@ -50,7 +50,7 @@ export default function LoginPage() {
               label="Passord"
             />
 
-            <Button type="submit" primary>
+            <Button type="submit" primary disabled={!form.email || !form.password}>
               Logg inn
             </Button>
 
@@ -64,7 +64,7 @@ export default function LoginPage() {
             ) : null}
           </Form>
         ) : (
-          <button onClick={logout}>Logg ut</button>
+          <Button onClick={logout}>Logg ut</Button>
         )}
       </Container>
     </Page>
