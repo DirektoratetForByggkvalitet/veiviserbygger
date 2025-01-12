@@ -146,6 +146,12 @@
             color: $color-text;
             background-color: color(neutral);
         }
+
+        &--delete,
+        &--delete:hover,
+        &--delete:focus:focus-visible {
+            color: $color-warning;
+        }
     }
 
     &--simple,
@@ -218,6 +224,15 @@
 
         #{$this}__icon {
             position: static;
+        }
+
+        #{$this}__wrapper {
+            top: $spacing--xsmall;
+        }
+
+        #{$this}__wrapper--above {
+            top: auto;
+            bottom: calc(35px + $spacing--xsmall);
         }
     }
 }

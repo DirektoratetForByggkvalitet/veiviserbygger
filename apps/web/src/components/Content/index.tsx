@@ -2,7 +2,7 @@ import { PageContent, Answer } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
 import Button from '@/components/Button'
-import Dropdown from '@/components/Dropdown'
+import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Checkbox from '@/components/Checkbox'
 import Expression from '@/components/Expression'
 import Icon from '@/components/Icon'
@@ -22,7 +22,7 @@ type Props = {
 export default function Content({ type, data, allNodes }: Props) {
   if (!data) return null
 
-  const contentActions = [
+  const contentActions: DropdownOptions = [
     {
       value: '0',
       label: 'Flytt til annen side',
@@ -37,6 +37,7 @@ export default function Content({ type, data, allNodes }: Props) {
       value: '0',
       label: 'Fjern spørsmål',
       onClick: () => console.log('Fjern'),
+      styled: 'delete',
     },
   ]
 

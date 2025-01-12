@@ -64,7 +64,8 @@ export default function HomePage() {
           options={[
             {
               value: '1',
-              label: 'Slett side',
+              label: 'Fjern siden',
+              styled: 'delete',
               onClick: () => {
                 console.log('Slettes')
               },

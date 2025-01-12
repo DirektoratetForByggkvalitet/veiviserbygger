@@ -18,6 +18,7 @@ export type DropdownOptions = Array<{
   value: string
   label: string
   onClick?: () => void
+  styled?: 'delete'
 }>
 
 type Props = {
@@ -128,7 +129,10 @@ export default function Dropdown({
                     type="button"
                     key={option.value}
                     onClick={handleClick}
-                    {...bem('option', { selected: option.value === value })}
+                    {...bem('option', {
+                      selected: option.value === value,
+                      [option.styled ?? '']: !!option.styled,
+                    })}
                   >
                     {option.label}
                   </button>
