@@ -9,6 +9,9 @@
     background-color: color(neutral);
     align-items: center;
     justify-content: center;
+    transition:
+        background-color 200ms $ease-in-out-quint--custom,
+        color 200ms $ease-in-out-quint--custom;
 
     &:hover,
     &:focus:focus-visible {
@@ -22,6 +25,10 @@
         &:hover,
         &:focus:focus-visible {
             background-color: shade(color(primary), 4%);
+        }
+        &:disabled {
+            background-color: color(neutral);
+            color: $color-muted;
         }
     }
 

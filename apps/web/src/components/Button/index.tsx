@@ -10,6 +10,7 @@ interface Props {
   type?: 'button' | 'submit'
   primary?: boolean
   subtle?: boolean
+  disabled?: boolean
   onClick?: () => void
   // full?: boolean
   size?: 'small' | 'large'
@@ -22,10 +23,16 @@ export default function Button({
   subtle,
   onClick,
   size,
+  ...props
 }: Props) {
   // TODO: Link button as well
   return (
-    <button {...bem('', { primary, subtle, [size ?? '']: size })} type={type} onClick={onClick}>
+    <button
+      {...props}
+      {...bem('', { primary, subtle, [size ?? '']: size })}
+      type={type}
+      onClick={onClick}
+    >
       {children}
     </button>
   )
