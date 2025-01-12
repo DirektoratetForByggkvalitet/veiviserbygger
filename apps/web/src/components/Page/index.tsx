@@ -14,13 +14,14 @@ interface Props {
   title?: string
   versions?: DropdownOptions
   version?: string
+  openWizardId?: string
 }
 
-export default function Page({ children, title, versions, version }: Props) {
+export default function Page({ children, title, versions, version, openWizardId }: Props) {
   return (
     <main {...bem('')}>
       <Header title={title} versions={versions} version={version} />
-      <Menu />
+      <Menu openWizardId={openWizardId} />
       {children}
     </main>
   )

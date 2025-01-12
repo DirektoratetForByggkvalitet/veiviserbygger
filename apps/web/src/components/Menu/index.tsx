@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom'
 import useAuth from '@/hooks/auth'
 import menuState from '@/store/menu'
 
-import Button from '@/components/Button'
 import Icon from '@/components/Icon'
 import Transition from '@/components/Transition'
+import User from '@/components/User'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -15,12 +15,14 @@ import useWizards from '@/hooks/useWizards'
 import NewWizard from '../NewWizard'
 const bem = BEMHelper(styles)
 
-export default function Menu() {
-  const { logout } = useAuth()
+interface Props {
+  openWizardId?: string
+}
+export default function Menu({ openWizardId }: Props) {
+  const { logout, user } = useAuth()
   const [modal, setModal] = useState(false)
   const [open, setOpen] = useAtom(menuState)
   const { wizards } = useWizards(open)
-
   const menuRef = useRef<HTMLDivElement>(null)
 
   const closeMenu = () => {
@@ -49,25 +51,38 @@ export default function Menu() {
         {open && (
           <>
             <nav {...bem('content')} ref={menuRef} tabIndex={0}>
-              {wizards?.map((wizard) => (
-                <Link
-                  key={wizard.id}
-                  to={`/wizard/${wizard.id}${wizard.data.publishedVersion ? `/${wizard.data.publishedVersion}` : ''}`}
-                  {...bem('item')}
-                >
-                  <span {...bem('label')}>
-                    {wizard.data.title}
-                    {!wizard.data.publishedVersion ? ' (ikke publisert)' : ''}
-                  </span>
-                </Link>
-              ))}
+              <section {...bem('section')}>
+                <h2 {...bem('section-title')}>Veivisere</h2>
+                <ul {...bem('menu-items')}>
+                  {wizards?.map((wizard) => (
+                    <li key={wizard.id}>
+                      <Link
+                        to={`/wizard/${wizard.id}${wizard.data.publishedVersion ? `/${wizard.data.publishedVersion}` : ''}`}
+                        {...bem('item', { open: openWizardId === wizard.id })}
+                      >
+                        <span {...bem('label')}>{wizard.data.title}</span>
+                        {!wizard.data.publishedVersion ? (
+                          <span {...bem('tag')}>Utkast</span>
+                        ) : (
+                          <span {...bem('tag', 'public')}>Publisert</span>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <button {...bem('item', 'new')} onClick={toggleModal(true)}>
+                  <Icon name="Plus" />
+                  <span {...bem('label')}>Ny veiviser</span>
+                </button>
+              </section>
+              <section {...bem('section', 'bottom')}>
+                <h2 {...bem('section-title')}>Innlogget</h2>
 
-              <button {...bem('item', 'new')} onClick={toggleModal(true)}>
-                <Icon name="Plus" />
-                <span {...bem('label')}>Ny veiviser</span>
-              </button>
-
-              <Button onClick={logout}>Logg inn i ut</Button>
+                <User
+                  name={user?.displayName || user?.email}
+                  options={[{ value: '', label: 'Logg ut', onClick: logout }]}
+                />
+              </section>
             </nav>
 
             <button type="button" aria-label="Lukk meny" {...bem('backdrop')} onClick={closeMenu} />

@@ -33,18 +33,20 @@ export default function Header({ title = 'Losen', versions, version }: Props) {
 
       <nav {...bem('actions')}>
         {versions && (
-          <Dropdown
-            options={versions}
-            value={version || 'Velg versjon'}
-            label="Versjoner"
-            hideLabel
-            simple
-            direction="right"
-          />
+          <>
+            <Dropdown
+              options={versions}
+              value={version || 'Velg versjon'}
+              label="Versjoner"
+              hideLabel
+              simple
+              direction="right"
+            />
+            <Button primary size="small">
+              Publiser
+            </Button>
+          </>
         )}
-        <Button primary size="small">
-          Publiser
-        </Button>
       </nav>
     </header>
   )
