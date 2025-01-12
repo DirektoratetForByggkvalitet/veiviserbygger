@@ -1,0 +1,27 @@
+@use '@/styles/_helpers' as *;
+
+.user {
+    $this: &;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing--small;
+
+    &__avatar {
+        @include font-size(base);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+        background-color: $color-backdrop;
+        text-transform: uppercase;
+    }
+
+    &__name {
+        @include font-size(small);
+        text-align: left;
+        flex-grow: 1;
+    }
+}
