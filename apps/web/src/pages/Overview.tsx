@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PageContent } from '@/types'
+import { useSetAtom } from 'jotai'
 import Form from '@/components/Form'
 import Input from '@/components/Input'
 import Meta from '@/components/Meta'
@@ -7,6 +8,7 @@ import Minimap from '@/components/Minimap'
 import Panel from '@/components/Panel'
 import Button from '@/components/Button'
 import Content from '@/components/Content'
+import menuState from '@/store/menu'
 import DUMMY_DATA from '@/dummy_data'
 import useWizard from '@/hooks/useWizard'
 import { useNavigate, useParams } from 'react-router'
@@ -16,6 +18,8 @@ export default function HomePage() {
   const [selected, setSelected] = useState<string | null>(null)
   const { wizardId, versionId } = useParams<{ wizardId?: string; versionId?: string }>()
   const { wizard, versions, version } = useWizard(wizardId, versionId)
+  const showFrontpage = !wizardId
+  const setOpenMenu = useSetAtom(menuState)
   const navigate = useNavigate()
 
   const handleSelect = (id: string) => {
@@ -32,6 +36,10 @@ export default function HomePage() {
 
   console.log(version, versions)
 
+  if (showFrontpage) {
+    setOpenMenu(true) // Open menu if no wizards is selected
+  }
+
   const versionsOptions = versions?.map((version, index) => ({
     value: version.id,
     label: `Versjon ${index + 1}`,
@@ -40,7 +48,12 @@ export default function HomePage() {
 
   return (
     <>
-      <Page title={wizard?.data?.title} versions={versionsOptions} version={versionId}>
+      <Page
+        title={wizard?.data?.title}
+        versions={versionsOptions}
+        version={versionId}
+        openWizardId={wizardId}
+      >
         <Meta title="Losen Veiviserbygger" />
 
         <Panel

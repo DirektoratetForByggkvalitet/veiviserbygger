@@ -59,6 +59,7 @@ export default function Menu({ openWizardId }: Props) {
                       <Link
                         to={`/wizard/${wizard.id}${wizard.data.publishedVersion ? `/${wizard.data.publishedVersion}` : ''}`}
                         {...bem('item', { open: openWizardId === wizard.id })}
+                        onClick={closeMenu}
                       >
                         <span {...bem('label')}>{wizard.data.title}</span>
                         {!wizard.data.publishedVersion ? (
