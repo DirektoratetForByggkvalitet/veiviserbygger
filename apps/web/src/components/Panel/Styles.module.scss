@@ -47,6 +47,7 @@
         @include font(base, normal);
         @include font-size(base);
         padding: 0 $margin;
+        flex-grow: 1;
     }
 
     &__close {

@@ -60,6 +60,16 @@ export default function HomePage() {
           open={!!(selected && data)}
           onClose={handleClose}
           backdrop={false}
+          optionsLabel="Sidevalg"
+          options={[
+            {
+              value: '1',
+              label: 'Slett side',
+              onClick: () => {
+                console.log('Slettes')
+              },
+            },
+          ]}
           title={panelTitle}
         >
           <Form>

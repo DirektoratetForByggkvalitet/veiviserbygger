@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useRef } from 'react'
 
 import Icon from '@/components/Icon'
 import Transition from '@/components/Transition'
+import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 
 import useKeyPress from '@/hooks/useKeyPress'
 
@@ -15,9 +16,19 @@ interface Props {
   onClose: () => void
   backdrop?: boolean
   title: string
+  optionsLabel?: string
+  options?: DropdownOptions
 }
 
-export default function Panel({ children, open, onClose, backdrop = true, title }: Props) {
+export default function Panel({
+  children,
+  open,
+  onClose,
+  backdrop = true,
+  title,
+  optionsLabel,
+  options,
+}: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -44,7 +55,16 @@ export default function Panel({ children, open, onClose, backdrop = true, title 
           <aside {...bem('panel')} ref={panelRef} tabIndex={0}>
             <header {...bem('header')}>
               <h2 {...bem('title')}>{title}</h2>
-              <button type="button" {...bem('close')} onClick={onClose}>
+              {options && (
+                <Dropdown
+                  icon="Settings2"
+                  direction="right"
+                  options={options}
+                  label={optionsLabel || 'Valg'}
+                  iconOnly
+                />
+              )}
+              <button type="button" {...bem('close')} onClick={onClose} aria-label="Lukk side">
                 <Icon name="X" />
               </button>
             </header>
