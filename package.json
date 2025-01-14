@@ -7,7 +7,7 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "dev": "turbo dev",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "turbo test",
     "build:docker": "docker build -f docker/Dockerfile ."
   },
   "repository": {

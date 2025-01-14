@@ -8,7 +8,7 @@
     "start": "node build/index.js",
     "dev": "npm run watch & nodemon --watch build --exec npm start",
     "lint": "eslint . && prettier . --check",
-    "test": "dotenv -e ../../.env -c ci jest -- --coverage --forceExit",
+    "test": "jest --coverage --passWithNoTests --forceExit",
     "test:clear-cache": "jest --clearCache",
     "test:watch": "npm run test -- --watch --coverage=false"
   },
