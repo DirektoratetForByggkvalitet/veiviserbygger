@@ -1,14 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDraggable } from 'react-use-draggable-scroll'
 
-// import Button from '@/components/Button'
 import { IconContinue, IconStop } from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { PageContent, WizardVersion } from 'types'
-import useFirebase from '@/hooks/useFirebase'
-import { addPage } from '@/services/firebase'
+import NewPage from '../NewPage'
+
 const bem = BEMHelper(styles)
 
 interface Props {
@@ -19,9 +18,9 @@ interface Props {
   versionId: string
 }
 
-export default function Minimap({ onClick, selected, data, wizardId, versionId }: Props) {
+export default function Minimap({ onClick, selected, data }: Props) {
   const contentRef = useRef<any>(null)
-  const { firestore } = useFirebase()
+  const [modal, setModal] = useState<'page' | null>(null)
 
   useEffect(() => {
     if (selected && contentRef.current) {
@@ -44,8 +43,8 @@ export default function Minimap({ onClick, selected, data, wizardId, versionId }
     onClick(id)
   }
 
-  const handleAddPage = () => {
-    addPage(firestore, wizardId, versionId, {})
+  const toggleModal = (value: typeof modal) => () => {
+    setModal(value)
   }
 
   const renderItem = (content: PageContent) => {
@@ -74,33 +73,37 @@ export default function Minimap({ onClick, selected, data, wizardId, versionId }
   }
 
   return (
-    <ul {...bem('', { selected })} ref={contentRef} {...events}>
-      {data?.pages?.map((item, index) => (
-        <li
-          key={item.id}
-          {...bem('page', { selected: item.id === selected })}
-          role="button"
-          onClick={handlePageClick(item.id)}
-          tabIndex={0}
-          id={`page-${item.id}`}
-        >
-          <h2 {...bem('title')} title={`${index + 1}. ${item.heading}`}>
-            <span {...bem('title-text')}>
-              {index + 1}. {item.heading}
-            </span>
-          </h2>
-          {item.content && (
-            <ul {...bem('content')}>
-              {item.content.map((content) => {
-                return renderItem(content)
-              })}
-            </ul>
-          )}
+    <>
+      <ul {...bem('', { selected })} ref={contentRef} {...events}>
+        {data?.pages?.map((item, index) => (
+          <li
+            key={item.id}
+            {...bem('page', { selected: item.id === selected })}
+            role="button"
+            onClick={handlePageClick(item.id)}
+            tabIndex={0}
+            id={`page-${item.id}`}
+          >
+            <h2 {...bem('title')} title={`${index + 1}. ${item.heading}`}>
+              <span {...bem('title-text')}>
+                {index + 1}. {item.heading}
+              </span>
+            </h2>
+            {item.content && (
+              <ul {...bem('content')}>
+                {item.content.map((content) => {
+                  return renderItem(content)
+                })}
+              </ul>
+            )}
+          </li>
+        ))}
+        <li {...bem('page')} role="button" onClick={toggleModal('page')}>
+          <h2 {...bem('title')}>Legg til side +</h2>
         </li>
-      ))}
-      <li {...bem('page')} role="button" onClick={handleAddPage}>
-        <h2 {...bem('title')}>Legg til side +</h2>
-      </li>
-    </ul>
+      </ul>
+
+      <NewPage open={modal === 'page'} closeModal={toggleModal(null)} />
+    </>
   )
 }

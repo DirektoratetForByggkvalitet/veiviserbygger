@@ -57,12 +57,12 @@ export default function Menu({ openWizardId }: Props) {
                   {wizards?.map((wizard) => (
                     <li key={wizard.id}>
                       <Link
-                        to={`/wizard/${wizard.id}${wizard.data.publishedVersion ? `/${wizard.data.publishedVersion}` : ''}`}
+                        to={`/wizard/${wizard.id}/${wizard.data.publishedVersionId || wizard.data.draftVersionId}`}
                         {...bem('item', { open: openWizardId === wizard.id })}
                         onClick={closeMenu}
                       >
                         <span {...bem('label')}>{wizard.data.title}</span>
-                        {!wizard.data.publishedVersion ? (
+                        {!wizard.data.publishedVersionId ? (
                           <span {...bem('tag')}>Utkast</span>
                         ) : (
                           <span {...bem('tag', 'public')}>Publisert</span>

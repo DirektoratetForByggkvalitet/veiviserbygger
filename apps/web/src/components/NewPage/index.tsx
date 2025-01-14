@@ -1,0 +1,73 @@
+import { useEffect, useState } from 'react'
+import Button from '../Button'
+import Form from '../Form'
+import Input from '../Input'
+import Modal from '../Modal'
+import { createPage } from '@/services/firebase'
+import useFirebase from '@/hooks/useFirebase'
+import { useParams } from 'react-router'
+import { WizardPage } from 'types'
+
+type Props = {
+  open: boolean
+  closeModal: () => void
+}
+
+const defaultState: Partial<WizardPage> = { heading: '', type: 'Page' }
+
+export default function NewPage({ open, closeModal }: Props) {
+  const { wizardId, versionId } = useParams()
+  const [newPage, setNewPage] = useState<Partial<WizardPage>>(defaultState)
+  const { firestore } = useFirebase()
+
+  useEffect(
+    () => () => {
+      setNewPage(defaultState)
+    },
+    [],
+  )
+
+  const close = () => {
+    setNewPage(defaultState)
+    closeModal()
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!wizardId || !versionId) {
+      return
+    }
+
+    await createPage(firestore, wizardId, versionId, newPage)
+
+    closeModal()
+  }
+
+  if (!wizardId || !versionId) {
+    return (
+      <Modal title="Ny side" expanded={open} onClose={close} preventClickOutside>
+        <p>
+          En feil oppsto. Fant ikke <code>wizardId</code> eller <code>versionId</code>.
+        </p>
+      </Modal>
+    )
+  }
+
+  return (
+    <Modal title="Ny side" expanded={open} onClose={close} preventClickOutside>
+      <Form onSubmit={handleSubmit}>
+        <Input
+          label="Overskrift"
+          value={newPage?.heading || ''}
+          onChange={(heading) => setNewPage((v) => ({ ...v, heading }))}
+          autoFocus
+        />
+
+        <Button type="submit" primary disabled={!newPage.heading}>
+          Opprett
+        </Button>
+      </Form>
+    </Modal>
+  )
+}

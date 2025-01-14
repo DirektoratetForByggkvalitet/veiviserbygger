@@ -11,7 +11,7 @@ import Content from '@/components/Content'
 import menuState from '@/store/menu'
 import DUMMY_DATA from '@/dummy_data'
 import useWizard from '@/hooks/useWizard'
-import { useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import Page from '@/components/Page'
 
 export default function HomePage() {
@@ -20,7 +20,6 @@ export default function HomePage() {
   const { wizard, versions, version } = useWizard(wizardId, versionId)
   const showFrontpage = !wizardId
   const setOpenMenu = useSetAtom(menuState)
-  const navigate = useNavigate()
 
   const handleSelect = (id: string) => {
     setSelected((value) => (value === id ? null : id))
@@ -34,26 +33,13 @@ export default function HomePage() {
   const data = selected ? DUMMY_DATA[dataIndex ?? 0] : undefined
   const panelTitle = selected && data ? `${(dataIndex ?? 0) + 1}. ${data.heading}` : ''
 
-  console.log(version, versions)
-
   if (showFrontpage) {
     setOpenMenu(true) // Open menu if no wizards is selected
   }
 
-  const versionsOptions = versions?.map((version, index) => ({
-    value: version.id,
-    label: `Versjon ${index + 1}`,
-    onClick: () => navigate(`/wizard/${wizardId}/${version.id}`),
-  }))
-
   return (
     <>
-      <Page
-        title={wizard?.data?.title}
-        versions={versionsOptions}
-        version={versionId}
-        openWizardId={wizardId}
-      >
+      <Page title={wizard?.data?.title} versions={versions} wizard={wizard}>
         <Meta title="Losen Veiviserbygger" />
 
         <Panel
@@ -99,10 +85,18 @@ export default function HomePage() {
           </Form>
         </Panel>
 
-        {/* {wizardId ? (
-          <Minimap onClick={handleSelect} selected={selected} data={version || {}} />
-        ) : null} */}
-        {wizardId && versionId ? (
+        {wizardId ? (
+          <Minimap
+            onClick={handleSelect}
+            selected={selected}
+            data={{
+              ...version,
+              pages: [...DUMMY_DATA, ...(version?.pages || [])],
+            }}
+          />
+        ) : null}
+
+        {/* {wizardId && versionId ? (
           <Minimap
             wizardId={wizardId}
             versionId={versionId}
@@ -110,7 +104,7 @@ export default function HomePage() {
             selected={selected}
             data={{ pages: DUMMY_DATA }}
           />
-        ) : null}
+        ) : null} */}
       </Page>
     </>
   )

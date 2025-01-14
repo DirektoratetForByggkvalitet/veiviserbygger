@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build npm
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+
+      - name: Install modules
+        run: npm ci --ignore-scripts
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run tests
+        timeout-minutes: 10
+        run: npm test

@@ -1,7 +1,6 @@
 import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
-  addDoc,
   arrayUnion,
   connectFirestoreEmulator,
   doc,
@@ -15,6 +14,7 @@ import { getConfig } from '../api'
 import { dataPoint } from './utils/db'
 import { Wizard, WizardPage, WizardVersion } from 'types'
 import { uniqueId } from 'lodash'
+import { v4 as uuid } from 'uuid'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -97,6 +97,10 @@ export function getWizardsRef(db: Firestore) {
   return dataPoint<Wizard>(db, 'wizards')
 }
 
+export function getWizardRef(db: Firestore, id: string) {
+  return doc(getWizardsRef(db), id)
+}
+
 export function getWizardVersionsRef(db: Firestore, id: string) {
   return dataPoint<WizardVersion>(db, 'wizards', id, 'versions')
 }
@@ -106,10 +110,39 @@ export function getWizardVersionRef(db: Firestore, id: string, version: string) 
 }
 
 export async function createWizard(db: Firestore, data: Wizard) {
-  const newDocRef = await addDoc(getWizardsRef(db), data)
-  const newVersion = await addDoc(getWizardVersionsRef(db, newDocRef.id), {})
+  return runTransaction(db, async (transaction) => {
+    const newDocId = uuid()
+    const newVersionId = uuid()
 
-  return { id: newDocRef.id, versionId: newVersion.id }
+    await transaction
+      .set(getWizardRef(db, newDocId), {
+        ...data,
+        draftVersionId: newVersionId,
+      })
+      .set(getWizardVersionRef(db, newDocId, newVersionId), {})
+
+    return { id: newDocId, versionId: newVersionId }
+  })
+}
+
+export async function createPage(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  page: Partial<WizardPage>,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getWizardVersionRef(db, wizardId, versionId)
+
+    await transaction.update(
+      ref,
+      `pages`,
+      arrayUnion({
+        ...page,
+        id: uniqueId(),
+      }),
+    )
+  })
 }
 
 export async function addPage(
