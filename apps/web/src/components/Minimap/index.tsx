@@ -14,8 +14,6 @@ interface Props {
   onClick: (id: string) => void
   selected?: string | null
   data: WizardVersion
-  wizardId: string
-  versionId: string
 }
 
 export default function Minimap({ onClick, selected, data }: Props) {

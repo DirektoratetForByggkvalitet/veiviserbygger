@@ -95,16 +95,6 @@ export default function HomePage() {
             }}
           />
         ) : null}
-
-        {/* {wizardId && versionId ? (
-          <Minimap
-            wizardId={wizardId}
-            versionId={versionId}
-            onClick={handleSelect}
-            selected={selected}
-            data={{ pages: DUMMY_DATA }}
-          />
-        ) : null} */}
       </Page>
     </>
   )
