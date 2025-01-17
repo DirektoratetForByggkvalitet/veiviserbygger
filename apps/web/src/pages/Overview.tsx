@@ -13,11 +13,13 @@ import DUMMY_DATA from '@/dummy_data'
 import useWizard from '@/hooks/useWizard'
 import { useParams } from 'react-router'
 import Page from '@/components/Page'
+import { useVersion } from '@/hooks/useVersion'
 
 export default function HomePage() {
   const [selected, setSelected] = useState<string | null>(null)
   const { wizardId, versionId } = useParams<{ wizardId?: string; versionId?: string }>()
   const { wizard, versions, version } = useWizard(wizardId, versionId)
+  const { patchPage, deletePage } = useVersion()
   const showFrontpage = !wizardId
   const setOpenMenu = useSetAtom(menuState)
 
@@ -29,9 +31,16 @@ export default function HomePage() {
     setSelected(null)
   }
 
-  const dataIndex = selected ? DUMMY_DATA.findIndex((item) => item.id === selected) : undefined
-  const data = selected ? DUMMY_DATA[dataIndex ?? 0] : undefined
-  const panelTitle = selected && data ? `${(dataIndex ?? 0) + 1}. ${data.heading}` : ''
+  const handleDelete = (pageId?: string) => () => {
+    if (!pageId) { return }
+
+    deletePage(pageId)
+    handleClose()
+  }
+
+  // const dataIndex = selected ? version?.pages?.find(p => p.id === selected) || DUMMY_DATA.findIndex((item) => item.id === selected) : undefined
+  const data = selected ? version?.pages?.find(p => p.id === selected) || DUMMY_DATA.find((item) => item.id === selected) : undefined
+  const panelTitle = data?.heading ?? 'Uten tittel'
 
   if (showFrontpage) {
     setOpenMenu(true) // Open menu if no wizards is selected
@@ -43,7 +52,7 @@ export default function HomePage() {
         <Meta title="Losen Veiviserbygger" />
 
         <Panel
-          open={!!(selected && data)}
+          open={!!data}
           onClose={handleClose}
           backdrop={false}
           optionsLabel="Sidevalg"
@@ -52,37 +61,35 @@ export default function HomePage() {
               value: '1',
               label: 'Fjern siden',
               styled: 'delete',
-              onClick: () => {
-                console.log('Slettes')
-              },
+              onClick: handleDelete(data?.id),
             },
           ]}
           title={panelTitle}
         >
-          <Form>
-            <Form.Split>
-              <Input
-                label="Sidetittel"
-                value={data?.heading || ''}
-                onChange={() => {
-                  console.log('Hej')
-                }}
-              />
-            </Form.Split>
+          {data?.id ? <>
+            <Form>
+              <Form.Split>
+                <Input
+                  label="Sidetittel"
+                  value={data?.heading || ''}
+                  onChange={v => patchPage(data.id, { heading: v })}
+                />
+              </Form.Split>
 
-            {data?.content?.map((node) => (
-              <Content
-                key={node.id}
-                type={node.type}
-                data={node}
-                allNodes={
-                  data?.content as PageContent[] /* TODO: Alle tilgjengelige nodes i wizard */
-                }
-              />
-            ))}
+              {data?.content?.map((node) => (
+                <Content
+                  key={node.id}
+                  type={node.type}
+                  data={node}
+                  allNodes={
+                    data?.content as PageContent[] /* TODO: Alle tilgjengelige nodes i wizard */
+                  }
+                />
+              ))}
 
-            <Button type="button">Legg til innhold</Button>
-          </Form>
+              <Button type="button">Legg til innhold</Button>
+            </Form>
+          </> : null}
         </Panel>
 
         {wizardId ? (

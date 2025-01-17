@@ -1,14 +1,15 @@
-import { ChangeEvent, HTMLInputTypeAttribute } from 'react'
+import { ChangeEvent, HTMLInputTypeAttribute, ReactHTMLElement } from 'react'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
+import { useValue } from '@/hooks/useValue'
 const bem = BEMHelper(styles)
 
-interface Props {
+type Props<T extends HTMLInputTypeAttribute = 'text'> = {
   label: string
-  type?: HTMLInputTypeAttribute
-  value: string
   header?: boolean
+  type?: T
+  value: T extends 'number' ? number : string
   placeholder?: string
   id?: string
   name?: string
@@ -16,31 +17,33 @@ interface Props {
   autoFocus?: boolean
   hideLabel?: boolean
   sentence?: boolean
-  onChange: (value: string) => void
+  onChange: (v: (T extends 'number' ? number : string)) => void
 }
 
-export default function Input({
+export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   label,
-  type = 'text',
+  type,
   header,
-  onChange,
   hideLabel,
   sentence,
   ...props
-}: Props) {
+}: Props<T>) {
+  const { value, inSync, onChange } = useValue(props.value, props.onChange)
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
+    const value = event.target.value as Props<T>['value']
     onChange(value)
   }
 
   return (
-    <label {...bem('', { header, sentence })}>
+    <label {...bem('', { header, sentence, dirty: !inSync })}>
       {!hideLabel && <span {...bem('label')}>{label}</span>}
       <input
         {...props}
         type={type}
         {...bem('input')}
         onChange={handleChange}
+        value={value}
         aria-label={(hideLabel && label) || undefined}
       />
     </label>

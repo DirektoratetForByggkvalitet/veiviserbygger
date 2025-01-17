@@ -46,6 +46,10 @@
         -webkit-background-clip: text; // Remove blue backgrunds in Chrome for saved passwords
     }
 
+    &--dirty {
+        background-color: rgb(255, 107, 181, 0.4);
+    }
+
     &--header #{$this}__input {
         font-weight: bold;
     }

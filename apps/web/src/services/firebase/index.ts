@@ -1,6 +1,7 @@
 import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
+  arrayRemove,
   arrayUnion,
   connectFirestoreEmulator,
   doc,
@@ -9,12 +10,14 @@ import {
   getDoc,
   getFirestore,
   runTransaction,
+  updateDoc,
 } from 'firebase/firestore'
 import { getConfig } from '../api'
 import { dataPoint } from './utils/db'
-import { Wizard, WizardPage, WizardVersion } from 'types'
-import { uniqueId } from 'lodash'
+import { DeepPartial, Wizard, WizardPage, WizardVersion } from 'types'
+import { defaultsDeep, uniqueId } from 'lodash'
 import { v4 as uuid } from 'uuid'
+import deepExtend from 'deep-extend'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -145,6 +148,34 @@ export async function createPage(
   })
 }
 
+export async function patchPage(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  pageId: string,
+  patch: DeepPartial<WizardPage>,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const current = await transaction.get(ref)
+
+    const currentPages = current?.data()?.pages || []
+    const patchedPageIndex = current?.data()?.pages?.findIndex((p) => p.id === pageId)
+
+    if (patchedPageIndex === undefined) {
+      throw new Error(`Page with id ${pageId} not found`)
+    }
+
+    await transaction.update(ref, {
+      pages: [
+        ...currentPages.slice(0, patchedPageIndex),
+        deepExtend(currentPages[patchedPageIndex], patch),
+        ...currentPages.slice(patchedPageIndex + 1),
+      ],
+    })
+  })
+}
+
 export async function addPage(
   db: Firestore,
   wizardId: string,
@@ -162,5 +193,24 @@ export async function addPage(
         id: uniqueId(),
       }),
     )
+  })
+}
+
+export async function deletePage(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  pageId: string,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const current = await transaction.get(ref)
+    const pageToDelete = current?.data()?.pages?.find((p) => p.id === pageId)
+
+    if (!pageToDelete) {
+      throw new Error(`Page with id ${pageId} not found`)
+    }
+
+    await transaction.update(ref, 'pages', arrayRemove(pageToDelete))
   })
 }

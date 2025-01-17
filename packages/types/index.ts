@@ -1,5 +1,11 @@
 import type { Timestamp } from 'firebase/firestore'
 
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>
+    }
+  : T
+
 export type WrappedWithId<T> = { id: string; data: T }
 
 export type Ordered<T> = T & { order: number }
