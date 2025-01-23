@@ -18,6 +18,12 @@
         background-color: shade(color(neutral), 4%);
     }
 
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        padding-left: $spacing--xsmall;
+    }
+
     &--primary {
         color: $color-light;
         background-color: color(primary);

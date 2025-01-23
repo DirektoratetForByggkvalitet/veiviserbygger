@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
-
+import { icons } from 'lucide-react'
+import Icon from '@/components/Icon'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 
@@ -12,6 +13,7 @@ interface Props {
   subtle?: boolean
   disabled?: boolean
   onClick?: () => void
+  icon?: keyof typeof icons
   // full?: boolean
   size?: 'small' | 'large'
 }
@@ -23,6 +25,7 @@ export default function Button({
   subtle,
   onClick,
   size,
+  icon,
   ...props
 }: Props) {
   // TODO: Link button as well
@@ -34,6 +37,11 @@ export default function Button({
       onClick={onClick}
     >
       {children}
+      {icon && (
+        <span {...bem('icon')}>
+          <Icon name={icon} />
+        </span>
+      )}
     </button>
   )
 }
