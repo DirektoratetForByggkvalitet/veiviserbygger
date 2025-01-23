@@ -9,6 +9,7 @@ import Panel from '@/components/Panel'
 import Button from '@/components/Button'
 import Content from '@/components/Content'
 import menuState from '@/store/menu'
+import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import DUMMY_DATA from '@/dummy_data'
 import useWizard from '@/hooks/useWizard'
 import { useParams } from 'react-router'
@@ -32,7 +33,9 @@ export default function HomePage() {
   }
 
   const handleDelete = (pageId?: string) => () => {
-    if (!pageId) { return }
+    if (!pageId) {
+      return
+    }
 
     deletePage(pageId)
     handleClose()
@@ -45,6 +48,59 @@ export default function HomePage() {
   if (showFrontpage) {
     setOpenMenu(true) // Open menu if no wizards is selected
   }
+
+  const addContentActions: DropdownOptions = [
+    {
+      group: 'Innhold',
+    },
+    {
+      value: '0',
+      label: 'Tekst',
+      onClick: () => console.log('Radiobutton'),
+    },
+    {
+      group: 'Spørsmål',
+    },
+    {
+      value: '0',
+      label: 'Radiovalg',
+      onClick: () => console.log('Radiobutton'),
+    },
+    {
+      value: '0',
+      label: 'Sjekkbokser',
+      onClick: () => console.log('Che'),
+    },
+    {
+      value: '0',
+      label: 'Tekstfelt',
+      onClick: () => console.log('Flytt'),
+    },
+    {
+      value: '0',
+      label: 'Nummerfelt',
+      onClick: () => console.log('Fjern'),
+    },
+    {
+      group: 'Hendelser',
+    },
+    {
+      value: '0',
+      label: 'Vis ekstra informasjon',
+      onClick: () => console.log('Branch'),
+    },
+    {
+      value: '0',
+      label: 'Vis ekstra spørsmål',
+      onClick: () => console.log('Branch'),
+      disabled: true,
+    },
+    {
+      value: '0',
+      label: 'Negativt resultat',
+      onClick: () => console.log('Branch'),
+    },
+  ]
 
   return (
     <>
@@ -66,30 +122,57 @@ export default function HomePage() {
           ]}
           title={panelTitle}
         >
-          {data?.id ? <>
-            <Form>
-              <Form.Split>
-                <Input
-                  label="Sidetittel"
-                  value={data?.heading || ''}
-                  onChange={v => patchPage(data.id, { heading: v })}
-                />
-              </Form.Split>
+          {data?.id ? (
+            <>
+              <Form>
+                <Form.Split>
+                  <Input
+                    label="Sidetittel"
+                    value={data?.heading || ''}
+                    onChange={(v) => patchPage(data.id, { heading: v })}
+                  />
+                </Form.Split>
 
-              {data?.content?.map((node) => (
-                <Content
-                  key={node.id}
-                  type={node.type}
-                  data={node}
-                  allNodes={
-                    data?.content as PageContent[] /* TODO: Alle tilgjengelige nodes i wizard */
-                  }
+                {data?.content?.map((node) => (
+                  <Content
+                    key={node.id}
+                    type={node.type}
+                    data={node}
+                    allNodes={
+                      data?.content as PageContent[] /* TODO: Alle tilgjengelige nodes i wizard */
+                    }
+                  />
+                ))}
+                {!data?.content && (
+                  <>
+                    <p>
+                      Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
+                      veiviseren.
+                    </p>
+                  </>
+                )}
+                <Dropdown
+                  direction="right"
+                  options={addContentActions}
+                  trigger={({ onClick }) => (
+                    <Button type="button" primary={!data?.content} icon="Plus" onClick={onClick}>
+                      Legg til innhold
+                    </Button>
+                  )}
                 />
-              ))}
-
-              <Button type="button">Legg til innhold</Button>
-            </Form>
-          </> : null}
+                {data?.type === 'Intro' && (
+                  <>
+                    <Button type="button" primary disabled>
+                      Start veiviseren
+                    </Button>
+                    <p>
+                      Introsiden avsluttes med en "Start veiviseren" knapp som starter veiviseren.
+                    </p>
+                  </>
+                )}
+              </Form>
+            </>
+          ) : null}
         </Panel>
 
         {wizardId ? (
