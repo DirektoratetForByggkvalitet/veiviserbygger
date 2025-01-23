@@ -7,6 +7,7 @@
     width: 100%;
     border: $border-style;
     background-color: $color-light;
+    position: relative;
 
     &:hover {
         border-color: shade(color(neutral), 6%);
@@ -47,7 +48,21 @@
     }
 
     &--dirty {
-        background-color: rgb(255, 107, 181, 0.4);
+        &:before {
+            content: 'Prøver å lagre ...';
+            font-size: 12px;
+            line-height: 1;
+            text-transform: uppercase;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            animation: fadeIn 600ms $ease-out-quart backwards;
+            animation-delay: 1000ms;
+            background: $color-warning;
+            color: $color-light;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
     }
 
     &--header #{$this}__input {
@@ -69,5 +84,14 @@
         #{$this}__input {
             min-width: 0;
         }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }
