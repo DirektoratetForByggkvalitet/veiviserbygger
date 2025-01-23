@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, ReactElement, MouseEventHandler } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { icons } from 'lucide-react'
@@ -14,12 +14,16 @@ import styles from './Styles.module.scss'
 
 const bem = BEMHelper(styles)
 
-export type DropdownOptions = Array<{
-  value: string
-  label: string
-  onClick?: () => void
-  styled?: 'delete'
-}>
+export type DropdownOptions = Array<
+  | {
+      value: string
+      label: string
+      onClick?: () => void
+      styled?: 'delete'
+      disabled?: boolean
+    }
+  | { group: string }
+>
 
 type Props = {
   label?: string
@@ -31,6 +35,7 @@ type Props = {
   simple?: boolean
   hideLabel?: boolean
   iconOnly?: boolean
+  trigger?: (props: { onClick: MouseEventHandler }) => ReactElement
   options: DropdownOptions
   onChange?: (value: string) => void
 }
@@ -45,6 +50,7 @@ export default function Dropdown({
   onChange,
   hideLabel,
   iconOnly,
+  trigger,
   sentence,
   simple,
 }: Props) {
@@ -96,30 +102,41 @@ export default function Dropdown({
       onChange(value)
     }
   }
-
-  const valueString = options.find((option) => option.value === value)?.label ?? value
+  const selectedOption = options.find((option) => 'value' in option && option.value === value)
+  const valueString = selectedOption && 'label' in selectedOption ? selectedOption?.label : value
 
   return (
     <div {...bem('', { simple, sentence, iconOnly })} ref={wrapperRef}>
-      <button
-        type="button"
-        {...bem('trigger', { expanded, label: !!label })}
-        onClick={triggerClick}
-        aria-label={label}
-        ref={triggerRef}
-        title={valueString}
-      >
-        {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
-        {!iconOnly && <span {...bem('value')}>{valueString || ' '}</span>}
+      {trigger ? (
+        trigger({ onClick: triggerClick })
+      ) : (
+        <button
+          type="button"
+          {...bem('trigger', { expanded, label: !!label })}
+          onClick={triggerClick}
+          aria-label={label}
+          ref={triggerRef}
+          title={valueString}
+        >
+          {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
+          {!iconOnly && <span {...bem('value')}>{valueString || ' '}</span>}
 
-        <span {...bem('icon')}>{icon ? <Icon name={icon} /> : <Icon name="ChevronDown" />}</span>
-      </button>
+          <span {...bem('icon')}>{icon ? <Icon name={icon} /> : <Icon name="ChevronDown" />}</span>
+        </button>
+      )}
 
       <Transition updateKey={expanded.toString()} {...bem('animation', { expanded })}>
         {expanded && (
           <div {...bem('wrapper', [direction, position])}>
             <nav {...bem('options')}>
               {options.map((option) => {
+                if ('group' in option) {
+                  return (
+                    <span key={option.group} {...bem('option-group')}>
+                      {option.group}
+                    </span>
+                  )
+                }
                 const handleClick = option.onClick
                   ? handleOptionClick(option.onClick)
                   : handleChange(option.value)
@@ -128,10 +145,12 @@ export default function Dropdown({
                   <button
                     type="button"
                     key={option.value}
+                    disabled={option?.disabled}
                     onClick={handleClick}
                     {...bem('option', {
                       selected: option.value === value,
                       [option.styled ?? '']: !!option.styled,
+                      disabled: option?.disabled,
                     })}
                   >
                     {option.label}

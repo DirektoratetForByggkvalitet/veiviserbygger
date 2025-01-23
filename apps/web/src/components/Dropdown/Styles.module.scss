@@ -130,6 +130,15 @@
         }
     }
 
+    &__option-group {
+        @include font-size(xsmall);
+        color: $color-muted;
+        white-space: nowrap;
+        text-align: left;
+        padding: $spacing--xsmall;
+        border-top: $border-style;
+    }
+
     &__option {
         @include font-size(small);
         white-space: nowrap;
@@ -140,8 +149,12 @@
             border-bottom: $border-style--weak;
         }
 
-        &:hover,
-        &:focus:focus-visible,
+        &--disabled {
+            color: $color-muted;
+        }
+
+        &:hover:not(#{$this}__option--disabled),
+        &:focus:focus-visible:not(#{$this}__option--disabled),
         &--selected {
             color: $color-text;
             background-color: color(neutral);
@@ -209,6 +222,34 @@
     }
 
     &--iconOnly {
+        #{$this}__trigger {
+            justify-content: center;
+            height: 35px;
+            width: 35px;
+            border-radius: 50%;
+            background-color: color(neutral, xlight);
+        }
+
+        #{$this}__trigger:hover,
+        #{$this}__trigger:focus {
+            background-color: color(neutral, light);
+        }
+
+        #{$this}__icon {
+            position: static;
+        }
+
+        #{$this}__wrapper {
+            top: $spacing--xsmall;
+        }
+
+        #{$this}__wrapper--above {
+            top: auto;
+            bottom: calc(35px + $spacing--xsmall);
+        }
+    }
+
+    &--buttonOnly {
         #{$this}__trigger {
             justify-content: center;
             height: 35px;
