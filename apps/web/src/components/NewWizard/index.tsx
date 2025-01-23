@@ -44,7 +44,7 @@ export default function NewWizard({ open, toggleModal }: Props) {
     <Modal title="Ny veiviser" expanded={open} onClose={close} preventClickOutside>
       <Form onSubmit={handleSubmit}>
         <Input
-          label="Tittel"
+          label="Veivisernavn"
           value={newWizard?.title || ''}
           onChange={(title) => setNewWizard((v) => ({ ...v, title }))}
           autoFocus
@@ -52,8 +52,7 @@ export default function NewWizard({ open, toggleModal }: Props) {
 
         <p>
           Navnet til veiviseren er synlig for sluttbrukere og bør være kort og beskrivende.
-          Veiviseren vil bli synlig for andre i ditt arbeidsområde, men ikke publisert til
-          sluttbrukere.
+          Veiviseren vil bli synlig for andre i ditt arbeidsområde som et utkast.
         </p>
 
         <Button type="submit" primary disabled={!newWizard.title}>
