@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDraggable } from 'react-use-draggable-scroll'
 
-import { IconContinue, IconStop } from '@/components/Icon'
+import Icon, { IconContinue, IconStop } from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -94,10 +94,19 @@ export default function Minimap({ onClick, selected, data }: Props) {
                 })}
               </ul>
             )}
+            {!item.content && !selected && (
+              <div {...bem('placeholder')}>
+                <span {...bem('placeholder-text')}>Legg til innhold </span>
+                <span {...bem('icon')}>
+                  <Icon name="Plus" />
+                </span>
+              </div>
+            )}
           </li>
         ))}
         <li {...bem('page')} role="button" onClick={toggleModal('page')}>
           <h2 {...bem('title')}>Legg til side +</h2>
+          <div {...bem('content', 'placeholder')}></div>
         </li>
       </ul>
 

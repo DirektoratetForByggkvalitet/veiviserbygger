@@ -25,9 +25,12 @@
 
     &__page {
         cursor: pointer;
+        display: flex;
+        flex-direction: column;
         width: var(--minimap-page-width);
         flex-shrink: 0;
         padding: 0 $margin;
+        transition: background-color 200ms $ease-in-out-quint--custom;
 
         &:not(:last-child) {
             border-right: $border-style;
@@ -36,6 +39,10 @@
         &:hover,
         &:focus:focus-visible {
             background-color: color(neutral, light);
+            #{$this}__placeholder,
+            #{$this}__content--placeholder {
+                background-color: color(neutral, base);
+            }
         }
 
         &--selected {
@@ -84,6 +91,30 @@
         text-align: right;
         flex-shrink: 0;
         width: 20px;
+    }
+
+    &__content {
+        flex-grow: 1;
+        &--placeholder {
+            border-radius: $border-radius;
+            background-color: color(neutral, light);
+            transition: background-color 200ms $ease-in-out-quint--custom;
+        }
+    }
+
+    &__placeholder {
+        @include font(base, normal);
+        @include font-size(xsmall, 1);
+        display: flex;
+        align-items: center;
+        padding: $spacing--xsmall;
+        border-radius: $border-radius;
+        background-color: color(neutral, light);
+        transition: background-color 200ms $ease-in-out-quint--custom;
+    }
+
+    &__placeholder-text {
+        flex-grow: 1;
     }
 
     &--selected {
