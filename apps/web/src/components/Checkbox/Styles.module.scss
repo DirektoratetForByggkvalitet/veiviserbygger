@@ -8,14 +8,14 @@
     align-items: center;
     width: 100%;
     cursor: pointer;
-    border: $border-style;
-    padding: $spacing--small;
-
+    &:not(:last-child) {
+        margin-bottom: $spacing--small;
+    }
     @include no-select;
 
     &__label {
         @include font(base, normal);
-        @include font-size(base);
+        @include font-size(small);
         margin-top: 3px;
         flex-grow: 2;
     }
@@ -31,6 +31,7 @@
         border-radius: 0;
         border: $border-style;
         background-color: $color-light;
+        border-radius: $border-radius;
     }
 
     &__icon {
@@ -39,7 +40,7 @@
         path {
             stroke-dasharray: $icon-strok-length;
             stroke-dashoffset: -$icon-strok-length;
-            transition: stroke-dashoffset 200ms $ease-in-out-quint--custom;
+            transition: stroke-dashoffset 100ms $ease-in-out-quint--custom;
         }
     }
 
@@ -50,12 +51,31 @@
         &:checked + #{$this}__indicator {
             path {
                 stroke-dashoffset: 0;
-                transition: stroke-dashoffset 300ms $ease-out-quart;
+                transition: stroke-dashoffset 100ms $ease-out-quart;
             }
         }
 
         &:focus:focus-visible ~ #{$this}__indicator {
             box-shadow: 0 0 0 1px black;
+        }
+    }
+
+    &--disabled {
+        #{$this}__indicator {
+            background-color: color(neutral, xlight);
+            border-color: color(neutral, xlight);
+        }
+        #{$this}__label {
+            color: $color-muted;
+        }
+    }
+
+    &--large {
+        border: $border-style;
+        padding: $spacing--small;
+        margin-bottom: 0;
+        #{$this}__label {
+            @include font-size(base);
         }
     }
 

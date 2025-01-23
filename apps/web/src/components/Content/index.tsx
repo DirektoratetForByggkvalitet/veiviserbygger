@@ -144,7 +144,7 @@ export default function Content({ type, data, allNodes }: Props) {
               description="Dette er et flervalgspørsmål vi stiller brukeren som de kan svare på. Avhengig av hva
               de svarer kan vi respondere med resultater eller informasjon."
             />
-            <h3 {...bem('sub-title')}>Visningsinstillinger</h3>
+            <h3 {...bem('sub-title')}>Instillinger</h3>
             <Dropdown
               label="Spørsmålstype"
               hideLabel
@@ -162,15 +162,16 @@ export default function Content({ type, data, allNodes }: Props) {
             />
             <div {...bem('field-list')}>
               <Checkbox
-                label="Grid"
+                label="Grid visning"
                 checked={data?.grid}
                 onChange={() => {
                   console.log('Hej')
                 }}
               />
               <Checkbox
-                label="Valgfritt"
+                label="Valgfritt felt"
                 checked={data?.optional}
+                disabled={data?.allMandatory}
                 onChange={() => {
                   console.log('Hej')
                 }}
@@ -178,6 +179,7 @@ export default function Content({ type, data, allNodes }: Props) {
               <Checkbox
                 label="Alle påkrevd"
                 checked={data?.allMandatory}
+                disabled={data?.optional}
                 onChange={() => {
                   console.log('Hej')
                 }}

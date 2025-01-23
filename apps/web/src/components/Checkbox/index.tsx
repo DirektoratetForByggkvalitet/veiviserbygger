@@ -12,24 +12,36 @@ interface Props {
   checked: boolean
   required?: boolean
   toggle?: boolean
+  disabled?: boolean
+  large?: boolean
   ariaLabel?: string
   onChange: (checked: boolean) => void
 }
 
-export default function Checkbox({ label, checked, onChange, className, toggle, ...props }: Props) {
+export default function Checkbox({
+  label,
+  checked,
+  onChange,
+  className,
+  toggle,
+  disabled,
+  large,
+  ...props
+}: Props) {
   const handleChange = () => {
     console.log(!checked)
     onChange(!checked)
   }
 
   return (
-    <label {...bem('', { toggle }, className)}>
+    <label {...bem('', { toggle, large, disabled }, className)}>
       <input
         {...props}
         {...bem('input')}
         type="checkbox"
         checked={checked}
         onChange={handleChange}
+        disabled={disabled}
       />
       <span {...bem('indicator')}>
         <Icon name="Check" size={toggle ? 16 : 22} {...bem('icon')} />
