@@ -102,6 +102,17 @@ export default function Dropdown({
       onChange(value)
     }
   }
+
+  const getPositionWithoutCollissions = () => {
+    const wrapperRect = wrapperRef?.current?.getBoundingClientRect()
+    const viewportHeight = window.innerHeight
+    if (wrapperRect && wrapperRect.bottom + 100 > viewportHeight)
+      return position === 'below' ? 'above' : position
+    if (wrapperRect && wrapperRect.top - 100 < 0) return position === 'above' ? 'below' : position
+    return position
+  }
+  const endPosition = getPositionWithoutCollissions()
+
   const selectedOption = options.find((option) => 'value' in option && option.value === value)
   const valueString = selectedOption && 'label' in selectedOption ? selectedOption?.label : value
 
@@ -127,7 +138,7 @@ export default function Dropdown({
 
       <Transition updateKey={expanded.toString()} {...bem('animation', { expanded })}>
         {expanded && (
-          <div {...bem('wrapper', [direction, position])}>
+          <div {...bem('wrapper', [direction, endPosition])}>
             <nav {...bem('options')}>
               {options.map((option) => {
                 if ('group' in option) {
