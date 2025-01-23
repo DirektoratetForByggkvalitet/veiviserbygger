@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 
@@ -24,20 +25,34 @@ const extensions = [
 interface Props {
   label: string
   value: string
+  hideIfEmpty?: boolean
 }
 
-export default function Editor({ label, value }: Props) {
+export default function Editor({ label, value, hideIfEmpty }: Props) {
+  const [showInput, setShowInput] = useState<boolean>(!!value || false)
+
+  if (hideIfEmpty && !value && !showInput) {
+    // Shows a small trigger for the input field when empty
+    return (
+      <button {...bem('button-label')} type="button" onClick={() => setShowInput(true)}>
+        {label}
+      </button>
+    )
+  }
+
   return (
-    <div {...bem('')}>
-      <span {...bem('label')}>{label}</span>
+    <section {...bem('')}>
+      <h3 {...bem('label')}>{label}</h3>
 
       <EditorProvider
         slotBefore={<MenuBar />}
         extensions={extensions}
         content={value}
         editorContainerProps={{ ...bem('input') }}
+        autofocus={hideIfEmpty && !value && showInput}
+        onBlur={hideIfEmpty && !value ? () => setShowInput(false) : undefined}
       />
-    </div>
+    </section>
   )
 }
 
@@ -50,25 +65,20 @@ function MenuBar() {
 
   const textStyle =
     (editor.isActive('paragraph') && 'p') ||
-    (editor.isActive('heading', { level: 1 }) && 'h1') ||
     (editor.isActive('heading', { level: 2 }) && 'h2') ||
     (editor.isActive('heading', { level: 3 }) && 'h3') ||
     undefined
   const textStyles = [
     {
       value: 'p',
-      label: 'Paragraph',
+      label: 'Paragraf',
     },
     {
-      label: 'H1',
-      value: 'h1',
-    },
-    {
-      label: 'H2',
+      label: 'Overskrift',
       value: 'h2',
     },
     {
-      label: 'H3',
+      label: 'Underoverskrift',
       value: 'h3',
     },
   ]

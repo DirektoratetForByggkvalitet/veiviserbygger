@@ -50,7 +50,7 @@ export default function Content({ type, data, allNodes }: Props) {
     </header>
   )
 
-  const Main = ({ children, full }: { children: ReactNode; full: boolean }) => (
+  const Main = ({ children, full }: { children: ReactNode; full?: boolean }) => (
     <div {...bem('main', { full })}>{children}</div>
   )
 
@@ -68,8 +68,9 @@ export default function Content({ type, data, allNodes }: Props) {
               onChange={() => {
                 console.log('Hej')
               }}
+              hideIfEmpty
             />
-            <Editor label="Innhold" value={data?.text} />
+            <Editor label="Innhold" value={data?.text} hideIfEmpty />
           </Main>
           {/* TODO: summary, details, show */}
         </>
@@ -91,8 +92,9 @@ export default function Content({ type, data, allNodes }: Props) {
           value: '2',
           label: 'Slett',
           onClick: () => console.log(''),
+          styled: 'delete',
         },
-      ]
+      ] as DropdownOptions
       return (
         <>
           <Header title="Spørsmål" icon="Diamond" />
@@ -105,11 +107,11 @@ export default function Content({ type, data, allNodes }: Props) {
               }}
               header
             />
-            <Editor label="Innhold" value={data?.text} />
+            <Editor label="Beskrivelse" value={data?.text} hideIfEmpty />
             <h3 {...bem('sub-title')}>Svaralternativer</h3>
-            <ul {...bem('options')}>
-              {data?.options &&
-                data?.options.map((option: Answer) => (
+            {data?.options && (
+              <ul {...bem('options')}>
+                {data?.options.map((option: Answer) => (
                   <li key={option.id} {...bem('option')}>
                     <Input
                       label="Svar"
@@ -130,8 +132,9 @@ export default function Content({ type, data, allNodes }: Props) {
                     {/* TODO: Dropdown menu with actions "Slett", "Gir negativt resultat", "Gir ekstra informasjon"  */}
                   </li>
                 ))}
-            </ul>
-            <Button type="button" subtle size="small" icon="Plus">
+              </ul>
+            )}
+            <Button type="button" size="small" subtle icon="Plus">
               Legg til svaralternativ
             </Button>
           </Main>
@@ -241,7 +244,7 @@ export default function Content({ type, data, allNodes }: Props) {
             }}
             header
           />
-          <Editor label="Innhold" value={data?.text} />
+          <Editor label="Beskrivelse" value={data?.text} hideIfEmpty />
         </>
       )
     },
@@ -255,7 +258,7 @@ export default function Content({ type, data, allNodes }: Props) {
               console.log('Hej')
             }}
           />
-          <Editor label="Innhold" value={data?.text} />
+          <Editor label="Beskrivelse" value={data?.text} hideIfEmpty />
         </>
       )
     },

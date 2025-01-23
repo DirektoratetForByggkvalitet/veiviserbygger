@@ -6,7 +6,6 @@
     display: grid;
     width: 100%;
     border: $border-style;
-    margin-bottom: $spacing--small;
     background-color: $color-light;
 
     &:hover {
@@ -17,21 +16,26 @@
         }
     }
 
-    &:focus-within {
-        border-radius: 2px;
-        border-color: color(primary);
-        box-shadow: 0 0 0 1px color(primary);
-
-        #{$this}__label {
-            color: $color-text;
+    &__button-label {
+        @include font-size(small);
+        color: $color-muted;
+        width: 100%;
+        border: $border-style;
+        padding: $form-padding-y $form-padding-x;
+        background-color: $color-light;
+        text-align: left;
+        cursor: text;
+        &:hover {
+            border-color: shade(color(neutral), 6%);
+            color: shade($color-muted, 20%);
         }
     }
 
     &__label {
         @include font-size(small);
+        font-weight: normal;
         color: $color-muted;
-        padding: $form-padding-y $form-padding-x;
-        border-bottom: $border-style;
+        padding: $form-padding-y $form-padding-x 0;
     }
 
     &__input {
@@ -42,13 +46,20 @@
         @include input-placeholder {
             color: $color-muted;
         }
+
+        &--empty:not(:focus-within) {
+            // TODO: Improve empty styling
+        }
     }
 
     &__menu {
         display: flex;
         height: 54px;
+        max-height: 54px;
         padding: 0;
         border-bottom: $border-style;
+        display: none;
+        z-index: $level-1;
     }
 
     &__control {
@@ -69,6 +80,23 @@
         margin: 0 4px;
         padding: 0;
         border-right: $border-style;
+    }
+
+    &:focus-within {
+        border-radius: 2px;
+        border-color: color(primary);
+        box-shadow: 0 0 0 1px color(primary);
+
+        #{$this}__label {
+            color: $color-text;
+            border-bottom: $border-style;
+            padding-bottom: $form-padding-y;
+        }
+
+        #{$this}__menu {
+            display: flex;
+            animation: menuFadeIn 200ms $ease-out-quart both;
+        }
     }
 
     :global(.tiptap) {
@@ -123,7 +151,15 @@
         }
 
         h3 {
-            @include font-size(base);
+            @include font-size(heading);
         }
+    }
+}
+
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
     }
 }

@@ -17,6 +17,7 @@ type Props<T extends HTMLInputTypeAttribute = 'text'> = {
   autoFocus?: boolean
   hideLabel?: boolean
   sentence?: boolean
+  hideIfEmpty?: boolean
   onChange: (v: T extends 'number' ? number : string) => void
 }
 
@@ -26,6 +27,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   header,
   hideLabel,
   sentence,
+  hideIfEmpty,
   ...props
 }: Props<T>) {
   const { value, inSync, onChange } = useValue(props.value, props.onChange)
@@ -36,7 +38,9 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   }
 
   return (
-    <label {...bem('', { header, sentence, dirty: !inSync })}>
+    <label
+      {...bem('', { header, sentence, 'hide-if-empty': hideIfEmpty && !value, dirty: !inSync })}
+    >
       {!hideLabel && <span {...bem('label')}>{label}</span>}
       <input
         {...props}
