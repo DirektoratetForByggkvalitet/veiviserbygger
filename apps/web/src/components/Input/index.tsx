@@ -1,4 +1,4 @@
-import { ChangeEvent, HTMLInputTypeAttribute, ReactHTMLElement } from 'react'
+import { ChangeEvent, HTMLInputTypeAttribute } from 'react'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -17,7 +17,7 @@ type Props<T extends HTMLInputTypeAttribute = 'text'> = {
   autoFocus?: boolean
   hideLabel?: boolean
   sentence?: boolean
-  onChange: (v: (T extends 'number' ? number : string)) => void
+  onChange: (v: T extends 'number' ? number : string) => void
 }
 
 export default function Input<T extends HTMLInputTypeAttribute = 'text'>({

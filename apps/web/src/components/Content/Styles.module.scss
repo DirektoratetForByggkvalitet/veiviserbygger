@@ -8,23 +8,22 @@
     grid-template-areas:
         'header header header'
         'main main main'
+        'full full full'
         'aside aside aside';
     width: 100%;
-    border: $border-style;
     margin-bottom: $spacing--small;
-    background-color: $color-light;
     @include min-width(lg) {
         grid-template-areas:
             'header header header'
-            'main main aside';
+            'main main aside'
+            'full full full';
     }
     &__header {
         grid-area: header;
         display: flex;
         align-items: center;
         gap: $spacing--xsmall;
-        padding: $spacing--xsmall $spacing--small;
-        border-bottom: $border-style;
+        padding: $spacing--xsmall;
     }
 
     &__header-icon {
@@ -42,12 +41,22 @@
 
     &__main {
         grid-area: main;
+        border: $border-style;
+        background-color: $color-light;
+        &--full {
+            grid-area: full;
+        }
     }
 
     &__aside {
         grid-area: aside;
+        border: $border-style;
+        border-top: none;
+        background-color: $color-light;
+
         @include min-width(lg) {
-            border-left: $border-style;
+            border-top: $border-style;
+            border-left: none;
         }
     }
 

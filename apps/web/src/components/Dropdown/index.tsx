@@ -18,7 +18,7 @@ export type DropdownOptions = Array<
   | {
       value: string
       label: string
-      onClick?: () => void
+      onClick?: MouseEventHandler
       styled?: 'delete'
       disabled?: boolean
     }
@@ -149,7 +149,7 @@ export default function Dropdown({
                   )
                 }
                 const handleClick = option.onClick
-                  ? handleOptionClick(option.onClick)
+                  ? handleOptionClick(option.onClick as () => void)
                   : handleChange(option.value)
 
                 return (

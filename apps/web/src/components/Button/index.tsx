@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, MouseEventHandler } from 'react'
 import { icons } from 'lucide-react'
 import Icon from '@/components/Icon'
 import BEMHelper from '@/lib/bem'
@@ -12,7 +12,7 @@ interface Props {
   primary?: boolean
   subtle?: boolean
   disabled?: boolean
-  onClick?: () => void
+  onClick?: MouseEventHandler
   icon?: keyof typeof icons
   // full?: boolean
   size?: 'small' | 'large'
@@ -36,12 +36,12 @@ export default function Button({
       type={type}
       onClick={onClick}
     >
-      {children}
       {icon && (
         <span {...bem('icon')}>
           <Icon name={icon} />
         </span>
       )}
+      {children}
     </button>
   )
 }

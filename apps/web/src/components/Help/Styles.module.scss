@@ -5,4 +5,5 @@
     @include font-size(base);
     color: $color-muted;
     margin: $spacing--xsmall 0;
+    max-width: 500px;
 }

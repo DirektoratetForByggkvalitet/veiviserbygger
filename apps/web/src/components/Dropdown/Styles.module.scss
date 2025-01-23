@@ -103,6 +103,7 @@
         z-index: 2;
         width: 100%;
         min-width: fit-content;
+        max-width: 500px;
         box-shadow: 0 6px 12px rgba(black, 0.05);
 
         @include entering {
@@ -136,7 +137,7 @@
         white-space: nowrap;
         text-align: left;
         padding: $spacing--xsmall;
-        border-top: $border-style;
+        background: color(neutral, xlight);
     }
 
     &__option {
@@ -226,35 +227,7 @@
             justify-content: center;
             height: 35px;
             width: 35px;
-            border-radius: 50%;
-            background-color: color(neutral, xlight);
-        }
-
-        #{$this}__trigger:hover,
-        #{$this}__trigger:focus {
-            background-color: color(neutral, light);
-        }
-
-        #{$this}__icon {
-            position: static;
-        }
-
-        #{$this}__wrapper {
-            top: $spacing--xsmall;
-        }
-
-        #{$this}__wrapper--above {
-            top: auto;
-            bottom: calc(35px + $spacing--xsmall);
-        }
-    }
-
-    &--buttonOnly {
-        #{$this}__trigger {
-            justify-content: center;
-            height: 35px;
-            width: 35px;
-            border-radius: 50%;
+            border-radius: $border-radius;
             background-color: color(neutral, xlight);
         }
 

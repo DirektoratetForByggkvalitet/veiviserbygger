@@ -17,6 +17,7 @@
         background-color: color(neutral, xlight);
         box-shadow: $shadow;
         overflow: auto;
+        padding-bottom: $spacing--large;
 
         @include entering {
             animation: enter 500ms $ease-out-quart backwards;

@@ -50,7 +50,9 @@ export default function Content({ type, data, allNodes }: Props) {
     </header>
   )
 
-  const Main = ({ children }: { children: ReactNode }) => <div {...bem('main')}>{children}</div>
+  const Main = ({ children, full }: { children: ReactNode; full: boolean }) => (
+    <div {...bem('main', { full })}>{children}</div>
+  )
 
   const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
 
@@ -59,7 +61,7 @@ export default function Content({ type, data, allNodes }: Props) {
       return (
         <>
           <Header title="Tekst" icon="Text" />
-          <Main>
+          <Main full>
             <Input
               label="Tittel"
               value={data?.heading || ''}

@@ -135,8 +135,12 @@ export default function HomePage() {
                     value={data?.heading || ''}
                     onChange={(v) => patchPage(data.id, { heading: v })}
                   />
+                  {data?.type === 'Intro' && (
+                    <>
+                      <Help description="Introsiden er en obligatorisk start på veiviseren. Her bør man fortelle besøkende kort hva man kan få svar på ved å bruke veiviseren." />
+                    </>
+                  )}
                 </Form.Split>
-
                 {data?.content?.map((node) => (
                   <Content
                     key={node.id}
@@ -163,10 +167,7 @@ export default function HomePage() {
                 />
                 {data?.type === 'Intro' && (
                   <>
-                    <Button type="button" primary disabled>
-                      Start veiviseren
-                    </Button>
-                    <Help description="Introsiden avsluttes med en 'Start veiviseren' knapp som starter veiviseren." />
+                    <Help description='Introsiden vil avsluttes med en "Start veiviseren" knapp som starter veiviseren. Prøv å hold innholdet på siden kort slik at besøkende ikke trenger å scrolle ned til denne knappen.' />
                   </>
                 )}
               </Form>
