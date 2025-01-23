@@ -8,6 +8,7 @@ import Minimap from '@/components/Minimap'
 import Panel from '@/components/Panel'
 import Button from '@/components/Button'
 import Content from '@/components/Content'
+import Help from '@/components/Help'
 import menuState from '@/store/menu'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import DUMMY_DATA from '@/dummy_data'
@@ -42,7 +43,10 @@ export default function HomePage() {
   }
 
   // const dataIndex = selected ? version?.pages?.find(p => p.id === selected) || DUMMY_DATA.findIndex((item) => item.id === selected) : undefined
-  const data = selected ? version?.pages?.find(p => p.id === selected) || DUMMY_DATA.find((item) => item.id === selected) : undefined
+  const data = selected
+    ? version?.pages?.find((p) => p.id === selected) ||
+      DUMMY_DATA.find((item) => item.id === selected)
+    : undefined
   const panelTitle = data?.heading ?? 'Uten tittel'
 
   if (showFrontpage) {
@@ -144,15 +148,12 @@ export default function HomePage() {
                   />
                 ))}
                 {!data?.content && (
-                  <>
-                    <p>
-                      Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
-                      veiviseren.
-                    </p>
-                  </>
+                  <Help
+                    description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
+                      veiviseren."
+                  />
                 )}
                 <Dropdown
-                  direction="right"
                   options={addContentActions}
                   trigger={({ onClick }) => (
                     <Button type="button" primary={!data?.content} icon="Plus" onClick={onClick}>
@@ -165,9 +166,7 @@ export default function HomePage() {
                     <Button type="button" primary disabled>
                       Start veiviseren
                     </Button>
-                    <p>
-                      Introsiden avsluttes med en "Start veiviseren" knapp som starter veiviseren.
-                    </p>
+                    <Help description="Introsiden avsluttes med en 'Start veiviseren' knapp som starter veiviseren." />
                   </>
                 )}
               </Form>

@@ -3,6 +3,7 @@ import Button from '../Button'
 import Form from '../Form'
 import Input from '../Input'
 import Modal from '../Modal'
+import Help from '../Help'
 import { createWizard } from '@/services/firebase'
 import useFirebase from '@/hooks/useFirebase'
 import { useNavigate } from 'react-router'
@@ -50,10 +51,7 @@ export default function NewWizard({ open, toggleModal }: Props) {
           autoFocus
         />
 
-        <p>
-          Navnet til veiviseren er synlig for sluttbrukere og bør være kort og beskrivende.
-          Veiviseren vil bli synlig for andre i ditt arbeidsområde som et utkast.
-        </p>
+        <Help description="Navnet til veiviseren er synlig for sluttbrukere og bør være kort og beskrivende. Veiviseren vil bli synlig for andre i ditt arbeidsområde som et utkast." />
 
         <Button type="submit" primary disabled={!newWizard.title}>
           Opprett

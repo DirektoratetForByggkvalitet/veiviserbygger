@@ -5,6 +5,7 @@ import Button from '@/components/Button'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Checkbox from '@/components/Checkbox'
 import Expression from '@/components/Expression'
+import Help from '@/components/Help'
 import Icon from '@/components/Icon'
 import { icons } from 'lucide-react'
 
@@ -128,16 +129,16 @@ export default function Content({ type, data, allNodes }: Props) {
                   </li>
                 ))}
             </ul>
-            <Button type="button" subtle size="small">
+            <Button type="button" subtle size="small" icon="Plus">
               Legg til svaralternativ
             </Button>
           </Main>
           <Aside>
             {/* TODO: summary, details, show */}
-            <p {...bem('description')}>
-              Dette er et flervalgspørsmål vi stiller brukeren som de kan svare på. Avhengig av hva
-              de svarer kan vi respondere med resultater eller informasjon.
-            </p>
+            <Help
+              description="Dette er et flervalgspørsmål vi stiller brukeren som de kan svare på. Avhengig av hva
+              de svarer kan vi respondere med resultater eller informasjon."
+            />
             <h3 {...bem('sub-title')}>Visningsinstillinger</h3>
             <Dropdown
               label="Spørsmålstype"
@@ -147,10 +148,6 @@ export default function Content({ type, data, allNodes }: Props) {
                 {
                   value: 'Radio',
                   label: 'Radioknapper',
-                },
-                {
-                  value: 'Checkbox',
-                  label: 'Sjekkbokser',
                 },
                 {
                   value: 'Select',
@@ -221,10 +218,12 @@ export default function Content({ type, data, allNodes }: Props) {
             ))}
           </Main>
           <Aside>
-            <p {...bem('description')}>
-              {titlePresets[data.preset]?.description ||
-                'Viser innhold avhengig av et tidligere valg.'}
-            </p>
+            <Help
+              description={
+                titlePresets[data.preset]?.description ||
+                'Viser innhold avhengig av et tidligere valg.'
+              }
+            />
           </Aside>
         </>
       )

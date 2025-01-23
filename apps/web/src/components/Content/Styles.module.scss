@@ -1,6 +1,6 @@
 @use '@/styles/helpers.scss' as *;
 
-.page-node {
+.content {
     $this: &;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -23,7 +23,7 @@
         display: flex;
         align-items: center;
         gap: $spacing--xsmall;
-        padding: $spacing--small;
+        padding: $spacing--xsmall $spacing--small;
         border-bottom: $border-style;
     }
 
@@ -66,11 +66,6 @@
         @include font-size(small);
         color: $color-muted;
         font-weight: normal;
-    }
-
-    &__description {
-        color: $color-muted;
-        margin-bottom: $spacing;
     }
 
     &__options {

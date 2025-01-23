@@ -1,0 +1,8 @@
+@use '@/styles/_helpers' as *;
+
+.help {
+    $this: &;
+    @include font-size(base);
+    color: $color-muted;
+    margin: $spacing--xsmall 0;
+}
