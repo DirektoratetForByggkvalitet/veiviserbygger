@@ -45,6 +45,11 @@ export default function Minimap({ onClick, selected, data }: Props) {
     setModal(value)
   }
 
+  const contentCleanup = (value?: string) => {
+    const regex = /(<([^>]+)>)/gi
+    return value?.substring(0, 80).replace(regex, ' ') || ''
+  }
+
   const renderItem = (content: PageContent) => {
     switch (content.type) {
       case 'Text':
@@ -55,7 +60,7 @@ export default function Minimap({ onClick, selected, data }: Props) {
       case 'Number':
         return (
           <li {...bem('item')} key={content.id}>
-            <h3 {...bem('sub-title')}>{content.heading || content.text}</h3>
+            <h3 {...bem('sub-title')}>{content.heading || contentCleanup(content.text)}</h3>
 
             <span {...bem('icon')}>
               {content.flow === 'continue' && <IconContinue />}

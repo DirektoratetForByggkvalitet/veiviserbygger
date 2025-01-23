@@ -196,7 +196,19 @@ const DUMMY_DATA: NonNullable<WizardVersion['pages']> = [
     type: 'Page',
     heading: 'Plassering',
     content: [
-      { id: '4', type: 'Radio', heading: 'Er bygningen frittliggende?', flow: 'stop' },
+      {
+        id: '4',
+        type: 'Radio',
+        heading: 'Er bygningen frittliggende?',
+        flow: 'stop',
+        options: [
+          {
+            id: '0',
+            type: 'Answer',
+            heading: '',
+          },
+        ],
+      },
       {
         id: '5',
         type: 'Radio',
@@ -208,6 +220,10 @@ const DUMMY_DATA: NonNullable<WizardVersion['pages']> = [
         type: 'Radio',
         heading: 'Skal mikrohuset ha en permantent plassering?',
         flow: 'continue',
+      },
+      {
+        id: '7',
+        type: 'Radio',
       },
     ],
   },

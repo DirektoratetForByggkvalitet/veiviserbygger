@@ -134,6 +134,7 @@ export default function HomePage() {
                     label="Sidetittel"
                     value={data?.heading || ''}
                     onChange={(v) => patchPage(data.id, { heading: v })}
+                    header
                   />
                   {data?.type === 'Intro' && (
                     <>

@@ -56,7 +56,7 @@
             position: absolute;
             top: 8px;
             right: 8px;
-            animation: fadeIn 600ms $ease-out-quart backwards;
+            animation: dirtyFadeIn 600ms $ease-out-quart backwards;
             animation-delay: 1000ms;
             background: $color-warning;
             color: $color-light;
@@ -85,13 +85,29 @@
             min-width: 0;
         }
     }
+
+    &--hide-if-empty:not(:focus-within) #{$this}__input {
+        height: calc($form-padding-y - 3px);
+        padding: 0;
+    }
+
+    &--hide-if-empty:focus-within #{$this}__input {
+        height: 50px;
+        animation: inputFadeIn 200ms $ease-out-quart both;
+    }
 }
 
-@keyframes fadeIn {
+@keyframes dirtyFadeIn {
     from {
         opacity: 0;
     }
     to {
         opacity: 1;
+    }
+}
+
+@keyframes inputFadeIn {
+    from {
+        height: calc($form-padding-y - 3px);
     }
 }

@@ -2,7 +2,7 @@
 
 .help {
     $this: &;
-    @include font-size(base);
+    @include font-size(small);
     color: $color-muted;
     margin: $spacing--xsmall 0;
     max-width: 500px;
