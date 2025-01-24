@@ -157,8 +157,8 @@
         &:hover:not(#{$this}__option--disabled),
         &:focus:focus-visible:not(#{$this}__option--disabled),
         &--selected {
-            color: $color-text;
-            background-color: color(neutral);
+            color: $color-light;
+            background-color: color(primary);
         }
 
         &--delete,
@@ -195,14 +195,14 @@
         #{$this}__trigger {
             @include font-size(small);
             border-radius: $border-radius;
-            background-color: color(neutral, xlight);
+            background-color: color(neutral, light);
             padding: 4px 4px;
             height: 35px;
         }
 
         #{$this}__trigger:hover,
         #{$this}__trigger:focus {
-            background-color: color(neutral, light);
+            background-color: color(neutral);
         }
 
         #{$this}__label {
@@ -228,12 +228,12 @@
             height: 35px;
             width: 35px;
             border-radius: $border-radius;
-            background-color: color(neutral, xlight);
+            background-color: color(neutral, light);
         }
 
         #{$this}__trigger:hover,
         #{$this}__trigger:focus {
-            background-color: color(neutral, light);
+            background-color: color(neutral);
         }
 
         #{$this}__icon {

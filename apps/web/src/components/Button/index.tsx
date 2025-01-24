@@ -14,6 +14,7 @@ interface Props {
   disabled?: boolean
   onClick?: MouseEventHandler
   icon?: keyof typeof icons
+  iconOnly?: boolean
   // full?: boolean
   size?: 'small' | 'large'
 }
@@ -24,6 +25,7 @@ export default function Button({
   primary,
   subtle,
   onClick,
+  iconOnly,
   size,
   icon,
   ...props
@@ -32,16 +34,18 @@ export default function Button({
   return (
     <button
       {...props}
-      {...bem('', { primary, subtle, [size ?? '']: size })}
+      {...bem('', { primary, subtle, [size ?? '']: size, 'icon-only': iconOnly })}
       type={type}
       onClick={onClick}
+      aria-label={iconOnly ? (children as string) : undefined}
+      title={iconOnly ? (children as string) : undefined}
     >
       {icon && (
         <span {...bem('icon')}>
           <Icon name={icon} />
         </span>
       )}
-      {children}
+      {!iconOnly && children}
     </button>
   )
 }

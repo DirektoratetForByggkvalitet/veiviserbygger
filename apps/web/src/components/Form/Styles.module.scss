@@ -11,9 +11,11 @@
     }
 
     &__split {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: $gutter;
-        width: 100%;
+        @include min-width(lg) {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: $gutter;
+            width: 100%;
+        }
     }
 }

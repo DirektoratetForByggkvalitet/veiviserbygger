@@ -31,6 +31,7 @@
         @include font-size(small);
         color: $color-muted;
         padding: $form-padding-y $form-padding-x 3px;
+        cursor: text;
     }
 
     &__input {

@@ -6,7 +6,7 @@
     display: inline-flex;
     padding: 14px 24px;
     border-radius: $border-radius;
-    background-color: color(neutral);
+    background-color: color(neutral, light);
     align-items: center;
     justify-content: center;
     transition:
@@ -15,7 +15,7 @@
 
     &:hover,
     &:focus:focus-visible {
-        background-color: shade(color(neutral), 4%);
+        background-color: color(neutral);
     }
 
     &__icon {
@@ -44,10 +44,23 @@
     }
 
     &--subtle {
-        background-color: color(neutral, xlight);
+        background-color: transparent;
+        width: fit-content;
         &:hover,
         &:focus:focus-visible {
-            background-color: color(neutral, light);
+            background-color: color(neutral, xlight);
+        }
+    }
+
+    &--icon-only {
+        padding: 14px;
+        #{$this}__icon {
+            padding: 0;
+        }
+        &#{$this}--small {
+            padding: 8px;
+            height: 35px;
+            width: 35px;
         }
     }
 

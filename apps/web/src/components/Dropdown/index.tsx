@@ -125,9 +125,9 @@ export default function Dropdown({
           type="button"
           {...bem('trigger', { expanded, label: !!label })}
           onClick={triggerClick}
-          aria-label={label}
+          aria-label={iconOnly ? label : undefined}
+          title={iconOnly ? label : undefined}
           ref={triggerRef}
-          title={valueString}
         >
           {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
           {!iconOnly && <span {...bem('value')}>{valueString || ' '}</span>}
