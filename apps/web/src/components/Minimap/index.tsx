@@ -5,7 +5,8 @@ import Icon, { IconContinue, IconStop } from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import { PageContent, WizardVersion } from 'types'
+import { WizardVersion } from 'types'
+import { getTypeText } from '@/lib/content'
 import NewPage from '../NewPage'
 import { getOrdered } from '@/lib/ordered'
 
@@ -67,7 +68,9 @@ export default function Minimap({ onClick, selected, data }: Props) {
       case 'Number':
         return (
           <li {...bem('item')} key={node.id}>
-            <h3 {...bem('sub-title')}>{node.heading || contentCleanup(node.text)}</h3>
+            <h3 {...bem('sub-title')}>
+              {node.heading || contentCleanup(node.text) || `(${getTypeText(node.type)})`}
+            </h3>
 
             <span {...bem('icon')}>
               {node.flow === 'continue' && <IconContinue />}

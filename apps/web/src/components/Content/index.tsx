@@ -1,4 +1,11 @@
-import { PageContent, Answer, WizardVersion, OptionalExcept, PartialPageContent } from 'types'
+import {
+  PageContent,
+  Answer,
+  Branch,
+  WizardVersion,
+  OptionalExcept,
+  PartialPageContent,
+} from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
 import Button from '@/components/Button'
@@ -7,12 +14,12 @@ import Checkbox from '@/components/Checkbox'
 import Expression from '@/components/Expression'
 import Help from '@/components/Help'
 import Icon from '@/components/Icon'
-import { icons } from 'lucide-react'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { ReactNode } from 'react'
 import { useVersion } from '@/hooks/useVersion'
+import { getTypeText, getTypeIcon, getTypeDescription } from '@/lib/content'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -47,10 +54,10 @@ export default function Content({ node }: Props) {
     },
   ]
 
-  const Header = ({ title, icon }: { title: string; icon: keyof typeof icons }) => (
+  const Header = ({ type }: { type: PageContent['type'] | Branch['preset'] }) => (
     <header {...bem('header')}>
-      <Icon name={icon} size="20" {...bem('header-icon')} />
-      <h2 {...bem('title')}>{title}</h2>
+      <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
+      <h2 {...bem('title')}>{getTypeText(type)}</h2>
       <Dropdown icon="Ellipsis" direction="right" options={contentActions} label="Valg" iconOnly />
     </header>
   )
@@ -65,18 +72,25 @@ export default function Content({ node }: Props) {
     Text: (data: PartialPageContent<'Text'>) => {
       return (
         <>
-          <Header title="Tekst" icon="Text" />
-          <Main full>
+          <Header type={data.type} />
+          <Main>
             <Input
               label="Tittel"
               value={data?.heading || ''}
               onChange={(v) => patchNode(node.id, { type: 'Text', heading: v })}
               hideIfEmpty
             />
-            <Editor label="Innhold" value={data?.text || ''} hideIfEmpty onChange={(v) => patchNode(node.id, { type: 'Text', heading: v })}
+            <Editor
+              label="Innhold"
+              value={data?.text || ''}
+              hideIfEmpty
+              onChange={(v) => patchNode(node.id, { type: 'Text', heading: v })}
             />
           </Main>
-          {/* TODO: summary, details, show */}
+          <Aside>
+            {/* TODO: summary, details, show */}
+            <Help description={getTypeDescription(data.type)} />
+          </Aside>
         </>
       )
     },
@@ -101,7 +115,7 @@ export default function Content({ node }: Props) {
       ] as DropdownOptions
       return (
         <>
-          <Header title="Spørsmål" icon="Diamond" />
+          <Header type={data.type} />
           <Main>
             <Input
               label="Tittel"
@@ -138,32 +152,14 @@ export default function Content({ node }: Props) {
                 ))}
               </ul>
             )}
-            <Button type="button" size="small" subtle icon="Plus">
+            <Button type="button" size="small" icon="Plus">
               Legg til svaralternativ
             </Button>
           </Main>
           <Aside>
             {/* TODO: summary, details, show */}
-            <Help
-              description="Dette er et flervalgspørsmål vi stiller brukeren som de kan svare på. Avhengig av hva
-              de svarer kan vi respondere med resultater eller informasjon."
-            />
-            <h3 {...bem('sub-title')}>Instillinger</h3>
-            <Dropdown
-              label="Spørsmålstype"
-              hideLabel
-              value={'Radio'}
-              options={[
-                {
-                  value: 'Radio',
-                  label: 'Radioknapper',
-                },
-                {
-                  value: 'Select',
-                  label: 'Nedtrekksmeny',
-                },
-              ]}
-            />
+            <Help description={getTypeDescription(data.type)} />
+            <h3 {...bem('sub-title')}>Innstillinger</h3>
             <div {...bem('field-list')}>
               <Checkbox
                 label="Grid visning"
@@ -175,15 +171,6 @@ export default function Content({ node }: Props) {
               <Checkbox
                 label="Valgfritt felt"
                 checked={data?.optional}
-                disabled={data?.allMandatory}
-                onChange={() => {
-                  console.log('Hej')
-                }}
-              />
-              <Checkbox
-                label="Alle påkrevd"
-                checked={data?.allMandatory}
-                disabled={data?.optional}
                 onChange={() => {
                   console.log('Hej')
                 }}
@@ -194,31 +181,9 @@ export default function Content({ node }: Props) {
       )
     },
     Branch: (data: any) => {
-      const titlePresets: any = {
-        NegativeResult: {
-          title: 'Negativt resultat',
-          icon: 'TriangleAlert',
-          description:
-            'Gir et negativt resultat hvor brukeren ikke kan fortsette i veiviseren, men går videre til en resultatside.',
-        },
-        ExtraInformation: {
-          title: 'Ekstra informasjon',
-          icon: 'Info',
-          description:
-            'Gir ekstra informasjon til brukeren, mens brukeren får mulighet til å fortsette veiviseren. Ekstra informasjon blir gjentatt på resultatsider.',
-        },
-        NewQuestions: {
-          title: 'Nye spørsmål',
-          icon: 'Option',
-          description: 'Viser et nytt spørsmål som ikke tidligere var synlig.',
-        },
-      }
       return (
         <>
-          <Header
-            title={titlePresets[data.preset]?.title || 'Branch'}
-            icon={titlePresets[data.preset]?.icon || 'option'}
-          />
+          <Header type={data.preset} />
           <Main>
             <h3 {...bem('sub-title')}>Vises hvis følgende er sant</h3>
             <Expression expression={data.test} nodes={allNodes} />
@@ -229,12 +194,7 @@ export default function Content({ node }: Props) {
             ))}
           </Main>
           <Aside>
-            <Help
-              description={
-                titlePresets[data.preset]?.description ||
-                'Viser innhold avhengig av et tidligere valg.'
-              }
-            />
+            <Help description={getTypeDescription(data.preset)} />
           </Aside>
         </>
       )

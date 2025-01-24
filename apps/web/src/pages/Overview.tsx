@@ -116,6 +116,11 @@ export default function HomePage() {
           options={[
             {
               value: '1',
+              label: 'Flytt siden',
+              onClick: handleDelete(data?.id),
+            },
+            {
+              value: '1',
               label: 'Fjern siden',
               styled: 'delete',
               onClick: handleDelete(data?.id),
@@ -126,20 +131,17 @@ export default function HomePage() {
           {data?.id ? (
             <>
               <Form>
-                <Form.Split>
-                  <Input
-                    label="Sidetittel"
-                    value={data?.heading || ''}
-                    onChange={(v) => patchPage(data.id, { heading: v })}
-                    header
-                  />
-                  {data?.type === 'Intro' && (
-                    <>
-                      <Help description="Introsiden er en obligatorisk start på veiviseren. Her bør man fortelle besøkende kort hva man kan få svar på ved å bruke veiviseren." />
-                    </>
-                  )}
-                </Form.Split>
-
+                <Input
+                  label="Sidetittel"
+                  value={data?.heading || ''}
+                  onChange={(v) => patchPage(data.id, { heading: v })}
+                  header
+                />
+                {data?.type === 'Intro' && (
+                  <>
+                    <Help description="Introsiden er en obligatorisk start på veiviseren. Her bør man fortelle besøkende kort hva man kan få svar på ved å bruke veiviseren." />
+                  </>
+                )}
 
                 {data.content?.map((nodeId) => {
                   if (!version?.nodes?.[nodeId]) { return null }
@@ -160,7 +162,7 @@ export default function HomePage() {
                 <Dropdown
                   options={addContentActions}
                   trigger={({ onClick }) => (
-                    <Button type="button" primary={!data.content?.length} icon="Plus" onClick={onClick}>
+                    <Button type="button" primary icon="Plus" onClick={onClick}>
                       Legg til innhold
                     </Button>
                   )}
