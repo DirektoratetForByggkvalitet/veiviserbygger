@@ -16,6 +16,9 @@
 
     &__name {
         @include font-size(base);
+        &:first-child {
+            margin-left: $spacing--small;
+        }
     }
 
     &__toggle {

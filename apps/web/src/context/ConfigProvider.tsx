@@ -1,4 +1,6 @@
 import { getConfig } from '@/services/api'
+import PageSimple from '@/components/PageSimple'
+import Message from '@/components/Message'
 import { createContext, ReactNode, useEffect, useState } from 'react'
 
 type Config = Awaited<ReturnType<typeof getConfig>> | null
@@ -54,17 +56,20 @@ export default function ConfigProvider({ children }: { children: ReactNode }) {
   }, [])
 
   if (error && !config) {
-    return <div>Error: {error.message}</div>
+    return (
+      <PageSimple title="Page failed to load">
+        <Message title="Error">{error.message}</Message>
+      </PageSimple>
+    )
   }
 
   if (!config) {
-    return <div>Loading...</div>
+    return <PageSimple>Loading...</PageSimple>
   }
 
   if (!configOk(emulatorEnvVars, config) && !configOk(prodEnvVars, config)) {
     return (
-      <div>
-        <h1>Missing environmental variables</h1>
+      <PageSimple title="Missing environmental variables">
         <p>
           Depending you're in development or production you either need to set env vars for running
           towards an emulator or towards a production Firebase account.
@@ -92,7 +97,7 @@ export default function ConfigProvider({ children }: { children: ReactNode }) {
             </li>
           ))}
         </ul>
-      </div>
+      </PageSimple>
     )
   }
 

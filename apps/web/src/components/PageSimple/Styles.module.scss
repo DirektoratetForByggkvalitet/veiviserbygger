@@ -1,0 +1,11 @@
+@use '@/styles/_helpers' as *;
+
+.page-simple {
+    $this: &;
+    padding: $spacing--large 0;
+    &__title {
+        border-bottom: $border-style;
+        padding-bottom: $spacing--small;
+        margin-bottom: $spacing--small;
+    }
+}

@@ -17,9 +17,18 @@ type Props = {
   title?: string
   versions?: { id: string; title?: string; publishedFrom?: Timestamp; publishedTo?: Timestamp }[]
   wizard?: WrappedWithId<Wizard>
+  hideMenu?: boolean
 }
 
-export default function Header({ title = 'Losen', versions }: Props) {
+export default function Header({ title = 'Losen', versions, hideMenu }: Props) {
+  if (hideMenu) {
+    return (
+      <header {...bem('')}>
+        <h1 {...bem('name')}>{title}</h1>
+      </header>
+    )
+  }
+
   const { version } = useParams()
   const { wizardId } = useParams()
   const navigate = useNavigate()
