@@ -18,6 +18,7 @@ type Props<T extends HTMLInputTypeAttribute = 'text'> = {
   hideLabel?: boolean
   sentence?: boolean
   hideIfEmpty?: boolean
+  forwardedRef?: any
   onChange: (v: T extends 'number' ? number : string) => void
 }
 
@@ -28,6 +29,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   hideLabel,
   sentence,
   hideIfEmpty,
+  forwardedRef,
   ...props
 }: Props<T>) {
   const { value, inSync, onChange } = useValue(props.value, props.onChange)
@@ -44,10 +46,11 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
       {!hideLabel && <span {...bem('label')}>{label}</span>}
       <input
         {...props}
-        type={type}
         {...bem('input')}
+        type={type}
         onChange={handleChange}
         value={value}
+        ref={forwardedRef}
         aria-label={(hideLabel && label) || undefined}
       />
     </label>

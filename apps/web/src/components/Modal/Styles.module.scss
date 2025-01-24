@@ -80,7 +80,7 @@
         z-index: 2;
         background-color: rgba($color-background, 0.8);
         outline: none;
-
+        cursor: default;
         animation: fade-in 500ms $ease-out-quad both;
 
         &--animate-out {

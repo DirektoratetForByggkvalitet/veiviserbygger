@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Button from '../Button'
 import Form from '../Form'
 import Input from '../Input'
@@ -20,6 +20,7 @@ export default function NewPage({ open, closeModal }: Props) {
   const { wizardId, versionId } = useParams()
   const [newPage, setNewPage] = useState<Partial<WizardPage>>(defaultState)
   const { firestore } = useFirebase()
+  const titleInput = useRef<HTMLElement>(null)
 
   useEffect(
     () => () => {
@@ -56,15 +57,19 @@ export default function NewPage({ open, closeModal }: Props) {
   }
 
   return (
-    <Modal title="Ny side" expanded={open} onClose={close} preventClickOutside>
+    <Modal
+      title="Ny side"
+      expanded={open}
+      onClose={close}
+      afterOpen={() => titleInput && titleInput.current?.focus()}
+    >
       <Form onSubmit={handleSubmit}>
         <Input
           label="Overskrift"
           value={newPage?.heading || ''}
           onChange={(heading) => setNewPage((v) => ({ ...v, heading }))}
-          autoFocus
+          forwardedRef={titleInput}
         />
-
         <Button type="submit" primary disabled={!newPage.heading}>
           Opprett
         </Button>

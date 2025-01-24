@@ -9,17 +9,25 @@ const bem = BEMHelper(styles)
 
 const CLOSE_TEXT = 'Lukk'
 const KEY_ESC = 27
-const ANIMATION_DURATION = 800
+const ANIMATION_DURATION = 500
 
 interface Props {
   children: React.ReactNode
   title: string
   expanded: boolean
   onClose: () => void
+  afterOpen?: () => void
   preventClickOutside?: boolean
 }
 
-export default function Modal({ children, title, expanded, onClose, preventClickOutside }: Props) {
+export default function Modal({
+  children,
+  title,
+  expanded,
+  onClose,
+  afterOpen,
+  preventClickOutside,
+}: Props) {
   const timer = useRef<ReturnType<typeof setTimeout>>()
   const contentRef = useRef<HTMLDivElement>(null)
   const [show, setShow] = useState(false)
@@ -42,6 +50,7 @@ export default function Modal({ children, title, expanded, onClose, preventClick
 
         timer.current = setTimeout(() => {
           setAnimateIn(false)
+          afterOpen && afterOpen()
         }, ANIMATION_DURATION)
       }
 
@@ -105,6 +114,7 @@ export default function Modal({ children, title, expanded, onClose, preventClick
           type="button"
           {...bem('hidden-close')}
           aria-label={CLOSE_TEXT}
+          onClick={handleBackdropClick}
           onFocus={handleBackdropClick}
         />
 

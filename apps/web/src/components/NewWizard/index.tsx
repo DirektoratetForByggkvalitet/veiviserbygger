@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Button from '../Button'
 import Form from '../Form'
 import Input from '../Input'
@@ -18,6 +18,7 @@ const defaultState = { title: '' }
 export default function NewWizard({ open, toggleModal }: Props) {
   const [newWizard, setNewWizard] = useState<{ title: string }>(defaultState)
   const navigate = useNavigate()
+  const titleInput = useRef<HTMLElement>(null)
   const { firestore } = useFirebase()
 
   useEffect(
@@ -42,12 +43,18 @@ export default function NewWizard({ open, toggleModal }: Props) {
   }
 
   return (
-    <Modal title="Ny veiviser" expanded={open} onClose={close} preventClickOutside>
+    <Modal
+      title="Ny veiviser"
+      expanded={open}
+      onClose={close}
+      afterOpen={() => titleInput && titleInput.current?.focus()}
+    >
       <Form onSubmit={handleSubmit}>
         <Input
           label="Veivisernavn"
           value={newWizard?.title || ''}
           onChange={(title) => setNewWizard((v) => ({ ...v, title }))}
+          forwardedRef={titleInput}
           autoFocus
         />
 
