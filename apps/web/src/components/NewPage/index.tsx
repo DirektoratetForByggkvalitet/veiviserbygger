@@ -3,6 +3,7 @@ import Button from '../Button'
 import Form from '../Form'
 import Input from '../Input'
 import Modal from '../Modal'
+import Message from '../Message'
 import { createPage } from '@/services/firebase'
 import useFirebase from '@/hooks/useFirebase'
 import { useParams } from 'react-router'
@@ -47,9 +48,9 @@ export default function NewPage({ open, closeModal }: Props) {
   if (!wizardId || !versionId) {
     return (
       <Modal title="Ny side" expanded={open} onClose={close} preventClickOutside>
-        <p>
-          En feil oppsto. Fant ikke <code>wizardId</code> eller <code>versionId</code>.
-        </p>
+        <Message title="En feil oppsto">
+          Fant ikke <code>wizardId</code> eller <code>versionId</code>.
+        </Message>
       </Modal>
     )
   }
