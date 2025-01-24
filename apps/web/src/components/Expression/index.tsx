@@ -1,4 +1,4 @@
-import { Expression as ExpressionType, PageContent } from 'types'
+import { Expression as ExpressionType, PageContent, WizardVersion } from 'types'
 // import Button from '@/components/Button'
 import Dropdown from '@/components/Dropdown'
 import Input from '@/components/Input'
@@ -8,7 +8,7 @@ const bem = BEMHelper(styles)
 
 interface Props {
   expression: ExpressionType
-  nodes: PageContent[]
+  nodes: WizardVersion['nodes']
   child?: boolean
   first?: boolean
   type?: 'or' | 'and'

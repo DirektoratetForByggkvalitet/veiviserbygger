@@ -7,6 +7,7 @@ import Icon from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
+import { useValue } from '@/hooks/useValue'
 const bem = BEMHelper(styles)
 
 const extensions = [
@@ -26,9 +27,11 @@ interface Props {
   label: string
   value: string
   hideIfEmpty?: boolean
+  onChange: (value: string) => void
 }
 
-export default function Editor({ label, value, hideIfEmpty }: Props) {
+export default function Editor({ label, value, hideIfEmpty, onChange }: Props) {
+  const v = useValue(value, () => console.log('Editor value changed'))
   const [showInput, setShowInput] = useState<boolean>(!!value || false)
 
   if (hideIfEmpty && !value && !showInput) {
@@ -47,10 +50,11 @@ export default function Editor({ label, value, hideIfEmpty }: Props) {
       <EditorProvider
         slotBefore={<MenuBar />}
         extensions={extensions}
-        content={value}
+        content={v.value}
         editorContainerProps={{ ...bem('input') }}
         autofocus={hideIfEmpty && !value && showInput}
         onBlur={hideIfEmpty && !value ? () => setShowInput(false) : undefined}
+        onUpdate={(content) => v.onChange(content.editor.getHTML())}
       />
     </section>
   )

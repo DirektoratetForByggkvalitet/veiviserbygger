@@ -16,12 +16,12 @@ const bem = BEMHelper(styles)
 
 export type DropdownOptions = Array<
   | {
-      value: string
-      label: string
-      onClick?: MouseEventHandler
-      styled?: 'delete'
-      disabled?: boolean
-    }
+    value: string
+    label: string
+    onClick?: MouseEventHandler
+    styled?: 'delete'
+    disabled?: boolean
+  }
   | { group: string }
 >
 

@@ -8,9 +8,29 @@ export type DeepPartial<T> = T extends object
 
 export type WrappedWithId<T> = { id: string; data: T }
 
+/**
+ * @deprecated Use OrderedMap instead
+ */
 export type Ordered<T> = T & { order: number }
 
+export type OrderedMap<T> = { [key: string]: T & { order: number } }
+
 export type Awaited<T> = T extends PromiseLike<infer U> ? U : T
+
+/**
+ * A generic that takes a type and returns a new type with all properties optional
+ * except for the ones specified in the second argument.
+ */
+export type OptionalExcept<T, K extends keyof T> = Partial<T> & Required<Pick<T, K>>
+
+/**
+ * A generic that narrows the PageContent type to a specific type and returns a new
+ * type that has all properties optional except for the type.
+ */
+export type PartialPageContent<T extends PageContent['type']> = OptionalExcept<
+  Extract<PageContent, { type: T }>,
+  'type' | 'id'
+>
 
 export type SimpleExpression = {
   field: string
@@ -52,6 +72,8 @@ export type Answer = {
   heading: string
 }
 
+export type PageNode<T extends { type: string }> = T
+
 export type Content = {
   id: string
   heading?: string
@@ -62,57 +84,69 @@ export type Content = {
   flow?: 'stop' | 'continue' | null
 }
 
-export type Text = Content & {
-  type: 'Text'
-}
-
-export type Radio = Content & {
-  type: 'Radio'
-  options?: Answer[]
-}
-
-export type Select = Content & {
-  type: 'Select'
-  optional?: boolean // By default all fields are required.
-  options?: Answer[]
-}
-
-export type Checkbox = Content & {
-  type: 'Checkbox'
-  allMandatory?: boolean // Required user to check all the options in the list, in order for it to be "valid".
-  grid: boolean // Display options in a three column grid.
-  optional?: boolean // By default all fields are required.
-  options?: Answer[]
-}
-
-export type Input = Content &
-  WithValidator & {
-    type: 'Input'
-    optional?: boolean // By default all fields are required.
+export type Text = PageNode<
+  Content & {
+    type: 'Text'
   }
+>
 
-export type NumberInput = Content &
-  WithValidator & {
-    type: 'Number'
-    minimum?: number
-    maximum?: number
-    step?: number // Defaults to 1
-    optional?: boolean // By default all fields are required.
+export type Radio = PageNode<
+  Content & {
+    type: 'Radio'
+    options?: Answer[]
   }
+>
 
-export type Information = {
+export type Select = PageNode<
+  Content & {
+    type: 'Select'
+    optional?: boolean // By default all fields are required.
+    options?: Answer[]
+  }
+>
+
+export type Checkbox = PageNode<
+  Content & {
+    type: 'Checkbox'
+    allMandatory?: boolean // Required user to check all the options in the list, in order for it to be "valid".
+    grid: boolean // Display options in a three column grid.
+    optional?: boolean // By default all fields are required.
+    options?: Answer[]
+  }
+>
+
+export type Input = PageNode<
+  Content &
+    WithValidator & {
+      type: 'Input'
+      optional?: boolean // By default all fields are required.
+    }
+>
+
+export type NumberInput = PageNode<
+  Content &
+    WithValidator & {
+      type: 'Number'
+      minimum?: number
+      maximum?: number
+      step?: number // Defaults to 1
+      optional?: boolean // By default all fields are required.
+    }
+>
+
+export type Information = PageNode<{
   id: string
   type: 'Information'
   heading: string
   text?: string // HTML
-}
+}>
 
-export type Error = {
+export type Error = PageNode<{
   id: string
   type: 'Error'
   heading: string
   text?: string // HTML
-}
+}>
 
 export type SimpleResult = {
   // Brukes i branches for å vise negative resultatsider etter errors
@@ -122,20 +156,26 @@ export type SimpleResult = {
   lead?: string // HTML
 }
 
-export type Branch = {
+export type Branch = PageNode<{
   id: string
   type: 'Branch'
   preset: 'NegativeResult' | 'ExtraInformation' | 'NewQuestions'
   test: Expression
-  content: (Information | Error | SimpleResult)[]
-}
+  /**
+   * Should not refer to nodes of types other than Information, Error or SimpleResult
+   */
+  content: (Information | Error | SimpleResult)['id'][]
+}>
 
 export type Intro = {
   id: string
   type: 'Intro'
   heading: string
   lead?: string // HTML
-  content?: Text[]
+  /**
+   * List of ids referencing Text nodes
+   */
+  content?: Text['id'][]
 }
 
 export type Result = {
@@ -144,7 +184,10 @@ export type Result = {
   heading: string
   lead?: string // HTML
   show?: Expression
-  content?: Text[]
+  /**
+   * List of ids referencing Text nodes
+   */
+  content?: Text['id'][]
 }
 
 export type PageContent =
@@ -164,7 +207,10 @@ export type Page = {
   heading: string
   lead?: string // HTML
   show?: Expression
-  content?: PageContent[]
+  /**
+   * List of ids referencing PageContent nodes
+   */
+  content?: PageContent['id'][]
 }
 
 export type Wizard = {
@@ -177,7 +223,8 @@ export type WizardVersion = {
   title?: string
   publishedFrom?: Timestamp
   publishedTo?: Timestamp
-  pages?: Ordered<WizardPage>[]
+  pages?: OrderedMap<WizardPage>
+  nodes?: Record<string, PageContent>
 }
 
 export type WizardPage = Intro | Page | Result

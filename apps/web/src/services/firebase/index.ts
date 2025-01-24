@@ -14,10 +14,10 @@ import {
 } from 'firebase/firestore'
 import { getConfig } from '../api'
 import { dataPoint } from './utils/db'
-import { DeepPartial, Wizard, WizardPage, WizardVersion } from 'types'
-import { defaultsDeep, uniqueId } from 'lodash'
+import { DeepPartial, OptionalExcept, PageContent, Wizard, WizardPage, WizardVersion } from 'types'
 import { v4 as uuid } from 'uuid'
 import deepExtend from 'deep-extend'
+import { maxBy, values } from 'lodash'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -132,19 +132,15 @@ export async function createPage(
   db: Firestore,
   wizardId: string,
   versionId: string,
-  page: Partial<WizardPage>,
+  page: Partial<Omit<WizardPage, 'id'>>,
 ) {
   await runTransaction(db, async (transaction) => {
     const ref = getWizardVersionRef(db, wizardId, versionId)
+    const current = await transaction.get(ref)
 
-    await transaction.update(
-      ref,
-      `pages`,
-      arrayUnion({
-        ...page,
-        id: uniqueId(),
-      }),
-    )
+    const maxOrder = maxBy(values(current?.data()?.pages), 'order')?.order ?? -1
+
+    await transaction.update(ref, `pages.${uuid()}`, { order: maxOrder + 1, ...page })
   })
 }
 
@@ -159,40 +155,13 @@ export async function patchPage(
     const ref = getWizardVersionRef(db, wizardId, versionId)
     const current = await transaction.get(ref)
 
-    const currentPages = current?.data()?.pages || []
-    const patchedPageIndex = current?.data()?.pages?.findIndex((p) => p.id === pageId)
+    const patchedPage = current?.data()?.pages?.[pageId]
 
-    if (patchedPageIndex === undefined) {
+    if (patchedPage === undefined) {
       throw new Error(`Page with id ${pageId} not found`)
     }
 
-    await transaction.update(ref, {
-      pages: [
-        ...currentPages.slice(0, patchedPageIndex),
-        deepExtend(currentPages[patchedPageIndex], patch),
-        ...currentPages.slice(patchedPageIndex + 1),
-      ],
-    })
-  })
-}
-
-export async function addPage(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
-  page: Partial<WizardPage>,
-) {
-  await runTransaction(db, async (transaction) => {
-    const ref = getWizardVersionRef(db, wizardId, versionId)
-
-    await transaction.update(
-      ref,
-      `pages`,
-      arrayUnion({
-        ...page,
-        id: uniqueId(),
-      }),
-    )
+    await transaction.update(ref, `pages.${pageId}`, deepExtend(patchedPage, patch))
   })
 }
 
@@ -205,12 +174,51 @@ export async function deletePage(
   await runTransaction(db, async (transaction) => {
     const ref = getWizardVersionRef(db, wizardId, versionId)
     const current = await transaction.get(ref)
-    const pageToDelete = current?.data()?.pages?.find((p) => p.id === pageId)
+    const pageToDelete = current?.data()?.pages?.[pageId]
 
     if (!pageToDelete) {
       throw new Error(`Page with id ${pageId} not found`)
     }
 
-    await transaction.update(ref, 'pages', arrayRemove(pageToDelete))
+    await transaction.update(ref, `pages.${pageId}`, undefined)
+  })
+}
+
+export async function addNode(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  pageId: string,
+  node: OptionalExcept<PageContent, 'type'>,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const newNodeId = uuid()
+
+    await transaction.update(ref, {
+      [`nodes.${newNodeId}`]: node,
+      [`pages.${pageId}.content`]: arrayUnion(newNodeId),
+    })
+  })
+}
+
+export async function patchNode(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  nodeId: string,
+  patch: OptionalExcept<PageContent, 'type'>,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const current = await transaction.get(ref)
+
+    const patchedNode = current?.data()?.nodes?.[nodeId]
+
+    if (patchedNode === undefined) {
+      throw new Error(`Node with id ${nodeId} not found`)
+    }
+
+    await transaction.update(ref, `nodes.${nodeId}`, deepExtend(patchedNode, patch))
   })
 }

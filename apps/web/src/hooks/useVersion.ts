@@ -1,6 +1,6 @@
 import { useParams } from 'react-router'
 import useFirebase from './useFirebase'
-import { createPage, deletePage, patchPage } from '@/services/firebase'
+import { createPage, deletePage, patchPage, addNode, patchNode } from '@/services/firebase'
 import { curry } from 'lodash'
 
 export function useVersion() {
@@ -14,7 +14,8 @@ export function useVersion() {
   return {
     createPage: curry(createPage)(firestore, wizardId, versionId),
     patchPage: curry(patchPage)(firestore, wizardId, versionId),
-    addPage: curry(createPage)(firestore, wizardId, versionId),
     deletePage: curry(deletePage)(firestore, wizardId, versionId),
+    addNode: curry(addNode)(firestore, wizardId, versionId),
+    patchNode: curry(patchNode)(firestore, wizardId, versionId),
   }
 }

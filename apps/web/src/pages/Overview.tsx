@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { PageContent } from 'types'
 import { useSetAtom } from 'jotai'
 import Form from '@/components/Form'
 import Input from '@/components/Input'
@@ -11,17 +10,17 @@ import Content from '@/components/Content'
 import Help from '@/components/Help'
 import menuState from '@/store/menu'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
-import DUMMY_DATA from '@/dummy_data'
 import useWizard from '@/hooks/useWizard'
 import { useParams } from 'react-router'
 import Page from '@/components/Page'
 import { useVersion } from '@/hooks/useVersion'
+import { getOrdered, getWithId } from '@/lib/ordered'
 
 export default function HomePage() {
   const [selected, setSelected] = useState<string | null>(null)
   const { wizardId, versionId } = useParams<{ wizardId?: string; versionId?: string }>()
   const { wizard, versions, version } = useWizard(wizardId, versionId)
-  const { patchPage, deletePage } = useVersion()
+  const { patchPage, deletePage, addNode } = useVersion()
   const showFrontpage = !wizardId
   const setOpenMenu = useSetAtom(menuState)
 
@@ -43,24 +42,22 @@ export default function HomePage() {
   }
 
   // const dataIndex = selected ? version?.pages?.find(p => p.id === selected) || DUMMY_DATA.findIndex((item) => item.id === selected) : undefined
-  const data = selected
-    ? version?.pages?.find((p) => p.id === selected) ||
-      DUMMY_DATA.find((item) => item.id === selected)
-    : undefined
+  const data = getWithId(version?.pages, selected)
+
   const panelTitle = data?.heading ?? 'Uten tittel'
 
   if (showFrontpage) {
     setOpenMenu(true) // Open menu if no wizards is selected
   }
 
-  const addContentActions: DropdownOptions = [
+  const addContentActions: DropdownOptions = data?.id ? [
     {
       group: 'Innhold',
     },
     {
       value: '0',
       label: 'Tekst',
-      onClick: () => console.log('Radiobutton'),
+      onClick: () => addNode(data.id, { type: 'Text' })
     },
     {
       group: 'Spørsmål',
@@ -68,22 +65,22 @@ export default function HomePage() {
     {
       value: '0',
       label: 'Radiovalg',
-      onClick: () => console.log('Radiobutton'),
+      onClick: () => addNode(data.id, { type: 'Radio' }),
     },
     {
       value: '0',
       label: 'Sjekkbokser',
-      onClick: () => console.log('Che'),
+      onClick: () => addNode(data.id, { type: 'Checkbox' }),
     },
     {
       value: '0',
       label: 'Tekstfelt',
-      onClick: () => console.log('Flytt'),
+      onClick: () => addNode(data.id, { type: 'Input' }),
     },
     {
       value: '0',
       label: 'Nummerfelt',
-      onClick: () => console.log('Fjern'),
+      onClick: () => addNode(data.id, { type: 'Number' }),
     },
     {
       group: 'Hendelser',
@@ -91,20 +88,20 @@ export default function HomePage() {
     {
       value: '0',
       label: 'Vis ekstra informasjon',
-      onClick: () => console.log('Branch'),
+      onClick: () => addNode(data.id, { type: 'Branch', preset: 'ExtraInformation' })
     },
     {
       value: '0',
       label: 'Vis ekstra spørsmål',
-      onClick: () => console.log('Branch'),
+      onClick: () => addNode(data.id, { type: 'Branch', preset: 'NewQuestions' }),
       disabled: true,
     },
     {
       value: '0',
       label: 'Negativt resultat',
-      onClick: () => console.log('Branch'),
+      onClick: () => addNode(data.id, { type: 'Branch', preset: 'NegativeResult' }),
     },
-  ]
+  ] : []
 
   return (
     <>
@@ -142,30 +139,33 @@ export default function HomePage() {
                     </>
                   )}
                 </Form.Split>
-                {data?.content?.map((node) => (
-                  <Content
-                    key={node.id}
-                    type={node.type}
-                    data={node}
-                    allNodes={
-                      data?.content as PageContent[] /* TODO: Alle tilgjengelige nodes i wizard */
-                    }
+
+
+                {data.content?.map((nodeId) => {
+                  if (!version?.nodes?.[nodeId]) { return null }
+
+                  return <Content
+                    key={nodeId}
+                    node={{ ...version?.nodes?.[nodeId], id: nodeId }}
+                  // nodeId={nodeId}
+                  // allNodes={version?.nodes}
                   />
-                ))}
-                {!data?.content && (
-                  <Help
-                    description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
-                      veiviseren."
-                  />
-                )}
+                }) || (
+                    <Help
+                      description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
+                    veiviseren."
+                    />
+                  )}
+
                 <Dropdown
                   options={addContentActions}
                   trigger={({ onClick }) => (
-                    <Button type="button" primary={!data?.content} icon="Plus" onClick={onClick}>
+                    <Button type="button" primary={!data.content?.length} icon="Plus" onClick={onClick}>
                       Legg til innhold
                     </Button>
                   )}
                 />
+
                 {data?.type === 'Intro' && (
                   <>
                     <Help description='Introsiden vil avsluttes med en "Start veiviseren" knapp som starter veiviseren. Prøv å hold innholdet på siden kort slik at besøkende ikke trenger å scrolle ned til denne knappen.' />
@@ -182,7 +182,7 @@ export default function HomePage() {
             selected={selected}
             data={{
               ...version,
-              pages: [...DUMMY_DATA, ...(version?.pages || [])],
+              pages: version?.pages
             }}
           />
         ) : null}

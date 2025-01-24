@@ -7,6 +7,7 @@ import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { PageContent, WizardVersion } from 'types'
 import NewPage from '../NewPage'
+import { getOrdered } from '@/lib/ordered'
 
 const bem = BEMHelper(styles)
 
@@ -50,8 +51,14 @@ export default function Minimap({ onClick, selected, data }: Props) {
     return value?.substring(0, 80).replace(regex, ' ') || ''
   }
 
-  const renderItem = (content: PageContent) => {
-    switch (content.type) {
+  const renderItem = (nodeId: string, nodes?: WizardVersion['nodes']) => {
+    const node = nodes?.[nodeId]
+
+    if (!node) {
+      return null
+    }
+
+    switch (node.type) {
       case 'Text':
       case 'Radio':
       case 'Checkbox':
@@ -59,17 +66,17 @@ export default function Minimap({ onClick, selected, data }: Props) {
       case 'Input':
       case 'Number':
         return (
-          <li {...bem('item')} key={content.id}>
-            <h3 {...bem('sub-title')}>{content.heading || contentCleanup(content.text)}</h3>
+          <li {...bem('item')} key={node.id}>
+            <h3 {...bem('sub-title')}>{node.heading || contentCleanup(node.text)}</h3>
 
             <span {...bem('icon')}>
-              {content.flow === 'continue' && <IconContinue />}
-              {content.flow === 'stop' && <IconStop />}
+              {node.flow === 'continue' && <IconContinue />}
+              {node.flow === 'stop' && <IconStop />}
             </span>
           </li>
         )
       case 'Branch':
-        return <li {...bem('item', 'branch')} key={content.id}></li>
+        return <li {...bem('item', 'branch')} key={node.id}></li>
       default:
         return null
     }
@@ -78,37 +85,42 @@ export default function Minimap({ onClick, selected, data }: Props) {
   return (
     <>
       <ul {...bem('', { selected })} ref={contentRef} {...events}>
-        {data?.pages?.map((item, index) => (
-          <li
-            key={item.id}
-            {...bem('page', { selected: item.id === selected })}
-            role="button"
-            onClick={handlePageClick(item.id)}
-            tabIndex={0}
-            id={`page-${item.id}`}
-          >
-            <h2 {...bem('title')} title={`${index + 1}. ${item.heading}`}>
-              <span {...bem('title-text')}>
-                {index + 1}. {item.heading}
-              </span>
-            </h2>
-            {item.content && (
-              <ul {...bem('content')}>
-                {item.content.map((content) => {
-                  return renderItem(content)
-                })}
-              </ul>
-            )}
-            {!item.content && !selected && (
-              <div {...bem('placeholder')}>
-                <span {...bem('placeholder-text')}>Legg til innhold </span>
-                <span {...bem('icon')}>
-                  <Icon name="Plus" />
+        {getOrdered(data?.pages)?.map((item, index) => {
+          return (
+            <li
+              key={item.id}
+              {...bem('page', { selected: item.id === selected })}
+              role="button"
+              onClick={handlePageClick(item.id)}
+              tabIndex={0}
+              id={`page-${item.id}`}
+            >
+              <h2 {...bem('title')} title={`${index + 1}. ${item.heading}`}>
+                <span {...bem('title-text')}>
+                  {index + 1}. {item.heading}
                 </span>
-              </div>
-            )}
-          </li>
-        ))}
+              </h2>
+
+              {item.content && (
+                <ul {...bem('content')}>
+                  {item.content.map((nodeId) => {
+                    return renderItem(nodeId, data.nodes)
+                  })}
+                </ul>
+              )}
+
+              {!item.content?.length && !selected && (
+                <div {...bem('placeholder')}>
+                  <span {...bem('placeholder-text')}>Legg til innhold </span>
+                  <span {...bem('icon')}>
+                    <Icon name="Plus" />
+                  </span>
+                </div>
+              )}
+            </li>
+          )
+        })}
+
         <li {...bem('page')} role="button" onClick={toggleModal('page')}>
           <h2 {...bem('title')}>Legg til side +</h2>
           <div {...bem('content', 'placeholder')}></div>

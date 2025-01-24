@@ -1,4 +1,4 @@
-import { PageContent, Answer } from 'types'
+import { PageContent, Answer, WizardVersion, OptionalExcept, PartialPageContent } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
 import Button from '@/components/Button'
@@ -12,16 +12,21 @@ import { icons } from 'lucide-react'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { ReactNode } from 'react'
+import { useVersion } from '@/hooks/useVersion'
 const bem = BEMHelper(styles)
 
 type Props = {
-  type: PageContent['type']
-  data: PageContent
-  allNodes: PageContent[]
+  node: PageContent
+  // nodeId: PageContent['id']
+  // allNodes: WizardVersion['nodes']
 }
 
-export default function Content({ type, data, allNodes }: Props) {
-  if (!data) return null
+export default function Content({ node }: Props) {
+  const { patchNode } = useVersion()
+
+  // if (!nodeId) return null
+
+  // const node = allNodes?.[nodeId]
 
   const contentActions: DropdownOptions = [
     {
@@ -57,7 +62,7 @@ export default function Content({ type, data, allNodes }: Props) {
   const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
 
   const nodes: any = {
-    Text: (data: any) => {
+    Text: (data: PartialPageContent<'Text'>) => {
       return (
         <>
           <Header title="Tekst" icon="Text" />
@@ -65,12 +70,11 @@ export default function Content({ type, data, allNodes }: Props) {
             <Input
               label="Tittel"
               value={data?.heading || ''}
-              onChange={() => {
-                console.log('Hej')
-              }}
+              onChange={(v) => patchNode(node.id, { type: 'Text', heading: v })}
               hideIfEmpty
             />
-            <Editor label="Innhold" value={data?.text} hideIfEmpty />
+            <Editor label="Innhold" value={data?.text || ''} hideIfEmpty onChange={(v) => patchNode(node.id, { type: 'Text', heading: v })}
+            />
           </Main>
           {/* TODO: summary, details, show */}
         </>
@@ -277,10 +281,12 @@ export default function Content({ type, data, allNodes }: Props) {
         </>
       )
     },
-    Fallback: (data: any) => {
-      return <p style={{ color: 'red' }}>Unknown node type: {data?.type}</p>
-    },
   }
 
-  return <section {...bem('')}>{(nodes[type] || nodes.Fallback)(data)}</section>
+  return <section {...bem('')}>
+    {node?.type && nodes?.[node.type] ? nodes?.[node.type]?.(node) : <>
+      {!node ? <p {...bem('error')}>Fant ikke node med id: {nodeId}</p> : null}
+      {node?.type && !nodes[node.type] ? <p {...bem('error')}>Ukjent nodetype: {node.type}</p> : null}
+    </>}
+  </section>
 }
