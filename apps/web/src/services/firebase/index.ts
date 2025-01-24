@@ -112,6 +112,21 @@ export function getWizardVersionRef(db: Firestore, id: string, version: string) 
   return doc(dataPoint<WizardVersion>(db, 'wizards', id, 'versions'), version)
 }
 
+export function getNodesRef(db: Firestore, id: string, version: string) {
+  return dataPoint<OptionalExcept<PageContent, 'type'>>(
+    db,
+    'wizards',
+    id,
+    'versions',
+    version,
+    'nodes',
+  )
+}
+
+export function getNodeRef(db: Firestore, id: string, version: string, nodeId: string) {
+  return doc(getNodesRef(db, id, version), nodeId)
+}
+
 export async function createWizard(db: Firestore, data: Wizard) {
   return runTransaction(db, async (transaction) => {
     const newDocId = uuid()
@@ -192,13 +207,15 @@ export async function addNode(
   node: OptionalExcept<PageContent, 'type'>,
 ) {
   await runTransaction(db, async (transaction) => {
-    const ref = getWizardVersionRef(db, wizardId, versionId)
     const newNodeId = uuid()
+    const versionRef = getWizardVersionRef(db, wizardId, versionId)
+    const nodeRef = getNodeRef(db, wizardId, versionId, newNodeId)
 
-    await transaction.update(ref, {
-      [`nodes.${newNodeId}`]: node,
-      [`pages.${pageId}.content`]: arrayUnion(newNodeId),
+    await transaction.update(versionRef, {
+      [`pages.${pageId}.content`]: arrayUnion(nodeRef),
     })
+
+    await transaction.set(nodeRef, node)
   })
 }
 
@@ -210,15 +227,35 @@ export async function patchNode(
   patch: OptionalExcept<PageContent, 'type'>,
 ) {
   await runTransaction(db, async (transaction) => {
-    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const ref = getNodeRef(db, wizardId, versionId, nodeId)
     const current = await transaction.get(ref)
 
-    const patchedNode = current?.data()?.nodes?.[nodeId]
+    const patchedNode = current?.data()
 
     if (patchedNode === undefined) {
       throw new Error(`Node with id ${nodeId} not found`)
     }
 
-    await transaction.update(ref, `nodes.${nodeId}`, deepExtend(patchedNode, patch))
+    await transaction.update(ref, deepExtend(patchedNode, patch))
+  })
+}
+
+export async function deleteNode(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  nodeId: string,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getNodeRef(db, wizardId, versionId, nodeId)
+    const current = await transaction.get(ref)
+
+    const nodeToDelete = current?.data()
+
+    if (!nodeToDelete) {
+      return
+    }
+
+    await transaction.delete(ref)
   })
 }

@@ -31,7 +31,7 @@ interface Props {
 }
 
 export default function Editor({ label, value, hideIfEmpty, onChange }: Props) {
-  const v = useValue(value, () => console.log('Editor value changed'))
+  const v = useValue(value, onChange)
   const [showInput, setShowInput] = useState<boolean>(!!value || false)
 
   if (hideIfEmpty && !value && !showInput) {

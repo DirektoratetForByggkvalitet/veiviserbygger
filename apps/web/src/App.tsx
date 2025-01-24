@@ -23,7 +23,7 @@ export default function App() {
       ) : (
         <>
           <Route path="/" element={<Overview />} />
-          <Route path="/wizard/:wizardId?/:versionId?" element={<Overview />} />
+          <Route path="/wizard/:wizardId?/:versionId?" Component={Overview} />
         </>
       )}
     </Routes>

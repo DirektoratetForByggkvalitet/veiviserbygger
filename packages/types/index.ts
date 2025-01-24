@@ -1,4 +1,4 @@
-import type { Timestamp } from 'firebase/firestore'
+import type { DocumentReference, Timestamp } from 'firebase/firestore'
 
 export type DeepPartial<T> = T extends object
   ? {
@@ -164,7 +164,7 @@ export type Branch = PageNode<{
   /**
    * Should not refer to nodes of types other than Information, Error or SimpleResult
    */
-  content: (Information | Error | SimpleResult)['id'][]
+  content: DocumentReference[]
 }>
 
 export type Intro = {
@@ -175,7 +175,7 @@ export type Intro = {
   /**
    * List of ids referencing Text nodes
    */
-  content?: Text['id'][]
+  content?: DocumentReference[]
 }
 
 export type Result = {
@@ -187,7 +187,7 @@ export type Result = {
   /**
    * List of ids referencing Text nodes
    */
-  content?: Text['id'][]
+  content?: DocumentReference[]
 }
 
 export type PageContent =
@@ -210,7 +210,7 @@ export type Page = {
   /**
    * List of ids referencing PageContent nodes
    */
-  content?: PageContent['id'][]
+  content?: DocumentReference[]
 }
 
 export type Wizard = {
