@@ -3,6 +3,7 @@ import { type ReactNode, useEffect, useRef } from 'react'
 import Icon from '@/components/Icon'
 import Transition from '@/components/Transition'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
+import Button from '@/components/Button'
 
 import useKeyPress from '@/hooks/useKeyPress'
 
@@ -54,7 +55,19 @@ export default function Panel({
         <>
           <aside {...bem('panel')} ref={panelRef} tabIndex={0}>
             <header {...bem('header')}>
+              <Button onClick={onClose} icon="PanelRightClose" size="small" iconOnly>
+                Lukk panel
+              </Button>
+              <Button icon="ArrowLeft" size="small" subtle iconOnly>
+                Forrige side
+              </Button>
+              <Button icon="ArrowRight" size="small" subtle iconOnly>
+                Neste side
+              </Button>
               <h2 {...bem('title')}>{title}</h2>
+              <Button icon="ArrowUpDown" size="small" subtle iconOnly>
+                Endre rekkefølge
+              </Button>
               {options && (
                 <Dropdown
                   icon="Settings2"
@@ -64,9 +77,6 @@ export default function Panel({
                   iconOnly
                 />
               )}
-              <button type="button" {...bem('close')} onClick={onClose} aria-label="Lukk side">
-                <Icon name="X" />
-              </button>
             </header>
 
             <div {...bem('content')}>{children}</div>

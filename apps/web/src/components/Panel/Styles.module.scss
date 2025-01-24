@@ -6,7 +6,6 @@
     &__panel {
         position: fixed;
         display: flex;
-        gap: $spacing--xsmall;
         flex-direction: column;
         right: 0;
         top: $header-height;
@@ -16,8 +15,6 @@
         // border-left: $border-style;
         background-color: color(neutral, xlight);
         box-shadow: $shadow;
-        overflow: auto;
-        padding-bottom: $spacing--large;
 
         @include entering {
             animation: enter 500ms $ease-out-quart backwards;
@@ -32,22 +29,26 @@
 
     &__content {
         padding: $margin;
+        padding-bottom: $spacing--large;
+        overflow: auto;
+        flex-grow: 1;
     }
 
     &__header {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: $spacing--xsmall;
         height: $header-height;
         border-bottom: $border-style;
         background-color: $color-light;
+        padding: 0 $margin;
         flex-shrink: 0;
     }
 
     &__title {
         @include font(base, normal);
         @include font-size(base);
-        padding: 0 $margin;
         flex-grow: 1;
     }
 
