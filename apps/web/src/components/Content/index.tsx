@@ -37,22 +37,31 @@ type NodeProps = {
 function Node({ node, contentActions }: NodeProps) {
   if (!node.data) return null
 
-
   if (node.data.type === 'Text') {
-    return <>
-      <Header contentActions={contentActions} title="Tekst" icon="Text" />
-      <Main full>
-        <Input
-          label="Tittel"
-          value={node.data?.heading || ''}
-          onChange={(v) => node.patch({ type: 'Text', heading: v })}
-          hideIfEmpty
-        />
-        <Editor label="Innhold" value={node.data?.text || ''} hideIfEmpty onChange={(v) => node.patch({ type: 'Text', text: v })}
-        />
-      </Main>
-      {/* TODO: summary, details, show */}
-    </>
+    return (
+      <>
+        <Header type={node.data.type} contentActions={contentActions} />
+        <Main>
+          <Input
+            label="Tittel"
+            value={node.data?.heading || ''}
+            onChange={(v) => node.patch({ type: 'Text', heading: v })}
+            hideIfEmpty
+            header
+          />
+          <Editor
+            label="Innhold"
+            value={node.data?.text || ''}
+            hideIfEmpty
+            onChange={(v) => node.patch({ type: 'Text', text: v })}
+          />
+        </Main>
+        <Aside>
+          <Help description={getTypeDescription(node.data.type)} />
+        </Aside>
+        {/* TODO: summary, details, show */}
+      </>
+    )
   }
 
   if (node.data.type === 'Radio') {
@@ -77,7 +86,7 @@ function Node({ node, contentActions }: NodeProps) {
 
     return (
       <>
-        <Header contentActions={contentActions} title="Spørsmål" icon="Diamond" />
+        <Header type={node.data.type} contentActions={contentActions} />
         <Main>
           <Input
             label="Tittel"
@@ -114,16 +123,13 @@ function Node({ node, contentActions }: NodeProps) {
               ))}
             </ul>
           )}
-          <Button type="button" size="small" subtle icon="Plus">
+          <Button type="button" size="small" icon="Plus">
             Legg til svaralternativ
           </Button>
         </Main>
         <Aside>
           {/* TODO: summary, details, show */}
-          <Help
-            description="Dette er et flervalgspørsmål vi stiller brukeren som de kan svare på. Avhengig av hva
-              de svarer kan vi respondere med resultater eller informasjon."
-          />
+          <Help description={getTypeDescription(node.data.type)} />
           <h3 {...bem('sub-title')}>Instillinger</h3>
           <Dropdown
             label="Spørsmålstype"
@@ -143,23 +149,15 @@ function Node({ node, contentActions }: NodeProps) {
           <div {...bem('field-list')}>
             <Checkbox
               label="Grid visning"
-              checked={node.data.grid}
+              checked={false}
               onChange={() => {
                 console.log('Hej')
               }}
             />
+
             <Checkbox
               label="Valgfritt felt"
-              checked={node.data.optional}
-              disabled={node.data.allMandatory}
-              onChange={() => {
-                console.log('Hej')
-              }}
-            />
-            <Checkbox
-              label="Alle påkrevd"
-              checked={node.data.allMandatory}
-              disabled={node.data.optional}
+              checked={false}
               onChange={() => {
                 console.log('Hej')
               }}
@@ -171,48 +169,21 @@ function Node({ node, contentActions }: NodeProps) {
   }
 
   if (node.data.type === 'Branch') {
-    const titlePresets: any = {
-      NegativeResult: {
-        title: 'Negativt resultat',
-        icon: 'TriangleAlert',
-        description:
-          'Gir et negativt resultat hvor brukeren ikke kan fortsette i veiviseren, men går videre til en resultatside.',
-      },
-      ExtraInformation: {
-        title: 'Ekstra informasjon',
-        icon: 'Info',
-        description:
-          'Gir ekstra informasjon til brukeren, mens brukeren får mulighet til å fortsette veiviseren. Ekstra informasjon blir gjentatt på resultatsider.',
-      },
-      NewQuestions: {
-        title: 'Nye spørsmål',
-        icon: 'Option',
-        description: 'Viser et nytt spørsmål som ikke tidligere var synlig.',
-      },
-    }
-
     return (
       <>
-        <Header contentActions={contentActions}
-          title={titlePresets[node.data.preset || '']?.title || 'Branch'}
-          icon={titlePresets[node.data.preset || '']?.icon || 'option'}
-        />
+        <Header type={node.data.preset || node.data.type} contentActions={contentActions} />
         <Main>
           <h3 {...bem('sub-title')}>Vises hvis følgende er sant</h3>
-          <Expression expression={node.data.test} nodes={allNodes} />
+          {/*<Expression expression={node.data.test} nodes={allNodes} />
           {node.data?.content?.map((child: PageContent, index: number) => (
             <div {...bem('inline-main')} key={child.id || index}>
               {(nodes[child.type] || nodes.Fallback)(child)}
             </div>
           ))}
+          */}
         </Main>
         <Aside>
-          <Help
-            description={
-              titlePresets[node.data.preset]?.description ||
-              'Viser innhold avhengig av et tidligere valg.'
-            }
-          />
+          <Help description={getTypeDescription(node.data.type)} />
         </Aside>
       </>
     )
@@ -264,10 +235,16 @@ function Node({ node, contentActions }: NodeProps) {
   // }
 }
 
-const Header = ({ title, icon, contentActions }: { title: string; icon: keyof typeof icons, contentActions: DropdownOptions }) => (
+const Header = ({
+  type,
+  contentActions,
+}: {
+  type: PageContent['type'] | Branch['preset']
+  contentActions: DropdownOptions
+}) => (
   <header {...bem('header')}>
-    <Icon name={icon} size="20" {...bem('header-icon')} />
-    <h2 {...bem('title')}>{title}</h2>
+    <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
+    <h2 {...bem('title')}>{getTypeText(type)}</h2>
     <Dropdown icon="Ellipsis" direction="right" options={contentActions} label="Valg" iconOnly />
   </header>
 )
@@ -300,9 +277,15 @@ export default function Content({ nodeId }: Props) {
     },
   ]
 
-  return <section {...bem('')}>
-    {node.data ? <Node node={node} contentActions={contentActions} /> : <>
-      <p {...bem('error')}>Fant ikke node med id: {nodeId}</p>
-    </>}
-  </section>
+  return (
+    <section {...bem('')}>
+      {node.data ? (
+        <Node node={node} contentActions={contentActions} />
+      ) : (
+        <>
+          <p {...bem('error')}>Fant ikke node med id: {nodeId}</p>
+        </>
+      )}
+    </section>
+  )
 }
