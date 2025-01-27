@@ -9,7 +9,7 @@ interface Props {
   label?: string
   name?: string
   id?: string
-  checked: boolean
+  checked?: boolean
   required?: boolean
   toggle?: boolean
   disabled?: boolean

@@ -16,9 +16,10 @@ interface Props {
   onClick: (id: string) => void
   selected?: string | null
   data: WizardVersion
+  allNodes: WizardVersion['nodes']
 }
 
-export default function Minimap({ onClick, selected, data }: Props) {
+export default function Minimap({ onClick, selected, data, allNodes }: Props) {
   const contentRef = useRef<any>(null)
   const [modal, setModal] = useState<'page' | null>(null)
 
@@ -106,8 +107,8 @@ export default function Minimap({ onClick, selected, data }: Props) {
 
               {item.content && (
                 <ul {...bem('content')}>
-                  {item.content.map((nodeId) => {
-                    return renderItem(nodeId, data.nodes)
+                  {item.content.map((ref) => {
+                    return renderItem(ref.id, allNodes)
                   })}
                 </ul>
               )}

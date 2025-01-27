@@ -93,6 +93,8 @@ export type Text = PageNode<
 export type Radio = PageNode<
   Content & {
     type: 'Radio'
+    allMandatory?: boolean // Required user to check all the options in the list, in order for it to be "valid".
+    grid: boolean // Display options in a three column grid.
     options?: Answer[]
   }
 >
@@ -224,7 +226,7 @@ export type WizardVersion = {
   publishedFrom?: Timestamp
   publishedTo?: Timestamp
   pages?: OrderedMap<WizardPage>
-  nodes?: Record<string, PageContent>
+  nodes?: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
 }
 
 export type WizardPage = Intro | Page | Result

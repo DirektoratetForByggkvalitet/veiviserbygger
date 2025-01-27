@@ -1,8 +1,13 @@
-import { getWizardsRef, getWizardVersionRef, getWizardVersionsRef } from '@/services/firebase'
+import {
+  getNodesRef,
+  getWizardsRef,
+  getWizardVersionRef,
+  getWizardVersionsRef,
+} from '@/services/firebase'
 import { doc, onSnapshot, Timestamp } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import useFirebase from './useFirebase'
-import { Wizard, WizardVersion, WrappedWithId } from 'types'
+import { OptionalExcept, PageContent, Wizard, WizardVersion, WrappedWithId } from 'types'
 import { sortVersions } from '@/lib/versions'
 
 export default function useWizard(id?: string, version?: string) {
@@ -11,9 +16,29 @@ export default function useWizard(id?: string, version?: string) {
   const [wizard, setWizard] = useState<WrappedWithId<Wizard>>()
   const [wizardVersions, setWizardVersions] =
     useState<{ id: string; title?: string; publishedFrom?: Timestamp; publishedTo?: Timestamp }[]>()
+  const [nodes, setNodes] = useState<Record<string, OptionalExcept<PageContent, 'type' | 'id'>>>({})
   const [wizardVersionData, setWizardVersionData] = useState<WizardVersion>()
 
-  console.log('||', wizard)
+  useEffect(() => {
+    const unsubNodes =
+      id && version
+        ? onSnapshot(getNodesRef(firestore, id, version), (snapshot) => {
+            setNodes(
+              snapshot.docs.reduce(
+                (res, doc) => ({
+                  ...res,
+                  [doc.id]: doc.data(),
+                }),
+                {},
+              ),
+            )
+          })
+        : undefined
+
+    return () => {
+      unsubNodes?.()
+    }
+  }, [id, version])
 
   useEffect(() => {
     const unsubWizardVersions = id
@@ -21,8 +46,8 @@ export default function useWizard(id?: string, version?: string) {
           setWizardVersions(
             sortVersions(
               snapshot.docs.map((doc) => ({
-                id: doc.id,
                 ...doc.data(),
+                id: doc.id,
               })),
             ),
           )
@@ -70,5 +95,6 @@ export default function useWizard(id?: string, version?: string) {
     wizard,
     versions: wizardVersions,
     version: wizardVersionData,
+    nodes,
   }
 }

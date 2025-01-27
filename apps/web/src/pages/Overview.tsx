@@ -18,7 +18,7 @@ import { useVersion } from '@/hooks/useVersion'
 export default function Overview() {
   const [selected, setSelected] = useState<string | null>(null)
   const { wizardId, versionId } = useParams<{ wizardId?: string; versionId?: string }>()
-  const { wizard, versions, version } = useWizard(wizardId, versionId)
+  const { wizard, versions, version, nodes } = useWizard(wizardId, versionId)
   const { patchPage, deletePage, addNode } = useVersion()
   const showFrontpage = !wizardId
   const setOpenMenu = useSetAtom(menuState)
@@ -112,8 +112,6 @@ export default function Overview() {
     },
   ] : []
 
-  console.log('ludo', { pageId: page?.id })
-
   return (
     <>
       <Page title={wizard?.data?.title} versions={versions} wizard={wizard}>
@@ -159,6 +157,7 @@ export default function Overview() {
                   return <Content
                     key={nodeId}
                     nodeId={nodeId}
+                    allNodes={nodes}
                   // allNodes={version?.nodes}
                   />
                 }) || (
@@ -195,6 +194,7 @@ export default function Overview() {
               ...version,
               pages: version?.pages
             }}
+            allNodes={nodes}
           />
         ) : null}
       </Page>

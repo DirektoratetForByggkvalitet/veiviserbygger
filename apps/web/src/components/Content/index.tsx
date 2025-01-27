@@ -1,70 +1,67 @@
 import {
   PageContent,
   Answer,
-  Branch,
   WizardVersion,
   OptionalExcept,
-  PartialPageContent,
+  Branch,
 } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
 import Button from '@/components/Button'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Checkbox from '@/components/Checkbox'
-import Expression from '@/components/Expression'
 import Help from '@/components/Help'
 import Icon from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import { ReactNode, useEffect } from 'react'
-import { getTypeText, getTypeIcon, getTypeDescription } from '@/lib/content'
-import { useNode } from '@/hooks/useNode'
+import { ReactNode } from 'react'
 import { DocumentReference } from 'firebase/firestore'
+import { useVersion } from '@/hooks/useVersion'
+import { getTypeDescription, getTypeIcon, getTypeText } from '@/lib/content'
 const bem = BEMHelper(styles)
 
 type Props = {
-  // node: PageContent
   nodeId: DocumentReference['id']
-  // allNodes: WizardVersion['nodes']
+  allNodes: WizardVersion['nodes']
 }
 
 type NodeProps = {
-  node: ReturnType<typeof useNode>
+  node: OptionalExcept<PageContent, 'id' | 'type'>
   contentActions: DropdownOptions
 }
 
 function Node({ node, contentActions }: NodeProps) {
-  if (!node.data) return null
+  const { patchNode } = useVersion()
 
-  if (node.data.type === 'Text') {
+  if (node.type === 'Text') {
     return (
       <>
-        <Header type={node.data.type} contentActions={contentActions} />
+        <Header type={node.type} contentActions={contentActions} />
         <Main>
           <Input
             label="Tittel"
-            value={node.data?.heading || ''}
-            onChange={(v) => node.patch({ type: 'Text', heading: v })}
+            value={node.heading || ''}
+            onChange={(v) => patchNode(node.id, { type: 'Text', heading: v })}
             hideIfEmpty
             header
           />
           <Editor
             label="Innhold"
-            value={node.data?.text || ''}
+            value={node.text || ''}
             hideIfEmpty
-            onChange={(v) => node.patch({ type: 'Text', text: v })}
+            onChange={(v) => patchNode(node.id, { type: 'Text', text: v })}
           />
         </Main>
         <Aside>
-          <Help description={getTypeDescription(node.data.type)} />
+          <Help description={getTypeDescription(node.type)} />
         </Aside>
         {/* TODO: summary, details, show */}
       </>
     )
   }
 
-  if (node.data.type === 'Radio') {
+  if (node.type === 'Radio') {
     const optionActions = [
       {
         value: '0',
@@ -86,21 +83,22 @@ function Node({ node, contentActions }: NodeProps) {
 
     return (
       <>
-        <Header type={node.data.type} contentActions={contentActions} />
+        <Header type={node.type} contentActions={contentActions} />
+
         <Main>
           <Input
             label="Tittel"
-            value={node.data.heading || ''}
-            onChange={() => {
-              console.log('Hej')
-            }}
+            value={node.heading || ''}
+            onChange={v => patchNode(node.id, { type: 'Radio', heading: v })}
             header
           />
-          <Editor label="Beskrivelse" value={node.data.text} hideIfEmpty />
+
+          <Editor label="Beskrivelse" value={node.text || ''} hideIfEmpty onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })} />
+
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
-          {node.data.options && (
+          {node.options && (
             <ul {...bem('options')}>
-              {node.data.options.map((option: Answer) => (
+              {node.options.map((option: Answer) => (
                 <li key={option.id} {...bem('option')}>
                   <Input
                     label="Svar"
@@ -127,9 +125,10 @@ function Node({ node, contentActions }: NodeProps) {
             Legg til svaralternativ
           </Button>
         </Main>
+
         <Aside>
           {/* TODO: summary, details, show */}
-          <Help description={getTypeDescription(node.data.type)} />
+          <Help description={getTypeDescription(node.type)} />
           <h3 {...bem('sub-title')}>Instillinger</h3>
           <Dropdown
             label="Spørsmålstype"
@@ -149,15 +148,7 @@ function Node({ node, contentActions }: NodeProps) {
           <div {...bem('field-list')}>
             <Checkbox
               label="Grid visning"
-              checked={false}
-              onChange={() => {
-                console.log('Hej')
-              }}
-            />
-
-            <Checkbox
-              label="Valgfritt felt"
-              checked={false}
+              checked={node.grid}
               onChange={() => {
                 console.log('Hej')
               }}
@@ -168,64 +159,64 @@ function Node({ node, contentActions }: NodeProps) {
     )
   }
 
-  if (node.data.type === 'Branch') {
+  if (node.type === 'Branch') {
     return (
       <>
-        <Header type={node.data.preset || node.data.type} contentActions={contentActions} />
+        <Header type={node.preset || node.type} contentActions={contentActions} />
         <Main>
           <h3 {...bem('sub-title')}>Vises hvis følgende er sant</h3>
-          {/*<Expression expression={node.data.test} nodes={allNodes} />
-          {node.data?.content?.map((child: PageContent, index: number) => (
+
+          {/*
+          <Expression expression={node.test} nodes={allNodes} />
+          {node?.content?.map((child: PageContent, index: number) => (
             <div {...bem('inline-main')} key={child.id || index}>
               {(nodes[child.type] || nodes.Fallback)(child)}
             </div>
           ))}
           */}
         </Main>
+
         <Aside>
-          <Help description={getTypeDescription(node.data.type)} />
-        </Aside>
+          <Help description={getTypeDescription(node.type)} />
+        </Aside >
       </>
     )
   }
 
-  if (node.data.type === 'Error') {
+  if (node.type === 'Error') {
     return (
       <>
         <Input
           label="Tittel"
-          value={node.data.heading || ''}
-          onChange={() => {
-            console.log('Hej')
-          }}
+          value={node.heading || ''}
+          onChange={v => patchNode(node.id, { type: 'Error', heading: v })}
           header
         />
-        <Editor label="Beskrivelse" value={node.data.text} hideIfEmpty />
+        <Editor label="Beskrivelse" value={node.text || ''} hideIfEmpty onChange={(v) => patchNode(node.id, { type: 'Error', text: v })} />
       </>
     )
   }
 
-  if (node.data.type === 'Information') {
+  if (node.type === 'Information') {
     return (
       <>
         <Input
           label="Tittel"
-          value={node.data.heading || ''}
-          onChange={() => {
-            console.log('Hej')
-          }}
+          value={node.heading || ''}
+          onChange={v => patchNode(node.id, { type: 'Information', heading: v })}
         />
-        <Editor label="Beskrivelse" value={node.data.text} hideIfEmpty />
+
+        <Editor label="Beskrivelse" value={node.text || ''} hideIfEmpty onChange={(v) => patchNode(node.id, { type: 'Information', text: v })} />
       </>
     )
   }
 
-  // if (node.data.type === 'Result') {
+  // if (node.type === 'Result') {
   //   return (
   //     <>
   //       <Input
   //         label="Resultatside tittel"
-  //         value={node.data.heading || ''}
+  //         value={node.heading || ''}
   //         onChange={() => {
   //           console.log('Hej')
   //         }}
@@ -255,8 +246,8 @@ const Main = ({ children, full }: { children: ReactNode; full?: boolean }) => (
 
 const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
 
-export default function Content({ nodeId }: Props) {
-  const node = useNode(nodeId)
+export default function Content({ nodeId, allNodes }: Props) {
+  const node = allNodes?.[nodeId]
 
   const contentActions: DropdownOptions = [
     {
@@ -279,7 +270,7 @@ export default function Content({ nodeId }: Props) {
 
   return (
     <section {...bem('')}>
-      {node.data ? (
+      {node ? (
         <Node node={node} contentActions={contentActions} />
       ) : (
         <>
