@@ -40,7 +40,7 @@
         background-color: transparent;
 
         @include input-placeholder {
-            color: $color-muted;
+            color: color(neutral, base);
         }
     }
 

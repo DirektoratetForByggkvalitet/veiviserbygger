@@ -16,12 +16,13 @@ const bem = BEMHelper(styles)
 
 export type DropdownOptions = Array<
   | {
-    value: string
-    label: string
-    onClick?: MouseEventHandler
-    styled?: 'delete'
-    disabled?: boolean
-  }
+      value: string
+      label: string
+      icon?: keyof typeof icons
+      onClick?: MouseEventHandler
+      styled?: 'delete'
+      disabled?: boolean
+    }
   | { group: string }
 >
 
@@ -164,6 +165,11 @@ export default function Dropdown({
                       disabled: option?.disabled,
                     })}
                   >
+                    {option?.icon && (
+                      <span {...bem('option-icon')}>
+                        <Icon name={option.icon} />
+                      </span>
+                    )}
                     {option.label}
                   </button>
                 )

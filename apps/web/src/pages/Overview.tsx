@@ -13,6 +13,7 @@ import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import useWizard from '@/hooks/useWizard'
 import { useParams } from 'react-router'
 import Page from '@/components/Page'
+import { getTypeIcon, getTypeText } from '@/lib/content'
 import { useVersion } from '@/hooks/useVersion'
 
 export default function Overview() {
@@ -143,6 +144,7 @@ export default function Overview() {
                 <Input
                   label="Sidetittel"
                   value={page?.heading || ''}
+                  placeholder="Uten tittel"
                   onChange={(v) => patchPage(page.id, { heading: v })}
                   header
                 />
@@ -153,19 +155,22 @@ export default function Overview() {
                   </>
                 )}
 
-                {nodeIds.map((nodeId) => {
-                  return <Content
-                    key={nodeId}
-                    nodeId={nodeId}
-                    allNodes={nodes}
-                  // allNodes={version?.nodes}
-                  />
-                }) || (
-                    <Help
-                      description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
+                {(nodeIds?.length > 0 &&
+                  nodeIds.map((nodeId) => {
+                    return (
+                      <Content
+                        key={nodeId}
+                        nodeId={nodeId}
+                        allNodes={nodes}
+                        // allNodes={version?.nodes}
+                      />
+                    )
+                  })) || (
+                  <Help
+                    description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
                     veiviseren."
-                    />
-                  )}
+                  />
+                )}
 
                 <Dropdown
                   options={addContentActions}

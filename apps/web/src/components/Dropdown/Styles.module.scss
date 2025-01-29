@@ -142,6 +142,7 @@
 
     &__option {
         @include font-size(small);
+        display: inline-flex;
         white-space: nowrap;
         text-align: left;
         padding: $form-padding-y $form-padding-x;
@@ -166,6 +167,14 @@
         &--delete:focus:focus-visible {
             color: $color-warning;
         }
+    }
+
+    &__option-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 100%;
+        margin-right: $spacing--xsmall;
     }
 
     &--simple,
