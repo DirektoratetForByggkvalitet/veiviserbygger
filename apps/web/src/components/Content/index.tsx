@@ -1,17 +1,14 @@
-import {
-  PageContent,
-  Answer,
-  WizardVersion,
-  OptionalExcept,
-  Branch,
-} from 'types'
+import { useState } from 'react'
+import { PageContent, Answer, WizardVersion, OptionalExcept, Branch } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
 import Button from '@/components/Button'
+import ButtonBar from '@/components/ButtonBar'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Checkbox from '@/components/Checkbox'
 import Help from '@/components/Help'
 import Icon from '@/components/Icon'
+import Modal from '@/components/Modal'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -28,16 +25,15 @@ type Props = {
 
 type NodeProps = {
   node: OptionalExcept<PageContent, 'id' | 'type'>
-  contentActions: DropdownOptions
 }
 
-function Node({ node, contentActions }: NodeProps) {
+function Node({ node }: NodeProps) {
   const { patchNode } = useVersion()
 
   if (node.type === 'Text') {
     return (
       <>
-        <Header type={node.type} contentActions={contentActions} />
+        <Header type={node.type} />
         <Main>
           <Input
             label="Tittel"
@@ -83,17 +79,22 @@ function Node({ node, contentActions }: NodeProps) {
 
     return (
       <>
-        <Header type={node.type} contentActions={contentActions} />
+        <Header type={node.type} title={node.heading || 'Hva er det til middag i dag?'} />
 
         <Main>
           <Input
             label="Tittel"
             value={node.heading || ''}
-            onChange={v => patchNode(node.id, { type: 'Radio', heading: v })}
+            onChange={(v) => patchNode(node.id, { type: 'Radio', heading: v })}
             header
           />
 
-          <Editor label="Beskrivelse" value={node.text || ''} hideIfEmpty onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })} />
+          <Editor
+            label="Beskrivelse"
+            value={node.text || ''}
+            hideIfEmpty
+            onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })}
+          />
 
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
           {node.options && (
@@ -129,22 +130,7 @@ function Node({ node, contentActions }: NodeProps) {
         <Aside>
           {/* TODO: summary, details, show */}
           <Help description={getTypeDescription(node.type)} />
-          <h3 {...bem('sub-title')}>Instillinger</h3>
-          <Dropdown
-            label="Spørsmålstype"
-            hideLabel
-            value={'Radio'}
-            options={[
-              {
-                value: 'Radio',
-                label: 'Radioknapper',
-              },
-              {
-                value: 'Select',
-                label: 'Nedtrekksmeny',
-              },
-            ]}
-          />
+          <h3 {...bem('sub-title')}>Innstillinger</h3>
           <div {...bem('field-list')}>
             <Checkbox
               label="Grid visning"
@@ -162,7 +148,7 @@ function Node({ node, contentActions }: NodeProps) {
   if (node.type === 'Branch') {
     return (
       <>
-        <Header type={node.preset || node.type} contentActions={contentActions} />
+        <Header type={node.preset || node.type} />
         <Main>
           <h3 {...bem('sub-title')}>Vises hvis følgende er sant</h3>
 
@@ -178,7 +164,7 @@ function Node({ node, contentActions }: NodeProps) {
 
         <Aside>
           <Help description={getTypeDescription(node.type)} />
-        </Aside >
+        </Aside>
       </>
     )
   }
@@ -189,10 +175,15 @@ function Node({ node, contentActions }: NodeProps) {
         <Input
           label="Tittel"
           value={node.heading || ''}
-          onChange={v => patchNode(node.id, { type: 'Error', heading: v })}
+          onChange={(v) => patchNode(node.id, { type: 'Error', heading: v })}
           header
         />
-        <Editor label="Beskrivelse" value={node.text || ''} hideIfEmpty onChange={(v) => patchNode(node.id, { type: 'Error', text: v })} />
+        <Editor
+          label="Beskrivelse"
+          value={node.text || ''}
+          hideIfEmpty
+          onChange={(v) => patchNode(node.id, { type: 'Error', text: v })}
+        />
       </>
     )
   }
@@ -203,10 +194,15 @@ function Node({ node, contentActions }: NodeProps) {
         <Input
           label="Tittel"
           value={node.heading || ''}
-          onChange={v => patchNode(node.id, { type: 'Information', heading: v })}
+          onChange={(v) => patchNode(node.id, { type: 'Information', heading: v })}
         />
 
-        <Editor label="Beskrivelse" value={node.text || ''} hideIfEmpty onChange={(v) => patchNode(node.id, { type: 'Information', text: v })} />
+        <Editor
+          label="Beskrivelse"
+          value={node.text || ''}
+          hideIfEmpty
+          onChange={(v) => patchNode(node.id, { type: 'Information', text: v })}
+        />
       </>
     )
   }
@@ -228,17 +224,72 @@ function Node({ node, contentActions }: NodeProps) {
 
 const Header = ({
   type,
-  contentActions,
+  title,
 }: {
   type: PageContent['type'] | Branch['preset']
-  contentActions: DropdownOptions
-}) => (
-  <header {...bem('header')}>
-    <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
-    <h2 {...bem('title')}>{getTypeText(type)}</h2>
-    <Dropdown icon="Ellipsis" direction="right" options={contentActions} label="Valg" iconOnly />
-  </header>
-)
+  title?: string
+}) => {
+  const [showMoveNode, setShowMoveNode] = useState(false)
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+
+  const contentActions: DropdownOptions = [
+    {
+      value: '0',
+      label: 'Flytt til annen side',
+      onClick: () => setShowMoveNode(true),
+    },
+    {
+      value: '0',
+      label: 'Dupliser',
+      onClick: () => console.log('Dupliser direkte og legg under med "[Header] (kopi)"'),
+    },
+    {
+      value: '0',
+      label: 'Fjern innhold',
+      onClick: () => setShowConfirmDelete(true),
+      styled: 'delete',
+    },
+  ]
+
+  return (
+    <header {...bem('header')}>
+      <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
+      <h2 {...bem('title')}>{getTypeText(type)}</h2>
+      <Dropdown icon="Ellipsis" direction="right" options={contentActions} label="Valg" iconOnly />
+
+      <Modal
+        title="Flytt til annen side"
+        expanded={showMoveNode}
+        onClose={() => setShowMoveNode(false)}
+      >
+        <Help
+          description={`Velg hvilken side du ønsker å flytte ${title ? `"${title}"` : 'dette innholdet'} til.`}
+        />
+        <ButtonBar>
+          <Button type="button">Side 1</Button>
+          <Button type="button">Side 2</Button>
+          <Button type="button">Side 3</Button>
+        </ButtonBar>
+      </Modal>
+
+      <Modal
+        title="Fjern innhold"
+        expanded={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+      >
+        <Help
+          description={`Vil du slette ${title ? `"${title}"` : 'dette innholdet'} ? Handlingen kan ikke angres.`}
+        />
+        <ButtonBar>
+          <Button type="button" warning>
+            Slett
+          </Button>
+          <Button type="button">Avbryt</Button>
+        </ButtonBar>
+      </Modal>
+    </header>
+  )
+}
 
 const Main = ({ children, full }: { children: ReactNode; full?: boolean }) => (
   <div {...bem('main', { full })}>{children}</div>
@@ -249,29 +300,10 @@ const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>
 export default function Content({ nodeId, allNodes }: Props) {
   const node = allNodes?.[nodeId]
 
-  const contentActions: DropdownOptions = [
-    {
-      value: '0',
-      label: 'Flytt til annen side',
-      onClick: () => console.log('Flytt'),
-    },
-    {
-      value: '0',
-      label: 'Dupliser',
-      onClick: () => console.log('Flytt'),
-    },
-    {
-      value: '0',
-      label: 'Fjern spørsmål',
-      onClick: () => console.log('Fjern'),
-      styled: 'delete',
-    },
-  ]
-
   return (
     <section {...bem('')}>
       {node ? (
-        <Node node={node} contentActions={contentActions} />
+        <Node node={node} />
       ) : (
         <>
           <p {...bem('error')}>Fant ikke node med id: {nodeId}</p>
