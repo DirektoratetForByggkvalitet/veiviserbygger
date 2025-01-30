@@ -13,6 +13,7 @@ import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import useWizard from '@/hooks/useWizard'
 import { useParams } from 'react-router'
 import Page from '@/components/Page'
+import { PageContent, Branch } from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
 import { useVersion } from '@/hooks/useVersion'
 
@@ -60,58 +61,48 @@ export default function Overview() {
     setOpenMenu(true) // Open menu if no wizards is selected
   }
 
-  const addContentActions: DropdownOptions = page?.id ? [
-    {
-      group: 'Innhold',
-    },
-    {
-      value: '0',
-      label: 'Tekst',
-      onClick: () => addNode(page.id, { type: 'Text' })
-    },
-    {
-      group: 'Spørsmål',
-    },
-    {
-      value: '0',
-      label: 'Radiovalg',
-      onClick: () => addNode(page.id, { type: 'Radio' }),
-    },
-    {
-      value: '0',
-      label: 'Sjekkbokser',
-      onClick: () => addNode(page.id, { type: 'Checkbox' }),
-    },
-    {
-      value: '0',
-      label: 'Tekstfelt',
-      onClick: () => addNode(page.id, { type: 'Input' }),
-    },
-    {
-      value: '0',
-      label: 'Nummerfelt',
-      onClick: () => addNode(page.id, { type: 'Number' }),
-    },
-    {
-      group: 'Hendelser',
-    },
-    {
-      value: '0',
-      label: 'Vis ekstra informasjon',
-      onClick: () => addNode(page.id, { type: 'Branch', preset: 'ExtraInformation' })
-    },
-    {
-      value: '0',
-      label: 'Vis ekstra spørsmål',
-      onClick: () => addNode(page.id, { type: 'Branch', preset: 'NewQuestions' }),
-      disabled: true,
-    },
-    {
-      value: '0',
-      label: 'Negativt resultat',
-      onClick: () => addNode(page.id, { type: 'Branch', preset: 'NegativeResult' }),
-    },
-  ] : []
+  const contentAction = ({
+    pageId,
+    type,
+    preset,
+    disabled,
+  }: {
+    pageId: string
+    type: PageContent['type']
+    preset?: Branch['preset']
+    disabled?: boolean
+  }) => ({
+    value: preset || type,
+    label: getTypeText(preset || type),
+    icon: getTypeIcon(preset || type),
+    onClick: () => addNode(pageId, { type, preset }),
+    disabled: disabled,
+  })
+
+  const addContentActions: DropdownOptions = page?.id
+    ? [
+        {
+          group: 'Innhold',
+        },
+        contentAction({ pageId: page.id, type: 'Text' }),
+        {
+          group: 'Spørsmål',
+        },
+        contentAction({ pageId: page.id, type: 'Radio' }),
+        contentAction({ pageId: page.id, type: 'Select', disabled: true }),
+        contentAction({ pageId: page.id, type: 'Checkbox' }),
+        contentAction({ pageId: page.id, type: 'Input', disabled: true }),
+        contentAction({ pageId: page.id, type: 'Number', disabled: true }),
+
+        {
+          group: 'Hendelser',
+        },
+        contentAction({ pageId: page.id, type: 'Branch', preset: 'ExtraInformation' }),
+        contentAction({ pageId: page.id, type: 'Branch', preset: 'NegativeResult' }),
+        contentAction({ pageId: page.id, type: 'Branch', preset: 'NewQuestions' }),
+        contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
+      ]
+    : []
 
   return (
     <>

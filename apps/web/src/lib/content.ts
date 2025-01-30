@@ -19,7 +19,7 @@ const typeMap: Record<
   Checkbox: { title: 'Avkrysningsbokser', icon: 'SquareCheck', description: '' },
   Select: { title: 'Nedtrekksmeny', icon: 'Rows3', description: '' },
   Input: { title: 'Tekstfelt', icon: 'PenLine', description: '' },
-  Branch: { title: 'Gren', icon: 'Split', description: '' },
+  Branch: { title: 'Egendefinert gren', icon: 'Split', description: '' },
   Error: { title: 'Feil', icon: 'TriangleAlert', description: '' },
   Information: { title: 'Informasjon', icon: 'Info', description: '' },
   Number: { title: 'Tallfelt', icon: 'Hash', description: '' },
