@@ -38,6 +38,20 @@
         }
     }
 
+    &--warning {
+        color: $color-light;
+        background-color: $color-warning;
+
+        &:hover,
+        &:focus:focus-visible {
+            background-color: shade($color-warning, 6%);
+        }
+        &:disabled {
+            background-color: color(neutral);
+            color: $color-muted;
+        }
+    }
+
     &--small {
         @include font-size(small);
         padding: 11px 18px;

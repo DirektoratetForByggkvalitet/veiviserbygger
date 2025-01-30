@@ -1,0 +1,31 @@
+@use '@/styles/_helpers' as *;
+
+.button-bar {
+    $this: &;
+    display: flex;
+    margin-top: $spacing--small;
+    gap: $spacing--xsmall;
+    &--list {
+        flex-direction: column;
+        & > * {
+            flex-basis: 100%;
+        }
+    }
+}
+
+@keyframes enter {
+    0% {
+        clip-path: inset(0 0 100% 0);
+        box-shadow: none;
+        transform: translateY(70%);
+    }
+
+    30% {
+        box-shadow: none;
+    }
+
+    to {
+        clip-path: inset(-50px -50px -50px -50px);
+        box-shadow: $shadow;
+    }
+}
