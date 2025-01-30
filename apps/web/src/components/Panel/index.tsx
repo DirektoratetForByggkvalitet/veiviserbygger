@@ -14,6 +14,8 @@ interface Props {
   children: ReactNode
   open: boolean
   onClose: () => void
+  onNext?: () => void
+  onPrevious?: () => void
   backdrop?: boolean
   title: string
   optionsLabel?: string
@@ -24,6 +26,8 @@ export default function Panel({
   children,
   open,
   onClose,
+  onNext,
+  onPrevious,
   backdrop = true,
   title,
   optionsLabel,
@@ -54,12 +58,18 @@ export default function Panel({
         <>
           <aside {...bem('panel')} ref={panelRef} tabIndex={0}>
             <header {...bem('header')}>
-              <Button icon="ArrowLeft" size="small" subtle iconOnly>
-                Forrige side
-              </Button>
-              <Button icon="ArrowRight" size="small" subtle iconOnly>
-                Neste side
-              </Button>
+              <div>
+                {onPrevious && (
+                  <Button icon="ArrowLeft" size="small" subtle iconOnly onClick={onPrevious}>
+                    Forrige side
+                  </Button>
+                )}
+                {onNext && (
+                  <Button icon="ArrowRight" size="small" subtle iconOnly onClick={onNext}>
+                    Neste side
+                  </Button>
+                )}
+              </div>
               <h2 {...bem('title')}>{title}</h2>
               {options && (
                 <Dropdown

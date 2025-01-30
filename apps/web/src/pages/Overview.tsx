@@ -18,6 +18,7 @@ import Page from '@/components/Page'
 import { PageContent, Branch } from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
 import { useVersion } from '@/hooks/useVersion'
+import { getOrdered } from '@/lib/ordered'
 
 export default function Overview() {
   const [selected, setSelected] = useState<string | null>(null)
@@ -62,6 +63,30 @@ export default function Overview() {
     },
     [deletePage, handleClose],
   )
+
+  const handleNext = useCallback(() => {
+    if (version?.pages && selected) {
+      const ordered = getOrdered(version.pages)
+      console.log({ ordered, selected, version })
+      const index = ordered.findIndex(({ id }) => id === selected)
+      const newSelected = ordered[index + 1].id || null
+      if (newSelected !== null) {
+        setSelected(newSelected)
+      }
+    }
+  }, [selected])
+
+  const handlePrevious = useCallback(() => {
+    if (version?.pages && selected) {
+      const ordered = getOrdered(version.pages)
+      console.log({ ordered, selected, version })
+      const currentIndex = ordered.findIndex(({ id }) => id === selected)
+      const newSelected = ordered[currentIndex - 1].id || null
+      if (newSelected !== null) {
+        setSelected(newSelected)
+      }
+    }
+  }, [selected])
 
   const panelTitle = page?.heading ?? 'Uten tittel'
 
@@ -149,6 +174,8 @@ export default function Overview() {
         <Panel
           open={!!page}
           onClose={handleClose}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
           backdrop={false}
           optionsLabel="Sidevalg"
           options={[
