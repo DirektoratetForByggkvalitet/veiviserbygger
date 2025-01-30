@@ -101,6 +101,15 @@ export default function Overview() {
         contentAction({
           pageId: page.id,
           type: 'Radio',
+          defaultContent: {
+            options: [
+              {
+                id: 0, // TODO: Riktig å sette dette i ID?
+                type: 'Answer',
+                heading: '',
+              },
+            ],
+          },
         }),
         contentAction({ pageId: page.id, type: 'Select', disabled: true }),
         contentAction({ pageId: page.id, type: 'Checkbox' }),
