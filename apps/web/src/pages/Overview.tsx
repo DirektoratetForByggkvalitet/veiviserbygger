@@ -8,6 +8,8 @@ import Panel from '@/components/Panel'
 import Button from '@/components/Button'
 import Content from '@/components/Content'
 import Help from '@/components/Help'
+import Modal from '@/components/Modal'
+import ButtonBar from '@/components/ButtonBar'
 import menuState from '@/store/menu'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import useWizard from '@/hooks/useWizard'
@@ -19,6 +21,7 @@ import { useVersion } from '@/hooks/useVersion'
 
 export default function Overview() {
   const [selected, setSelected] = useState<string | null>(null)
+  const [showConfirmDeletePage, setShowConfirmDeletePage] = useState(false)
   const { wizardId, versionId } = useParams<{ wizardId?: string; versionId?: string }>()
   const { wizard, versions, version, nodes } = useWizard(wizardId, versionId)
   const { patchPage, deletePage, addNode } = useVersion()
@@ -26,7 +29,9 @@ export default function Overview() {
   const setOpenMenu = useSetAtom(menuState)
 
   const page = useMemo(() => {
-    if (!selected || !version || !version.pages?.[selected]) { return null }
+    if (!selected || !version || !version.pages?.[selected]) {
+      return null
+    }
     return { ...version?.pages?.[selected], id: selected }
   }, [version, selected])
 
@@ -46,14 +51,17 @@ export default function Overview() {
     setSelected(null)
   }, [selected])
 
-  const handleDelete = useCallback((pageId?: string) => () => {
-    if (!pageId) {
-      return
-    }
+  const handleDelete = useCallback(
+    (pageId?: string) => () => {
+      if (!pageId) {
+        return
+      }
 
-    deletePage(pageId)
-    handleClose()
-  }, [deletePage, handleClose])
+      deletePage(pageId)
+      handleClose()
+    },
+    [deletePage, handleClose],
+  )
 
   const panelTitle = page?.heading ?? 'Uten tittel'
 
@@ -117,18 +125,36 @@ export default function Overview() {
           options={[
             {
               value: '1',
-              label: 'Flytt siden',
-              onClick: handleDelete(page?.id),
+              label: 'Dupliser siden',
+              onClick: () => console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
+              disabled: true,
             },
             {
               value: '1',
               label: 'Fjern siden',
               styled: 'delete',
-              onClick: handleDelete(page?.id),
+              onClick: () => setShowConfirmDeletePage(true),
             },
           ]}
           title={panelTitle}
         >
+          <Modal
+            title="Fjern siden"
+            expanded={showConfirmDeletePage}
+            onClose={() => setShowConfirmDeletePage(false)}
+          >
+            <Help
+              description={`Vil du slette ${page?.heading ? `siden "${page.heading}"` : 'denne siden'} med alt innhold? Handlingen kan ikke angres.`}
+            />
+            <ButtonBar>
+              <Button type="button" warning onClick={() => handleDelete(page?.id)}>
+                Slett siden
+              </Button>
+              <Button type="button" onClick={() => setShowConfirmDeletePage(false)}>
+                Avbryt
+              </Button>
+            </ButtonBar>
+          </Modal>
           {page?.id ? (
             <>
               <Form>
@@ -188,7 +214,7 @@ export default function Overview() {
             selected={selected}
             data={{
               ...version,
-              pages: version?.pages
+              pages: version?.pages,
             }}
             allNodes={nodes}
           />

@@ -1,6 +1,5 @@
 import { type ReactNode, useEffect, useRef } from 'react'
 
-import Icon from '@/components/Icon'
 import Transition from '@/components/Transition'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Button from '@/components/Button'
@@ -65,9 +64,6 @@ export default function Panel({
                 Neste side
               </Button>
               <h2 {...bem('title')}>{title}</h2>
-              <Button icon="ArrowUpDown" size="small" subtle iconOnly>
-                Endre rekkefølge
-              </Button>
               {options && (
                 <Dropdown
                   icon="Settings2"
