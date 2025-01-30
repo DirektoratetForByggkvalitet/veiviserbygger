@@ -1,26 +1,28 @@
-@use '@/styles/_helpers' as *;
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/vars';
 
 .minimap {
     $this: &;
     display: flex;
     width: 100%;
-    height: calc(100vh - #{$header-height});
+    height: calc(100vh - #{vars.$header-height});
     overflow: auto;
 
-    transition: width 500ms $ease-in-out-quint--custom;
+    transition: width 500ms vars.$ease-in-out-quint--custom;
 
-    @include no-select;
+    @include mixins.no-select;
 
     &__title {
-        @include font(base, normal);
-        @include font-size(small, 1);
+        @include mixins.font(base, normal);
+        @include mixins.font-size(small, 1);
         display: flex;
         align-items: center;
-        height: $header-height;
+        height: vars.$header-height;
     }
 
     &__title-text {
-        @include text-overflow;
+        @include mixins.text-overflow;
     }
 
     &__page {
@@ -29,19 +31,19 @@
         flex-direction: column;
         width: var(--minimap-page-width);
         flex-shrink: 0;
-        padding: 0 $margin;
-        transition: background-color 200ms $ease-in-out-quint--custom;
+        padding: 0 vars.$margin;
+        transition: background-color 200ms vars.$ease-in-out-quint--custom;
 
         &:not(:last-child) {
-            border-right: $border-style;
+            border-right: vars.$border-style;
         }
 
         &:hover,
         &:focus:focus-visible {
-            background-color: color(neutral, light);
+            background-color: colors.get(neutral, light);
             #{$this}__placeholder,
             #{$this}__content--placeholder {
-                background-color: color(neutral, base);
+                background-color: colors.get(neutral, base);
             }
         }
 
@@ -49,22 +51,22 @@
             &,
             &:hover,
             &:focus:focus-visible {
-                background-color: color(primary, light);
-                border-color: color(primary, light);
+                background-color: colors.get(primary, light);
+                border-color: colors.get(primary, light);
             }
         }
 
         &:has(+ #{$this}__page--selected) {
-            border-color: color(primary, light);
+            border-color: colors.get(primary, light);
         }
     }
 
     &__sub-title {
         $line-height: 1.3;
-        @include font(base, normal);
-        @include font-size(xsmall, $line-height);
+        @include mixins.font(base, normal);
+        @include mixins.font-size(xsmall, $line-height);
         text-wrap: balance;
-        @include line-clamp(2);
+        @include mixins.line-clamp(2);
         height: (1em * 2) * $line-height;
     }
 
@@ -74,12 +76,12 @@
         align-items: flex-start;
         justify-content: space-between;
         padding: 7px 8px;
-        border: $border-style;
-        background-color: $color-light;
+        border: vars.$border-style;
+        background-color: colors.$color-light;
         margin-bottom: 4px;
         border-radius: 6px;
 
-        @include min-width(md) {
+        @include mixins.min-width(md) {
             padding: 9px 12px;
         }
         &--branch {
@@ -96,21 +98,21 @@
     &__content {
         flex-grow: 1;
         &--placeholder {
-            border-radius: $border-radius;
-            background-color: color(neutral, light);
-            transition: background-color 200ms $ease-in-out-quint--custom;
+            border-radius: vars.$border-radius;
+            background-color: colors.get(neutral, light);
+            transition: background-color 200ms vars.$ease-in-out-quint--custom;
         }
     }
 
     &__placeholder {
-        @include font(base, normal);
-        @include font-size(xsmall, 1);
+        @include mixins.font(base, normal);
+        @include mixins.font-size(xsmall, 1);
         display: flex;
         align-items: center;
-        padding: $spacing--xsmall;
-        border-radius: $border-radius;
-        background-color: color(neutral, light);
-        transition: background-color 200ms $ease-in-out-quint--custom;
+        padding: vars.$spacing--xsmall;
+        border-radius: vars.$border-radius;
+        background-color: colors.get(neutral, light);
+        transition: background-color 200ms vars.$ease-in-out-quint--custom;
     }
 
     &__placeholder-text {

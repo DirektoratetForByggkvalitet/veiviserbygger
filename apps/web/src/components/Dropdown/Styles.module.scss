@@ -1,4 +1,6 @@
-@use '@/styles/helpers.scss' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
 
 .dropdown {
     $this: &;
@@ -6,35 +8,35 @@
     width: 100%;
 
     &__trigger {
-        @include font-size(base);
+        @include mixins.font-size(base);
         position: relative;
         display: grid;
-        border: $border-style;
+        border: vars.$border-style;
         text-align: left;
         width: 100%;
-        background-color: $color-light;
+        background-color: colors.$color-light;
 
         &:hover {
-            border-color: shade(color(neutral), 6%);
+            border-color: shade(colors.get(neutral), 6%);
 
             #{$this}__label {
-                color: shade($color-muted, 20%);
+                color: shade(colors.$color-muted, 20%);
             }
         }
 
         &--expanded {
-            z-index: $level-3 + 1;
+            z-index: vars.$level-3 + 1;
 
             border-radius: 2px;
-            box-shadow: 0 0 0 1px color(primary);
+            box-shadow: 0 0 0 1px colors.get(primary);
 
             &,
             &:hover {
-                border-color: color(primary);
+                border-color: colors.get(primary);
             }
 
             #{$this}__label {
-                color: $color-text;
+                color: colors.$color-text;
             }
         }
 
@@ -44,18 +46,18 @@
     }
 
     &__label {
-        @include font-size(small);
-        color: $color-muted;
-        padding: $form-padding-y $form-padding-x 3px;
+        @include mixins.font-size(small);
+        color: colors.$color-muted;
+        padding: vars.$form-padding-y vars.$form-padding-x 3px;
     }
 
     &__value {
         border-radius: 0;
-        padding: $form-padding-y $form-padding-x $form-padding-y;
+        padding: vars.$form-padding-y vars.$form-padding-x vars.$form-padding-y;
         background-color: transparent;
 
-        @include input-placeholder {
-            color: $color-muted;
+        @include mixins.input-placeholder {
+            color: colors.$color-muted;
         }
     }
 
@@ -66,32 +68,32 @@
         top: 0;
         right: 0;
         height: 100%;
-        padding-right: $form-padding-x;
+        padding-right: vars.$form-padding-x;
     }
 
     &__animation {
         position: relative;
 
         &--expanded {
-            z-index: $level-3;
+            z-index: vars.$level-3;
         }
     }
 
     &__options {
-        @include font-size(small);
+        @include mixins.font-size(small);
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        color: $color-text;
-        border: $border-style;
+        color: colors.$color-text;
+        border: vars.$border-style;
         border-radius: 2px;
-        background-color: $color-light;
+        background-color: colors.$color-light;
 
         max-height: min(50vh, 600px);
         overflow-x: hidden;
         overflow-y: auto;
 
-        @include overflow-scroll;
+        @include mixins.overflow-scroll;
         overscroll-behavior: contain;
     }
 
@@ -106,12 +108,12 @@
         max-width: 500px;
         box-shadow: 0 6px 12px rgba(black, 0.05);
 
-        @include entering {
-            animation: enter 300ms $ease-out-quart both;
+        @include mixins.entering {
+            animation: enter 300ms vars.$ease-out-quart both;
         }
 
-        @include exiting {
-            animation: exit 300ms $ease-in-out-quint--custom forwards;
+        @include mixins.exiting {
+            animation: exit 300ms vars.$ease-in-out-quint--custom forwards;
         }
 
         &--left {
@@ -132,40 +134,40 @@
     }
 
     &__option-group {
-        @include font-size(xsmall);
-        color: $color-muted;
+        @include mixins.font-size(xsmall);
+        color: colors.$color-muted;
         white-space: nowrap;
         text-align: left;
-        padding: $spacing--xsmall;
-        background: color(neutral, xlight);
+        padding: vars.$spacing--xsmall;
+        background: colors.get(neutral, xlight);
     }
 
     &__option {
-        @include font-size(small);
+        @include mixins.font-size(small);
         display: inline-flex;
         white-space: nowrap;
         text-align: left;
-        padding: $form-padding-y $form-padding-x;
+        padding: vars.$form-padding-y vars.$form-padding-x;
 
         &:not(:last-child) {
-            border-bottom: $border-style--weak;
+            border-bottom: vars.$border-style--weak;
         }
 
         &--disabled {
-            color: $color-muted;
+            color: colors.$color-muted;
         }
 
         &:hover:not(#{$this}__option--disabled),
         &:focus:focus-visible:not(#{$this}__option--disabled),
         &--selected {
-            color: $color-light;
-            background-color: color(primary);
+            color: colors.$color-light;
+            background-color: colors.get(primary);
         }
 
         &--delete,
         &--delete:hover,
         &--delete:focus:focus-visible {
-            color: $color-warning;
+            color: colors.$color-warning;
         }
     }
 
@@ -174,7 +176,7 @@
         align-items: center;
         justify-content: center;
         line-height: 100%;
-        margin-right: $spacing--xsmall;
+        margin-right: vars.$spacing--xsmall;
     }
 
     &--simple,
@@ -183,7 +185,7 @@
         width: fit-content;
 
         #{$this}__trigger {
-            @include font-size(small);
+            @include mixins.font-size(small);
             display: flex;
             align-items: center;
             border: none;
@@ -202,20 +204,20 @@
 
     &--sentence {
         #{$this}__trigger {
-            @include font-size(small);
-            border-radius: $border-radius;
-            background-color: color(neutral, light);
+            @include mixins.font-size(small);
+            border-radius: vars.$border-radius;
+            background-color: colors.get(neutral, light);
             padding: 4px 4px;
             height: 35px;
         }
 
         #{$this}__trigger:hover,
         #{$this}__trigger:focus {
-            background-color: color(neutral);
+            background-color: colors.get(neutral);
         }
 
         #{$this}__label {
-            color: color(neutral, light);
+            color: colors.get(neutral, light);
         }
 
         #{$this}__value {
@@ -236,13 +238,13 @@
             justify-content: center;
             height: 35px;
             width: 35px;
-            border-radius: $border-radius;
-            background-color: color(neutral, light);
+            border-radius: vars.$border-radius;
+            background-color: colors.get(neutral, light);
         }
 
         #{$this}__trigger:hover,
         #{$this}__trigger:focus {
-            background-color: color(neutral);
+            background-color: colors.get(neutral);
         }
 
         #{$this}__icon {
@@ -250,12 +252,12 @@
         }
 
         #{$this}__wrapper {
-            top: $spacing--xsmall;
+            top: vars.$spacing--xsmall;
         }
 
         #{$this}__wrapper--above {
             top: auto;
-            bottom: calc(35px + $spacing--xsmall);
+            bottom: calc(35px + vars.$spacing--xsmall);
         }
     }
 }

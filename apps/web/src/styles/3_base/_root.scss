@@ -1,3 +1,5 @@
+@use "../1_settings/mixins";
+
 :root {
     // Spacings
     --spacing: 20px;
@@ -12,7 +14,7 @@
 
     --minimap-page-width: 270px;
 
-    @include min-width(md) {
+    @include mixins.min-width(md) {
         --spacing: 30px;
         --spacing--small: 20px;
         --gutter: 40px;
@@ -23,12 +25,12 @@
         --margin: 16px;
     }
 
-    @include min-width(lg) {
+    @include mixins.min-width(lg) {
         --spacing: 40px;
         --spacing--large: 80px;
     }
 
-    @include min-width(xl) {
+    @include mixins.min-width(xl) {
         --panel-width: calc(100% - (var(--minimap-page-width) * 2));
     }
 }

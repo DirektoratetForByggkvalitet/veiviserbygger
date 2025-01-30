@@ -1,23 +1,25 @@
-@use '@/styles/_helpers' as *;
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/vars';
 
 .header {
     $this: &;
-    @include font-size(base);
+    @include mixins.font-size(base);
     position: relative;
     display: flex;
     align-items: center;
-    height: $header-height;
+    height: vars.$header-height;
     // padding-left: $margin;
-    padding-right: $margin;
-    z-index: $level-3;
+    padding-right: vars.$margin;
+    z-index: vars.$level-3;
 
-    border-bottom: $border-style;
-    background-color: $color-light;
+    border-bottom: vars.$border-style;
+    background-color: colors.$color-light;
 
     &__name {
-        @include font-size(base);
+        @include mixins.font-size(base);
         &:first-child {
-            margin-left: $spacing--small;
+            margin-left: vars.$spacing--small;
         }
     }
 
@@ -26,7 +28,7 @@
         align-items: center;
         justify-content: center;
         height: 100%;
-        padding: 0 $spacing--small 1px; // 1px = Optical centering
+        padding: 0 vars.$spacing--small 1px; // 1px = Optical centering
     }
 
     &__actions {
@@ -34,7 +36,7 @@
         align-items: center;
         justify-content: center;
         margin-left: auto;
-        gap: $spacing--small;
+        gap: vars.$spacing--small;
     }
 
     &--open {

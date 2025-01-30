@@ -1,4 +1,6 @@
-@use '@/styles/helpers.scss' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
 
 .modal {
     $this: &;
@@ -13,27 +15,27 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: $level-4 + 1;
-    padding: min(60px, #{$margin}) $margin;
+    z-index: vars.$level-4 + 1;
+    padding: min(60px, #{vars.$margin}) vars.$margin;
 
-    @include overflow-scroll-y;
+    @include mixins.overflow-scroll-y;
 
     &__content {
-        padding: $margin;
+        padding: vars.$margin;
     }
 
     &__header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: $header-height;
-        border-bottom: $border-style;
+        height: vars.$header-height;
+        border-bottom: vars.$border-style;
     }
 
     &__title {
-        @include font(base, normal);
-        @include font-size(base);
-        padding: 0 $margin;
+        @include mixins.font(base, normal);
+        @include mixins.font-size(base);
+        padding: 0 vars.$margin;
     }
 
     &__close {
@@ -41,7 +43,7 @@
         align-items: center;
         justify-content: center;
         align-self: stretch;
-        padding: 0 $margin;
+        padding: 0 vars.$margin;
     }
 
     &__wrapper {
@@ -55,13 +57,13 @@
     }
 
     &__box {
-        color: $color-text;
+        color: colors.$color-text;
         display: flex;
         flex-direction: column;
         padding: 0;
-        border: $border-style;
-        background-color: $color-light;
-        box-shadow: $shadow;
+        border: vars.$border-style;
+        background-color: colors.$color-light;
+        box-shadow: vars.$shadow;
     }
 
     &__hidden-close {
@@ -78,13 +80,13 @@
         width: 100%;
         height: 100%;
         z-index: 2;
-        background-color: rgba($color-background, 0.8);
+        background-color: rgba(colors.$color-background, 0.8);
         outline: none;
         cursor: default;
-        animation: fade-in 500ms $ease-out-quad both;
+        animation: fade-in 500ms vars.$ease-out-quad both;
 
         &--animate-out {
-            animation: fade-out 700ms $ease-in-out-quint--custom forwards;
+            animation: fade-out 700ms vars.$ease-in-out-quint--custom forwards;
         }
 
         &--prevent-close {
@@ -95,7 +97,7 @@
     &--entering {
         #{$this}__box {
             will-change: clip-path, box-shadow, transform, opacity;
-            animation: enter 400ms $ease-in-out-quint--custom both;
+            animation: enter 400ms vars.$ease-in-out-quint--custom both;
             animation-delay: 100ms;
         }
     }
@@ -103,7 +105,7 @@
     &--exiting {
         #{$this}__box {
             will-change: clip-path, box-shadow, transform, opacity;
-            animation: exit 400ms $ease-in-out-quint--custom both;
+            animation: exit 400ms vars.$ease-in-out-quint--custom both;
         }
     }
 }
@@ -133,14 +135,14 @@
 
     to {
         clip-path: inset(-50px -50px -50px -50px);
-        box-shadow: $shadow;
+        box-shadow: vars.$shadow;
     }
 }
 
 @keyframes exit {
     from {
         clip-path: inset(-50px -50px -50px -50px);
-        box-shadow: $shadow;
+        box-shadow: vars.$shadow;
     }
 
     to {

@@ -1,12 +1,10 @@
 @charset 'UTF-8';
 
-@import 'helpers';
+@use '2_generic/fonts';
+@use '2_generic/reset';
 
-@import '2_generic/fonts';
-@import '2_generic/reset';
-
-@import '3_base/root';
-@import '3_base/html';
-@import '3_base/body';
-@import '3_base/link';
-@import '3_base/type';
+@use '3_base/root';
+@use '3_base/html';
+@use '3_base/body';
+@use '3_base/link';
+@use '3_base/type';

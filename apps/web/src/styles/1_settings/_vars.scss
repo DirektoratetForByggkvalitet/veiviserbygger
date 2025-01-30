@@ -1,10 +1,4 @@
-$breakpoints: (
-    xs: 410px,
-    sm: 620px,
-    md: 760px,
-    lg: 1160px,
-    xl: 1520px,
-);
+@use 'colors';
 
 // Grids max-width
 $container-base: getStrippedPxSizeInRem(1220px);
@@ -36,9 +30,9 @@ $panel-width: var(--panel-width);
 // Borders and strokes
 $border-width: 1px;
 $border-radius: 8px;
-$border-style: $border-width solid color(neutral);
-$border-style--weak: $border-width solid color(neutral, xlight);
-$border-style--dashed: $border-width dashed color(neutral);
+$border-style: $border-width solid colour(neutral);
+$border-style--weak: $border-width solid colors.get(neutral, xlight);
+$border-style--dashed: $border-width dashed colors.get(neutral);
 
 $shadow:
     0px 0px 1.9px -6px rgba(0, 0, 0, 0.02),

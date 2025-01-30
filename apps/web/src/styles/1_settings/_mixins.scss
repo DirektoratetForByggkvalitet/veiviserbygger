@@ -1,23 +1,26 @@
+@use 'sass:list';
+@use 'sass:map';
 @use 'sass:math';
-
-// Colors
-@function color($color-name, $color-variant: 'base') {
-    @return map-get(map-get($colors, $color-name), $color-variant);
-}
+@use 'sass:meta';
+@use 'sass:color';
+@use 'constants';
+@use 'type';
+@use 'colors';
+@use 'vars';
 
 // Add percentage of white to a color
 @function tint($color, $percent) {
-    @return mix(white, $color, $percent);
+    @return color.mix(white, $color, $percent);
 }
 
 // Add percentage of black to a color
 @function shade($color, $percent) {
-    @return mix(black, $color, $percent);
+    @return color.mix(black, $color, $percent);
 }
 
 // Strip units from number
 @function strip-unit($number) {
-    @if type-of($number) == 'number' and not unitless($number) {
+    @if meta.type-of($number) == 'number' and not math.is-unitless($number) {
         @return math.div($number, $number * 0 + 1);
     }
 
@@ -26,23 +29,23 @@
 
 // Font family and weights
 @mixin font($font-family: base, $weight: null) {
-    $family: map-get($fonts, $font-family);
+    $family: map.get(type.$fonts, $font-family);
     @if $weight {
-        @if map-has-key($family, $weight) {
-            $f-weight: map-get($family, $weight);
+        @if map.has-key($family, $weight) {
+            $f-weight: map.get($family, $weight);
 
-            @if (length($f-weight) > 1) {
-                font-family: nth($f-weight, 2), map-get($family, fallback);
-                font-weight: nth($f-weight, 1);
+            @if (list.length($f-weight) > 1) {
+                font-family: list.nth($f-weight, 2), map.get($family, fallback);
+                font-weight: list.nth($f-weight, 1);
             } @else {
-                font-family: map-get($family, font), map-get($family, fallback);
+                font-family: map.get($family, font), map.get($family, fallback);
                 font-weight: $f-weight;
             }
         } @else {
-            font-family: map-get($family, font), map-get($family, fallback);
+            font-family: map.get($family, font), map.get($family, fallback);
         }
     } @else {
-        font-family: map-get($family, font), map-get($family, fallback);
+        font-family: map.get($family, font), map.get($family, fallback);
     }
 }
 
@@ -50,13 +53,13 @@
 // Calculation from: https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/
 @function clampBuilder($minFontSize, $maxFontSize) {
     // From viewport
-    $minWidthPx: strip-unit(map-get($breakpoints, sm));
+    $minWidthPx: strip-unit(map.get(constants.$breakpoints, sm));
     // To viewport
-    $maxWidthPx: strip-unit(map-get($breakpoints, xl));
+    $maxWidthPx: strip-unit(map.get(constants.$breakpoints, xl));
 
     // Combine with base font size (px)
-    $minWidth: math.div($minWidthPx, $font-size-base);
-    $maxWidth: math.div($maxWidthPx, $font-size-base);
+    $minWidth: math.div($minWidthPx, type.$font-size-base);
+    $maxWidth: math.div($maxWidthPx, type.$font-size-base);
 
     // Create the scale between min and max
     $slope: math.div(($maxFontSize - $minFontSize), ($maxWidth - $minWidth));
@@ -73,16 +76,16 @@
 
 // Get size from px to rem without units
 @function getStrippedPxSizeInRem($size) {
-    @return strip-unit(math.div($size, $font-size-base));
+    @return strip-unit(math.div($size, type.$font-size-base));
 }
 
 @mixin font-size($size: base, $custom-line-height: false) {
-    $sizes: map-get($font-sizes, $size);
+    $sizes: map.get(type.$font-sizes, $size);
 
-    @if map-has-key($sizes, base) and map-has-key($sizes, to) {
+    @if map.has-key($sizes, base) and map.has-key($sizes, to) {
         // Convert to rem (without unit)
-        $base: getStrippedPxSizeInRem(map-get($sizes, base));
-        $to: getStrippedPxSizeInRem(map-get($sizes, to));
+        $base: getStrippedPxSizeInRem(map.get($sizes, base));
+        $to: getStrippedPxSizeInRem(map.get($sizes, to));
 
         // Build the clamp..
         $font-size: clampBuilder($base, $to);
@@ -95,13 +98,13 @@
         }
     } @else {
         // If only base is set
-        $base: getStrippedPxSizeInRem(map-get($sizes, base));
+        $base: getStrippedPxSizeInRem(map.get($sizes, base));
         font-size: #{$base}rem;
     }
 
     // Set the line height
-    @if (map-has-key($sizes, line-height) and not $custom-line-height) {
-        $line-height: map-get($sizes, line-height);
+    @if (map.has-key($sizes, line-height) and not $custom-line-height) {
+        $line-height: map.get($sizes, line-height);
         line-height: $line-height;
     }
 
@@ -131,24 +134,24 @@
 
 // Media queries
 @mixin min-width($name) {
-    @if not map-has-key($breakpoints, $name) {
+    @if not map.has-key(constants.$breakpoints, $name) {
         @media (min-width: $name) {
             @content;
         }
     } @else {
-        @media (min-width: map-get($breakpoints, $name)) {
+        @media (min-width: map.get(constants.$breakpoints, $name)) {
             @content;
         }
     }
 }
 
 @mixin max-width($name) {
-    @if not map-has-key($breakpoints, $name) {
+    @if not map.has-key(constants.$breakpoints, $name) {
         @media (max-width: ($name - 1)) {
             @content;
         }
     } @else {
-        @media (max-width: (map-get($breakpoints, $name) - 1)) {
+        @media (max-width: (map.get(constants.$breakpoints, $name) - 1)) {
             @content;
         }
     }
@@ -210,17 +213,17 @@
 
 // Create container size based on 24 grid
 @function makeContainerSize($units: 12) {
-    @return calc(#{math.div($container-base, 12) * $units}rem + (var(--margin) * 2));
+    @return calc(#{math.div(vars.$container-base, 12) * $units}rem + (var(--margin) * 2));
 }
 
 // Make container
 @mixin container($size: base) {
     width: 100%;
-    max-width: map-get($container-width, $size);
+    max-width: map.get(vars.$container-width, $size);
     margin-left: auto;
     margin-right: auto;
-    padding-left: $margin;
-    padding-right: $margin;
+    padding-left: vars.$margin;
+    padding-right: vars.$margin;
 }
 
 @mixin uppercase {
@@ -319,8 +322,8 @@
 @mixin underline($strong: false, $color-override: false, $offset-additions: 0) {
     $offset: 0.1em + $offset-additions;
     $thickness: 1px;
-    $color: rgba($color-text, 0.2);
-    $bg: $color-background;
+    $color: rgba(colors.$color-text, 0.2);
+    $bg: colors.$color-background;
     text-decoration: underline;
 
     @if ($strong) {
@@ -373,7 +376,11 @@
     @return calc(#{$variable} * -1);
 }
 
-@mixin skeleton($bg: $color-background, $bg-shade: darken($color-background, 5%), $speed: 800ms) {
+@mixin skeleton(
+    $bg: colors.$color-background,
+    $bg-shade: color.adjust(colors.$color-background, $lightness: -5%),
+    $speed: 800ms
+) {
     background: linear-gradient(to right, $bg-shade, $bg, $bg-shade), $bg-shade;
     background-repeat: repeat-y;
     background-size: 320px 500px;

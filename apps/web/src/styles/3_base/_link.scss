@@ -1,10 +1,12 @@
+@use "../1_settings/mixins";
+
 a {
     cursor: pointer;
 
     color: inherit;
 
     &:not([class]) {
-        @include underline;
+        @include mixins.underline;
     }
 
     &:hover,

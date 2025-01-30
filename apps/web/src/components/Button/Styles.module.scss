@@ -1,59 +1,61 @@
-@use '@/styles/_helpers' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
 
 .button {
     $this: &;
-    @include font-size(base);
+    @include mixins.font-size(base);
     display: inline-flex;
     padding: 14px 24px;
-    border-radius: $border-radius;
-    background-color: color(neutral, light);
+    border-radius: vars.$border-radius;
+    background-color: colors.get(neutral, light);
     align-items: center;
     justify-content: center;
     transition:
-        background-color 200ms $ease-in-out-quint--custom,
-        color 200ms $ease-in-out-quint--custom;
+        background-color 200ms vars.$ease-in-out-quint--custom,
+        color 200ms vars.$ease-in-out-quint--custom;
 
     &:hover,
     &:focus:focus-visible {
-        background-color: color(neutral);
+        background-color: colors.get(neutral);
     }
 
     &__icon {
         display: inline-flex;
         align-items: center;
-        padding-right: $spacing--xsmall;
+        padding-right: vars.$spacing--xsmall;
     }
 
     &--primary {
-        color: $color-light;
-        background-color: color(primary);
+        color: colors.$color-light;
+        background-color: colors.get(primary);
 
         &:hover,
         &:focus:focus-visible {
-            background-color: shade(color(primary), 4%);
+            background-color: mixins.shade(colors.get(primary), 4%);
         }
         &:disabled {
-            background-color: color(neutral);
-            color: $color-muted;
+            background-color: colors.get(neutral);
+            color: colors.$color-muted;
         }
     }
 
     &--warning {
-        color: $color-light;
-        background-color: $color-warning;
+        color: colors.$color-light;
+        background-color: colors.$color-warning;
 
         &:hover,
         &:focus:focus-visible {
-            background-color: shade($color-warning, 6%);
+            background-color: shade(colors.$color-warning, 6%);
         }
         &:disabled {
-            background-color: color(neutral);
-            color: $color-muted;
+            background-color: colors.get(neutral);
+            color: colors.$color-muted;
         }
     }
 
     &--small {
-        @include font-size(small);
+        @include mixins.font-size(small);
         padding: 11px 18px;
     }
 
@@ -62,7 +64,7 @@
         width: fit-content;
         &:hover,
         &:focus:focus-visible {
-            background-color: color(neutral, xlight);
+            background-color: colors.get(neutral, xlight);
         }
     }
 

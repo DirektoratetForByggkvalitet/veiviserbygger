@@ -1,11 +1,12 @@
-@use '@/styles/_helpers' as *;
+@use '@/styles/1_settings/vars';
 
 .page-simple {
     $this: &;
-    padding: $spacing--large 0;
+    padding: vars.$spacing--large 0;
+
     &__title {
-        border-bottom: $border-style;
-        padding-bottom: $spacing--small;
-        margin-bottom: $spacing--small;
+        border-bottom: vars.$border-style;
+        padding-bottom: vars.$spacing--small;
+        margin-bottom: vars.$spacing--small;
     }
 }

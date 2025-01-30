@@ -1,5 +1,7 @@
+@use "../1_settings/type";
+
 html {
-    font-size: #{$font-size-base}px;
+    font-size: #{type.$font-size-base}px;
     // scroll-snap-type: y proximity;
     // scroll-padding: 100px 0 0;
 }

@@ -24,5 +24,12 @@ export default defineConfig(({ mode }) => {
         '@': resolve(__dirname, './src'),
       },
     },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          silenceDeprecations: ['mixed-decls'],
+        },
+      },
+    },
   }
 })

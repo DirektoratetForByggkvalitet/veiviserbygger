@@ -1,4 +1,6 @@
-@use '@/styles/helpers.scss' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
 
 .content {
     $this: &;
@@ -11,23 +13,25 @@
         'full full full'
         'aside aside aside';
     width: 100%;
-    margin-bottom: $spacing--small;
-    @include min-width(lg) {
+    margin-bottom: vars.$spacing--small;
+
+    @include mixins.min-width(lg) {
         grid-template-areas:
             'header header header'
             'main main aside'
             'full full full';
     }
+
     &__header {
         grid-area: header;
         display: flex;
         align-items: center;
-        gap: $spacing--xsmall;
-        padding: $spacing--xsmall;
+        gap: vars.$spacing--xsmall;
+        padding: vars.$spacing--xsmall;
     }
 
     &__header-icon {
-        color: $color-muted;
+        color: colors.$color-muted;
     }
 
     &__main,
@@ -35,14 +39,14 @@
     &__inline-main {
         display: flex;
         flex-direction: column;
-        gap: $spacing--small;
-        padding: $spacing--small;
+        gap: vars.$spacing--small;
+        padding: vars.$spacing--small;
     }
 
     &__main {
         grid-area: main;
-        border: $border-style;
-        background-color: $color-light;
+        border: vars.$border-style;
+        background-color: colors.$color-light;
         &--full {
             grid-area: full;
         }
@@ -50,12 +54,12 @@
 
     &__aside {
         grid-area: aside;
-        border: $border-style;
+        border: vars.$border-style;
         border-top: none;
-        background-color: $color-light;
+        background-color: colors.$color-light;
 
-        @include min-width(lg) {
-            border-top: $border-style;
+        @include mixins.min-width(lg) {
+            border-top: vars.$border-style;
             border-left: none;
         }
     }
@@ -65,15 +69,15 @@
     }
 
     &__title {
-        @include font-size(small);
-        color: $color-muted;
+        @include mixins.font-size(small);
+        color: colors.$color-muted;
         font-weight: normal;
         flex-grow: 2;
     }
 
     &__sub-title {
-        @include font-size(small);
-        color: $color-muted;
+        @include mixins.font-size(small);
+        color: colors.$color-muted;
         font-weight: normal;
     }
 
@@ -85,7 +89,7 @@
 
     &__grid {
         display: flex;
-        gap: $spacing--small;
+        gap: vars.$spacing--small;
     }
 
     &__option {
@@ -100,8 +104,8 @@
 
     &__option-actions {
         position: absolute;
-        top: $spacing--small;
-        right: $spacing--small;
+        top: vars.$spacing--small;
+        right: vars.$spacing--small;
     }
 
     &__field-list > *:not(:first-child) {

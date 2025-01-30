@@ -1,9 +1,11 @@
-@use '@/styles/_helpers' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
 
 .help {
     $this: &;
-    @include font-size(small);
-    color: $color-muted;
-    margin: $spacing--xsmall 0;
+    @include mixins.font-size(small);
+    color: colors.$color-muted;
+    margin: vars.$spacing--xsmall 0;
     max-width: 500px;
 }

@@ -1,46 +1,48 @@
-@use '@/styles/helpers.scss' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
 
 .input {
     $this: &;
-    @include font-size(base);
+    @include mixins.font-size(base);
     display: grid;
     width: 100%;
-    border: $border-style;
-    background-color: $color-light;
+    border: vars.$border-style;
+    background-color: colors.$color-light;
     position: relative;
 
     &:hover {
-        border-color: shade(color(neutral), 6%);
+        border-color: shade(colors.get(neutral), 6%);
 
         #{$this}__label {
-            color: shade($color-muted, 20%);
+            color: shade(colors.$color-muted, 20%);
         }
     }
 
     &:focus-within {
         border-radius: 2px;
-        border-color: color(primary);
-        box-shadow: 0 0 0 1px color(primary);
+        border-color: colors.get(primary);
+        box-shadow: 0 0 0 1px colors.get(primary);
 
         #{$this}__label {
-            color: $color-text;
+            color: colors.$color-text;
         }
     }
 
     &__label {
-        @include font-size(small);
-        color: $color-muted;
-        padding: $form-padding-y $form-padding-x 3px;
+        @include mixins.font-size(small);
+        color: colors.$color-muted;
+        padding: vars.$form-padding-y vars.$form-padding-x 3px;
         cursor: text;
     }
 
     &__input {
         border-radius: 0;
-        padding: 3px $form-padding-x $form-padding-y;
+        padding: 3px vars.$form-padding-x vars.$form-padding-y;
         background-color: transparent;
 
-        @include input-placeholder {
-            color: color(neutral, base);
+        @include mixins.input-placeholder {
+            color: colors.get(neutral, base);
         }
     }
 
@@ -57,10 +59,10 @@
             position: absolute;
             top: 8px;
             right: 8px;
-            animation: dirtyFadeIn 600ms $ease-out-quart backwards;
+            animation: dirtyFadeIn 600ms vars.$ease-out-quart backwards;
             animation-delay: 1000ms;
-            background: $color-warning;
-            color: $color-light;
+            background: colors.$color-warning;
+            color: colors.$color-light;
             padding: 4px 8px;
             border-radius: 4px;
         }
@@ -71,16 +73,16 @@
     }
 
     &--sentence {
-        @include font-size(small);
+        @include mixins.font-size(small);
         border: none;
-        border-radius: $border-radius;
-        background-color: color(neutral, xlight);
+        border-radius: vars.$border-radius;
+        background-color: colors.get(neutral, xlight);
         padding: 4px 4px;
         height: 35px;
         width: auto;
         &:hover,
         &:focus {
-            background-color: color(neutral, light);
+            background-color: colors.get(neutral, light);
         }
         #{$this}__input {
             min-width: 0;
@@ -88,13 +90,13 @@
     }
 
     &--hide-if-empty:not(:focus-within) #{$this}__input {
-        height: calc($form-padding-y - 3px);
+        height: calc(vars.$form-padding-y - 3px);
         padding: 0;
     }
 
     &--hide-if-empty:focus-within #{$this}__input {
         height: 50px;
-        animation: inputFadeIn 200ms $ease-out-quart both;
+        animation: inputFadeIn 200ms vars.$ease-out-quart both;
     }
 }
 
@@ -109,6 +111,6 @@
 
 @keyframes inputFadeIn {
     from {
-        height: calc($form-padding-y - 3px);
+        height: calc(vars.$form-padding-y - 3px);
     }
 }

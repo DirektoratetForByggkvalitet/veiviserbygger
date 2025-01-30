@@ -1,26 +1,28 @@
-@use '@/styles/_helpers' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
 
 .user {
     $this: &;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: $spacing--small;
+    gap: vars.$spacing--small;
 
     &__avatar {
-        @include font-size(base);
+        @include mixins.font-size(base);
         display: flex;
         justify-content: center;
         align-items: center;
         height: 40px;
         width: 40px;
         border-radius: 50%;
-        background-color: $color-backdrop;
+        background-color: colors.$color-backdrop;
         text-transform: uppercase;
     }
 
     &__name {
-        @include font-size(small);
+        @include mixins.font-size(small);
         text-align: left;
         flex-grow: 1;
     }

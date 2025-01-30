@@ -1,4 +1,6 @@
-@use '@/styles/helpers.scss' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
 
 .checkbox {
     $this: &;
@@ -9,13 +11,13 @@
     width: 100%;
     cursor: pointer;
     &:not(:last-child) {
-        margin-bottom: $spacing--small;
+        margin-bottom: vars.$spacing--small;
     }
-    @include no-select;
+    @include mixins.no-select;
 
     &__label {
-        @include font(base, normal);
-        @include font-size(small);
+        @include mixins.font(base, normal);
+        @include mixins.font-size(small);
         margin-top: 3px;
         flex-grow: 2;
     }
@@ -29,9 +31,9 @@
         height: $size;
         margin-right: 10px;
         border-radius: 0;
-        border: $border-style;
-        background-color: $color-light;
-        border-radius: $border-radius;
+        border: vars.$border-style;
+        background-color: colors.$color-light;
+        border-radius: vars.$border-radius;
     }
 
     &__icon {
@@ -40,7 +42,7 @@
         path {
             stroke-dasharray: $icon-strok-length;
             stroke-dashoffset: -$icon-strok-length;
-            transition: stroke-dashoffset 100ms $ease-in-out-quint--custom;
+            transition: stroke-dashoffset 100ms vars.$ease-in-out-quint--custom;
         }
     }
 
@@ -51,7 +53,7 @@
         &:checked + #{$this}__indicator {
             path {
                 stroke-dashoffset: 0;
-                transition: stroke-dashoffset 100ms $ease-out-quart;
+                transition: stroke-dashoffset 100ms vars.$ease-out-quart;
             }
         }
 
@@ -62,20 +64,20 @@
 
     &--disabled {
         #{$this}__indicator {
-            background-color: color(neutral, xlight);
-            border-color: color(neutral, xlight);
+            background-color: colors.get(neutral, xlight);
+            border-color: colors.get(neutral, xlight);
         }
         #{$this}__label {
-            color: $color-muted;
+            color: colors.$color-muted;
         }
     }
 
     &--large {
-        border: $border-style;
-        padding: $spacing--small;
+        border: vars.$border-style;
+        padding: vars.$spacing--small;
         margin-bottom: 0;
         #{$this}__label {
-            @include font-size(base);
+            @include mixins.font-size(base);
         }
     }
 
@@ -86,17 +88,17 @@
             opacity: 0;
 
             transition:
-                transform 300ms $ease-in-out-quint--custom,
-                opacity 500ms $ease-in-out-quint--custom;
+                transform 300ms vars.$ease-in-out-quint--custom,
+                opacity 500ms vars.$ease-in-out-quint--custom;
         }
 
         #{$this}__indicator {
             position: relative;
             width: $size * 2 - 8px;
-            color: $color-text;
+            color: colors.$color-text;
             border-radius: $size;
-            border-color: color(neutral, xlight);
-            background-color: $color-light;
+            border-color: colors.get(neutral, xlight);
+            background-color: colors.$color-light;
 
             &:before {
                 content: '';
@@ -106,12 +108,12 @@
                 height: $size - 6px;
                 width: $size - 6px;
                 border-radius: 50%;
-                background-color: color(primary);
+                background-color: colors.get(primary);
                 opacity: 0.65;
 
                 transition:
-                    transform 300ms $ease-in-out-quint--custom,
-                    opacity 200ms $ease-in-out-quint--custom;
+                    transform 300ms vars.$ease-in-out-quint--custom,
+                    opacity 200ms vars.$ease-in-out-quint--custom;
             }
         }
 

@@ -1,20 +1,22 @@
-@use '@/styles/_helpers' as *;
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/vars';
 
 .message {
     $this: &;
-    background-color: $color-info;
-    border-radius: $border-radius;
-    padding: $spacing--xsmall;
+    background-color: colors.$color-info;
+    border-radius: vars.$border-radius;
+    padding: vars.$spacing--xsmall;
     text-align: left;
-    @include font-size(small);
-    animation: enter 400ms $ease-in-out-quint--custom both;
+    @include mixins.font-size(small);
+    animation: enter 400ms vars.$ease-in-out-quint--custom both;
     &__title {
-        @include font(base, normal);
-        @include font-size(base);
+        @include mixins.font(base, normal);
+        @include mixins.font-size(base);
         font-weight: bold;
         display: flex;
         align-items: center;
-        gap: $spacing--xsmall;
+        gap: vars.$spacing--xsmall;
         margin-bottom: 4px;
     }
 }
@@ -32,6 +34,6 @@
 
     to {
         clip-path: inset(-50px -50px -50px -50px);
-        box-shadow: $shadow;
+        box-shadow: vars.$shadow;
     }
 }

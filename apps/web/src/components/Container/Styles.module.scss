@@ -1,11 +1,12 @@
-@use '@/styles/helpers.scss' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/vars';
 
 .container {
-    @include container;
+    @include mixins.container;
 
-    @each $key, $size in $container-width {
+    @each $key, $size in vars.$container-width {
         &--#{$key} {
-            @include container($key);
+            @include mixins.container($key);
         }
     }
 

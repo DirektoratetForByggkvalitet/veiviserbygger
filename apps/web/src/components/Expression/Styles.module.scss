@@ -1,10 +1,11 @@
-@use '@/styles/helpers.scss' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/vars';
 
 .expression {
     &__clauses {
-        padding-left: $spacing--small;
-        border-left: $border-style;
-        margin-bottom: $spacing--small;
+        padding-left: vars.$spacing--small;
+        border-left: vars.$border-style;
+        margin-bottom: vars.$spacing--small;
     }
 
     &__clause {
@@ -14,9 +15,9 @@
     &__head {
         display: flex;
         align-items: center;
-        gap: $spacing--xsmall;
-        padding-bottom: $spacing--xsmall;
-        margin-bottom: $spacing--small;
+        gap: vars.$spacing--xsmall;
+        padding-bottom: vars.$spacing--xsmall;
+        margin-bottom: vars.$spacing--small;
     }
 
     &__head {
@@ -24,16 +25,16 @@
     }
 
     &__string {
-        @include font-size(small);
+        @include mixins.font-size(small);
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        gap: $spacing--xsmall;
+        gap: vars.$spacing--xsmall;
         flex-grow: 1;
     }
 
     &--clauses {
-        // border: $border-style;
-        margin-bottom: $spacing--small;
+        // border: vars.$border-style;
+        margin-bottom: vars.$spacing--small;
     }
 }

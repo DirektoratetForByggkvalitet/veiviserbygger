@@ -1,22 +1,24 @@
+@use '../1_settings/mixins';
+
 h1,
 h2,
 h3 {
-    // @include hyphens;
-    @include font(base, bold);
+    // @include mixins.hyphens;
+    @include mixins.font(base, bold);
     text-wrap: pretty;
     margin: 0;
 }
 
 h1 {
-    @include font-size(title);
+    @include mixins.font-size(title);
 }
 
 h2 {
-    @include font-size(sub-title);
+    @include mixins.font-size(sub-title);
 }
 
 h3 {
-    @include font-size(base);
+    @include mixins.font-size(base);
 }
 
 p {

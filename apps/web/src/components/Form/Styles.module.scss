@@ -1,4 +1,5 @@
-@use '@/styles/helpers.scss' as *;
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/vars';
 
 .form {
     $this: &;
@@ -7,14 +8,14 @@
         display: flex;
         flex-direction: column;
         align-items: start;
-        gap: $spacing--small;
+        gap: vars.$spacing--small;
     }
 
     &__split {
-        @include min-width(lg) {
+        @include mixins.min-width(lg) {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: $gutter;
+            gap: vars.$gutter;
             width: 100%;
         }
     }
