@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import menuState from '@/store/menu'
 
 import Button from '@/components/Button'
-import Dropdown from '@/components/Dropdown'
+import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import { IconMenu } from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
@@ -40,6 +40,27 @@ export default function Header({ title = 'Losen', versions, hideMenu }: Props) {
     setOpen(!open)
   }
 
+  const wizardOptions = [
+    {
+      value: '1',
+      label: 'Endre navn',
+      onClick: () => console.log('Åpne en modal for dette. Samme?"'),
+      disabled: true,
+    },
+    {
+      value: '2',
+      label: 'Dupliser veiviseren',
+      onClick: () => console.log('Åpne en modal med bekreftelse."'),
+      disabled: true,
+    },
+    {
+      value: '3',
+      label: 'Slett utkastet',
+      styled: 'delete',
+      onClick: () => console.log('Hvis den ikke er publisert'),
+    },
+  ] as DropdownOptions
+
   return (
     <header {...bem('', { open })}>
       <button type="button" {...bem('toggle')} aria-label="Meny" onClick={toggleMenu}>
@@ -65,12 +86,24 @@ export default function Header({ title = 'Losen', versions, hideMenu }: Props) {
             direction="right"
           />
         ) : null}
-
-        {activeVersion?.publishedFrom ? (
+        <Button size="small">Forhåndsvisning</Button>
+        {!activeVersion?.publishedFrom ? (
           <Button primary size="small">
             Publiser
           </Button>
         ) : null}
+        {activeVersion?.publishedFrom ? (
+          <Button primary size="small">
+            Publiser endringer
+          </Button>
+        ) : null}
+        <Dropdown
+          icon="Settings2"
+          direction="right"
+          options={wizardOptions}
+          label={'Valg for veiviser'}
+          iconOnly
+        />
       </nav>
     </header>
   )

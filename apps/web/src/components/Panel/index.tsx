@@ -54,9 +54,6 @@ export default function Panel({
         <>
           <aside {...bem('panel')} ref={panelRef} tabIndex={0}>
             <header {...bem('header')}>
-              <Button onClick={onClose} icon="PanelRightClose" size="small" iconOnly>
-                Lukk panel
-              </Button>
               <Button icon="ArrowLeft" size="small" subtle iconOnly>
                 Forrige side
               </Button>
@@ -73,6 +70,9 @@ export default function Panel({
                   iconOnly
                 />
               )}
+              <Button onClick={onClose} icon="X" size="small" iconOnly>
+                Lukk panel
+              </Button>
             </header>
 
             <div {...bem('content')}>{children}</div>
