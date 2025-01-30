@@ -74,16 +74,18 @@ export default function Overview() {
     type,
     preset,
     disabled,
+    defaultContent,
   }: {
     pageId: string
     type: PageContent['type']
     preset?: Branch['preset']
     disabled?: boolean
+    defaultContent?: any // TODO
   }) => ({
     value: preset || type,
     label: getTypeText(preset || type),
     icon: getTypeIcon(preset || type),
-    onClick: () => addNode(pageId, { type, preset }),
+    onClick: () => addNode(pageId, { type, ...defaultContent }),
     disabled: disabled,
   })
 
@@ -96,7 +98,10 @@ export default function Overview() {
         {
           group: 'Spørsmål',
         },
-        contentAction({ pageId: page.id, type: 'Radio' }),
+        contentAction({
+          pageId: page.id,
+          type: 'Radio',
+        }),
         contentAction({ pageId: page.id, type: 'Select', disabled: true }),
         contentAction({ pageId: page.id, type: 'Checkbox' }),
         contentAction({ pageId: page.id, type: 'Input', disabled: true }),
@@ -105,9 +110,24 @@ export default function Overview() {
         {
           group: 'Hendelser',
         },
-        contentAction({ pageId: page.id, type: 'Branch', preset: 'ExtraInformation' }),
-        contentAction({ pageId: page.id, type: 'Branch', preset: 'NegativeResult' }),
-        contentAction({ pageId: page.id, type: 'Branch', preset: 'NewQuestions' }),
+        contentAction({
+          pageId: page.id,
+          type: 'Branch',
+          preset: 'ExtraInformation',
+          defaultContent: { preset: 'ExtraInformation' },
+        }),
+        contentAction({
+          pageId: page.id,
+          type: 'Branch',
+          preset: 'NegativeResult',
+          defaultContent: { preset: 'NegativeResult' },
+        }),
+        contentAction({
+          pageId: page.id,
+          type: 'Branch',
+          preset: 'NewQuestions',
+          defaultContent: { preset: 'NewQuestions' },
+        }),
         contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
       ]
     : []
