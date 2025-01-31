@@ -42,6 +42,15 @@ export function useSortableList<T extends { id: string | number }>(
 
   // update the value if the debounced value is different
   useEffect(() => {
+    // if the values have different lengths, something was added or removed
+    // so we update the local value to discard the order change. Without this
+    // a newly added item would be discarded since the the local value is not
+    // in sync with the value prop and the old value would be persisted.
+    if (value.length !== localValue.length) {
+      setLocalValue(value)
+      return
+    }
+
     if (isEqual(value, debouncedValue)) {
       return
     }

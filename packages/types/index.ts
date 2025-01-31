@@ -95,7 +95,7 @@ export type Radio = PageNode<
     type: 'Radio'
     allMandatory?: boolean // Required user to check all the options in the list, in order for it to be "valid".
     grid: boolean // Display options in a three column grid.
-    options?: Answer[]
+    options?: OrderedMap<Answer>
   }
 >
 
@@ -103,7 +103,7 @@ export type Select = PageNode<
   Content & {
     type: 'Select'
     optional?: boolean // By default all fields are required.
-    options?: Answer[]
+    options?: OrderedMap<Answer>
   }
 >
 
@@ -113,9 +113,11 @@ export type Checkbox = PageNode<
     allMandatory?: boolean // Required user to check all the options in the list, in order for it to be "valid".
     grid: boolean // Display options in a three column grid.
     optional?: boolean // By default all fields are required.
-    options?: Answer[]
+    options?: OrderedMap<Answer>
   }
 >
+
+export type PageContentWithOptions = Extract<PageContent, { options?: OrderedMap<Answer> }>
 
 export type Input = PageNode<
   Content &

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PageContent, Answer, WizardVersion, OptionalExcept, Branch } from 'types'
+import { PageContent, Answer, WizardVersion, OptionalExcept, Branch, WizardPage, PageContentWithOptions } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
 import Button from '@/components/Button'
@@ -16,6 +16,7 @@ import { ReactNode } from 'react'
 import { DocumentReference } from 'firebase/firestore'
 import { useVersion } from '@/hooks/useVersion'
 import { getTypeDescription, getTypeIcon, getTypeText } from '@/lib/content'
+import { getOrdered } from '@/lib/ordered'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -27,8 +28,57 @@ type NodeProps = {
   node: OptionalExcept<PageContent, 'id' | 'type'>
 }
 
+function Options({ node }: { node: OptionalExcept<PageContentWithOptions, 'id'> } & {}) {
+  const { patchAnswer, deleteAnswer } = useVersion()
+
+  const optionActions = (nodeId: string, optionId: string) => [
+    {
+      value: '0',
+      label: 'Gir negativt resultat',
+      onClick: () => console.log(''),
+    },
+    {
+      value: '1',
+      label: 'Gir ekstra informasjon',
+      onClick: () => console.log(''),
+    },
+    {
+      value: '2',
+      label: 'Slett',
+      onClick: () => deleteAnswer(nodeId, optionId),
+      styled: 'delete',
+    },
+  ] as DropdownOptions
+
+  if (!node?.options) {
+    return null
+  }
+
+  return <ul {...bem('options')}>
+    {getOrdered(node.options).map((option) => (
+      <li key={option.id} {...bem('option')}>
+        <Input
+          label="Svar"
+          value={option?.heading || ''}
+          onChange={v => patchAnswer(node.id, option.id, { heading: v })}
+        />
+        <div {...bem('option-actions')}>
+          <Dropdown
+            icon="Ellipsis"
+            direction="right"
+            options={optionActions(node.id, option.id)}
+            label="Valg"
+            iconOnly
+          />
+        </div>
+        {/* TODO: Dropdown menu with actions "Slett", "Gir negativt resultat", "Gir ekstra informasjon"  */}
+      </li>
+    ))}
+  </ul>
+}
+
 function Node({ node }: NodeProps) {
-  const { patchNode } = useVersion()
+  const { patchNode, addAnswer, patchAnswer, deleteAnswer } = useVersion()
 
   if (node.type === 'Text') {
     return (
@@ -58,25 +108,6 @@ function Node({ node }: NodeProps) {
   }
 
   if (node.type === 'Radio') {
-    const optionActions = [
-      {
-        value: '0',
-        label: 'Gir negativt resultat',
-        onClick: () => console.log(''),
-      },
-      {
-        value: '1',
-        label: 'Gir ekstra informasjon',
-        onClick: () => console.log(''),
-      },
-      {
-        value: '2',
-        label: 'Slett',
-        onClick: () => console.log(''),
-        styled: 'delete',
-      },
-    ] as DropdownOptions
-
     return (
       <>
         <Header type={node.type} title={node.heading || 'Hva er det til middag i dag?'} />
@@ -97,32 +128,9 @@ function Node({ node }: NodeProps) {
           />
 
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
-          {node.options && (
-            <ul {...bem('options')}>
-              {node.options.map((option: Answer) => (
-                <li key={option.id} {...bem('option')}>
-                  <Input
-                    label="Svar"
-                    value={option?.heading || ''}
-                    onChange={() => {
-                      console.log('Hej')
-                    }}
-                  />
-                  <div {...bem('option-actions')}>
-                    <Dropdown
-                      icon="Ellipsis"
-                      direction="right"
-                      options={optionActions}
-                      label="Valg"
-                      iconOnly
-                    />
-                  </div>
-                  {/* TODO: Dropdown menu with actions "Slett", "Gir negativt resultat", "Gir ekstra informasjon"  */}
-                </li>
-              ))}
-            </ul>
-          )}
-          <Button type="button" size="small" icon="Plus">
+          <Options node={node} />
+
+          <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
             Legg til svaralternativ
           </Button>
         </Main>
@@ -135,9 +143,51 @@ function Node({ node }: NodeProps) {
             <Checkbox
               label="Grid visning"
               checked={node.grid}
-              onChange={() => {
-                console.log('Hej')
-              }}
+              onChange={(v) => patchNode(node.id, { type: 'Radio', grid: v })}
+            />
+          </div>
+        </Aside>
+      </>
+    )
+  }
+
+  if (node.type === 'Checkbox') {
+    return (
+      <>
+        <Header type={node.type} title={node.heading || 'Hva er det til middag i dag?'} />
+
+        <Main>
+          <Input
+            label="Tittel"
+            value={node.heading || ''}
+            onChange={(v) => patchNode(node.id, { type: 'Radio', heading: v })}
+            header
+          />
+
+          <Editor
+            label="Beskrivelse"
+            value={node.text || ''}
+            hideIfEmpty
+            onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })}
+          />
+
+          <h3 {...bem('sub-title')}>Svaralternativer</h3>
+          <Options node={node} />
+
+          <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
+            Legg til svaralternativ
+          </Button>
+        </Main>
+
+        <Aside>
+          {/* TODO: summary, details, show */}
+          <Help description={getTypeDescription(node.type)} />
+          <h3 {...bem('sub-title')}>Innstillinger</h3>
+          <div {...bem('field-list')}>
+            <Checkbox
+              label="Grid visning"
+              checked={node.grid}
+              onChange={(v) => patchNode(node.id, { type: 'Radio', grid: v })}
             />
           </div>
         </Aside>

@@ -41,9 +41,9 @@ export default function NewPage({ open, closeModal }: Props) {
       return
     }
 
-    await createPage(firestore, wizardId, versionId, newPage)
+    await createPage({ db: firestore, wizardId, versionId }, newPage)
 
-    closeModal()
+    close()
   }
 
   if (!wizardId || !versionId) {

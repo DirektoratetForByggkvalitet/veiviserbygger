@@ -1,16 +1,15 @@
 import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
-  arrayRemove,
   arrayUnion,
   connectFirestoreEmulator,
+  deleteField,
   doc,
   DocumentReference,
   Firestore,
   getDoc,
   getFirestore,
   runTransaction,
-  updateDoc,
 } from 'firebase/firestore'
 import { getConfig } from '../api'
 import { dataPoint } from './utils/db'
@@ -19,6 +18,7 @@ import {
   DeepPartial,
   OptionalExcept,
   PageContent,
+  PageContentWithOptions,
   Wizard,
   WizardPage,
   WizardVersion,
@@ -151,10 +151,14 @@ export async function createWizard(db: Firestore, data: Wizard) {
   })
 }
 
+type FuncScope = {
+  db: Firestore
+  wizardId: string
+  versionId: string
+}
+
 export async function createPage(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
+  { db, wizardId, versionId }: FuncScope,
   page: Partial<Omit<WizardPage, 'id'>>,
 ) {
   await runTransaction(db, async (transaction) => {
@@ -168,9 +172,7 @@ export async function createPage(
 }
 
 export async function patchPage(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
+  { db, wizardId, versionId }: FuncScope,
   pageId: string,
   patch: DeepPartial<WizardPage>,
 ) {
@@ -188,12 +190,7 @@ export async function patchPage(
   })
 }
 
-export async function deletePage(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
-  pageId: string,
-) {
+export async function deletePage({ db, wizardId, versionId }: FuncScope, pageId: string) {
   await runTransaction(db, async (transaction) => {
     const ref = getWizardVersionRef(db, wizardId, versionId)
     const current = await transaction.get(ref)
@@ -208,9 +205,7 @@ export async function deletePage(
 }
 
 export async function addNode(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
+  { db, wizardId, versionId }: FuncScope,
   pageId: string,
   node: OptionalExcept<PageContent, 'type'>,
 ) {
@@ -228,9 +223,7 @@ export async function addNode(
 }
 
 export async function patchNode(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
+  { db, wizardId, versionId }: FuncScope,
   nodeId: string,
   patch: OptionalExcept<PageContent, 'type'>,
 ) {
@@ -240,18 +233,16 @@ export async function patchNode(
 
     const patchedNode = current?.data()
 
-    if (patchedNode === undefined) {
+    if (!patchedNode) {
       throw new Error(`Node with id ${nodeId} not found`)
     }
 
-    await transaction.update(ref, deepExtend(patchedNode, patch))
+    await transaction.update(ref, deepExtend(patchedNode as any, patch))
   })
 }
 
 export async function reorderNodes(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
+  { db, wizardId, versionId }: FuncScope,
   pageId: string,
   nodes: WizardPage['content'],
 ) {
@@ -269,12 +260,7 @@ export async function reorderNodes(
   })
 }
 
-export async function deleteNode(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
-  nodeId: string,
-) {
+export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId: string) {
   await runTransaction(db, async (transaction) => {
     const ref = getNodeRef(db, wizardId, versionId, nodeId)
     const current = await transaction.get(ref)
@@ -289,24 +275,47 @@ export async function deleteNode(
   })
 }
 
-export function addAnswer(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
+export async function addAnswer(
+  { db, wizardId, versionId }: FuncScope,
   nodeId: string,
   answer: Partial<Omit<Answer, 'id'>>,
 ) {
-  return updateDoc(getNodeRef(db, wizardId, versionId, nodeId), {
-    options: arrayUnion(answer),
+  await runTransaction(db, async (transaction) => {
+    const ref = getNodeRef(db, wizardId, versionId, nodeId)
+    const current = await transaction.get(ref)
+
+    const currentOptions = current.data() as PageContentWithOptions
+
+    const maxOrder = maxBy(values(currentOptions.options), 'order')?.order ?? -1
+
+    await transaction.update(ref, `options.${uuid()}`, { order: maxOrder + 1, ...answer })
+  })
+}
+
+export function patchAnswer(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  answerId: string,
+  patch: Partial<Answer>,
+) {
+  return runTransaction(db, async (transaction) => {
+    const ref = getNodeRef(db, wizardId, versionId, nodeId)
+    const current = await transaction.get(ref)
+
+    const node = current?.data() as PageContentWithOptions
+
+    if (!node || !node.options || !node.options[answerId]) {
+      throw new Error(`Answer with id ${answerId} not found in node with id ${nodeId}`)
+    }
+
+    await transaction.update(ref, `options.${answerId}`, deepExtend(node.options[answerId], patch))
   })
 }
 
 export function deleteAnswer(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
+  { db, wizardId, versionId }: FuncScope,
   nodeId: string,
-  answer: Partial<Answer>,
+  answerId: string,
 ) {
   return runTransaction(db, async (transaction) => {
     const ref = getNodeRef(db, wizardId, versionId, nodeId)
@@ -318,44 +327,6 @@ export function deleteAnswer(
       return
     }
 
-    await transaction.update(ref, {
-      options: arrayRemove(answer),
-    })
-  })
-}
-
-export function patchAnswer(
-  db: Firestore,
-  wizardId: string,
-  versionId: string,
-  nodeId: string,
-  answer: OptionalExcept<Answer, 'id'>,
-) {
-  return runTransaction(db, async (transaction) => {
-    const ref = getNodeRef(db, wizardId, versionId, nodeId)
-    const current = await transaction.get(ref)
-
-    const node = current?.data() as Extract<PageContent, { options?: Answer[] }>
-
-    if (!node) {
-      throw new Error(`Node with id ${nodeId} not found`)
-    }
-
-    const currentAnswerIndex = node.options?.findIndex((a: Answer) => a.id === answer.id) ?? -1
-
-    if (currentAnswerIndex < 0) {
-      throw new Error(`Answer with id ${answer.id} not found`)
-    }
-
-    await transaction.update(ref, {
-      options: [
-        ...(node?.options?.slice(0, currentAnswerIndex) || []),
-        {
-          ...node?.options?.[currentAnswerIndex],
-          ...answer,
-        },
-        ...(node?.options?.slice(currentAnswerIndex + 1) || []),
-      ],
-    })
+    await transaction.update(ref, `options.${answerId}`, deleteField())
   })
 }
