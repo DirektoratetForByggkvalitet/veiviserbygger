@@ -14,7 +14,15 @@ import {
 } from 'firebase/firestore'
 import { getConfig } from '../api'
 import { dataPoint } from './utils/db'
-import { DeepPartial, OptionalExcept, PageContent, Wizard, WizardPage, WizardVersion } from 'types'
+import {
+  Answer,
+  DeepPartial,
+  OptionalExcept,
+  PageContent,
+  Wizard,
+  WizardPage,
+  WizardVersion,
+} from 'types'
 import { v4 as uuid } from 'uuid'
 import deepExtend from 'deep-extend'
 import { maxBy, values } from 'lodash'
@@ -240,6 +248,27 @@ export async function patchNode(
   })
 }
 
+export async function reorderNodes(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  pageId: string,
+  nodes: WizardPage['content'],
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const current = await transaction.get(ref)
+
+    const page = current?.data()?.pages?.[pageId]
+
+    if (!page) {
+      throw new Error(`Page with id ${pageId} not found`)
+    }
+
+    await transaction.update(ref, `pages.${pageId}.content`, nodes)
+  })
+}
+
 export async function deleteNode(
   db: Firestore,
   wizardId: string,
@@ -257,5 +286,76 @@ export async function deleteNode(
     }
 
     await transaction.delete(ref)
+  })
+}
+
+export function addAnswer(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  nodeId: string,
+  answer: Partial<Omit<Answer, 'id'>>,
+) {
+  return updateDoc(getNodeRef(db, wizardId, versionId, nodeId), {
+    options: arrayUnion(answer),
+  })
+}
+
+export function deleteAnswer(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  nodeId: string,
+  answer: Partial<Answer>,
+) {
+  return runTransaction(db, async (transaction) => {
+    const ref = getNodeRef(db, wizardId, versionId, nodeId)
+    const current = await transaction.get(ref)
+
+    const node = current?.data()
+
+    if (!node) {
+      return
+    }
+
+    await transaction.update(ref, {
+      options: arrayRemove(answer),
+    })
+  })
+}
+
+export function patchAnswer(
+  db: Firestore,
+  wizardId: string,
+  versionId: string,
+  nodeId: string,
+  answer: OptionalExcept<Answer, 'id'>,
+) {
+  return runTransaction(db, async (transaction) => {
+    const ref = getNodeRef(db, wizardId, versionId, nodeId)
+    const current = await transaction.get(ref)
+
+    const node = current?.data() as Extract<PageContent, { options?: Answer[] }>
+
+    if (!node) {
+      throw new Error(`Node with id ${nodeId} not found`)
+    }
+
+    const currentAnswerIndex = node.options?.findIndex((a: Answer) => a.id === answer.id) ?? -1
+
+    if (currentAnswerIndex < 0) {
+      throw new Error(`Answer with id ${answer.id} not found`)
+    }
+
+    await transaction.update(ref, {
+      options: [
+        ...(node?.options?.slice(0, currentAnswerIndex) || []),
+        {
+          ...node?.options?.[currentAnswerIndex],
+          ...answer,
+        },
+        ...(node?.options?.slice(currentAnswerIndex + 1) || []),
+      ],
+    })
   })
 }
