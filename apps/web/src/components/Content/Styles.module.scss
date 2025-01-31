@@ -31,7 +31,7 @@
     }
 
     &__header-icon {
-        color: colors.$color-muted;
+        color: colors.$muted;
     }
 
     &__main,
@@ -46,7 +46,7 @@
     &__main {
         grid-area: main;
         border: vars.$border-style;
-        background-color: colors.$color-light;
+        background-color: colors.$light;
         &--full {
             grid-area: full;
         }
@@ -56,7 +56,7 @@
         grid-area: aside;
         border: vars.$border-style;
         border-top: none;
-        background-color: colors.$color-light;
+        background-color: colors.$light;
 
         @include mixins.min-width(lg) {
             border-top: vars.$border-style;
@@ -70,14 +70,14 @@
 
     &__title {
         @include mixins.font-size(small);
-        color: colors.$color-muted;
+        color: colors.$muted;
         font-weight: normal;
         flex-grow: 2;
     }
 
     &__sub-title {
         @include mixins.font-size(small);
-        color: colors.$color-muted;
+        color: colors.$muted;
         font-weight: normal;
     }
 

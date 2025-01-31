@@ -70,7 +70,7 @@
         flex-grow: 1;
         height: (1em * 2) * $line-height;
         &--placeholder {
-            color: colors.$color-muted;
+            color: colors.$muted;
         }
     }
 
@@ -80,7 +80,7 @@
         align-items: flex-start;
         padding: 7px 8px;
         border: vars.$border-style;
-        background-color: colors.$color-light;
+        background-color: colors.$light;
         margin-bottom: 4px;
         border-radius: 6px;
 

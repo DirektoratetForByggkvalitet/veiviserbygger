@@ -57,12 +57,12 @@
     }
 
     &__box {
-        color: colors.$color-text;
+        color: colors.$text;
         display: flex;
         flex-direction: column;
         padding: 0;
         border: vars.$border-style;
-        background-color: colors.$color-light;
+        background-color: colors.$light;
         box-shadow: vars.$shadow;
     }
 
@@ -80,7 +80,7 @@
         width: 100%;
         height: 100%;
         z-index: 2;
-        background-color: rgba(colors.$color-background, 0.8);
+        background-color: rgba(colors.$background, 0.8);
         outline: none;
         cursor: default;
         animation: fade-in 500ms vars.$ease-out-quad both;

@@ -1,4 +1,4 @@
-@use "../1_settings/colors";
+@use '../1_settings/colors';
 
 // Let’s make the box model all nice and sweet
 * {
@@ -18,7 +18,7 @@ html {
 }
 
 ::selection {
-    color: colors.$color-background;
+    color: colors.$background;
     background: black;
 }
 

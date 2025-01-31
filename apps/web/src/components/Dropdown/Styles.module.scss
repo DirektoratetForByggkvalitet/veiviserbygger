@@ -14,13 +14,13 @@
         border: vars.$border-style;
         text-align: left;
         width: 100%;
-        background-color: colors.$color-light;
+        background-color: colors.$light;
 
         &:hover {
             border-color: shade(colors.get(neutral), 6%);
 
             #{$this}__label {
-                color: shade(colors.$color-muted, 20%);
+                color: shade(colors.$muted, 20%);
             }
         }
 
@@ -36,7 +36,7 @@
             }
 
             #{$this}__label {
-                color: colors.$color-text;
+                color: colors.$text;
             }
         }
 
@@ -47,7 +47,7 @@
 
     &__label {
         @include mixins.font-size(small);
-        color: colors.$color-muted;
+        color: colors.$muted;
         padding: vars.$form-padding-y vars.$form-padding-x 3px;
     }
 
@@ -57,7 +57,7 @@
         background-color: transparent;
 
         @include mixins.input-placeholder {
-            color: colors.$color-muted;
+            color: colors.$muted;
         }
     }
 
@@ -84,10 +84,10 @@
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        color: colors.$color-text;
+        color: colors.$text;
         border: vars.$border-style;
         border-radius: 2px;
-        background-color: colors.$color-light;
+        background-color: colors.$light;
 
         max-height: min(50vh, 600px);
         overflow-x: hidden;
@@ -135,7 +135,7 @@
 
     &__option-group {
         @include mixins.font-size(xsmall);
-        color: colors.$color-muted;
+        color: colors.$muted;
         white-space: nowrap;
         text-align: left;
         padding: vars.$spacing--xsmall;
@@ -154,20 +154,20 @@
         }
 
         &--disabled {
-            color: colors.$color-muted;
+            color: colors.$muted;
         }
 
         &:hover:not(#{$this}__option--disabled),
         &:focus:focus-visible:not(#{$this}__option--disabled),
         &--selected {
-            color: colors.$color-light;
+            color: colors.$light;
             background-color: colors.get(primary);
         }
 
         &--delete,
         &--delete:hover,
         &--delete:focus:focus-visible {
-            color: colors.$color-warning;
+            color: colors.$warning;
         }
     }
 

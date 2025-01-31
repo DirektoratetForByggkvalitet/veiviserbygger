@@ -2,8 +2,8 @@
 @use 'sass:color';
 
 // Colors
-@function get($color-name, $color-variant: 'base') {
-    @return map.get(map.get($colors, $color-name), $color-variant);
+@function get($name, $variant: 'base') {
+    @return map.get(map.get($colors, $name), $variant);
 }
 
 $colors: (
@@ -21,25 +21,25 @@ $colors: (
     ),
 );
 
-$color-light: #ffffff;
-$color-dark: get(neutral, xdark);
+$light: #ffffff;
+$dark: get(neutral, xdark);
 
 // Specific colors.
 // Variables are there to be reused, so being  to specific or creating to many will create the opposite situation
-$color-background: get(neutral, xlight);
-$color-backdrop: rgba(white, 0.8);
+$background: get(neutral, xlight);
+$backdrop: rgba(white, 0.8);
 
-$color-text: $color-dark;
-$color-muted: get(neutral, dark);
+$text: $dark;
+$muted: get(neutral, dark);
 
-$color-notification: #f06565;
-$color-info: #fcdb81;
+$notification: #f06565;
+$info: #fcdb81;
 
-$color-links: $color-text;
-$color-links--hover: $color-text;
+$links: $text;
+$links--hover: $text;
 
-$color-outline: rgba(#99d6ea, 0.6);
-$color-backdrop: get(primary, light);
+$outline: rgba(#99d6ea, 0.6);
+$backdrop: get(primary, light);
 
-$color-warning: #f06565;
-$color-success: #81d459;
+$warning: #f06565;
+$success: #81d459;

@@ -8,35 +8,35 @@
     display: grid;
     width: 100%;
     border: vars.$border-style;
-    background-color: colors.$color-light;
+    background-color: colors.$light;
 
     &:hover {
         border-color: mixins.shade(colors.get(neutral), 6%);
 
         #{$this}__label {
-            color: shade(colors.$color-muted, 20%);
+            color: shade(colors.$muted, 20%);
         }
     }
 
     &__button-label {
         @include mixins.font-size(small);
-        color: colors.$color-muted;
+        color: colors.$muted;
         width: 100%;
         border: vars.$border-style;
         padding: vars.$form-padding-y vars.$form-padding-x;
-        background-color: colors.$color-light;
+        background-color: colors.$light;
         text-align: left;
         cursor: text;
         &:hover {
             border-color: mixins.shade(colors.get(neutral), 6%);
-            color: mixins.shade(colors.$color-muted, 20%);
+            color: mixins.shade(colors.$muted, 20%);
         }
     }
 
     &__label {
         @include mixins.font-size(small);
         font-weight: normal;
-        color: colors.$color-muted;
+        color: colors.$muted;
         padding: vars.$form-padding-y vars.$form-padding-x 0;
     }
 
@@ -46,7 +46,7 @@
         background-color: transparent;
 
         @include mixins.input-placeholder {
-            color: colors.$color-muted;
+            color: colors.$muted;
         }
 
         &--empty:not(:focus-within) {
@@ -90,7 +90,7 @@
         box-shadow: 0 0 0 1px colors.get(primary);
 
         #{$this}__label {
-            color: colors.$color-text;
+            color: colors.$text;
             border-bottom: vars.$border-style;
             padding-bottom: vars.$form-padding-y;
         }

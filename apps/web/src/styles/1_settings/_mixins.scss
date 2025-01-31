@@ -319,19 +319,19 @@
 }
 
 // links
-@mixin underline($strong: false, $color-override: false, $offset-additions: 0) {
+@mixin underline($strong: false, $override: false, $offset-additions: 0) {
     $offset: 0.1em + $offset-additions;
     $thickness: 1px;
-    $color: rgba(colors.$color-text, 0.2);
-    $bg: colors.$color-background;
+    $color: rgba(colors.$text, 0.2);
+    $bg: colors.$background;
     text-decoration: underline;
 
     @if ($strong) {
         $color: currentColor;
     }
 
-    @if ($color-override) {
-        $color: $color-override;
+    @if ($override) {
+        $color: $override;
     }
 
     text-decoration-thickness: 1px;
@@ -377,8 +377,8 @@
 }
 
 @mixin skeleton(
-    $bg: colors.$color-background,
-    $bg-shade: color.adjust(colors.$color-background, $lightness: -5%),
+    $bg: colors.$background,
+    $bg-shade: color.adjust(colors.$background, $lightness: -5%),
     $speed: 800ms
 ) {
     background: linear-gradient(to right, $bg-shade, $bg, $bg-shade), $bg-shade;

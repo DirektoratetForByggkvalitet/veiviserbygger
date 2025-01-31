@@ -32,7 +32,7 @@
         margin-right: 10px;
         border-radius: 0;
         border: vars.$border-style;
-        background-color: colors.$color-light;
+        background-color: colors.$light;
         border-radius: vars.$border-radius;
     }
 
@@ -68,7 +68,7 @@
             border-color: colors.get(neutral, xlight);
         }
         #{$this}__label {
-            color: colors.$color-muted;
+            color: colors.$muted;
         }
     }
 
@@ -95,10 +95,10 @@
         #{$this}__indicator {
             position: relative;
             width: $size * 2 - 8px;
-            color: colors.$color-text;
+            color: colors.$text;
             border-radius: $size;
             border-color: colors.get(neutral, xlight);
-            background-color: colors.$color-light;
+            background-color: colors.$light;
 
             &:before {
                 content: '';

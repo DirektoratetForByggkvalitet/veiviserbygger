@@ -14,7 +14,7 @@
     z-index: vars.$level-3;
 
     border-bottom: vars.$border-style;
-    background-color: colors.$color-light;
+    background-color: colors.$light;
 
     &__name {
         @include mixins.font-size(base);

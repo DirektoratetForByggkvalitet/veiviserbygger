@@ -8,14 +8,14 @@
     display: grid;
     width: 100%;
     border: vars.$border-style;
-    background-color: colors.$color-light;
+    background-color: colors.$light;
     position: relative;
 
     &:hover {
         border-color: shade(colors.get(neutral), 6%);
 
         #{$this}__label {
-            color: shade(colors.$color-muted, 20%);
+            color: shade(colors.$muted, 20%);
         }
     }
 
@@ -25,13 +25,13 @@
         box-shadow: 0 0 0 1px colors.get(primary);
 
         #{$this}__label {
-            color: colors.$color-text;
+            color: colors.$text;
         }
     }
 
     &__label {
         @include mixins.font-size(small);
-        color: colors.$color-muted;
+        color: colors.$muted;
         padding: vars.$form-padding-y vars.$form-padding-x 3px;
         cursor: text;
     }
@@ -61,8 +61,8 @@
             right: 8px;
             animation: dirtyFadeIn 600ms vars.$ease-out-quart backwards;
             animation-delay: 1000ms;
-            background: colors.$color-warning;
-            color: colors.$color-light;
+            background: colors.$warning;
+            color: colors.$light;
             padding: 4px 8px;
             border-radius: 4px;
         }

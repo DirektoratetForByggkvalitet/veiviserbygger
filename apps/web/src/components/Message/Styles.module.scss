@@ -4,7 +4,7 @@
 
 .message {
     $this: &;
-    background-color: colors.$color-info;
+    background-color: colors.$info;
     border-radius: vars.$border-radius;
     padding: vars.$spacing--xsmall;
     text-align: left;

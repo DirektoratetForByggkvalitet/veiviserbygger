@@ -27,7 +27,7 @@
     }
 
     &--primary {
-        color: colors.$color-light;
+        color: colors.$light;
         background-color: colors.get(primary);
 
         &:hover,
@@ -36,21 +36,21 @@
         }
         &:disabled {
             background-color: colors.get(neutral);
-            color: colors.$color-muted;
+            color: colors.$muted;
         }
     }
 
     &--warning {
-        color: colors.$color-light;
-        background-color: colors.$color-warning;
+        color: colors.$light;
+        background-color: colors.$warning;
 
         &:hover,
         &:focus:focus-visible {
-            background-color: shade(colors.$color-warning, 6%);
+            background-color: shade(colors.$warning, 6%);
         }
         &:disabled {
             background-color: colors.get(neutral);
-            color: colors.$color-muted;
+            color: colors.$muted;
         }
     }
 

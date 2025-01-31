@@ -18,7 +18,7 @@
         width: vars.$menu-width;
         z-index: vars.$level-3;
         border-right: vars.$border-style;
-        background-color: colors.$color-light;
+        background-color: colors.$light;
         box-shadow: vars.$shadow;
         overflow-y: auto;
 
@@ -44,7 +44,7 @@
     &__section-title {
         @include mixins.font(base, normal);
         @include mixins.font-size(small);
-        color: colors.$color-muted;
+        color: colors.$muted;
     }
 
     &__section--bottom {
@@ -82,7 +82,7 @@
     &__tag {
         @include mixins.font(base, normal);
         @include mixins.font-size(small);
-        color: colors.$color-muted;
+        color: colors.$muted;
         text-align: right;
     }
 

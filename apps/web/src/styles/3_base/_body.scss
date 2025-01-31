@@ -1,5 +1,5 @@
-@use "../1_settings/colors";
-@use "../1_settings/mixins";
+@use '../1_settings/colors';
+@use '../1_settings/mixins';
 
 body {
     // Type
@@ -7,7 +7,7 @@ body {
     @include mixins.font-size(base);
     position: relative;
 
-    color: colors.$color-text;
+    color: colors.$text;
     font-style: normal;
 
     -moz-osx-font-smoothing: grayscale;
@@ -16,7 +16,7 @@ body {
     text-rendering: optimizeLegibility;
     // font-feature-settings: 'ss03' 1;
 
-    background-color: colors.$color-background;
+    background-color: colors.$background;
 
     &.block-scrolling {
         overflow: hidden;
