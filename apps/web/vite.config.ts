@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
       preprocessorOptions: {
         scss: {
           silenceDeprecations: ['mixed-decls'],
+          api: 'modern',
         },
       },
     },

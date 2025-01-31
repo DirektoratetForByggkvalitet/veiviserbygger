@@ -303,7 +303,7 @@ export default function Content({ nodeId, allNodes }: Props) {
   return (
     <section {...bem('')}>
       {node ? (
-        <Node node={node} />
+        <Node node={{ ...node, id: nodeId }} />
       ) : (
         <>
           <p {...bem('error')}>Fant ikke node med id: {nodeId}</p>
