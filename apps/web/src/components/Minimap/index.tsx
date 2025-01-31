@@ -112,10 +112,10 @@ const ContentItem = ({
 function PageMap({ page, index, selected, onPageClick, allNodes }: { page: WizardPage, index: number, selected: boolean, onPageClick: () => void, allNodes: Props['allNodes'] }) {
   const { reorderNodes } = useVersion()
 
-  const handleSortChange = (list: WizardPage['content']) => reorderNodes(page.id, list)
-
-  const { value, onSort } = useSortableList(page.content || [], handleSortChange)
-
+  const { value, onSort, inSync } = useSortableList(
+    page.content || [],
+    (list) => reorderNodes(page.id, list),
+  )
 
   const handleSortingDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -134,7 +134,7 @@ function PageMap({ page, index, selected, onPageClick, allNodes }: { page: Wizar
 
   return (
     <li
-      {...bem('page', { selected })}
+      {...bem('page', { selected, dirty: !inSync })}
       role="button"
       tabIndex={0}
       id={`page-${page.id}`}

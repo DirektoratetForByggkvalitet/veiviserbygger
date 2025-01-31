@@ -1,6 +1,6 @@
 import { useDebounce } from '@uidotdev/usehooks'
-import { intersection, isEqualWith } from 'lodash'
-import { ReactHTMLElement, useEffect, useState } from 'react'
+import { isEqual } from 'lodash'
+import { useEffect, useState } from 'react'
 
 /**
  * Value hook that debounces the value before calling the onChange, while
@@ -42,7 +42,7 @@ export function useSortableList<T extends { id: string | number }>(
 
   // update the value if the debounced value is different
   useEffect(() => {
-    if (isEqualWith(value, debouncedValue)) {
+    if (isEqual(value, debouncedValue)) {
       return
     }
 
@@ -51,7 +51,7 @@ export function useSortableList<T extends { id: string | number }>(
 
   return {
     value: localValue,
-    inSync: value === localValue,
+    inSync: isEqual(value, localValue),
     onSort: handleSort,
   }
 }

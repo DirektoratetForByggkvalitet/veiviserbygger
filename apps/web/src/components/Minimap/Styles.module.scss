@@ -26,6 +26,7 @@
     }
 
     &__page {
+        position: relative;
         cursor: pointer;
         display: flex;
         flex-direction: column;
@@ -53,6 +54,24 @@
             &:focus:focus-visible {
                 background-color: colors.get(neutral, xlight);
                 border-color: colors.get(neutral, xlight);
+            }
+        }
+
+        &--dirty {
+            &:before {
+                content: 'Prøver å lagre ...';
+                font-size: 12px;
+                line-height: 1;
+                text-transform: uppercase;
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                animation: dirtyFadeIn 600ms vars.$ease-out-quart backwards;
+                animation-delay: 1000ms;
+                background: colors.$warning;
+                color: colors.$light;
+                padding: 4px 8px;
+                border-radius: 4px;
             }
         }
 
