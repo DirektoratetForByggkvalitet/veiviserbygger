@@ -16,20 +16,20 @@ const bem = BEMHelper(styles)
 
 export type DropdownOptions = Array<
   | {
-      value: string
-      label: string
-      icon?: keyof typeof icons
-      onClick?: MouseEventHandler
-      styled?: 'delete'
-      disabled?: boolean
-    }
+    value: string
+    label: string
+    icon?: keyof typeof icons
+    onClick?: MouseEventHandler
+    styled?: 'delete'
+    disabled?: boolean
+  }
   | { group: string }
 >
 
 type Props = {
   label?: string
   icon?: keyof typeof icons
-  value?: string
+  value?: string | number | boolean
   position?: 'above' | 'below'
   direction?: 'left' | 'right'
   sentence?: boolean

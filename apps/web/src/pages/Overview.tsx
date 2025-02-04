@@ -116,54 +116,54 @@ export default function Overview() {
 
   const addContentActions: DropdownOptions = page?.id
     ? [
-        {
-          group: 'Innhold',
+      {
+        group: 'Innhold',
+      },
+      contentAction({ pageId: page.id, type: 'Text' }),
+      {
+        group: 'Spørsmål',
+      },
+      contentAction({
+        pageId: page.id,
+        type: 'Radio',
+        defaultContent: {
+          options: [
+            {
+              id: 0, // TODO: Riktig å sette dette i ID?
+              type: 'Answer',
+              heading: '',
+            },
+          ],
         },
-        contentAction({ pageId: page.id, type: 'Text' }),
-        {
-          group: 'Spørsmål',
-        },
-        contentAction({
-          pageId: page.id,
-          type: 'Radio',
-          defaultContent: {
-            options: [
-              {
-                id: 0, // TODO: Riktig å sette dette i ID?
-                type: 'Answer',
-                heading: '',
-              },
-            ],
-          },
-        }),
-        contentAction({ pageId: page.id, type: 'Select', disabled: true }),
-        contentAction({ pageId: page.id, type: 'Checkbox' }),
-        contentAction({ pageId: page.id, type: 'Input', disabled: true }),
-        contentAction({ pageId: page.id, type: 'Number', disabled: true }),
+      }),
+      contentAction({ pageId: page.id, type: 'Select', disabled: true }),
+      contentAction({ pageId: page.id, type: 'Checkbox' }),
+      contentAction({ pageId: page.id, type: 'Input', disabled: true }),
+      contentAction({ pageId: page.id, type: 'Number', disabled: true }),
 
-        {
-          group: 'Hendelser',
-        },
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'ExtraInformation',
-          defaultContent: { preset: 'ExtraInformation' },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'NegativeResult',
-          defaultContent: { preset: 'NegativeResult' },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'NewQuestions',
-          defaultContent: { preset: 'NewQuestions' },
-        }),
-        contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
-      ]
+      {
+        group: 'Hendelser',
+      },
+      contentAction({
+        pageId: page.id,
+        type: 'Branch',
+        preset: 'ExtraInformation',
+        defaultContent: { preset: 'ExtraInformation' },
+      }),
+      contentAction({
+        pageId: page.id,
+        type: 'Branch',
+        preset: 'NegativeResult',
+        defaultContent: { preset: 'NegativeResult' },
+      }),
+      contentAction({
+        pageId: page.id,
+        type: 'Branch',
+        preset: 'NewQuestions',
+        defaultContent: { preset: 'NewQuestions' },
+      }),
+      contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
+    ]
     : []
 
   return (
@@ -235,15 +235,16 @@ export default function Overview() {
                         key={nodeId}
                         nodeId={nodeId}
                         allNodes={nodes}
-                        // allNodes={version?.nodes}
+                        pageId={page.id}
+                      // allNodes={version?.nodes}
                       />
                     )
                   })) || (
-                  <Help
-                    description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
+                    <Help
+                      description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
                     veiviseren."
-                  />
-                )}
+                    />
+                  )}
 
                 <Dropdown
                   options={addContentActions}

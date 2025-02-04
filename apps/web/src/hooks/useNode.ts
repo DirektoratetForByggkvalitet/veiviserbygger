@@ -11,7 +11,7 @@ export function useNode(nodeId: DocumentReference['id']) {
   const [data, setData] = useState<OptionalExcept<PageContent, 'type'>>()
   const { wizardId = '', versionId = '' } = useParams()
 
-  const patch = useCallback(curry(patchNode)(firestore, wizardId, versionId, nodeId), [
+  const patch = useCallback(curry(patchNode)({ db: firestore, wizardId, versionId }, nodeId), [
     firestore,
     wizardId,
     versionId,
@@ -19,14 +19,17 @@ export function useNode(nodeId: DocumentReference['id']) {
   ])
 
   const del = useCallback(
-    () => deleteNode(firestore, wizardId, versionId, nodeId),
+    () => deleteNode({ db: firestore, wizardId, versionId }, nodeId),
     [firestore, wizardId, versionId, nodeId],
   )
 
   useEffect(() => {
-    const unsubNode = onSnapshot(getNodeRef(firestore, wizardId, versionId, nodeId), (snapshot) => {
-      setData(snapshot.data())
-    })
+    const unsubNode = onSnapshot(
+      getNodeRef({ db: firestore, wizardId, versionId }, nodeId),
+      (snapshot) => {
+        setData(snapshot.data())
+      },
+    )
 
     return () => {
       unsubNode?.()

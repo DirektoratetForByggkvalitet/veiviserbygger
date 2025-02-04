@@ -17,25 +17,35 @@ import { DocumentReference } from 'firebase/firestore'
 import { useVersion } from '@/hooks/useVersion'
 import { getTypeDescription, getTypeIcon, getTypeText } from '@/lib/content'
 import { getOrdered } from '@/lib/ordered'
+import Expression from '../Expression'
 const bem = BEMHelper(styles)
 
 type Props = {
   nodeId: DocumentReference['id']
   allNodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
+  pageId: WizardPage['id']
 }
 
 type NodeProps = {
+  allNodes: Props['allNodes']
   node: OptionalExcept<PageContent, 'id' | 'type'>
+  pageId: WizardPage['id']
 }
 
-function Options({ node }: { node: OptionalExcept<PageContentWithOptions, 'id'> } & {}) {
-  const { patchAnswer, deleteAnswer } = useVersion()
+function Options({ node, pageId }: { node: OptionalExcept<PageContentWithOptions, 'id'>, pageId: WizardPage['id'] }) {
+  const { getNodeRef, patchAnswer, deleteAnswer, addNode } = useVersion()
 
   const optionActions = (nodeId: string, optionId: string) => [
     {
       value: '0',
       label: 'Gir negativt resultat',
-      onClick: () => console.log(''),
+      onClick: () => addNode(pageId, {
+        type: 'Branch', preset: 'NegativeResult', test: {
+          field: getNodeRef(nodeId),
+          operator: 'eq',
+          value: optionId
+        }
+      }),
     },
     {
       value: '1',
@@ -77,7 +87,7 @@ function Options({ node }: { node: OptionalExcept<PageContentWithOptions, 'id'> 
   </ul>
 }
 
-function Node({ node }: NodeProps) {
+function Node({ node, pageId, allNodes }: NodeProps) {
   const { patchNode, addAnswer, patchAnswer, deleteAnswer } = useVersion()
 
   if (node.type === 'Text') {
@@ -128,7 +138,7 @@ function Node({ node }: NodeProps) {
           />
 
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
-          <Options node={node} />
+          <Options node={node} pageId={pageId} />
 
           <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
             Legg til svaralternativ
@@ -172,7 +182,7 @@ function Node({ node }: NodeProps) {
           />
 
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
-          <Options node={node} />
+          <Options node={node} pageId={pageId} />
 
           <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
             Legg til svaralternativ
@@ -202,14 +212,12 @@ function Node({ node }: NodeProps) {
         <Main>
           <h3 {...bem('sub-title')}>Vises hvis følgende er sant</h3>
 
-          {/*
-          <Expression expression={node.test} nodes={allNodes} />
-          {node?.content?.map((child: PageContent, index: number) => (
+          <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
+          {/* {node?.content?.map((child: PageContent, index: number) => (
             <div {...bem('inline-main')} key={child.id || index}>
               {(nodes[child.type] || nodes.Fallback)(child)}
             </div>
-          ))}
-          */}
+          ))} */}
         </Main>
 
         <Aside>
@@ -354,13 +362,13 @@ const Main = ({ children, full }: { children: ReactNode; full?: boolean }) => (
 
 const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
 
-export default function Content({ nodeId, allNodes }: Props) {
+export default function Content({ nodeId, allNodes, pageId }: Props) {
   const node = allNodes?.[nodeId]
 
   return (
     <section {...bem('')}>
       {node ? (
-        <Node node={{ ...node, id: nodeId }} />
+        <Node node={{ ...node, id: nodeId }} pageId={pageId} allNodes={allNodes} />
       ) : (
         <>
           <p {...bem('error')}>Fant ikke node med id: {nodeId}</p>

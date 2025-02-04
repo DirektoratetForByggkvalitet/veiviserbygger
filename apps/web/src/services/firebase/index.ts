@@ -26,7 +26,7 @@ import {
 } from 'types'
 import { v4 as uuid } from 'uuid'
 import deepExtend from 'deep-extend'
-import { maxBy, values } from 'lodash'
+import { maxBy, merge, mergeWith, values } from 'lodash'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -117,23 +117,23 @@ export function getWizardVersionsRef(db: Firestore, id: string) {
   return dataPoint<WizardVersion>(db, 'wizards', id, 'versions')
 }
 
-export function getWizardVersionRef(db: Firestore, id: string, version: string) {
-  return doc(dataPoint<WizardVersion>(db, 'wizards', id, 'versions'), version)
+export function getWizardVersionRef({ db, wizardId, versionId }: FuncScope) {
+  return doc(dataPoint<WizardVersion>(db, 'wizards', wizardId, 'versions'), versionId)
 }
 
-export function getNodesRef(db: Firestore, id: string, version: string) {
+export function getNodesRef({ db, wizardId, versionId }: FuncScope) {
   return dataPoint<OptionalExcept<PageContent, 'type'>>(
     db,
     'wizards',
-    id,
+    wizardId,
     'versions',
-    version,
+    versionId,
     'nodes',
   )
 }
 
-export function getNodeRef(db: Firestore, id: string, version: string, nodeId: string) {
-  return doc(getNodesRef(db, id, version), nodeId)
+export function getNodeRef({ db, wizardId, versionId }: FuncScope, nodeId: string) {
+  return doc(getNodesRef({ db, wizardId, versionId }), nodeId)
 }
 
 export async function createWizard(db: Firestore, data: Wizard) {
@@ -146,7 +146,7 @@ export async function createWizard(db: Firestore, data: Wizard) {
         ...data,
         draftVersionId: newVersionId,
       })
-      .set(getWizardVersionRef(db, newDocId, newVersionId), {})
+      .set(getWizardVersionRef({ db, wizardId: newDocId, versionId: newVersionId }), {})
 
     return { id: newDocId, versionId: newVersionId }
   })
@@ -163,7 +163,7 @@ export async function createPage(
   page: Partial<Omit<WizardPage, 'id'>>,
 ) {
   await runTransaction(db, async (transaction) => {
-    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const ref = getWizardVersionRef({ db, wizardId, versionId })
     const current = await transaction.get(ref)
 
     const maxOrder = maxBy(values(current?.data()?.pages), 'order')?.order ?? -1
@@ -178,7 +178,7 @@ export async function patchPage(
   patch: DeepPartial<WizardPage>,
 ) {
   await runTransaction(db, async (transaction) => {
-    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const ref = getWizardVersionRef({ db, wizardId, versionId })
     const current = await transaction.get(ref)
 
     const patchedPage = current?.data()?.pages?.[pageId]
@@ -193,7 +193,7 @@ export async function patchPage(
 
 export async function deletePage({ db, wizardId, versionId }: FuncScope, pageId: string) {
   await runTransaction(db, async (transaction) => {
-    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const ref = getWizardVersionRef({ db, wizardId, versionId })
     const current = await transaction.get(ref)
     const pageToDelete = current?.data()?.pages?.[pageId]
 
@@ -212,8 +212,8 @@ export async function addNode(
 ) {
   await runTransaction(db, async (transaction) => {
     const newNodeId = uuid()
-    const versionRef = getWizardVersionRef(db, wizardId, versionId)
-    const nodeRef = getNodeRef(db, wizardId, versionId, newNodeId)
+    const versionRef = getWizardVersionRef({ db, wizardId, versionId })
+    const nodeRef = getNodeRef({ db, wizardId, versionId }, newNodeId)
 
     await transaction.update(versionRef, {
       [`pages.${pageId}.content`]: arrayUnion(nodeRef),
@@ -226,10 +226,10 @@ export async function addNode(
 export async function patchNode(
   { db, wizardId, versionId }: FuncScope,
   nodeId: string,
-  patch: OptionalExcept<PageContent, 'type'>,
+  patch: DeepPartial<PageContent>,
 ) {
   await runTransaction(db, async (transaction) => {
-    const ref = getNodeRef(db, wizardId, versionId, nodeId)
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
     const current = await transaction.get(ref)
 
     const patchedNode = current?.data()
@@ -238,7 +238,7 @@ export async function patchNode(
       throw new Error(`Node with id ${nodeId} not found`)
     }
 
-    await transaction.update(ref, deepExtend(patchedNode as any, patch))
+    await transaction.update(ref, merge(patchedNode as any, patch))
   })
 }
 
@@ -248,7 +248,7 @@ export async function reorderNodes(
   nodes: WizardPage['content'],
 ) {
   await runTransaction(db, async (transaction) => {
-    const ref = getWizardVersionRef(db, wizardId, versionId)
+    const ref = getWizardVersionRef({ db, wizardId, versionId })
     const current = await transaction.get(ref)
 
     const page = current?.data()?.pages?.[pageId]
@@ -263,8 +263,8 @@ export async function reorderNodes(
 
 export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId: string) {
   await runTransaction(db, async (transaction) => {
-    const nodeRef = getNodeRef(db, wizardId, versionId, nodeId)
-    const versionRef = getWizardVersionRef(db, wizardId, versionId)
+    const nodeRef = getNodeRef({ db, wizardId, versionId }, nodeId)
+    const versionRef = getWizardVersionRef({ db, wizardId, versionId })
 
     const [node, version] = await Promise.all([
       transaction.get(nodeRef),
@@ -298,7 +298,7 @@ export async function addAnswer(
   answer: Partial<Omit<Answer, 'id'>>,
 ) {
   await runTransaction(db, async (transaction) => {
-    const ref = getNodeRef(db, wizardId, versionId, nodeId)
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
     const current = await transaction.get(ref)
 
     const currentOptions = current.data() as PageContentWithOptions
@@ -316,7 +316,7 @@ export function patchAnswer(
   patch: Partial<Answer>,
 ) {
   return runTransaction(db, async (transaction) => {
-    const ref = getNodeRef(db, wizardId, versionId, nodeId)
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
     const current = await transaction.get(ref)
 
     const node = current?.data() as PageContentWithOptions
@@ -335,7 +335,7 @@ export function deleteAnswer(
   answerId: string,
 ) {
   return runTransaction(db, async (transaction) => {
-    const ref = getNodeRef(db, wizardId, versionId, nodeId)
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
     const current = await transaction.get(ref)
 
     const node = current?.data()

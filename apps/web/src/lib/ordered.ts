@@ -8,13 +8,10 @@ export function getOrdered<T extends Object>(value?: OrderedMap<T>): T[] {
   )
 }
 
-export function getWithId<T>(
-  value: { [key: string]: T } | undefined,
-  id: string | undefined | null,
-) {
-  if (!id || !value?.[id]) {
-    return undefined
+export function getWithIds<T>(docs?: { [id: string]: T }) {
+  if (!docs) {
+    return []
   }
 
-  return { ...value[id], id }
+  return Object.keys(docs).map((id) => ({ ...docs[id], id }))
 }

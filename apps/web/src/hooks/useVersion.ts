@@ -11,6 +11,7 @@ import {
   reorderNodes,
   patchAnswer,
   deleteNode,
+  getNodeRef,
 } from '@/services/firebase'
 import { curry } from 'lodash'
 
@@ -23,6 +24,7 @@ export function useVersion() {
   }
 
   return {
+    getNodeRef: curry(getNodeRef)({ db: firestore, wizardId, versionId }),
     createPage: curry(createPage)({ db: firestore, wizardId, versionId }),
     patchPage: curry(patchPage)({ db: firestore, wizardId, versionId }),
     deletePage: curry(deletePage)({ db: firestore, wizardId, versionId }),

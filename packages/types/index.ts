@@ -33,7 +33,7 @@ export type PartialPageContent<T extends PageContent['type']> = OptionalExcept<
 >
 
 export type SimpleExpression = {
-  field: string
+  field: DocumentReference
   operator:
     | 'gt'
     | 'lt'

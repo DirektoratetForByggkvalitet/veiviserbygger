@@ -22,17 +22,20 @@ export default function useWizard(id?: string, version?: string) {
   useEffect(() => {
     const unsubNodes =
       id && version
-        ? onSnapshot(getNodesRef(firestore, id, version), (snapshot) => {
-            setNodes(
-              snapshot.docs.reduce(
-                (res, doc) => ({
-                  ...res,
-                  [doc.id]: doc.data(),
-                }),
-                {},
-              ),
-            )
-          })
+        ? onSnapshot(
+            getNodesRef({ db: firestore, wizardId: id, versionId: version }),
+            (snapshot) => {
+              setNodes(
+                snapshot.docs.reduce(
+                  (res, doc) => ({
+                    ...res,
+                    [doc.id]: doc.data(),
+                  }),
+                  {},
+                ),
+              )
+            },
+          )
         : undefined
 
     return () => {
@@ -81,9 +84,12 @@ export default function useWizard(id?: string, version?: string) {
   useEffect(() => {
     const unsubVersion =
       id && version
-        ? onSnapshot(getWizardVersionRef(firestore, id, version), (snapshot) => {
-            setWizardVersionData(snapshot.data())
-          })
+        ? onSnapshot(
+            getWizardVersionRef({ db: firestore, wizardId: id, versionId: version }),
+            (snapshot) => {
+              setWizardVersionData(snapshot.data())
+            },
+          )
         : undefined
 
     return () => {
