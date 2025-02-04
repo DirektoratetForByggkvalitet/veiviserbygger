@@ -228,7 +228,6 @@ export type WizardVersion = {
   publishedFrom?: Timestamp
   publishedTo?: Timestamp
   pages?: OrderedMap<WizardPage>
-  nodes?: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
 }
 
 export type WizardPage = Intro | Page | Result

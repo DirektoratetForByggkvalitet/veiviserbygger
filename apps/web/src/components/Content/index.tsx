@@ -21,7 +21,7 @@ const bem = BEMHelper(styles)
 
 type Props = {
   nodeId: DocumentReference['id']
-  allNodes: WizardVersion['nodes']
+  allNodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
 }
 
 type NodeProps = {
@@ -83,7 +83,7 @@ function Node({ node }: NodeProps) {
   if (node.type === 'Text') {
     return (
       <>
-        <Header type={node.type} />
+        <Header type={node.type} node={node} />
         <Main>
           <Input
             label="Tittel"
@@ -110,7 +110,7 @@ function Node({ node }: NodeProps) {
   if (node.type === 'Radio') {
     return (
       <>
-        <Header type={node.type} title={node.heading || 'Hva er det til middag i dag?'} />
+        <Header type={node.type} title={node.heading || 'Hva er det til middag i dag?'} node={node} />
 
         <Main>
           <Input
@@ -141,7 +141,7 @@ function Node({ node }: NodeProps) {
           <h3 {...bem('sub-title')}>Innstillinger</h3>
           <div {...bem('field-list')}>
             <Checkbox
-              label="Grid visning"
+              label="Gridvisning"
               checked={node.grid}
               onChange={(v) => patchNode(node.id, { type: 'Radio', grid: v })}
             />
@@ -154,7 +154,7 @@ function Node({ node }: NodeProps) {
   if (node.type === 'Checkbox') {
     return (
       <>
-        <Header type={node.type} title={node.heading || 'Hva er det til middag i dag?'} />
+        <Header type={node.type} title={node.heading || 'Hva er det til middag i dag?'} node={node} />
 
         <Main>
           <Input
@@ -185,7 +185,7 @@ function Node({ node }: NodeProps) {
           <h3 {...bem('sub-title')}>Innstillinger</h3>
           <div {...bem('field-list')}>
             <Checkbox
-              label="Grid visning"
+              label="Gridvisning"
               checked={node.grid}
               onChange={(v) => patchNode(node.id, { type: 'Radio', grid: v })}
             />
@@ -198,7 +198,7 @@ function Node({ node }: NodeProps) {
   if (node.type === 'Branch') {
     return (
       <>
-        <Header type={node.preset || node.type} />
+        <Header type={node.preset || node.type} node={node} />
         <Main>
           <h3 {...bem('sub-title')}>Vises hvis følgende er sant</h3>
 
@@ -275,12 +275,15 @@ function Node({ node }: NodeProps) {
 const Header = ({
   type,
   title,
+  node
 }: {
   type: PageContent['type'] | Branch['preset']
+  node: NodeProps['node']
   title?: string
 }) => {
   const [showMoveNode, setShowMoveNode] = useState(false)
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+  const { deleteNode } = useVersion()
 
   const contentActions: DropdownOptions = [
     {
@@ -331,10 +334,14 @@ const Header = ({
           description={`Vil du slette ${title ? `"${title}"` : 'dette innholdet'} ? Handlingen kan ikke angres.`}
         />
         <ButtonBar>
-          <Button type="button" warning>
+          <Button type="button" warning onClick={async () => {
+            await deleteNode(node.id)
+            setShowConfirmDelete(false)
+          }}>
             Slett
           </Button>
-          <Button type="button">Avbryt</Button>
+
+          <Button type="button" onClick={() => setShowConfirmDelete(false)}>Avbryt</Button>
         </ButtonBar>
       </Modal>
     </header>

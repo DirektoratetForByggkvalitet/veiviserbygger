@@ -1,6 +1,7 @@
 import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
+  arrayRemove,
   arrayUnion,
   connectFirestoreEmulator,
   deleteField,
@@ -40,7 +41,7 @@ let firebaseApp: {
 export function getFirebaseApp(
   options?: Awaited<ReturnType<typeof getConfig>>,
 ): typeof firebaseApp {
-  if (firebaseApp) {
+  if (firebaseApp!) {
     return firebaseApp
   }
 
@@ -262,16 +263,32 @@ export async function reorderNodes(
 
 export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId: string) {
   await runTransaction(db, async (transaction) => {
-    const ref = getNodeRef(db, wizardId, versionId, nodeId)
-    const current = await transaction.get(ref)
+    const nodeRef = getNodeRef(db, wizardId, versionId, nodeId)
+    const versionRef = getWizardVersionRef(db, wizardId, versionId)
 
-    const nodeToDelete = current?.data()
+    const [node, version] = await Promise.all([
+      transaction.get(nodeRef),
+      transaction.get(versionRef),
+    ])
+
+    const pageIds = Object.keys(version.data()?.pages || {})
+    const nodeToDelete = node?.data()
 
     if (!nodeToDelete) {
       return
     }
 
-    await transaction.delete(ref)
+    await transaction.delete(nodeRef)
+    await transaction.update(
+      versionRef,
+      pageIds.reduce(
+        (res, pageId) => ({
+          ...res,
+          [`pages.${pageId}.content`]: arrayRemove(nodeRef),
+        }),
+        {},
+      ),
+    )
   })
 }
 
