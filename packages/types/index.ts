@@ -1,4 +1,4 @@
-import type { DocumentReference, Timestamp } from 'firebase/firestore'
+import type { DocumentReference, PartialWithFieldValue, Timestamp } from 'firebase/firestore'
 
 export type DeepPartial<T> = T extends object
   ? {
@@ -22,6 +22,14 @@ export type Awaited<T> = T extends PromiseLike<infer U> ? U : T
  * except for the ones specified in the second argument.
  */
 export type OptionalExcept<T, K extends keyof T> = Partial<T> & Required<Pick<T, K>>
+
+export type Patch<T, RequiredKeys extends keyof T = never> = {
+  [K in keyof T as K extends RequiredKeys ? K : never]: T[K] extends object ? Patch<T[K]> : T[K]
+} & {
+  [K in keyof T as K extends RequiredKeys ? never : K]?:
+    | (T[K] extends object ? Patch<T[K]> : T[K])
+    | symbol
+}
 
 /**
  * A generic that narrows the PageContent type to a specific type and returns a new
@@ -52,7 +60,7 @@ export type SimpleExpression = {
 
 export type ComplexExpression = {
   type: 'and' | 'or'
-  clauses: Expression[]
+  clauses: OrderedMap<SimpleExpression>
   // errorMessage?: string Trenger vi denne?
 }
 
@@ -204,6 +212,7 @@ export type PageContent =
   | Branch
   | Error
   | Information
+  | SimpleResult
 
 export type Page = {
   id: string

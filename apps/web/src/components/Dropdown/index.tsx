@@ -115,7 +115,7 @@ export default function Dropdown({
   const endPosition = getPositionWithoutCollissions()
 
   const selectedOption = options.find((option) => 'value' in option && option.value === value)
-  const valueString = selectedOption && 'label' in selectedOption ? selectedOption?.label : value
+  const valueString = selectedOption && 'label' in selectedOption ? selectedOption?.label : value || label
 
   return (
     <div {...bem('', { simple, sentence, iconOnly })} ref={wrapperRef}>

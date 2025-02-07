@@ -25,7 +25,7 @@ export default function Overview() {
   const [showConfirmDeletePage, setShowConfirmDeletePage] = useState(false)
   const { wizardId, versionId } = useParams<{ wizardId?: string; versionId?: string }>()
   const { wizard, versions, version, nodes } = useWizard(wizardId, versionId)
-  const { patchPage, deletePage, addNode } = useVersion()
+  const { patchPage, deletePage, addNodes } = useVersion()
   const showFrontpage = !wizardId
   const setOpenMenu = useSetAtom(menuState)
 
@@ -110,7 +110,7 @@ export default function Overview() {
     value: preset || type,
     label: getTypeText(preset || type),
     icon: getTypeIcon(preset || type),
-    onClick: () => addNode(pageId, { type, ...defaultContent }),
+    onClick: () => addNodes(pageId, [{ type, ...defaultContent }]),
     disabled: disabled,
   })
 
@@ -140,7 +140,6 @@ export default function Overview() {
       contentAction({ pageId: page.id, type: 'Checkbox' }),
       contentAction({ pageId: page.id, type: 'Input', disabled: true }),
       contentAction({ pageId: page.id, type: 'Number', disabled: true }),
-
       {
         group: 'Hendelser',
       },
@@ -148,19 +147,19 @@ export default function Overview() {
         pageId: page.id,
         type: 'Branch',
         preset: 'ExtraInformation',
-        defaultContent: { preset: 'ExtraInformation' },
+        defaultContent: { preset: 'ExtraInformation', test: {} },
       }),
       contentAction({
         pageId: page.id,
         type: 'Branch',
         preset: 'NegativeResult',
-        defaultContent: { preset: 'NegativeResult' },
+        defaultContent: { preset: 'NegativeResult', test: {} },
       }),
       contentAction({
         pageId: page.id,
         type: 'Branch',
         preset: 'NewQuestions',
-        defaultContent: { preset: 'NewQuestions' },
+        defaultContent: { preset: 'NewQuestions', test: {} },
       }),
       contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
     ]

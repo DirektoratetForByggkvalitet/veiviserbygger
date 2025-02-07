@@ -1,4 +1,4 @@
-import { Expression as ExpressionType, OptionalExcept, PageContent, WizardVersion } from 'types'
+import { ComplexExpression, Expression as ExpressionType, OptionalExcept, PageContent, Patch, SimpleExpression, WizardVersion } from 'types'
 // import Button from '@/components/Button'
 import Dropdown from '@/components/Dropdown'
 import Input from '@/components/Input'
@@ -6,18 +6,38 @@ import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { getOrdered, getWithIds } from '@/lib/ordered'
 import { useVersion } from '@/hooks/useVersion'
+import { deleteField } from 'firebase/firestore'
+import { unset } from '@/lib/merge'
+import { v4 as uuid } from 'uuid'
+
 const bem = BEMHelper(styles)
 
 interface Props {
   expression?: ExpressionType
   nodeId: string
+  /**
+   * Only used when the expression is a clause in a complex expression
+   */
+  clauseId?: string
   nodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
   child?: boolean
   first?: boolean
   type?: 'or' | 'and'
 }
 
-const OPERATORS = [
+type Operators =
+  'gt' |
+  'lt' |
+  'gte' |
+  'lte' |
+  'eq' |
+  'neq' |
+  'between' |
+  'is' |
+  'not' |
+  'required'
+
+const OPERATORS: { value: Operators, label: string }[] = [
   { value: 'gt', label: 'er større enn' },
   { value: 'lt', label: 'er mindre enn' },
   { value: 'gte', label: 'er lik eller større enn' },
@@ -36,19 +56,6 @@ const TYPES = [
   { value: 'or', label: 'en av følgende' },
 ]
 
-const SIMPLE_ACTIONS = [
-  {
-    value: '0',
-    label: 'Legg til flere vilkår',
-    onClick: () => console.log('Ny undergruppe'),
-  },
-  {
-    value: '0',
-    label: 'Slett',
-    onClick: () => console.log('Fjern'),
-  },
-]
-
 const COMPLEX_ACTIONS = [
   {
     value: '0',
@@ -57,11 +64,88 @@ const COMPLEX_ACTIONS = [
   },
 ]
 
-export default function Expression({ expression, nodes, child, first, type, nodeId }: Props) {
+const inputTypeMap: {
+  [K in PageContent['type']]?: {
+    operators: Operators[]
+    type: 'single' | 'multi' | 'number' | 'text'
+  }
+} = {
+  Radio: {
+    operators: ['gt',
+      'eq',
+      'neq',
+      'is',
+      'not',
+      'required'
+    ],
+    type: 'single',
+  },
+  Checkbox: {
+    operators: ['is', 'not', 'required'],
+    type: 'multi',
+  },
+}
+
+export default function Expression({ expression, nodes, child, first, type, nodeId, clauseId }: Props) {
   const { getNodeRef, patchNode } = useVersion()
 
+  const handleAddClause = () => {
+    if (!expression) { return }
+
+    // new clause in complex expression
+    if (clauseId || 'clauses' in expression) {
+      return patchNode(nodeId, {
+        type: 'Branch',
+        test: {
+          clauses: {
+            [uuid()]: {} as Patch<SimpleExpression>
+          }
+        }
+      })
+    }
+
+    // turn simple expression into complex expression
+    patchNode(nodeId, {
+      type: 'Branch',
+      test: {
+        field: unset,
+        operator: unset,
+        value: unset,
+        type: 'and',
+        clauses: {
+          [uuid()]: expression as SimpleExpression,
+          [uuid()]: {} as Patch<SimpleExpression>
+        },
+      }
+    })
+  }
+
+  const handleExpressionChange = (key: string) => (value: any) => {
+    let val = key === 'field' ? getNodeRef(value) : value
+
+    if (clauseId) {
+      return patchNode(nodeId, {
+        test: {
+          clauses: {
+            [clauseId]: {
+              [key]: val,
+              ...(key === 'field' ? { operator: unset, value: unset } : {})
+            }
+          }
+        }
+      })
+    }
+
+    patchNode(nodeId, {
+      test: {
+        [key]: val,
+        ...(key === 'field' ? { operator: unset, value: unset } : {})
+      }
+    })
+  }
+
   const fieldOptions =
-    (getWithIds(nodes).filter((node) => node.type === 'Radio')
+    (getWithIds(nodes).filter((node) => inputTypeMap[node.type])
       .map((node) => ({
         value: node.id,
         label: node.heading || 'Uten navn',
@@ -80,14 +164,16 @@ export default function Expression({ expression, nodes, child, first, type, node
             {!child && !type && 'Hvis'}
             {child && !first && type == 'or' && 'Eller hvis'}
             {child && !first && type == 'and' && 'Og hvis'}
-            <Dropdown options={TYPES} value={expression.type} label="Vekting" hideLabel sentence />
+            <Dropdown options={TYPES} value={expression.type} label="Vekting" hideLabel sentence onChange={handleExpressionChange('type')} />
           </div>
           <Dropdown icon="Ellipsis" direction="right" options={COMPLEX_ACTIONS} iconOnly />
         </div>
         <ul {...bem('clauses')}>
-          {expression.clauses.map((clause, index) => (
+          {getOrdered(expression.clauses).map((clause, index) => (
             <li key={index} {...bem('clause')}>
               <Expression
+                clauseId={clause.id}
+                nodeId={nodeId}
                 expression={clause}
                 nodes={nodes}
                 child
@@ -103,9 +189,7 @@ export default function Expression({ expression, nodes, child, first, type, node
   }
 
   const activeField =
-    expression?.field && fieldOptions.find((option) => option.value === expression.field.id) // TODO: Type
-
-  console.log(activeField?.options, expression?.value)
+    expression?.field && fieldOptions.find((option) => option.value === expression?.field?.id) // TODO: Type
 
   // Expression of type SimpleExpression
   return (
@@ -118,23 +202,20 @@ export default function Expression({ expression, nodes, child, first, type, node
 
           <Dropdown
             options={fieldOptions}
-            value={expression?.field.id}
+            value={expression?.field?.id}
             label="Felt"
             hideLabel
             sentence
-            onChange={(value) => {
-              patchNode(nodeId, {
-                type: 'Branch', test: { field: getNodeRef(value) }
-              })
-            }}
+            onChange={handleExpressionChange('field')}
           />
 
           <Dropdown
             options={OPERATORS}
             value={expression?.operator}
-            label="Oppfyller betingelse"
+            label="Velg betingelse"
             hideLabel
             sentence
+            onChange={handleExpressionChange('operator')}
           />
 
           {activeField?.type === 'Radio' && (
@@ -144,7 +225,7 @@ export default function Expression({ expression, nodes, child, first, type, node
               value={expression?.value || 'Velg alternativ'}
               hideLabel
               sentence
-              onChange={(value) => patchNode(nodeId, { type: 'Branch', test: { value } })}
+              onChange={handleExpressionChange('value')}
             />
           )}
 
@@ -153,16 +234,25 @@ export default function Expression({ expression, nodes, child, first, type, node
               label="Verdi"
               placeholder="Verdi"
               value={expression?.value as string}
-              onChange={() => {
-                console.log('Input')
-              }}
+              onChange={handleExpressionChange('value')}
               hideLabel
               sentence
             />
           )}
         </div>
 
-        <Dropdown icon="Ellipsis" direction="right" options={SIMPLE_ACTIONS} iconOnly />
+        <Dropdown icon="Ellipsis" direction="right" options={[
+          {
+            value: '0',
+            label: 'Legg til flere vilkår',
+            onClick: handleAddClause,
+          },
+          {
+            value: '0',
+            label: 'Slett',
+            onClick: () => console.log('Fjern'),
+          },
+        ]} iconOnly />
       </div>
     </div>
   )

@@ -33,19 +33,31 @@ type NodeProps = {
 }
 
 function Options({ node, pageId }: { node: OptionalExcept<PageContentWithOptions, 'id'>, pageId: WizardPage['id'] }) {
-  const { getNodeRef, patchAnswer, deleteAnswer, addNode } = useVersion()
+  const { getNodeRef, patchAnswer, deleteAnswer, addNodes } = useVersion()
 
   const optionActions = (nodeId: string, optionId: string) => [
     {
       value: '0',
       label: 'Gir negativt resultat',
-      onClick: () => addNode(pageId, {
-        type: 'Branch', preset: 'NegativeResult', test: {
-          field: getNodeRef(nodeId),
-          operator: 'eq',
-          value: optionId
-        }
-      }),
+      onClick: async () => {
+        const [alertNodeRef, resultRef] = await addNodes(undefined, [{
+          type: 'Error',
+        },
+        {
+          type: 'Result',
+        }])
+
+        await addNodes(pageId, [{
+          type: 'Branch',
+          preset: 'NegativeResult',
+          test: {
+            field: getNodeRef(nodeId),
+            operator: 'eq',
+            value: optionId
+          },
+          content: [alertNodeRef, resultRef]
+        }])
+      },
     },
     {
       value: '1',
@@ -213,11 +225,11 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           <h3 {...bem('sub-title')}>Vises hvis følgende er sant</h3>
 
           <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
-          {/* {node?.content?.map((child: PageContent, index: number) => (
-            <div {...bem('inline-main')} key={child.id || index}>
-              {(nodes[child.type] || nodes.Fallback)(child)}
-            </div>
-          ))} */}
+          {node?.content?.map((nodeRef) => {
+            const node = allNodes[nodeRef.id]
+
+            return <Node node={{ ...node, id: node.id }} pageId={pageId} allNodes={allNodes} />
+          })}
         </Main>
 
         <Aside>

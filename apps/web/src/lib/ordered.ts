@@ -1,9 +1,11 @@
 import { sortBy, transform, values } from 'lodash'
 import { OrderedMap } from 'types'
 
-export function getOrdered<T extends Object>(value?: OrderedMap<T>): T[] {
+export function getOrdered<T extends Object>(value?: OrderedMap<T>): Array<T & { id: string }> {
   return sortBy(
-    Object.keys(value || {}).map<T>((key) => ({ ...(value?.[key] || {}), id: key }) as any) as T[],
+    Object.keys(value || {}).map<T>(
+      (key) => ({ ...(value?.[key] || {}), id: key }) as any,
+    ) as Array<T & { id: string }>,
     'order',
   )
 }

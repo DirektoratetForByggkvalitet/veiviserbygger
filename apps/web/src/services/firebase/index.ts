@@ -10,6 +10,7 @@ import {
   Firestore,
   getDoc,
   getFirestore,
+  PartialWithFieldValue,
   runTransaction,
 } from 'firebase/firestore'
 import { getConfig } from '../api'
@@ -20,13 +21,15 @@ import {
   OptionalExcept,
   PageContent,
   PageContentWithOptions,
+  Patch,
   Wizard,
   WizardPage,
   WizardVersion,
 } from 'types'
 import { v4 as uuid } from 'uuid'
 import deepExtend from 'deep-extend'
-import { maxBy, merge, mergeWith, values } from 'lodash'
+import { maxBy, values } from 'lodash'
+import { merge } from '@/lib/merge'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -205,31 +208,37 @@ export async function deletePage({ db, wizardId, versionId }: FuncScope, pageId:
   })
 }
 
-export async function addNode(
+export async function addNodes(
   { db, wizardId, versionId }: FuncScope,
-  pageId: string,
-  node: OptionalExcept<PageContent, 'type'>,
+  pageId: string | undefined,
+  nodes: OptionalExcept<PageContent, 'type'>[],
 ) {
+  const nodeRefs = nodes.map(() => getNodeRef({ db, wizardId, versionId }, uuid()))
+
   await runTransaction(db, async (transaction) => {
-    const newNodeId = uuid()
     const versionRef = getWizardVersionRef({ db, wizardId, versionId })
-    const nodeRef = getNodeRef({ db, wizardId, versionId }, newNodeId)
 
-    await transaction.update(versionRef, {
-      [`pages.${pageId}.content`]: arrayUnion(nodeRef),
+    nodeRefs.forEach(async (nodeRef, index) => {
+      pageId &&
+        (await transaction.update(versionRef, {
+          [`pages.${pageId}.content`]: arrayUnion(nodeRef),
+        }))
+
+      await transaction.set(nodeRef, nodes[index])
     })
-
-    await transaction.set(nodeRef, node)
   })
+
+  return nodeRefs as DocumentReference[]
 }
 
 export async function patchNode(
   { db, wizardId, versionId }: FuncScope,
   nodeId: string,
-  patch: DeepPartial<PageContent>,
+  patch: Patch<PageContent>,
 ) {
   await runTransaction(db, async (transaction) => {
     const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+
     const current = await transaction.get(ref)
 
     const patchedNode = current?.data()
@@ -238,6 +247,7 @@ export async function patchNode(
       throw new Error(`Node with id ${nodeId} not found`)
     }
 
+    console.log(ref.path, merge(patchedNode as any, patch))
     await transaction.update(ref, merge(patchedNode as any, patch))
   })
 }
