@@ -8,6 +8,8 @@ import Icon from '@/components/Icon'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { useValue } from '@/hooks/useValue'
+import Superscript from '@tiptap/extension-superscript'
+import Subscript from '@tiptap/extension-subscript'
 const bem = BEMHelper(styles)
 
 const extensions = [
@@ -21,6 +23,8 @@ const extensions = [
       keepAttributes: false,
     },
   }),
+  Superscript,
+  Subscript,
 ]
 
 interface Props {
@@ -72,6 +76,7 @@ function MenuBar() {
     (editor.isActive('heading', { level: 2 }) && 'h2') ||
     (editor.isActive('heading', { level: 3 }) && 'h3') ||
     undefined
+
   const textStyles = [
     {
       value: 'p',
@@ -110,6 +115,12 @@ function MenuBar() {
         return editor.chain().focus().toggleBulletList().run()
       case 'orderedList':
         return editor.chain().focus().toggleOrderedList().run()
+      case 'superscript':
+        return editor.chain().focus().toggleSuperscript().run()
+      case 'subscript':
+        return editor.chain().focus().toggleSubscript().run()
+      default:
+        console.log(value)
     }
   }
 
@@ -123,6 +134,7 @@ function MenuBar() {
       >
         <Icon name="Bold" />
       </button>
+
       <button
         type="button"
         onClick={toggle('italic')}
@@ -130,6 +142,24 @@ function MenuBar() {
         {...bem('control', { active: editor.isActive('italic') })}
       >
         <Icon name="Italic" />
+      </button>
+
+      <button
+        type="button"
+        onClick={toggle('superscript')}
+        disabled={!editor.can().chain().focus().toggleSuperscript().run()}
+        {...bem('control', { active: editor.isActive('superscript') })}
+      >
+        <Icon name="Superscript" />
+      </button>
+
+      <button
+        type="button"
+        onClick={toggle('subscript')}
+        disabled={!editor.can().chain().focus().toggleSubscript().run()}
+        {...bem('control', { active: editor.isActive('subscript') })}
+      >
+        <Icon name="Subscript" />
       </button>
 
       <hr {...bem('separator')} />
@@ -141,6 +171,7 @@ function MenuBar() {
       >
         <Icon name="List" />
       </button>
+
       <button
         type="button"
         onClick={toggle('orderedList')}
