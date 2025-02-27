@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Requests } from 'types/requests'
 
 const instance = axios.create({
-  baseURL: import.meta.env.API_ROOT || '/api/',
+  baseURL: import.meta.env.VITE_API_ROOT || '/api/',
   timeout: 1000,
 })
 
