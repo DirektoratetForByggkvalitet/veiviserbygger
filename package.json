@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "turbo start",
-    "build": "turbo build",
+    "build": "turbo build --filter=${BUILD_FILTER:-*}",
     "lint": "turbo lint",
     "dev": "turbo dev",
     "test": "turbo test",
