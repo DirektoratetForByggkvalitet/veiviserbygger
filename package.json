@@ -4,6 +4,7 @@
   "description": "Wizard builder for Losen ===",
   "main": "index.js",
   "scripts": {
+    "start": "turbo start",
     "build": "turbo build",
     "lint": "turbo lint",
     "dev": "turbo dev",
