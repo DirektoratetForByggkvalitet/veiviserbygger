@@ -1,1 +1,1 @@
-web: npm run start --filter api
+web: node apps/api/build/index.js
