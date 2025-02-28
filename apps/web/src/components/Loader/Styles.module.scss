@@ -1,19 +1,44 @@
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
+
 .loader {
+    $this: &;
     inset: 0;
     position: fixed;
-    display: grid;
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 400px;
-    color: hotpink;
-
-    &__rotate {
-        animation: spinner var(--duration) linear infinite;
+    gap: vars.$spacing--small;
+    animation: fade-in 400ms vars.$ease-in-quart backwards;
+    &__box1,
+    &__box2 {
+        background-color: colors.$light;
+        border-radius: vars.$border-radius;
+        border: vars.$border-style;
+        padding: vars.$spacing--small;
+        animation: wiggle 400ms vars.$ease-out-quart infinite;
+        box-shadow: vars.$shadow;
+        -webkit-animation-direction: alternate;
+    }
+    &__box2 {
+        animation-delay: 400ms;
+    }
+    &__label {
     }
 }
 
-@keyframes spinner {
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes wiggle {
+    from {
+        transform: translateY(-50%);
+    }
     to {
-        transform: rotate3d(0, 0.5, 1, 1turn);
+        transform: translateY(0%);
     }
 }
