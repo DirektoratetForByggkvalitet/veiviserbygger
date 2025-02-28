@@ -5,7 +5,7 @@
 .help {
     $this: &;
     @include mixins.font-size(small);
-    color: colors.$muted;
+    color: colors.$text;
     margin: vars.$spacing--xsmall 0;
     max-width: 500px;
 }

@@ -57,7 +57,9 @@
 
     &__aside {
         grid-area: aside;
-        padding-left: vars.$margin;
+        @include mixins.min-width(lg) {
+            padding-left: vars.$spacing;
+        }
     }
 
     &__inline-main {

@@ -202,14 +202,14 @@
         #{$this}__trigger {
             @include mixins.font-size(small);
             border-radius: vars.$border-radius;
-            background-color: colors.get(neutral, light);
+            background-color: colors.get(neutral, xlight);
             padding: 4px 4px;
             height: 35px;
         }
 
         #{$this}__trigger:hover,
         #{$this}__trigger:focus {
-            background-color: colors.get(neutral);
+            background-color: colors.get(neutral, light);
         }
 
         #{$this}__label {
