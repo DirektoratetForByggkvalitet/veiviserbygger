@@ -1,3 +1,11 @@
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/vars';
+
 .page {
     $this: &;
+    min-height: 100vh;
+    &--light {
+        background-color: colors.$light;
+    }
 }

@@ -17,9 +17,9 @@ interface Props {
 export default function PageSimple({ children, title }: Props) {
   return (
     <>
+      <Meta title={title} />
       <Header hideMenu />
       <main {...bem('')}>
-        <Meta title={`${title} | Losen`} />
         <Container size="tight">
           <h1 {...bem('title')}>{title}</h1>
           {children}
