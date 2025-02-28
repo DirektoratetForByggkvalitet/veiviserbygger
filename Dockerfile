@@ -26,7 +26,7 @@ COPY apps/api/package.json apps/api/
 RUN npm ci
 
 # Copy the rest of the project files
-COPY .. .
+COPY . .
 
 # Run the build command for the TurboRepo project
 RUN npm run build --filter=web --filter=api
