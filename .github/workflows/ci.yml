@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  SLACK_WEBHOOK_URL: ${{ vars.SLACK_WEBHOOK_URL }}
+
 on:
   workflow_dispatch:
   push:
