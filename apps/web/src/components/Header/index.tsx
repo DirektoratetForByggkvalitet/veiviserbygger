@@ -27,7 +27,7 @@ export default function Header({ title = siteName, versions, hideMenu }: Props) 
   if (hideMenu) {
     return (
       <header {...bem('')}>
-        <img src="/src/assets/header-logo.svg" alt={title} {...bem('logo')} />
+        <img src="/header-logo.svg" alt={title} {...bem('logo')} />
         <h1 {...bem('name')}>{title}</h1>
         {user && (
           <nav {...bem('actions')}>
