@@ -1,4 +1,4 @@
-import type { DocumentReference, PartialWithFieldValue, Timestamp } from 'firebase/firestore'
+import type { DocumentReference, Timestamp } from 'firebase/firestore'
 
 export type DeepPartial<T> = T extends object
   ? {
