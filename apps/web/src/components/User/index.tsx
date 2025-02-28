@@ -13,17 +13,24 @@ type Props = {
 export default function User({ name, options }: Props) {
   return (
     <div {...bem()}>
-      <span {...bem('avatar')} role="presentation">
-        {name?.charAt(0) || ''}
-      </span>
-      <span {...bem('name')}>{name || 'Ukjent'}</span>
       {options && (
         <Dropdown
           icon="Ellipsis"
           direction="right"
           position="above"
-          options={options}
+          options={name ? [{ group: name }, ...options] : options}
           label="Valg"
+          trigger={({ onClick }) => (
+            <button
+              type="button"
+              onClick={onClick}
+              {...bem('avatar')}
+              role="presentation"
+              title={name || undefined}
+            >
+              {name?.charAt(0) || ''}
+            </button>
+          )}
           iconOnly
         />
       )}

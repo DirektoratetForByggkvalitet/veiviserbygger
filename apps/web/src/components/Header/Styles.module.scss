@@ -8,19 +8,24 @@
     position: relative;
     display: flex;
     align-items: center;
+    gap: vars.$spacing--xsmall;
     height: vars.$header-height;
     // padding-left: $margin;
     padding-right: vars.$margin;
-    z-index: vars.$level-3;
+    z-index: vars.$level-4;
 
     border-bottom: vars.$border-style;
     background-color: colors.$light;
 
-    &__name {
-        @include mixins.font-size(base);
+    &__logo {
+        height: calc(vars.$header-height - vars.$spacing--small);
         &:first-child {
             margin-left: vars.$spacing--small;
         }
+    }
+
+    &__name {
+        @include mixins.font-size(base);
     }
 
     &__toggle {

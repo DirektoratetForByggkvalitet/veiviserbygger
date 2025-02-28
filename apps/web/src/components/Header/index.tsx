@@ -5,12 +5,14 @@ import menuState from '@/store/menu'
 import Button from '@/components/Button'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import { IconMenu } from '@/components/Icon'
-
+import User from '@/components/User'
+import useAuth from '@/hooks/auth'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { useNavigate, useParams } from 'react-router'
 import { Wizard, WrappedWithId } from 'types'
 import { Timestamp } from 'firebase/firestore'
+import { siteName } from '@/constants'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -20,27 +22,46 @@ type Props = {
   hideMenu?: boolean
 }
 
-export default function Header({ title = 'Losen', versions, hideMenu }: Props) {
+export default function Header({ title = siteName, versions, hideMenu }: Props) {
+  const { logout, user } = useAuth()
   if (hideMenu) {
     return (
       <header {...bem('')}>
+        <img src="/src/assets/header-logo.svg" alt={title} {...bem('logo')} />
         <h1 {...bem('name')}>{title}</h1>
+        {user && (
+          <nav {...bem('actions')}>
+            <User
+              name={user?.displayName || user?.email}
+              options={[{ value: '', label: 'Logg ut', onClick: logout }]}
+            />
+          </nav>
+        )}
       </header>
     )
   }
 
-  const { version } = useParams()
+  const { versionId } = useParams()
   const { wizardId } = useParams()
   const navigate = useNavigate()
   const [open, setOpen] = useAtom(menuState)
-
-  const activeVersion = versions?.find((v) => v.id === version)
+  const activeVersion = versions?.find((v) => v.id === versionId)
 
   const toggleMenu = () => {
     setOpen(!open)
   }
 
   const wizardOptions = [
+    { group: 'Versjoner' },
+    ...(versions || []).map((v, i, arr) => ({
+      label:
+        v.title ||
+        `Versjon ${arr.length - i} ${v.publishedFrom && !v.publishedTo ? '(publisert)' : ''}${!v.publishedFrom ? '(utkast)' : ''}`,
+      value: v.id,
+      selected: v.id === versionId,
+      onClick: () => navigate(`/wizard/${wizardId}/${v.id}`),
+    })),
+    { group: 'Handlinger' },
     {
       value: '1',
       label: 'Endre navn',
@@ -70,40 +91,34 @@ export default function Header({ title = 'Losen', versions, hideMenu }: Props) {
       <h1 {...bem('name')}>{title}</h1>
 
       <nav {...bem('actions')}>
-        {versions?.length ? (
-          <Dropdown
-            options={versions.map((v, i, arr) => ({
-              label:
-                v.title ||
-                `Versjon ${arr.length - i} ${v.publishedFrom && !v.publishedTo ? '(publisert)' : ''}${!v.publishedFrom ? '(utkast)' : ''}`,
-              value: v.id,
-            }))}
-            value={activeVersion?.id || 'Velg versjon'}
-            onChange={(id) => navigate(`/wizard/${wizardId}/${id}`)}
-            label="Versjoner"
-            hideLabel
-            simple
-            direction="right"
+        {activeVersion && (
+          <>
+            <Button size="small">Forhåndsvisning</Button>
+            {!activeVersion?.publishedFrom ? (
+              <Button primary size="small">
+                Publiser
+              </Button>
+            ) : null}
+            {activeVersion?.publishedFrom ? (
+              <Button primary size="small">
+                Publiser endringer
+              </Button>
+            ) : null}
+            <Dropdown
+              icon="Settings2"
+              direction="right"
+              options={wizardOptions}
+              label={'Valg for veiviser'}
+              iconOnly
+            />
+          </>
+        )}
+        {user && (
+          <User
+            name={user?.displayName || user?.email}
+            options={[{ value: '', label: 'Logg ut', onClick: logout }]}
           />
-        ) : null}
-        <Button size="small">Forhåndsvisning</Button>
-        {!activeVersion?.publishedFrom ? (
-          <Button primary size="small">
-            Publiser
-          </Button>
-        ) : null}
-        {activeVersion?.publishedFrom ? (
-          <Button primary size="small">
-            Publiser endringer
-          </Button>
-        ) : null}
-        <Dropdown
-          icon="Settings2"
-          direction="right"
-          options={wizardOptions}
-          label={'Valg for veiviser'}
-          iconOnly
-        />
+        )}
       </nav>
     </header>
   )

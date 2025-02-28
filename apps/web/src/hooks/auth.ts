@@ -4,13 +4,16 @@ import { useCallback, useContext } from 'react'
 
 export default function useAuth() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const { auth } = useContext(FirebaseContext)!
-  const { user, loading } = useContext(AuthContext)
+  const firebaseContext = useContext(FirebaseContext)
+  const authContext = useContext(AuthContext)
+  const auth = firebaseContext?.auth ?? null
+  const user = authContext?.user ?? null
+  const loading = authContext?.loading ?? false
 
   const signUp = useCallback(
     (email: string, password: string) => {
-      if (user) {
-        return
+      if (!auth || user) {
+        return Promise.reject(new Error('Auth unavailable'))
       }
 
       return createUserWithEmailAndPassword(auth, email, password)
@@ -20,23 +23,20 @@ export default function useAuth() {
 
   const login = useCallback(
     (type: 'email', credentials?: { email: string; password: string }) => {
-      if (user) {
-        return
-      }
+      if (!auth || user) return Promise.reject(new Error('Auth unavailable'))
 
       if (type === 'email' && credentials) {
         return signInWithEmailAndPassword(auth, credentials.email, credentials.password)
       }
 
       console.log(`Unsupported login type: ${type}`)
+      return Promise.reject(new Error('Unsupported login type'))
     },
     [auth, user],
   )
 
   const logout = useCallback(() => {
-    if (!user) {
-      return
-    }
+    if (!auth || !user) return Promise.reject(new Error('Auth unavailable'))
 
     return signOut(auth)
   }, [auth, user])
