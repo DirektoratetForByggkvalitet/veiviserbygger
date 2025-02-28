@@ -8,8 +8,8 @@
     width: 100%;
     height: calc(100vh - #{vars.$header-height});
     overflow: auto;
-
     transition: width 500ms vars.$ease-in-out-quint--custom;
+    background-color: colors.$light;
 
     @include mixins.no-select;
 
@@ -34,6 +34,7 @@
         flex-shrink: 0;
         padding: 0 vars.$margin;
         transition: background-color 200ms vars.$ease-in-out-quint--custom;
+        background-color: colors.$background;
 
         &:not(:last-child) {
             border-right: vars.$border-style;
@@ -44,15 +45,19 @@
             background-color: colors.get(neutral, light);
             #{$this}__placeholder,
             #{$this}__content--placeholder {
-                background-color: colors.get(neutral, base);
+                background-color: colors.get(neutral, xlight);
             }
+        }
+
+        &--placeholder {
+            background-color: colors.$light;
         }
 
         &--selected {
             &,
             &:hover,
             &:focus:focus-visible {
-                background-color: colors.get(neutral, xlight);
+                background-color: colors.get(primary, light);
                 border-color: colors.get(neutral, xlight);
             }
         }
@@ -76,7 +81,7 @@
         }
 
         &:has(+ #{$this}__page--selected) {
-            border-color: colors.get(primary, light);
+            //   border-color: colors.get(primary, light);
         }
     }
 
@@ -142,7 +147,7 @@
         flex-grow: 1;
         &--placeholder {
             border-radius: vars.$border-radius;
-            background-color: colors.get(neutral, light);
+            background-color: colors.$light;
             transition: background-color 200ms vars.$ease-in-out-quint--custom;
         }
     }

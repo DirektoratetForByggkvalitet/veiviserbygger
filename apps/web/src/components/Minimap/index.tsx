@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { useDraggable } from 'react-use-draggable-scroll'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { useSortable, SortableContext } from '@dnd-kit/sortable'
@@ -8,7 +8,7 @@ import Icon from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import { PageContent, WizardPage, WizardVersion } from 'types'
+import { WizardPage, WizardVersion } from 'types'
 import { getTypeText } from '@/lib/content'
 import NewPage from '../NewPage'
 import { getOrdered } from '@/lib/ordered'
@@ -109,19 +109,30 @@ const ContentItem = ({
   }
 }
 
-function PageMap({ page, index, selected, onPageClick, allNodes }: { page: WizardPage, index: number, selected: boolean, onPageClick: () => void, allNodes: Props['allNodes'] }) {
+function PageMap({
+  page,
+  index,
+  selected,
+  onPageClick,
+  allNodes,
+}: {
+  page: WizardPage
+  index: number
+  selected: boolean
+  onPageClick: () => void
+  allNodes: Props['allNodes']
+}) {
   const { reorderNodes } = useVersion()
-
-  const { value, onSort, inSync } = useSortableList(
-    page.content || [],
-    (list) => reorderNodes(page.id, list),
+  console.log('PageMap', selected)
+  const { value, onSort, inSync } = useSortableList(page.content || [], (list) =>
+    reorderNodes(page.id, list),
   )
 
   const handleSortingDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
     if (active.id !== over?.id) {
-      const newIndex = page.content?.findIndex(r => r.id === over?.id)
+      const newIndex = page.content?.findIndex((r) => r.id === over?.id)
 
       if (newIndex === undefined) {
         console.error('Could not find new index')
@@ -146,23 +157,6 @@ function PageMap({ page, index, selected, onPageClick, allNodes }: { page: Wizar
         </span>
       </h2>
 
-      {value && (
-        <DndContext onDragEnd={handleSortingDragEnd}>
-          <SortableContext items={value} disabled={!selected}>
-            <ul {...bem('content')}>
-              {value.map((ref) => (
-                <ContentItem
-                  nodeId={ref.id}
-                  nodes={allNodes}
-                  key={ref.id}
-                  draggable={selected}
-                />
-              ))}
-            </ul>
-          </SortableContext>
-        </DndContext>
-      )}
-
       {!value.length && !selected && (
         <div {...bem('placeholder')}>
           <span {...bem('placeholder-text')}>Legg til innhold </span>
@@ -171,6 +165,18 @@ function PageMap({ page, index, selected, onPageClick, allNodes }: { page: Wizar
           </span>
         </div>
       )}
+
+      {value && (
+        <DndContext onDragEnd={handleSortingDragEnd}>
+          <SortableContext items={value} disabled={!selected}>
+            <ul {...bem('content')}>
+              {value.map((ref) => (
+                <ContentItem nodeId={ref.id} nodes={allNodes} key={ref.id} draggable={selected} />
+              ))}
+            </ul>
+          </SortableContext>
+        </DndContext>
+      )}
     </li>
   )
 }
@@ -178,14 +184,19 @@ function PageMap({ page, index, selected, onPageClick, allNodes }: { page: Wizar
 export default function Minimap({ onClick, selected, data, allNodes }: Props) {
   const contentRef = useRef<any>(null)
   const [modal, setModal] = useState<'page' | null>(null)
-
+  console.log('Minimap')
   useEffect(() => {
     if (selected && contentRef.current) {
       const selectedElement = document.getElementById(`page-${selected}`)
 
       if (selectedElement) {
         const diff = Math.abs(selectedElement.offsetWidth - contentRef.current.offsetWidth)
-        contentRef.current.scrollTo({ left: selectedElement.offsetLeft - diff, behavior: 'smooth' })
+        requestAnimationFrame(() => {
+          contentRef.current.scrollTo({
+            left: selectedElement.offsetLeft - diff,
+            behavior: 'smooth',
+          })
+        })
       }
     }
   }, [selected])
@@ -196,24 +207,38 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
     safeDisplacement: 30, // px
   })
 
-  const draggableEvents = selected ? {} : draggable.events // Disable dragging when a page is selected
+  const draggableEvents = selected ? draggable.events : {} // Disable dragging when a page is not selected
 
-  const handlePageClick = (id: string) => () => {
-    onClick(id)
-  }
+  const handlePageClick = useCallback(
+    (id: string) => () => {
+      onClick(id)
+    },
+    [onClick],
+  )
 
   const toggleModal = (value: typeof modal) => () => {
     setModal(value)
   }
 
+  const orderedPages = useMemo(() => getOrdered(data?.pages), [data?.pages]) ?? []
+
   return (
     <>
       <ul {...bem('', { selected })} ref={contentRef} {...draggableEvents}>
-        {getOrdered(data?.pages)?.map((item, index) => {
-          return <PageMap key={item.id} page={item} index={index} onPageClick={handlePageClick(item.id)} selected={item.id !== selected} allNodes={allNodes} />
+        {orderedPages.map((item, index) => {
+          return (
+            <PageMap
+              key={item.id}
+              page={item}
+              index={index}
+              onPageClick={handlePageClick(item.id)}
+              selected={item.id === selected}
+              allNodes={allNodes}
+            />
+          )
         })}
 
-        <li {...bem('page')} role="button" onClick={toggleModal('page')}>
+        <li {...bem('page', 'placeholder')} role="button" onClick={toggleModal('page')}>
           <h2 {...bem('title')}>Legg til side +</h2>
           <div {...bem('content', 'placeholder')}></div>
         </li>
