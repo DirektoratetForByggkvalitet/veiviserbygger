@@ -13,7 +13,11 @@
         'full full full'
         'aside aside aside';
     width: 100%;
-    margin-bottom: vars.$spacing--small;
+    //background-color: colors.get(neutral, xlight);
+    border-top: vars.$border-style--primary;
+    padding-top: vars.$spacing--small;
+    //border-radius: vars.$border-radius;
+    margin-bottom: vars.$spacing--xsmall;
 
     @include mixins.min-width(lg) {
         grid-template-areas:
@@ -27,7 +31,8 @@
         display: flex;
         align-items: center;
         gap: vars.$spacing--xsmall;
-        padding: vars.$spacing--xsmall;
+        padding: vars.$spacing--small 0;
+        padding-top: calc(vars.$spacing--small - 6px);
     }
 
     &__header-icon {
@@ -40,13 +45,11 @@
         display: flex;
         flex-direction: column;
         gap: vars.$spacing--small;
-        padding: vars.$spacing--small;
+        padding: vars.$spacing--small 0;
     }
 
     &__main {
         grid-area: main;
-        border: vars.$border-style;
-        background-color: colors.$light;
         &--full {
             grid-area: full;
         }
@@ -54,14 +57,7 @@
 
     &__aside {
         grid-area: aside;
-        border: vars.$border-style;
-        border-top: none;
-        background-color: colors.$light;
-
-        @include mixins.min-width(lg) {
-            border-top: vars.$border-style;
-            border-left: none;
-        }
+        padding-left: vars.$margin;
     }
 
     &__inline-main {
@@ -70,7 +66,6 @@
 
     &__title {
         @include mixins.font-size(small);
-        color: colors.$muted;
         font-weight: normal;
         flex-grow: 2;
     }

@@ -9,7 +9,7 @@
     height: calc(100vh - #{vars.$header-height});
     overflow: auto;
     transition: width 500ms vars.$ease-in-out-quint--custom;
-    background-color: colors.$light;
+    background-color: colors.get(neutral, light);
 
     @include mixins.no-select;
 
@@ -34,31 +34,30 @@
         flex-shrink: 0;
         padding: 0 vars.$margin;
         transition: background-color 200ms vars.$ease-in-out-quint--custom;
-        background-color: colors.$background;
+        background-color: colors.$light;
 
         &:not(:last-child) {
-            border-right: vars.$border-style;
+            border-right: vars.$border-style--primary;
         }
 
         &:hover,
         &:focus:focus-visible {
-            background-color: colors.get(neutral, light);
-            #{$this}__placeholder,
-            #{$this}__content--placeholder {
-                background-color: colors.get(neutral, xlight);
-            }
+            background-color: colors.get(primary, xlight);
         }
 
         &--placeholder {
-            background-color: colors.$light;
+            background-color: colors.get(neutral, light);
+            &:hover,
+            &:focus:focus-visible {
+                background-color: colors.get(neutral, xlight);
+            }
         }
 
         &--selected {
             &,
             &:hover,
             &:focus:focus-visible {
-                background-color: colors.get(primary, light);
-                border-color: colors.get(neutral, xlight);
+                background-color: colors.$light;
             }
         }
 
@@ -94,7 +93,7 @@
         flex-grow: 1;
         height: (1em * 2) * $line-height;
         &--placeholder {
-            color: colors.$muted;
+            color: colors.get(primary, base);
         }
     }
 
@@ -103,16 +102,15 @@
         gap: 6px;
         align-items: flex-start;
         padding: 7px 8px;
-        border: vars.$border-style;
-        background-color: colors.$light;
-        margin-bottom: 4px;
+        background-color: colors.get(primary, light);
+        margin-bottom: 10px;
         border-radius: 6px;
 
         @include mixins.min-width(md) {
             padding: 9px 12px;
         }
         &--branch {
-            background-color: colors.get(neutral, light);
+            background-color: transparent;
             border: vars.$border-style--dashed;
         }
     }
@@ -121,7 +119,7 @@
         display: inline-flex;
         padding: 4px;
         border-radius: vars.$border-radius;
-        background-color: colors.get(neutral, xlight);
+        background-color: transparent;
         align-items: center;
         justify-content: center;
         transition:
@@ -133,7 +131,7 @@
         animation: fade-in 300ms vars.$ease-out-quart backwards;
         &:hover,
         &:focus:focus-visible {
-            background-color: colors.get(neutral, light);
+            background-color: colors.get(primary, xlight);
         }
     }
 
@@ -147,7 +145,7 @@
         flex-grow: 1;
         &--placeholder {
             border-radius: vars.$border-radius;
-            background-color: colors.$light;
+            background-color: colors.$background;
             transition: background-color 200ms vars.$ease-in-out-quint--custom;
         }
     }
@@ -159,7 +157,7 @@
         align-items: center;
         padding: vars.$spacing--xsmall;
         border-radius: vars.$border-radius;
-        background-color: colors.get(neutral, light);
+        background-color: colors.get(primary, light);
         transition: background-color 400ms vars.$ease-in-out-quint--custom;
     }
 

@@ -157,7 +157,7 @@
         &:focus:focus-visible:not(#{$this}__option--disabled),
         &--selected {
             color: colors.$light;
-            background-color: colors.get(primary);
+            background-color: colors.get(primary, dark);
         }
 
         &--delete,

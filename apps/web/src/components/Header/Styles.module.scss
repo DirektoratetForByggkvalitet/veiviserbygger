@@ -14,7 +14,7 @@
     padding-right: vars.$margin;
     z-index: vars.$level-4;
 
-    border-bottom: vars.$border-style;
+    border-bottom: vars.$border-style--primary;
     background-color: colors.$light;
 
     &__logo {
