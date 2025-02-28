@@ -28,11 +28,11 @@
 
     &--primary {
         color: colors.$light;
-        background-color: colors.get(primary);
+        background-color: colors.get(primary, dark);
 
         &:hover,
         &:focus:focus-visible {
-            background-color: mixins.shade(colors.get(primary), 4%);
+            background-color: mixins.shade(colors.get(primary, dark), 4%);
         }
         &:disabled {
             background-color: colors.get(neutral);

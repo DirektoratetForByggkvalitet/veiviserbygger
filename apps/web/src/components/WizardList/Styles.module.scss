@@ -1,0 +1,86 @@
+@use 'sass:color';
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
+
+.wizard-list {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: vars.$spacing--small;
+    margin-bottom: vars.$spacing--small;
+    @include mixins.min-width(md) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    @include mixins.min-width(lg) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    &--compact {
+        @include mixins.min-width(md) {
+            grid-template-columns: repeat(1, 1fr);
+        }
+        @include mixins.min-width(lg) {
+            grid-template-columns: repeat(1, 1fr);
+        }
+    }
+
+    &__item {
+        @include mixins.font-size(base);
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 22px;
+        border: vars.$border-style;
+        border-color: transparent;
+        background-color: colors.get(primary, light);
+        border-radius: vars.$border-radius;
+        transition:
+            background-color 200ms vars.$ease-in-out-quint--custom,
+            border-color 200ms vars.$ease-in-out-quint--custom;
+
+        &:hover,
+        &:focus:focus-visible {
+            background-color: color.adjust(colors.get(primary, light), $lightness: -5%);
+        }
+
+        &--new {
+            border-style: dashed;
+            background-color: transparent;
+            border-color: colors.get(primary, base);
+            &:hover,
+            &:focus:focus-visible {
+                background-color: colors.get(primary, light);
+            }
+        }
+
+        &--open {
+            background-color: colors.get(neutral);
+        }
+
+        &--placeholder {
+            border: vars.$border-style--weak;
+            background-color: transparent;
+            color: colors.$muted;
+            &:hover,
+            &:focus:focus-visible {
+                background-color: transparent;
+            }
+        }
+    }
+
+    &__label {
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    &__tag {
+        @include mixins.font(base, normal);
+        @include mixins.font-size(small);
+        display: inline-block;
+        color: colors.get(primary, dark);
+        background-color: colors.$light;
+        padding: 2px 10px;
+        border-radius: vars.$border-radius;
+        text-align: right;
+    }
+}
