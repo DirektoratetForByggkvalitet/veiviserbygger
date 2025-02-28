@@ -9,13 +9,15 @@
 $colors: (
     primary: (
         // base: #3a8ff4,
-        base: color.adjust(#3a8ff4, $lightness: -8%),
-        light: color.mix(#3a8ff4, #f8f8f8, 20%),
+        base: #89bad6,
+        dark: #003045,
+        // color.adjust(#3a8ff4, $lightness: -8%),
+        light: #ebf4fa // color.mix(#3a8ff4, #f8f8f8, 20%),,,,,,,
     ),
     neutral: (
         xlight: #f8f8f8,
         light: color.mix(black, #f8f8f8, 3%),
-        base: #e7e7e7,
+        base: #e2e2e2,
         dark: #878787,
         xdark: #111111,
     ),
