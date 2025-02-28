@@ -36,4 +36,4 @@ RUN mkdir -p /usr/share/nginx/html
 RUN cp -r apps/web/dist/* /usr/share/nginx/html
 RUN ls -la /usr/share/nginx/html
 
-ENTRYPOINT ["sh", "-c", "(/usr/local/bin/nginx-entrypoint.sh & PORT=3000 npm run start --workspace=api)"]
+ENTRYPOINT ["sh", "-c", "/usr/local/bin/nginx-entrypoint.sh"]
