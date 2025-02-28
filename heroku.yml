@@ -1,8 +1,6 @@
 build:
   docker:
-    web:
-      dockerfile: docker/Dockerfile
-      context: ./
+    web: Dockerfile
 setup:
   addons:
     - plan: papertrail
