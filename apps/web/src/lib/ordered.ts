@@ -1,7 +1,7 @@
-import { sortBy, transform, values } from 'lodash'
+import { sortBy } from 'lodash'
 import { OrderedMap } from 'types'
 
-export function getOrdered<T extends Object>(value?: OrderedMap<T>): Array<T & { id: string }> {
+export function getOrdered<T extends object>(value?: OrderedMap<T>): Array<T & { id: string }> {
   return sortBy(
     Object.keys(value || {}).map<T>(
       (key) => ({ ...(value?.[key] || {}), id: key }) as any,

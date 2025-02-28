@@ -1,4 +1,3 @@
-import { DocumentReference } from 'firebase/firestore'
 import { merge, unset } from '../merge'
 
 describe('merge', () => {
@@ -62,6 +61,7 @@ describe('merge', () => {
   })
 
   it('should handle functions correctly', () => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const fn = () => {}
     expect(merge({ a: fn }, { a: fn })).toEqual({ a: fn })
   })

@@ -16,13 +16,13 @@ const bem = BEMHelper(styles)
 
 export type DropdownOptions = Array<
   | {
-    value: string
-    label: string
-    icon?: keyof typeof icons
-    onClick?: MouseEventHandler
-    styled?: 'delete'
-    disabled?: boolean
-  }
+      value: string
+      label: string
+      icon?: keyof typeof icons
+      onClick?: MouseEventHandler
+      styled?: 'delete'
+      disabled?: boolean
+    }
   | { group: string }
 >
 
@@ -115,7 +115,8 @@ export default function Dropdown({
   const endPosition = getPositionWithoutCollissions()
 
   const selectedOption = options.find((option) => 'value' in option && option.value === value)
-  const valueString = selectedOption && 'label' in selectedOption ? selectedOption?.label : value || label
+  const valueString =
+    selectedOption && 'label' in selectedOption ? selectedOption?.label : value || label
 
   return (
     <div {...bem('', { simple, sentence, iconOnly })} ref={wrapperRef}>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PageContent, Answer, WizardVersion, OptionalExcept, Branch, WizardPage, PageContentWithOptions } from 'types'
+import { PageContent, OptionalExcept, Branch, WizardPage, PageContentWithOptions } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
 import Button from '@/components/Button'
@@ -32,75 +32,88 @@ type NodeProps = {
   pageId: WizardPage['id']
 }
 
-function Options({ node, pageId }: { node: OptionalExcept<PageContentWithOptions, 'id'>, pageId: WizardPage['id'] }) {
+function Options({
+  node,
+  pageId,
+}: {
+  node: OptionalExcept<PageContentWithOptions, 'id'>
+  pageId: WizardPage['id']
+}) {
   const { getNodeRef, patchAnswer, deleteAnswer, addNodes } = useVersion()
 
-  const optionActions = (nodeId: string, optionId: string) => [
-    {
-      value: '0',
-      label: 'Gir negativt resultat',
-      onClick: async () => {
-        const [alertNodeRef, resultRef] = await addNodes(undefined, [{
-          type: 'Error',
-        },
-        {
-          type: 'Result',
-        }])
+  const optionActions = (nodeId: string, optionId: string) =>
+    [
+      {
+        value: '0',
+        label: 'Gir negativt resultat',
+        onClick: async () => {
+          const [alertNodeRef, resultRef] = await addNodes(undefined, [
+            {
+              type: 'Error',
+            },
+            {
+              type: 'Result',
+            },
+          ])
 
-        await addNodes(pageId, [{
-          type: 'Branch',
-          preset: 'NegativeResult',
-          test: {
-            field: getNodeRef(nodeId),
-            operator: 'eq',
-            value: optionId
-          },
-          content: [alertNodeRef, resultRef]
-        }])
+          await addNodes(pageId, [
+            {
+              type: 'Branch',
+              preset: 'NegativeResult',
+              test: {
+                field: getNodeRef(nodeId),
+                operator: 'eq',
+                value: optionId,
+              },
+              content: [alertNodeRef, resultRef],
+            },
+          ])
+        },
       },
-    },
-    {
-      value: '1',
-      label: 'Gir ekstra informasjon',
-      onClick: () => console.log(''),
-    },
-    {
-      value: '2',
-      label: 'Slett',
-      onClick: () => deleteAnswer(nodeId, optionId),
-      styled: 'delete',
-    },
-  ] as DropdownOptions
+      {
+        value: '1',
+        label: 'Gir ekstra informasjon',
+        onClick: () => console.log(''),
+      },
+      {
+        value: '2',
+        label: 'Slett',
+        onClick: () => deleteAnswer(nodeId, optionId),
+        styled: 'delete',
+      },
+    ] as DropdownOptions
 
   if (!node?.options) {
     return null
   }
 
-  return <ul {...bem('options')}>
-    {getOrdered(node.options).map((option) => (
-      <li key={option.id} {...bem('option')}>
-        <Input
-          label="Svar"
-          value={option?.heading || ''}
-          onChange={v => patchAnswer(node.id, option.id, { heading: v })}
-        />
-        <div {...bem('option-actions')}>
-          <Dropdown
-            icon="Ellipsis"
-            direction="right"
-            options={optionActions(node.id, option.id)}
-            label="Valg"
-            iconOnly
+  return (
+    <ul {...bem('options')}>
+      {getOrdered(node.options).map((option) => (
+        <li key={option.id} {...bem('option')}>
+          <Input
+            label="Svar"
+            value={option?.heading || ''}
+            onChange={(v) => patchAnswer(node.id, option.id, { heading: v })}
           />
-        </div>
-        {/* TODO: Dropdown menu with actions "Slett", "Gir negativt resultat", "Gir ekstra informasjon"  */}
-      </li>
-    ))}
-  </ul>
+          <div {...bem('option-actions')}>
+            <Dropdown
+              icon="Ellipsis"
+              direction="right"
+              options={optionActions(node.id, option.id)}
+              label="Valg"
+              iconOnly
+            />
+          </div>
+          {/* TODO: Dropdown menu with actions "Slett", "Gir negativt resultat", "Gir ekstra informasjon"  */}
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 function Node({ node, pageId, allNodes }: NodeProps) {
-  const { patchNode, addAnswer, patchAnswer, deleteAnswer } = useVersion()
+  const { patchNode, addAnswer } = useVersion()
 
   if (node.type === 'Text') {
     return (
@@ -132,7 +145,11 @@ function Node({ node, pageId, allNodes }: NodeProps) {
   if (node.type === 'Radio') {
     return (
       <>
-        <Header type={node.type} title={node.heading || 'Hva er det til middag i dag?'} node={node} />
+        <Header
+          type={node.type}
+          title={node.heading || 'Hva er det til middag i dag?'}
+          node={node}
+        />
 
         <Main>
           <Input
@@ -176,7 +193,11 @@ function Node({ node, pageId, allNodes }: NodeProps) {
   if (node.type === 'Checkbox') {
     return (
       <>
-        <Header type={node.type} title={node.heading || 'Hva er det til middag i dag?'} node={node} />
+        <Header
+          type={node.type}
+          title={node.heading || 'Hva er det til middag i dag?'}
+          node={node}
+        />
 
         <Main>
           <Input
@@ -295,7 +316,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
 const Header = ({
   type,
   title,
-  node
+  node,
 }: {
   type: PageContent['type'] | Branch['preset']
   node: NodeProps['node']
@@ -354,14 +375,20 @@ const Header = ({
           description={`Vil du slette ${title ? `"${title}"` : 'dette innholdet'} ? Handlingen kan ikke angres.`}
         />
         <ButtonBar>
-          <Button type="button" warning onClick={async () => {
-            await deleteNode(node.id)
-            setShowConfirmDelete(false)
-          }}>
+          <Button
+            type="button"
+            warning
+            onClick={async () => {
+              await deleteNode(node.id)
+              setShowConfirmDelete(false)
+            }}
+          >
             Slett
           </Button>
 
-          <Button type="button" onClick={() => setShowConfirmDelete(false)}>Avbryt</Button>
+          <Button type="button" onClick={() => setShowConfirmDelete(false)}>
+            Avbryt
+          </Button>
         </ButtonBar>
       </Modal>
     </header>

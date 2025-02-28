@@ -10,9 +10,9 @@ import {
   Firestore,
   getDoc,
   getFirestore,
-  PartialWithFieldValue,
   runTransaction,
 } from 'firebase/firestore'
+
 import { getConfig } from '../api'
 import { dataPoint } from './utils/db'
 import {
@@ -44,6 +44,7 @@ let firebaseApp: {
 export function getFirebaseApp(
   options?: Awaited<ReturnType<typeof getConfig>>,
 ): typeof firebaseApp {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (firebaseApp!) {
     return firebaseApp
   }

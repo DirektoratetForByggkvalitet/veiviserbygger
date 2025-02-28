@@ -1,5 +1,5 @@
 import { useDebounce } from '@uidotdev/usehooks'
-import { ReactHTMLElement, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 /**
  * Value hook that debounces the value before calling the onChange, while
