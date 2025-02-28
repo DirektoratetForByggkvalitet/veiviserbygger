@@ -64,12 +64,17 @@
         width: fit-content;
         &:hover,
         &:focus:focus-visible {
-            background-color: colors.get(neutral, xlight);
+            background-color: colors.get(neutral, light);
         }
     }
 
     &--icon-only {
         padding: 14px;
+        background-color: transparent;
+        &:hover,
+        &:focus:focus-visible {
+            background-color: colors.get(neutral, light);
+        }
         #{$this}__icon {
             padding: 0;
         }

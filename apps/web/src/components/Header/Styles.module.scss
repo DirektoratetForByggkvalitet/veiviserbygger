@@ -26,6 +26,7 @@
 
     &__name {
         @include mixins.font-size(base);
+        font-weight: 400;
     }
 
     &__toggle {

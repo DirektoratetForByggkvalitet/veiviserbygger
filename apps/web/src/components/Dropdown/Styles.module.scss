@@ -39,10 +39,6 @@
                 color: colors.$text;
             }
         }
-
-        &--iconOnly {
-            border: 1px solid red;
-        }
     }
 
     &__label {
@@ -239,12 +235,12 @@
             height: 35px;
             width: 35px;
             border-radius: vars.$border-radius;
-            background-color: colors.get(neutral, light);
+            background-color: transparent;
         }
 
         #{$this}__trigger:hover,
         #{$this}__trigger:focus {
-            background-color: colors.get(neutral);
+            background-color: colors.get(neutral, light);
         }
 
         #{$this}__icon {
