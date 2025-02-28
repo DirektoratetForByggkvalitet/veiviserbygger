@@ -6,6 +6,6 @@
     $this: &;
     @include mixins.font-size(small);
     color: colors.$text;
-    margin: vars.$spacing--xsmall 0;
+    margin: 0 0 vars.$spacing--small;
     max-width: 500px;
 }

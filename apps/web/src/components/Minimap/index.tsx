@@ -58,7 +58,7 @@ const ContentItem = ({
     case 'Number':
       return (
         <li {...bem('item')} key={node.id} ref={setNodeRef} style={style} {...attributes}>
-          <h3 {...bem('sub-title', { placeholder: !node.heading })}>
+          <h3 {...bem('sub-title', { placeholder: !node.heading && !node.text })}>
             {node.heading || contentCleanup(node.text) || `${getTypeText(node.type)}`}
           </h3>
           {draggable && (

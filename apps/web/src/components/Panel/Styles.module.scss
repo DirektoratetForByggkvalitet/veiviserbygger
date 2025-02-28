@@ -1,4 +1,3 @@
-@use 'sass:map';
 @use '@/styles/1_settings/mixins';
 @use '@/styles/1_settings/colors';
 @use '@/styles/1_settings/vars';
@@ -34,7 +33,6 @@
         padding-bottom: vars.$spacing--large;
         overflow: auto;
         flex-grow: 1;
-        max-width: map.get(vars.$container-width, base);
     }
 
     &__header {

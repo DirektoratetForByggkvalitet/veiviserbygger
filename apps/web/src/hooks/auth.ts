@@ -13,7 +13,7 @@ export default function useAuth() {
   const signUp = useCallback(
     (email: string, password: string) => {
       if (!auth || user) {
-        return Promise.reject(new Error('Auth unavailable'))
+        return
       }
 
       return createUserWithEmailAndPassword(auth, email, password)
@@ -23,7 +23,7 @@ export default function useAuth() {
 
   const login = useCallback(
     (type: 'email', credentials?: { email: string; password: string }) => {
-      if (!auth || user) return Promise.reject(new Error('Auth unavailable'))
+      if (!auth || user) return
 
       if (type === 'email' && credentials) {
         return signInWithEmailAndPassword(auth, credentials.email, credentials.password)
@@ -36,7 +36,7 @@ export default function useAuth() {
   )
 
   const logout = useCallback(() => {
-    if (!auth || !user) return Promise.reject(new Error('Auth unavailable'))
+    if (!auth || !user) return
 
     return signOut(auth)
   }, [auth, user])

@@ -213,7 +213,6 @@ export default function Wizard() {
                   placeholder="Uten tittel"
                   onChange={(v) => patchPage(page.id, { heading: v })}
                   header
-                  noBorders
                 />
 
                 {page?.type === 'Intro' && (

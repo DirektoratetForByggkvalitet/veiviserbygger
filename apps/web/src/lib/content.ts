@@ -50,5 +50,5 @@ export function getTypeIcon(type: PageContent['type'] | Branch['preset']) {
 }
 
 export function getTypeDescription(type: PageContent['type'] | Branch['preset']) {
-  return typeMap[type].description || '🐝eeeskrivelse'
+  return typeMap[type].description || ''
 }

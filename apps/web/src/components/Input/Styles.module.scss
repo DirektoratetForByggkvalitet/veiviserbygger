@@ -89,11 +89,6 @@
         }
     }
 
-    &--noBorders {
-        border: none;
-        padding: 0;
-    }
-
     &--hide-if-empty:not(:focus-within) #{$this}__input {
         height: calc(vars.$form-padding-y - 3px);
         padding: 0;

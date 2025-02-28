@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '@/styles/1_settings/mixins';
 @use '@/styles/1_settings/colors';
 @use '@/styles/1_settings/vars';
@@ -13,8 +14,12 @@
         'full full full'
         'aside aside aside';
     width: 100%;
+    max-width: map.get(vars.$container-width, base);
     //background-color: colors.get(neutral, xlight);
     border-top: vars.$border-style--primary;
+    &:last-of-type {
+        border-bottom: vars.$border-style--primary;
+    }
     padding-top: vars.$spacing--small;
     //border-radius: vars.$border-radius;
     margin-bottom: vars.$spacing--xsmall;

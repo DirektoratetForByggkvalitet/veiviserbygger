@@ -38,12 +38,11 @@ export default function WizardList({
           </Link>
         </li>
       ))}
-      {!wizards ||
-        (wizards.length === 0 && (
-          <li key="none">
-            <span {...bem('item', 'placeholder')}>Ingen veivisere</span>
-          </li>
-        ))}
+      {(!wizards || wizards.length === 0) && !toggleNewModal && (
+        <li key="none">
+          <span {...bem('item', 'placeholder')}>Ingen veivisere</span>
+        </li>
+      )}
 
       {toggleNewModal && (
         <li>

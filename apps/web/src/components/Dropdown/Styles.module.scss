@@ -240,7 +240,7 @@
 
         #{$this}__trigger:hover,
         #{$this}__trigger:focus {
-            background-color: colors.get(neutral, light);
+            background-color: colors.get(neutral, xlight);
         }
 
         #{$this}__icon {
