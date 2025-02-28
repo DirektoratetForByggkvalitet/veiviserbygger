@@ -17,21 +17,21 @@ $ npm run dev
 ## Environment variables
 Depending on what you're trying to do, you'll want to either provide env vars to connect to your local firebase emulator (this is the default that is set up in the `.env.development`) or connect to a real firebase instance hosted by Google.
 
-### With an emulator
-- `FIREBASE_EMULATOR_AUTH_HOST` - Hostname, protocol and port to auth emulator. For example: `http://localhost:9099`
-- `FIREBASE_EMULATOR_FIRESTORE_HOST` - Host name for firestore emulator. Just host, not port or protocol. Example: `localhost`
-- `FIREBASE_EMULATOR_FIRESTORE_PORT` - Port number for firestore emulator. Example: `8080`
+### With an emulator (in dev)
+- `PUBLIC_FIREBASE_EMULATOR_AUTH_HOST` - Hostname, protocol and port to auth emulator. For example: `http://localhost:9099`
+- `PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST` - Host name for firestore emulator. Just host, not port or protocol. Example: `localhost`
+- `PUBLIC_FIREBASE_EMULATOR_FIRESTORE_PORT` - Port number for firestore emulator. Example: `8080`
 
 ### Firebase hosted by Google
-- `FIREBASE_API_KEY` - Firebase API key
-- `FIREBASE_APP_ID` – Firebase app ID
-- `FIREBASE_AUTH_DOMAIN` - Firebase auth domain
-- `FIREBASE_PROJECT_ID` - Firebase project id
-- `FIREBASE_STORAGE_BUCKET` - Firebase storage bucket
-- `FIREBASE_MESSAGING_SENDER_ID` - Firebase messaging sender ID
+- `PUBLIC_FIREBASE_API_KEY` - Firebase API key
+- `PUBLIC_FIREBASE_APP_ID` – Firebase app ID
+- `PUBLIC_FIREBASE_AUTH_DOMAIN` - Firebase auth domain
+- `PUBLIC_FIREBASE_PROJECT_ID` - Firebase project id
+- `PUBLIC_FIREBASE_STORAGE_BUCKET` - Firebase storage bucket
+- `PUBLIC_FIREBASE_MESSAGING_SENDER_ID` - Firebase messaging sender ID
 
 ## Building and running with docker
-The applications can be built and bundled with docker by doing `npm run docker` or `docker build -f docker/Dockerfile .` if you prefer that. In short it will
+The applications can be built and bundled with docker by doing `npm run build:docker` or `docker build .` if you prefer that. In short it will
 
 1. build the frontend and api
 2. build an image that contains a node runtime and a nginx server
@@ -42,7 +42,17 @@ After building the image you will, when starting the app, need to map port `80` 
 You would typically start the container by doing something along the lines of:
 
 ```sh
-docker run -p 8181:80 -e FIREBASE_API_KEY=... -e FIREBASE_APP_ID=abc123 imageName
+docker run -p 8181:80 -e PUBLIC_FIREBASE_API_KEY=... -e PUBLIC_FIREBASE_APP_ID=abc123 imageName
 ```
 
-## ⛴️ Deploying the wizard builder
+## Building for production
+Docker images for the wizard builder is [automatically built](https://github.com/behalf-no/veiviserbygger/actions/workflows/ci.yml) on every push to the main branch and pushed to [Dockerhub](https://hub.docker.com/r/kbrabrand/losen-veiviserbygger).
+
+> Later, when we push them to someplace public you can pull the image from dockerhub like every other image.
+
+## Running in production
+Pull the docker image `dibk/losen-builder`, bind the desired host port to container port `80` and pass env vars as specified under [environment variables](#firebase-hosted-by-google). An example
+
+```sh
+docker run -p3333:80 -e PUBLIC_FIREBASE_API_KEY=... -e PUBLIC_FIREBASE_APP_ID=abc123 kbrabrand/losen-veiviserbygger
+```
