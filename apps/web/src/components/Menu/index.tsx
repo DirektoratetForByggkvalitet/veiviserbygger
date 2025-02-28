@@ -1,13 +1,11 @@
 import { useAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-
-import useAuth from '@/hooks/auth'
 import menuState from '@/store/menu'
-
 import Icon from '@/components/Icon'
+
+import WizardList from '@/components/WizardList'
 import Transition from '@/components/Transition'
-import User from '@/components/User'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -19,7 +17,6 @@ interface Props {
   openWizardId?: string
 }
 export default function Menu({ openWizardId }: Props) {
-  const { logout, user } = useAuth()
   const [modal, setModal] = useState(false)
   const [open, setOpen] = useAtom(menuState)
   const { wizards } = useWizards(open)
@@ -51,37 +48,19 @@ export default function Menu({ openWizardId }: Props) {
         {open && (
           <>
             <nav {...bem('content')} ref={menuRef} tabIndex={0}>
+              <Link to="/" {...bem('link')} onClick={closeMenu}>
+                <Icon name="LayoutGrid" />
+                Oversikt
+              </Link>
+
               <section {...bem('section')}>
                 <h2 {...bem('section-title')}>Veivisere</h2>
-                <ul {...bem('menu-items')}>
-                  {wizards?.map((wizard) => (
-                    <li key={wizard.id}>
-                      <Link
-                        to={`/wizard/${wizard.id}/${wizard.data.publishedVersionId || wizard.data.draftVersionId}`}
-                        {...bem('item', { open: openWizardId === wizard.id })}
-                        onClick={closeMenu}
-                      >
-                        <span {...bem('label')}>{wizard.data.title}</span>
-                        {!wizard.data.publishedVersionId ? (
-                          <span {...bem('tag')}>Utkast</span>
-                        ) : (
-                          <span {...bem('tag', 'public')}>Publisert</span>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <button {...bem('item', 'new')} onClick={toggleModal(true)}>
-                  <Icon name="Plus" />
-                  <span {...bem('label')}>Ny veiviser</span>
-                </button>
-              </section>
-              <section {...bem('section', 'bottom')}>
-                <h2 {...bem('section-title')}>Innlogget</h2>
-
-                <User
-                  name={user?.displayName || user?.email}
-                  options={[{ value: '', label: 'Logg ut', onClick: logout }]}
+                <WizardList
+                  wizards={wizards}
+                  toggleNewModal={toggleModal(true)}
+                  selected={openWizardId}
+                  onLinkClick={closeMenu}
+                  compact
                 />
               </section>
             </nav>

@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '@/styles/1_settings/mixins';
 @use '@/styles/1_settings/colors';
 @use '@/styles/1_settings/vars';
@@ -84,6 +85,24 @@
         @include mixins.font-size(small);
         color: colors.$muted;
         text-align: right;
+    }
+
+    &__link {
+        @include mixins.font-size(base);
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 22px;
+        border-radius: vars.$border-radius;
+        transition:
+            background-color 200ms vars.$ease-in-out-quint--custom,
+            border-color 200ms vars.$ease-in-out-quint--custom;
+
+        &:hover,
+        &:focus:focus-visible {
+            background-color: colors.get(primary, light);
+        }
     }
 
     &__backdrop {
