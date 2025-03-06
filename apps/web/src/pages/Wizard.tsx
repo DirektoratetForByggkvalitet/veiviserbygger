@@ -13,11 +13,12 @@ import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import useWizard from '@/hooks/useWizard'
 import { useParams } from 'react-router'
 import Page from '@/components/Page'
-import { PageContent, Branch } from 'types'
+import { PageContent, Branch, DeepPartial } from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
 import { useVersion } from '@/hooks/useVersion'
 import { getOrdered } from '@/lib/ordered'
 import { siteName } from '@/constants'
+import { v4 as uuid } from 'uuid'
 
 export default function Wizard() {
   const [selected, setSelected] = useState<string | null>(null)
@@ -88,7 +89,7 @@ export default function Wizard() {
   const panelTitle = page?.heading ?? 'Uten tittel'
   const wizardTitle = !wizard ? siteName : (wizard?.data?.title ?? 'Uten tittel')
 
-  const contentAction = ({
+  function contentAction<T extends PageContent['type']>({
     pageId,
     type,
     preset,
@@ -96,67 +97,75 @@ export default function Wizard() {
     defaultContent,
   }: {
     pageId: string
-    type: PageContent['type']
+    type: T
     preset?: Branch['preset']
     disabled?: boolean
-    defaultContent?: any // TODO
-  }) => ({
-    value: preset || type,
-    label: getTypeText(preset || type),
-    icon: getTypeIcon(preset || type),
-    onClick: () => addNodes(pageId, [{ type, ...defaultContent }]),
-    disabled: disabled,
-  })
+    defaultContent?: Omit<DeepPartial<Extract<PageContent, { type: T }>>, 'id' | 'type'>
+  }) {
+    return {
+      value: preset || type,
+      label: getTypeText(preset || type),
+      icon: getTypeIcon(preset || type),
+      onClick: () => addNodes(pageId, [{ type, ...defaultContent }]),
+      disabled: disabled,
+    }
+  }
 
   const addContentActions: DropdownOptions = page?.id
     ? [
-        {
-          group: 'Innhold',
+      {
+        group: 'Innhold',
+      },
+      contentAction({ pageId: page.id, type: 'Text' }),
+      {
+        group: 'Spørsmål',
+      },
+      contentAction({
+        pageId: page.id,
+        type: 'Radio',
+        defaultContent: {
+          options: {
+            [uuid()]: { heading: '', order: 0 }
+          }
         },
-        contentAction({ pageId: page.id, type: 'Text' }),
-        {
-          group: 'Spørsmål',
-        },
-        contentAction({
-          pageId: page.id,
-          type: 'Radio',
-          defaultContent: {
-            options: [
-              {
-                id: 0, // TODO: Riktig å sette dette i ID?
-                type: 'Answer',
-                heading: '',
-              },
-            ],
-          },
-        }),
-        contentAction({ pageId: page.id, type: 'Select', disabled: true }),
-        contentAction({ pageId: page.id, type: 'Checkbox' }),
-        contentAction({ pageId: page.id, type: 'Input', disabled: true }),
-        contentAction({ pageId: page.id, type: 'Number', disabled: true }),
-        {
-          group: 'Hendelser',
-        },
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'ExtraInformation',
-          defaultContent: { preset: 'ExtraInformation', test: {} },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'NegativeResult',
-          defaultContent: { preset: 'NegativeResult', test: {} },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'NewQuestions',
-          defaultContent: { preset: 'NewQuestions', test: {} },
-        }),
-        contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
-      ]
+      }),
+      contentAction({
+        pageId: page.id, type: 'Select', disabled: true, defaultContent: {
+          options: {
+            [uuid()]: { heading: '', order: 0 }
+          }
+        }
+      }),
+      contentAction({
+        pageId: page.id, type: 'Checkbox', defaultContent: {
+          [uuid()]: { heading: '', order: 0 }
+        }
+      }),
+      contentAction({ pageId: page.id, type: 'Input', disabled: true }),
+      contentAction({ pageId: page.id, type: 'Number', disabled: true }),
+      {
+        group: 'Hendelser',
+      },
+      contentAction({
+        pageId: page.id,
+        type: 'Branch',
+        preset: 'ExtraInformation',
+        defaultContent: { preset: 'ExtraInformation', test: {} },
+      }),
+      contentAction({
+        pageId: page.id,
+        type: 'Branch',
+        preset: 'NegativeResult',
+        defaultContent: { preset: 'NegativeResult', test: {} },
+      }),
+      contentAction({
+        pageId: page.id,
+        type: 'Branch',
+        preset: 'NewQuestions',
+        defaultContent: { preset: 'NewQuestions', test: {} },
+      }),
+      contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
+    ]
     : []
 
   return (
@@ -229,15 +238,15 @@ export default function Wizard() {
                         nodeId={nodeId}
                         allNodes={nodes}
                         pageId={page.id}
-                        // allNodes={version?.nodes}
+                      // allNodes={version?.nodes}
                       />
                     )
                   })) || (
-                  <Help
-                    description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
+                    <Help
+                      description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
                     veiviseren."
-                  />
-                )}
+                    />
+                  )}
 
                 <Dropdown
                   options={addContentActions}
