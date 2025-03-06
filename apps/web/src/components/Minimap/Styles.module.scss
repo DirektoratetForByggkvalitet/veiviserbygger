@@ -9,7 +9,7 @@
     height: calc(100vh - #{vars.$header-height});
     overflow: auto;
     transition: width 500ms vars.$ease-in-out-quint--custom;
-    background-color: colors.get(neutral, light);
+    background-color: colors.$light;
 
     @include mixins.no-select;
 
@@ -34,22 +34,22 @@
         flex-shrink: 0;
         padding: 0 vars.$margin;
         transition: background-color 200ms vars.$ease-in-out-quint--custom;
-        background-color: colors.$light;
+        background-color: colors.get(neutral, xlight);
 
         &:not(:last-child) {
-            border-right: vars.$border-style--primary;
+            border-right: vars.$border-style;
         }
 
         &:hover,
         &:focus:focus-visible {
-            background-color: colors.get(primary, xlight);
+            background-color: colors.get(neutral, light);
         }
 
         &--placeholder {
-            background-color: colors.get(neutral, light);
+            background-color: colors.$light;
             &:hover,
             &:focus:focus-visible {
-                background-color: colors.get(neutral, xlight);
+                background-color: colors.get(neutral, light);
             }
         }
 
@@ -57,7 +57,7 @@
             &,
             &:hover,
             &:focus:focus-visible {
-                background-color: colors.$light;
+                background-color: colors.get(neutral, light);
             }
         }
 
@@ -93,7 +93,7 @@
         flex-grow: 1;
         height: (1em * 2) * $line-height;
         &--placeholder {
-            color: colors.get(primary, base);
+            color: colors.$muted;
         }
     }
 
@@ -102,7 +102,8 @@
         gap: 6px;
         align-items: flex-start;
         padding: 7px 8px;
-        background-color: colors.get(primary, light);
+        background-color: colors.$light;
+        border: vars.$border-style;
         margin-bottom: 10px;
         border-radius: 6px;
 
@@ -110,7 +111,7 @@
             padding: 9px 12px;
         }
         &--branch {
-            background-color: transparent;
+            background-color: colors.get(neutral, light);
             border: vars.$border-style--dashed;
         }
     }
@@ -132,7 +133,7 @@
         animation: fade-in 300ms vars.$ease-out-quart backwards;
         &:hover,
         &:focus:focus-visible {
-            background-color: colors.get(primary, xlight);
+            background-color: colors.get(neutral, xlight);
         }
     }
 
@@ -146,7 +147,7 @@
         flex-grow: 1;
         &--placeholder {
             border-radius: vars.$border-radius;
-            background-color: colors.$background;
+            border: vars.$border-style--dashed;
             transition: background-color 200ms vars.$ease-in-out-quint--custom;
         }
     }
@@ -158,7 +159,7 @@
         align-items: center;
         padding: vars.$spacing--xsmall;
         border-radius: vars.$border-radius;
-        background-color: colors.get(primary, light);
+        border: vars.$border-style--dashed;
         transition: background-color 400ms vars.$ease-in-out-quint--custom;
     }
 

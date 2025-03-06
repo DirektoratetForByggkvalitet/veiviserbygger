@@ -15,13 +15,7 @@
         'aside aside aside';
     width: 100%;
     max-width: map.get(vars.$container-width, base);
-    //background-color: colors.get(neutral, xlight);
-    border-top: vars.$border-style--primary;
-    &:last-of-type {
-        border-bottom: vars.$border-style--primary;
-    }
     padding-top: vars.$spacing--small;
-    //border-radius: vars.$border-radius;
     margin-bottom: vars.$spacing--xsmall;
 
     @include mixins.min-width(lg) {
@@ -50,11 +44,13 @@
         display: flex;
         flex-direction: column;
         gap: vars.$spacing--small;
-        padding: vars.$spacing--small 0;
+        padding: vars.$spacing--small;
     }
 
     &__main {
         grid-area: main;
+        background-color: colors.$light;
+        border: vars.$border-style;
         &--full {
             grid-area: full;
         }
@@ -62,8 +58,13 @@
 
     &__aside {
         grid-area: aside;
+        background-color: colors.$light;
+        border: vars.$border-style;
+        border-top: none;
         @include mixins.min-width(lg) {
             padding-left: vars.$spacing;
+            border-top: vars.$border-style;
+            border-left: none;
         }
     }
 

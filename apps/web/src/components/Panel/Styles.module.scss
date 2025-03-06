@@ -14,8 +14,8 @@
         bottom: 0;
         width: vars.$panel-width;
         z-index: vars.$level-3 - 1;
-        // border-left: $border-style;
-        background-color: colors.$light;
+        background-color: colors.get(neutral, xlight);
+        box-shadow: vars.$shadow;
 
         @include mixins.entering {
             animation: enter 500ms vars.$ease-out-quart backwards;
@@ -29,7 +29,7 @@
     }
 
     &__content {
-        padding: vars.$spacing;
+        padding: vars.$margin;
         padding-bottom: vars.$spacing--large;
         overflow: auto;
         flex-grow: 1;

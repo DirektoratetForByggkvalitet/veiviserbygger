@@ -16,8 +16,8 @@ $colors: (
     ),
     neutral: (
         xlight: #f8f8f8,
-        light: color.mix(black, #f8f8f8, 5%),
-        base: #e2e2e2,
+        light: color.mix(black, #f8f8f8, 2%),
+        base: color.mix(black, #e2e2e2, 3%),
         dark: #878787,
         xdark: #111111,
     ),

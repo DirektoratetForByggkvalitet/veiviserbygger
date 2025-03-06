@@ -13,8 +13,7 @@ $font-base-fallback:
 
 $fonts: (
     base: (
-        font: 'Inter',
-        fallback: $font-base-fallback,
+        font: $font-base-fallback,
         light: 300,
         normal: normal,
         bold: bold,
