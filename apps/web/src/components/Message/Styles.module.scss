@@ -19,6 +19,15 @@
         gap: vars.$spacing--xsmall;
         margin-bottom: 4px;
     }
+    &--subtle {
+        background-color: colors.get(primary, light);
+        border: vars.$border-style;
+        border-color: colors.get(primary, base);
+        #{$this}__title {
+            @include mixins.font-size(small);
+            font-weight: normal;
+        }
+    }
 }
 
 @keyframes enter {

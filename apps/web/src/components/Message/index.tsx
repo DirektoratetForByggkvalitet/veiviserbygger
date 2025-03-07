@@ -8,12 +8,13 @@ const bem = BEMHelper(styles)
 
 interface Props {
   title: string
-  children: ReactNode
+  children?: ReactNode
+  subtle?: boolean
 }
 
-export default function Message({ title, children }: Props) {
+export default function Message({ title, children, subtle }: Props) {
   return (
-    <section role="alert" {...bem('')}>
+    <section role="alert" {...bem('', { subtle })}>
       <p {...bem('title')}>
         <Icon name="Info" />
         {title}
