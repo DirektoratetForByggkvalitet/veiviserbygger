@@ -156,7 +156,7 @@ function Options({
 }
 
 function Node({ node, pageId, allNodes }: NodeProps) {
-  const { patchNode, addAnswer } = useVersion()
+  const { patchNode } = useVersion()
 
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
     return (
