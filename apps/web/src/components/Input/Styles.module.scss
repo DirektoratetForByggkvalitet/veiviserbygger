@@ -72,6 +72,21 @@
         font-weight: bold;
     }
 
+    &--hide-label:not(&--sentence) {
+        border: none;
+        &:focus-within {
+            border-color: transparent;
+            box-shadow: none;
+
+            #{$this}__label {
+                color: colors.$text;
+            }
+        }
+        #{$this}__input {
+            padding: 0;
+        }
+    }
+
     &--sentence {
         @include mixins.font-size(small);
         border: none;

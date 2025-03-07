@@ -44,6 +44,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
       {...bem('', {
         header,
         sentence,
+        'hide-label': hideLabel,
         'hide-if-empty': hideIfEmpty && !value,
         dirty: !inSync,
       })}

@@ -87,7 +87,7 @@
     &__options {
         display: flex;
         flex-direction: column;
-        gap: 0;
+        gap: vars.$spacing--xsmall;
     }
 
     &__grid {
@@ -98,17 +98,41 @@
     &__option {
         position: relative;
         display: flex;
-        gap: 0;
+        gap: vars.$spacing--xsmall;
+        border: vars.$border-style;
+        background-color: colors.$light;
+        padding: vars.$spacing--xsmall;
+        &:focus-within {
+            border-radius: 2px;
+            border-color: colors.get(primary);
+            box-shadow: 0 0 0 1px colors.get(primary);
+            z-index: vars.$level-1;
+
+            #{$this}__label {
+                color: colors.$text;
+            }
+        }
     }
 
     &__option:not(:first-child) > * {
         border-top: none;
     }
 
+    &__option-handle {
+        display: flex;
+        align-items: center;
+        padding: vars.$spacing--xsmall;
+        border-radius: vars.$border-radius;
+        background-color: transparent;
+        flex-grow: 1;
+        cursor: grab;
+        &:hover,
+        &:focus-visible {
+            background-color: colors.get(neutral, xlight);
+        }
+    }
+
     &__option-actions {
-        position: absolute;
-        top: vars.$spacing--small;
-        right: vars.$spacing--small;
     }
 
     &__field-list > *:not(:first-child) {

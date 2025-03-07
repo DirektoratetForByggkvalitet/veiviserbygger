@@ -1,5 +1,16 @@
-import { useState } from 'react'
-import { PageContent, OptionalExcept, Branch, WizardPage, PageContentWithOptions } from 'types'
+import { useState, useMemo } from 'react'
+import { DndContext, DragEndEvent } from '@dnd-kit/core'
+import { useSortable, SortableContext } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import {
+  PageContent,
+  OptionalExcept,
+  Branch,
+  WizardPage,
+  PageContentWithOptions,
+  Answer,
+  OrderedMap,
+} from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
 import Button from '@/components/Button'
@@ -31,15 +42,15 @@ type NodeProps = {
   node: OptionalExcept<PageContent, 'id' | 'type'>
   pageId: WizardPage['id']
 }
-
-function Options({
-  node,
-  pageId,
-}: {
-  node: OptionalExcept<PageContentWithOptions, 'id'>
-  pageId: WizardPage['id']
-}) {
+function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & Answer) {
   const { getNodeRef, patchAnswer, deleteAnswer, addNodes } = useVersion()
+  const sortable = useSortable({ id })
+  const { attributes, listeners, setNodeRef, transform, transition } = sortable
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
 
   const optionActions = (nodeId: string, optionId: string) =>
     [
@@ -83,32 +94,65 @@ function Options({
       },
     ] as DropdownOptions
 
+  return (
+    <li {...bem('option')} ref={setNodeRef} style={style} {...attributes}>
+      <button type="button" {...bem('option-handle')} {...listeners}>
+        <Icon name="GripVertical" />
+      </button>
+      <Input
+        hideLabel
+        label="Svar"
+        value={heading || ''}
+        onChange={(v) => patchAnswer(nodeId, id, { heading: v })}
+      />
+      <div {...bem('option-actions')}>
+        <Dropdown
+          icon="Ellipsis"
+          direction="right"
+          options={optionActions(nodeId, id)}
+          label="Valg"
+          iconOnly
+        />
+      </div>
+    </li>
+  )
+}
+function Options({
+  node,
+  pageId,
+}: {
+  node: OptionalExcept<PageContentWithOptions, 'id'>
+  pageId: WizardPage['id']
+}) {
+  const { addAnswer } = useVersion()
+
+  const handleSortingDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    console.log('TODO: Handle sort as we do in Minimap.tsx just for options', active, over)
+  }
+
   if (!node?.options) {
     return null
   }
 
+  const orderedOptions: Answer[] = useMemo(() => getOrdered(node.options), [node.options]) ?? []
+
   return (
-    <ul {...bem('options')}>
-      {getOrdered(node.options).map((option) => (
-        <li key={option.id} {...bem('option')}>
-          <Input
-            label="Svar"
-            value={option?.heading || ''}
-            onChange={(v) => patchAnswer(node.id, option.id, { heading: v })}
-          />
-          <div {...bem('option-actions')}>
-            <Dropdown
-              icon="Ellipsis"
-              direction="right"
-              options={optionActions(node.id, option.id)}
-              label="Valg"
-              iconOnly
-            />
-          </div>
-          {/* TODO: Dropdown menu with actions "Slett", "Gir negativt resultat", "Gir ekstra informasjon"  */}
-        </li>
-      ))}
-    </ul>
+    <DndContext onDragEnd={handleSortingDragEnd}>
+      <SortableContext items={orderedOptions}>
+        <ul {...bem('options')}>
+          {orderedOptions.map((option) => (
+            <Option key={option.id} pageId={pageId} nodeId={node.id} {...option} />
+          ))}
+          <li>
+            <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
+              Legg til svaralternativ
+            </Button>
+          </li>
+        </ul>
+      </SortableContext>
+    </DndContext>
   )
 }
 
@@ -169,10 +213,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
 
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
           <Options node={node} pageId={pageId} />
-
-          <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
-            Legg til svaralternativ
-          </Button>
         </Main>
 
         <Aside>
