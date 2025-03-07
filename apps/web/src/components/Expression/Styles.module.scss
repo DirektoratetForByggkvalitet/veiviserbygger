@@ -28,9 +28,12 @@
         @include mixins.font-size(small);
         display: flex;
         align-items: center;
-        flex-wrap: wrap;
         gap: vars.$spacing--xsmall;
         flex-grow: 1;
+        flex-wrap: wrap;
+        @include mixins.min-width(lg) {
+            flex-wrap: nowrap;
+        }
     }
 
     &--clauses {

@@ -9,7 +9,6 @@ import {
   WizardPage,
   PageContentWithOptions,
   Answer,
-  OrderedMap,
 } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
@@ -145,7 +144,7 @@ function Options({
           {orderedOptions.map((option) => (
             <Option key={option.id} pageId={pageId} nodeId={node.id} {...option} />
           ))}
-          <li>
+          <li key="add">
             <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
               Legg til svaralternativ
             </Button>
@@ -257,10 +256,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
 
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
           <Options node={node} pageId={pageId} />
-
-          <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
-            Legg til svaralternativ
-          </Button>
         </Main>
 
         <Aside>
