@@ -14,6 +14,7 @@ import { useVersion } from '@/hooks/useVersion'
 import { unset } from '@/lib/merge'
 import { v4 as uuid } from 'uuid'
 import Range from '../Range'
+import { get } from 'lodash'
 
 const bem = BEMHelper(styles)
 
@@ -134,7 +135,7 @@ function FieldValue({
       <Dropdown
         options={activeField.options}
         label="Alternativ"
-        value={expression?.value || 'Velg alternativ'}
+        value={(expression?.value as string) || 'Velg alternativ'}
         hideLabel
         sentence
         onChange={handleExpressionChange('value')}
@@ -265,9 +266,9 @@ export default function Expression({
       .filter((node) => inputTypeMap[node.type])
       .map((node) => ({
         value: node.id,
-        label: node.heading || 'Uten navn',
+        label: get(node, 'heading', 'Uten navn'),
         type: node.type,
-        options: getOrdered(node.options)?.map((o) => ({ label: o.heading, value: o.id })),
+        options: getOrdered(get(node, 'options'))?.map((o) => ({ label: o.heading, value: o.id })),
       })) || []
 
   if (expression && 'clauses' in expression) {
