@@ -18,7 +18,6 @@ import { dataPoint } from './utils/db'
 import {
   Answer,
   Branch,
-  ComplexExpression,
   DeepPartial,
   OptionalExcept,
   PageContent,

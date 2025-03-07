@@ -13,7 +13,6 @@ import { getOrdered, getWithIds } from '@/lib/ordered'
 import { useVersion } from '@/hooks/useVersion'
 import { unset } from '@/lib/merge'
 import { v4 as uuid } from 'uuid'
-import Button from '../Button'
 import Range from '../Range'
 
 const bem = BEMHelper(styles)
@@ -36,13 +35,13 @@ export interface ExpressionProps {
 }
 
 type FieldType = {
-  value: string;
-  label: any;
+  value: string
+  label: any
   type: PageContent['type']
   options: {
-    label: any;
-    value: string;
-  }[];
+    label: any
+    value: string
+  }[]
 }
 
 type Operators = 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'neq' | 'between' | 'is' | 'not' | 'required'
@@ -74,7 +73,6 @@ const inputTypeMap: {
   Radio: {
     operators: ['eq', 'neq', 'is', 'not', 'required'],
     type: 'single',
-
   },
   Checkbox: {
     operators: ['eq', 'neq', 'is', 'not', 'required'],
@@ -99,18 +97,30 @@ function getInputOperators(type?: PageContent['type']) {
     return []
   }
 
-  return inputTypeMap[type]?.operators.reduce<typeof OPERATORS>((res, operator) => {
-    const op = OPERATORS.find((o) => o.value === operator)
+  return (
+    inputTypeMap[type]?.operators.reduce<typeof OPERATORS>((res, operator) => {
+      const op = OPERATORS.find((o) => o.value === operator)
 
-    if (!op) {
-      return res
-    }
+      if (!op) {
+        return res
+      }
 
-    return [...res, op]
-  }, []) || []
+      return [...res, op]
+    }, []) || []
+  )
 }
 
-function FieldValue({ fieldValueType, activeField, expression, handleExpressionChange }: { activeField?: FieldType, fieldValueType?: NonNullable<typeof inputTypeMap[PageContent['type']]>['type'], expression?: SimpleExpression, handleExpressionChange: (key: string) => (value: any) => void }) {
+function FieldValue({
+  fieldValueType,
+  activeField,
+  expression,
+  handleExpressionChange,
+}: {
+  activeField?: FieldType
+  fieldValueType?: NonNullable<(typeof inputTypeMap)[PageContent['type']]>['type']
+  expression?: SimpleExpression
+  handleExpressionChange: (key: string) => (value: any) => void
+}) {
   if (!activeField || !expression) {
     return null
   }
@@ -120,52 +130,58 @@ function FieldValue({ fieldValueType, activeField, expression, handleExpressionC
   }
 
   if (fieldValueType === 'single') {
-    return <Dropdown
-      options={activeField.options}
-      label="Alternativ"
-      value={expression?.value || 'Velg alternativ'}
-      hideLabel
-      sentence
-      onChange={handleExpressionChange('value')}
-    />
-  }
-
-  if (fieldValueType === 'multi') {
     return (
-      <div>Multi-select</div>
+      <Dropdown
+        options={activeField.options}
+        label="Alternativ"
+        value={expression?.value || 'Velg alternativ'}
+        hideLabel
+        sentence
+        onChange={handleExpressionChange('value')}
+      />
     )
   }
 
+  if (fieldValueType === 'multi') {
+    return <div>Multi-select</div>
+  }
+
   if (fieldValueType === 'text') {
-    return <Input
-      label="Verdi"
-      placeholder="Verdi"
-      value={expression?.value as string}
-      onChange={handleExpressionChange('value')}
-      hideLabel
-      sentence
-    />
+    return (
+      <Input
+        label="Verdi"
+        placeholder="Verdi"
+        value={expression?.value as string}
+        onChange={handleExpressionChange('value')}
+        hideLabel
+        sentence
+      />
+    )
   }
 
   if (fieldValueType === 'number' && expression?.operator === 'between') {
-    return <Range
-      label="Mellom"
-      value={expression?.value as { from?: number; to?: number }}
-      onChange={handleExpressionChange('value')}
-      hideLabel
-    />
+    return (
+      <Range
+        label="Mellom"
+        value={expression?.value as { from?: number; to?: number }}
+        onChange={handleExpressionChange('value')}
+        hideLabel
+      />
+    )
   }
 
   if (fieldValueType === 'number' && expression.operator !== 'between') {
-    return <Input
-      label="Verdi"
-      placeholder="Verdi"
-      type="number"
-      value={expression?.value as number}
-      onChange={handleExpressionChange('value')}
-      hideLabel
-      sentence
-    />
+    return (
+      <Input
+        label="Verdi"
+        placeholder="Verdi"
+        type="number"
+        value={expression?.value as number}
+        onChange={handleExpressionChange('value')}
+        hideLabel
+        sentence
+      />
+    )
   }
 }
 
@@ -319,14 +335,16 @@ export default function Expression({
             onChange={handleExpressionChange('field')}
           />
 
-          {activeField ? <Dropdown
-            options={getInputOperators(activeField?.type)}
-            value={expression?.operator}
-            label="Velg betingelse"
-            hideLabel
-            sentence
-            onChange={handleExpressionChange('operator')}
-          /> : null}
+          {activeField ? (
+            <Dropdown
+              options={getInputOperators(activeField?.type)}
+              value={expression?.operator}
+              label="Velg betingelse"
+              hideLabel
+              sentence
+              onChange={handleExpressionChange('operator')}
+            />
+          ) : null}
 
           <FieldValue
             activeField={activeField}
@@ -345,11 +363,15 @@ export default function Expression({
               label: 'Legg til flere vilkår',
               onClick: handleAddClause,
             },
-            ...(clauseId && !onlyClause ? [{
-              value: '0',
-              label: 'Slett',
-              onClick: () => handleDeleteClause(clauseId),
-            }] : []),
+            ...(clauseId && !onlyClause
+              ? [
+                  {
+                    value: '0',
+                    label: 'Slett',
+                    onClick: () => handleDeleteClause(clauseId),
+                  },
+                ]
+              : []),
           ]}
           iconOnly
         />
