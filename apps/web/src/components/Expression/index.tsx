@@ -16,7 +16,7 @@ import { v4 as uuid } from 'uuid'
 
 const bem = BEMHelper(styles)
 
-interface Props {
+export interface ExpressionProps {
   expression?: ExpressionType
   nodeId: string
   /**
@@ -82,7 +82,7 @@ export default function Expression({
   type,
   nodeId,
   clauseId,
-}: Props) {
+}: ExpressionProps) {
   const { getNodeRef, patchNode } = useVersion()
 
   const handleAddClause = () => {

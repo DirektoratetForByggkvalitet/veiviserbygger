@@ -8,6 +8,7 @@ import Button from '@/components/Button'
 import Content from '@/components/Content'
 import Help from '@/components/Help'
 import Modal from '@/components/Modal'
+import PageExpression from '@/components/PageExpression'
 import ButtonBar from '@/components/ButtonBar'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import useWizard from '@/hooks/useWizard'
@@ -182,13 +183,19 @@ export default function Wizard() {
           optionsLabel="Sidevalg"
           options={[
             {
+              value: '0',
+              label: 'Vis siden hvis...',
+              onClick: () => console.log('Legg til page.show'),
+              disabled: false,
+            },
+            {
               value: '1',
               label: 'Dupliser siden',
               onClick: () => console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
               disabled: true,
             },
             {
-              value: '1',
+              value: '2',
               label: 'Fjern siden',
               styled: 'delete',
               onClick: () => setShowConfirmDeletePage(true),
@@ -223,11 +230,18 @@ export default function Wizard() {
                   onChange={(v) => patchPage(page.id, { heading: v })}
                   header
                 />
-
                 {page?.type === 'Intro' && (
                   <>
                     <Help description="Introsiden er en obligatorisk start på veiviseren. Her bør man fortelle besøkende kort hva man kan få svar på ved å bruke veiviseren." />
                   </>
+                )}
+
+                {page?.type !== 'Intro' && page?.show && (
+                  <PageExpression
+                    expression={page?.show}
+                    nodes={nodes}
+                    nodeId={'TODO: Fjernes her'}
+                  />
                 )}
 
                 {(nodeIds?.length > 0 &&
