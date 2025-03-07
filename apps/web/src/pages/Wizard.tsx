@@ -8,6 +8,7 @@ import Button from '@/components/Button'
 import Content from '@/components/Content'
 import Help from '@/components/Help'
 import Modal from '@/components/Modal'
+import Message from '@/components/Message'
 import PageExpression from '@/components/PageExpression'
 import ButtonBar from '@/components/ButtonBar'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
@@ -16,6 +17,7 @@ import { useParams } from 'react-router'
 import Page from '@/components/Page'
 import { PageContent, Branch, DeepPartial } from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
+import { getPageTypeDescription, getPageTypeAdd } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
 import { getOrdered } from '@/lib/ordered'
 import { siteName } from '@/constants'
@@ -230,11 +232,6 @@ export default function Wizard() {
                   onChange={(v) => patchPage(page.id, { heading: v })}
                   header
                 />
-                {page?.type === 'Intro' && (
-                  <>
-                    <Help description="Introsiden er en obligatorisk start på veiviseren. Her bør man fortelle besøkende kort hva man kan få svar på ved å bruke veiviseren." />
-                  </>
-                )}
 
                 {page?.type !== 'Intro' && page?.show && (
                   <PageExpression
@@ -252,15 +249,15 @@ export default function Wizard() {
                         nodeId={nodeId}
                         allNodes={nodes}
                         pageId={page.id}
-                      // allNodes={version?.nodes}
+                        // allNodes={version?.nodes}
                       />
                     )
                   })) || (
-                    <Help
-                      description="Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i
-                    veiviseren."
-                    />
-                  )}
+                  <>
+                    <Help description={getPageTypeDescription(page.type)} />
+                    <Message title={getPageTypeAdd(page.type)} subtle />
+                  </>
+                )}
 
                 <Dropdown
                   options={addContentActions}
@@ -270,12 +267,6 @@ export default function Wizard() {
                     </Button>
                   )}
                 />
-
-                {page?.type === 'Intro' && (
-                  <>
-                    <Help description='Introsiden vil avsluttes med en "Start veiviseren" knapp som starter veiviseren. Prøv å hold innholdet på siden kort slik at besøkende ikke trenger å scrolle ned til denne knappen.' />
-                  </>
-                )}
               </Form>
             </>
           ) : null}

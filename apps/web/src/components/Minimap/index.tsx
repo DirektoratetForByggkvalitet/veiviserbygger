@@ -12,6 +12,7 @@ import { WizardPage, WizardVersion } from 'types'
 import { getTypeText } from '@/lib/content'
 import NewPage from '../NewPage'
 import { getOrdered } from '@/lib/ordered'
+import { getPageTypeDescription, getPageTypeTitle, getPageTypeIcon } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
 import { useSortableList } from '@/hooks/useSortableList'
 const bem = BEMHelper(styles)
@@ -153,7 +154,14 @@ function PageMap({
     >
       <h2 {...bem('title')} title={`${index + 1}. ${page.heading}`}>
         <span {...bem('title-text')}>
-          {index + 1}. {page.heading}
+          {page.type === 'Page' ? (
+            <span {...bem('title-type')}>{index}.</span>
+          ) : (
+            <span {...bem('title-type')} title={getPageTypeDescription(page.type)}>
+              {getPageTypeTitle(page.type)}
+            </span>
+          )}
+          {page.heading}
         </span>
       </h2>
 

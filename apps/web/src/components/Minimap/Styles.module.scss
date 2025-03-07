@@ -18,7 +18,13 @@
         @include mixins.font-size(small, 1);
         display: flex;
         align-items: center;
+        justify-content: space-between;
         height: vars.$header-height;
+    }
+    &__title-type {
+        color: colors.$muted;
+        text-transform: uppercase;
+        padding-right: vars.$spacing--xsmall;
     }
 
     &__title-text {

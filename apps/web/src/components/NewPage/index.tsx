@@ -3,6 +3,7 @@ import Button from '../Button'
 import Form from '../Form'
 import Input from '../Input'
 import Modal from '../Modal'
+import Checkbox from '../Checkbox'
 import Message from '../Message'
 import { createPage } from '@/services/firebase'
 import useFirebase from '@/hooks/useFirebase'
@@ -69,6 +70,14 @@ export default function NewPage({ open, closeModal }: Props) {
           value={newPage?.heading || ''}
           onChange={(heading) => setNewPage((v) => ({ ...v, heading }))}
           forwardedRef={titleInput}
+        />
+        <Checkbox
+          toggle
+          label="Resultatside"
+          checked={newPage?.type === 'Result'}
+          onChange={() =>
+            setNewPage((v) => ({ ...v, type: newPage?.type === 'Result' ? 'Page' : 'Result' }))
+          }
         />
         <Button type="submit" primary disabled={!newPage.heading}>
           Opprett
