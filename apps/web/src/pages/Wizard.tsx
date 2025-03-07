@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Form from '@/components/Form'
 import Input from '@/components/Input'
 import Meta from '@/components/Meta'
@@ -45,10 +45,6 @@ export default function Wizard() {
     setSelected((value) => (value === id ? null : id))
   }
 
-  useEffect(() => {
-    console.log('HomePage rendered')
-  })
-
   const handleClose = useCallback(() => {
     setSelected(null)
   }, [selected])
@@ -60,6 +56,7 @@ export default function Wizard() {
       }
 
       deletePage(pageId)
+      setShowConfirmDeletePage(false)
       handleClose()
     },
     [deletePage, handleClose],
@@ -68,7 +65,6 @@ export default function Wizard() {
   const handleNext = useCallback(() => {
     if (version?.pages && selected) {
       const ordered = getOrdered(version.pages)
-      console.log({ ordered, selected, version })
       const index = ordered.findIndex(({ id }) => id === selected)
       const newSelected = ordered[index + 1]?.id || null
       if (newSelected !== null) {
@@ -80,7 +76,6 @@ export default function Wizard() {
   const handlePrevious = useCallback(() => {
     if (version?.pages && selected) {
       const ordered = getOrdered(version.pages)
-      console.log({ ordered, selected, version })
       const currentIndex = ordered.findIndex(({ id }) => id === selected)
       const newSelected = ordered[currentIndex - 1]?.id || null
       if (newSelected !== null) {
@@ -116,64 +111,64 @@ export default function Wizard() {
 
   const addContentActions: DropdownOptions = page?.id
     ? [
-        {
-          group: 'Innhold',
-        },
-        contentAction({ pageId: page.id, type: 'Text' }),
-        {
-          group: 'Spørsmål',
-        },
-        contentAction({
-          pageId: page.id,
-          type: 'Radio',
-          defaultContent: {
-            options: {
-              [uuid()]: { heading: '', order: 0 },
-            },
-          },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Select',
-          disabled: true,
-          defaultContent: {
-            options: {
-              [uuid()]: { heading: '', order: 0 },
-            },
-          },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Checkbox',
-          defaultContent: {
+      {
+        group: 'Innhold',
+      },
+      contentAction({ pageId: page.id, type: 'Text' }),
+      {
+        group: 'Spørsmål',
+      },
+      contentAction({
+        pageId: page.id,
+        type: 'Radio',
+        defaultContent: {
+          options: {
             [uuid()]: { heading: '', order: 0 },
           },
-        }),
-        contentAction({ pageId: page.id, type: 'Input', disabled: false }),
-        contentAction({ pageId: page.id, type: 'Number', disabled: false }),
-        {
-          group: 'Hendelser',
         },
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'ExtraInformation',
-          defaultContent: { preset: 'ExtraInformation', test: {} },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'NegativeResult',
-          defaultContent: { preset: 'NegativeResult', test: {} },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'NewQuestions',
-          defaultContent: { preset: 'NewQuestions', test: {} },
-        }),
-        contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
-      ]
+      }),
+      contentAction({
+        pageId: page.id,
+        type: 'Select',
+        disabled: true,
+        defaultContent: {
+          options: {
+            [uuid()]: { heading: '', order: 0 },
+          },
+        },
+      }),
+      contentAction({
+        pageId: page.id,
+        type: 'Checkbox',
+        defaultContent: {
+          [uuid()]: { heading: '', order: 0 },
+        },
+      }),
+      contentAction({ pageId: page.id, type: 'Input', disabled: false }),
+      contentAction({ pageId: page.id, type: 'Number', disabled: false }),
+      {
+        group: 'Hendelser',
+      },
+      contentAction({
+        pageId: page.id,
+        type: 'Branch',
+        preset: 'ExtraInformation',
+        defaultContent: { preset: 'ExtraInformation', test: {} },
+      }),
+      contentAction({
+        pageId: page.id,
+        type: 'Branch',
+        preset: 'NegativeResult',
+        defaultContent: { preset: 'NegativeResult', test: {} },
+      }),
+      contentAction({
+        pageId: page.id,
+        type: 'Branch',
+        preset: 'NewQuestions',
+        defaultContent: { preset: 'NewQuestions', test: {} },
+      }),
+      contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
+    ]
     : []
 
   return (
@@ -219,7 +214,7 @@ export default function Wizard() {
               description={`Vil du slette ${page?.heading ? `siden "${page.heading}"` : 'denne siden'} med alt innhold? Handlingen kan ikke angres.`}
             />
             <ButtonBar>
-              <Button type="button" warning onClick={() => handleDelete(page?.id)}>
+              <Button type="button" warning onClick={handleDelete(page?.id)}>
                 Slett siden
               </Button>
               <Button type="button" onClick={() => setShowConfirmDeletePage(false)}>
@@ -254,15 +249,15 @@ export default function Wizard() {
                         nodeId={nodeId}
                         allNodes={nodes}
                         pageId={page.id}
-                        // allNodes={version?.nodes}
+                      // allNodes={version?.nodes}
                       />
                     )
                   })) || (
-                  <>
-                    <Help description={getPageTypeDescription(page.type)} />
-                    <Message title={getPageTypeAdd(page.type)} subtle />
-                  </>
-                )}
+                    <>
+                      <Help description={getPageTypeDescription(page.type)} />
+                      <Message title={getPageTypeAdd(page.type)} subtle />
+                    </>
+                  )}
 
                 <Dropdown
                   options={addContentActions}

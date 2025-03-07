@@ -206,7 +206,7 @@ export async function deletePage({ db, wizardId, versionId }: FuncScope, pageId:
       throw new Error(`Page with id ${pageId} not found`)
     }
 
-    await transaction.update(ref, `pages.${pageId}`, undefined)
+    await transaction.update(ref, `pages.${pageId}`, deleteField())
   })
 }
 
