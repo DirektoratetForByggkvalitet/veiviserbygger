@@ -96,37 +96,40 @@
             width: $size * 2 - 8px;
             color: colors.$text;
             border-radius: $size;
-            border-color: colors.get(neutral, xlight);
+            border-color: colors.get(neutral, base);
             background-color: colors.$light;
+            transition: background-color 200ms vars.$ease-in-out-quint--custom;
 
             &:before {
                 content: '';
                 position: absolute;
-                top: 2px;
-                left: 2px;
-                height: $size - 6px;
-                width: $size - 6px;
+                top: 4px;
+                left: 4px;
+                height: $size - 10px;
+                width: $size - 10px;
                 border-radius: 50%;
-                background-color: colors.get(primary);
-                opacity: 0.65;
+                background-color: colors.get(primary, dark);
 
                 transition:
                     transform 300ms vars.$ease-in-out-quint--custom,
-                    opacity 200ms vars.$ease-in-out-quint--custom;
+                    background-color 200ms vars.$ease-in-out-quint--custom;
             }
         }
 
         #{$this}__input:checked {
             & + #{$this}__indicator {
+                background-color: colors.get(primary, dark);
                 &:before {
                     opacity: 1;
-                    transform: translateX(calc(100% - 2px));
+                    transform: translateX(calc(100%));
+                    background-color: colors.$light;
                 }
             }
 
             & + #{$this}__indicator #{$this}__icon {
                 opacity: 1;
-                transform: translateX(($size * 0.5) - 3px);
+                color: colors.get(primary, dark);
+                transform: translateX(($size * 0.5) - 7px);
             }
         }
     }
