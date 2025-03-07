@@ -12,7 +12,7 @@ import { WizardPage, WizardVersion } from 'types'
 import { getTypeText } from '@/lib/content'
 import NewPage from '../NewPage'
 import { getOrdered } from '@/lib/ordered'
-import { getPageTypeDescription, getPageTypeTitle, getPageTypeIcon } from '@/lib/page'
+import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
 import { useSortableList } from '@/hooks/useSortableList'
 const bem = BEMHelper(styles)
