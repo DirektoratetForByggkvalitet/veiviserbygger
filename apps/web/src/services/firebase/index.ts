@@ -17,6 +17,8 @@ import { getConfig } from '../api'
 import { dataPoint } from './utils/db'
 import {
   Answer,
+  Branch,
+  ComplexExpression,
   DeepPartial,
   OptionalExcept,
   PageContent,
@@ -250,6 +252,25 @@ export async function patchNode(
 
     console.log(ref.path, merge(patchedNode as any, patch))
     await transaction.update(ref, merge(patchedNode as any, patch))
+  })
+}
+
+export async function removeExpressionClause(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  clauseId: string,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+    const current = await transaction.get(ref)
+
+    const node = current?.data() as Branch
+
+    if (!node?.test?.type || !node.test.clauses[clauseId]) {
+      throw new Error(`Clause with id ${clauseId} not found in node with id ${nodeId}`)
+    }
+
+    await transaction.update(ref, `test.clauses.${clauseId}`, deleteField())
   })
 }
 

@@ -41,6 +41,7 @@ export type PartialPageContent<T extends PageContent['type']> = OptionalExcept<
 >
 
 export type SimpleExpression = {
+  type: undefined
   field: DocumentReference
   operator:
     | 'gt'
@@ -54,7 +55,7 @@ export type SimpleExpression = {
     | 'not'
     | 'isnot'
     | 'required'
-  value?: string | number | boolean
+  value?: string | number | boolean | { from?: string; to?: string }
   // errorMessage?: string Trenger vi denne?
 }
 

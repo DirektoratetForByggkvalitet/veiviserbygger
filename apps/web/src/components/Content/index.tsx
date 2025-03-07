@@ -115,7 +115,7 @@ function Options({
 function Node({ node, pageId, allNodes }: NodeProps) {
   const { patchNode, addAnswer } = useVersion()
 
-  if (node.type === 'Text') {
+  if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
     return (
       <>
         <Header type={node.type} node={node} />
@@ -123,15 +123,16 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           <Input
             label="Tittel"
             value={node.heading || ''}
-            onChange={(v) => patchNode(node.id, { type: 'Text', heading: v })}
+            onChange={(v) => patchNode(node.id, { heading: v })}
             hideIfEmpty
             header
           />
+
           <Editor
             label="Innhold"
             value={node.text || ''}
             hideIfEmpty
-            onChange={(v) => patchNode(node.id, { type: 'Text', text: v })}
+            onChange={(v) => patchNode(node.id, { text: v })}
           />
         </Main>
         <Aside>

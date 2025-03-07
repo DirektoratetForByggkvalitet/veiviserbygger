@@ -13,6 +13,8 @@ import { getOrdered, getWithIds } from '@/lib/ordered'
 import { useVersion } from '@/hooks/useVersion'
 import { unset } from '@/lib/merge'
 import { v4 as uuid } from 'uuid'
+import Button from '../Button'
+import Range from '../Range'
 
 const bem = BEMHelper(styles)
 
@@ -23,10 +25,24 @@ export interface ExpressionProps {
    * Only used when the expression is a clause in a complex expression
    */
   clauseId?: string
+  /**
+   * Whether or not the clause is the only clause in a complex expression
+   */
+  onlyClause?: boolean
   nodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
   child?: boolean
   first?: boolean
   type?: 'or' | 'and'
+}
+
+type FieldType = {
+  value: string;
+  label: any;
+  type: PageContent['type']
+  options: {
+    label: any;
+    value: string;
+  }[];
 }
 
 type Operators = 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'neq' | 'between' | 'is' | 'not' | 'required'
@@ -41,21 +57,12 @@ const OPERATORS: { value: Operators; label: string }[] = [
   { value: 'between', label: 'er mellom' },
   { value: 'is', label: 'er valgt' },
   { value: 'not', label: 'er ikke valgt' },
-  /* { value: 'isnot', label: '?' }, Hva betyr denne? */
   { value: 'required', label: 'er utfylt' },
 ]
 
 const TYPES = [
   { value: 'and', label: 'alle av følgende' },
   { value: 'or', label: 'en av følgende' },
-]
-
-const COMPLEX_ACTIONS = [
-  {
-    value: '0',
-    label: 'Slett',
-    onClick: () => console.log('Fjern'),
-  },
 ]
 
 const inputTypeMap: {
@@ -65,13 +72,101 @@ const inputTypeMap: {
   }
 } = {
   Radio: {
-    operators: ['gt', 'eq', 'neq', 'is', 'not', 'required'],
+    operators: ['eq', 'neq', 'is', 'not', 'required'],
     type: 'single',
+
   },
   Checkbox: {
-    operators: ['is', 'not', 'required'],
+    operators: ['eq', 'neq', 'is', 'not', 'required'],
     type: 'multi',
   },
+  Select: {
+    operators: ['eq', 'neq', 'is', 'not', 'required'],
+    type: 'single',
+  },
+  Input: {
+    operators: ['eq', 'neq', 'required'],
+    type: 'text',
+  },
+  Number: {
+    operators: ['gt', 'lt', 'gte', 'lte', 'eq', 'neq', 'between', 'required'],
+    type: 'number',
+  },
+}
+
+function getInputOperators(type?: PageContent['type']) {
+  if (!type) {
+    return []
+  }
+
+  return inputTypeMap[type]?.operators.reduce<typeof OPERATORS>((res, operator) => {
+    const op = OPERATORS.find((o) => o.value === operator)
+
+    if (!op) {
+      return res
+    }
+
+    return [...res, op]
+  }, []) || []
+}
+
+function FieldValue({ fieldValueType, activeField, expression, handleExpressionChange }: { activeField?: FieldType, fieldValueType?: NonNullable<typeof inputTypeMap[PageContent['type']]>['type'], expression?: SimpleExpression, handleExpressionChange: (key: string) => (value: any) => void }) {
+  if (!activeField || !expression) {
+    return null
+  }
+
+  if (['not', 'is', 'isnot', 'required'].includes(expression?.operator)) {
+    return null
+  }
+
+  if (fieldValueType === 'single') {
+    return <Dropdown
+      options={activeField.options}
+      label="Alternativ"
+      value={expression?.value || 'Velg alternativ'}
+      hideLabel
+      sentence
+      onChange={handleExpressionChange('value')}
+    />
+  }
+
+  if (fieldValueType === 'multi') {
+    return (
+      <div>Multi-select</div>
+    )
+  }
+
+  if (fieldValueType === 'text') {
+    return <Input
+      label="Verdi"
+      placeholder="Verdi"
+      value={expression?.value as string}
+      onChange={handleExpressionChange('value')}
+      hideLabel
+      sentence
+    />
+  }
+
+  if (fieldValueType === 'number' && expression?.operator === 'between') {
+    return <Range
+      label="Mellom"
+      value={expression?.value as { from?: number; to?: number }}
+      onChange={handleExpressionChange('value')}
+      hideLabel
+    />
+  }
+
+  if (fieldValueType === 'number' && expression.operator !== 'between') {
+    return <Input
+      label="Verdi"
+      placeholder="Verdi"
+      type="number"
+      value={expression?.value as number}
+      onChange={handleExpressionChange('value')}
+      hideLabel
+      sentence
+    />
+  }
 }
 
 export default function Expression({
@@ -82,8 +177,9 @@ export default function Expression({
   type,
   nodeId,
   clauseId,
+  onlyClause,
 }: ExpressionProps) {
-  const { getNodeRef, patchNode } = useVersion()
+  const { getNodeRef, patchNode, removeExpressionClause } = useVersion()
 
   const handleAddClause = () => {
     if (!expression) {
@@ -118,8 +214,14 @@ export default function Expression({
     })
   }
 
+  const handleDeleteClause = (id: string) => {
+    removeExpressionClause(nodeId, id)
+  }
+
   const handleExpressionChange = (key: string) => (value: any) => {
     const val = key === 'field' ? getNodeRef(value) : value
+
+    console.log('setting', key, val)
 
     if (clauseId) {
       return patchNode(nodeId, {
@@ -153,6 +255,8 @@ export default function Expression({
       })) || []
 
   if (expression && 'clauses' in expression) {
+    const clauses = getOrdered(expression.clauses)
+
     // Expression of type ComplexExpression
     return (
       <div {...bem('', { clauses: true })}>
@@ -170,10 +274,10 @@ export default function Expression({
               onChange={handleExpressionChange('type')}
             />
           </div>
-          <Dropdown icon="Ellipsis" direction="right" options={COMPLEX_ACTIONS} iconOnly />
         </div>
+
         <ul {...bem('clauses')}>
-          {getOrdered(expression.clauses).map((clause, index) => (
+          {clauses.map((clause, index) => (
             <li key={index} {...bem('clause')}>
               <Expression
                 clauseId={clause.id}
@@ -182,18 +286,20 @@ export default function Expression({
                 nodes={nodes}
                 child
                 first={index === 0}
+                onlyClause={clauses.length <= 1}
                 type={expression.type}
               />
             </li>
           ))}
-          <li>{/*<Button size="small">Legg til</Button>*/}</li>
         </ul>
       </div>
     )
   }
 
-  const activeField =
-    expression?.field && fieldOptions.find((option) => option.value === expression?.field?.id) // TODO: Type
+  const activeField: FieldType | undefined =
+    expression?.field && fieldOptions.find((option) => option.value === expression?.field?.id)
+
+  const activeFieldValueType = activeField && inputTypeMap[activeField?.type]?.type
 
   // Expression of type SimpleExpression
   return (
@@ -213,36 +319,21 @@ export default function Expression({
             onChange={handleExpressionChange('field')}
           />
 
-          <Dropdown
-            options={OPERATORS}
+          {activeField ? <Dropdown
+            options={getInputOperators(activeField?.type)}
             value={expression?.operator}
             label="Velg betingelse"
             hideLabel
             sentence
             onChange={handleExpressionChange('operator')}
+          /> : null}
+
+          <FieldValue
+            activeField={activeField}
+            fieldValueType={activeFieldValueType}
+            expression={expression}
+            handleExpressionChange={handleExpressionChange}
           />
-
-          {activeField?.type === 'Radio' && (
-            <Dropdown
-              options={activeField.options}
-              label="Alternativ"
-              value={expression?.value || 'Velg alternativ'}
-              hideLabel
-              sentence
-              onChange={handleExpressionChange('value')}
-            />
-          )}
-
-          {activeField?.type === 'Input' && (
-            <Input
-              label="Verdi"
-              placeholder="Verdi"
-              value={expression?.value as string}
-              onChange={handleExpressionChange('value')}
-              hideLabel
-              sentence
-            />
-          )}
         </div>
 
         <Dropdown
@@ -254,11 +345,11 @@ export default function Expression({
               label: 'Legg til flere vilkår',
               onClick: handleAddClause,
             },
-            {
+            ...(clauseId && !onlyClause ? [{
               value: '0',
               label: 'Slett',
-              onClick: () => console.log('Fjern'),
-            },
+              onClick: () => handleDeleteClause(clauseId),
+            }] : []),
           ]}
           iconOnly
         />

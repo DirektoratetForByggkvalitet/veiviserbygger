@@ -142,8 +142,8 @@ export default function Wizard() {
           [uuid()]: { heading: '', order: 0 }
         }
       }),
-      contentAction({ pageId: page.id, type: 'Input', disabled: true }),
-      contentAction({ pageId: page.id, type: 'Number', disabled: true }),
+      contentAction({ pageId: page.id, type: 'Input', disabled: false }),
+      contentAction({ pageId: page.id, type: 'Number', disabled: false }),
       {
         group: 'Hendelser',
       },
