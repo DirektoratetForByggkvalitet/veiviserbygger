@@ -204,7 +204,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           <Input
             label="Tittel"
             value={node.heading || ''}
-            onChange={(v) => patchNode(node.id, { type: 'Radio', heading: v })}
+            onChange={(v) => patchNode(node.id, { type: 'Checkbox', heading: v })}
             header
           />
 
@@ -212,7 +212,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             label="Beskrivelse"
             value={node.text || ''}
             hideIfEmpty
-            onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })}
+            onChange={(v) => patchNode(node.id, { type: 'Checkbox', text: v })}
           />
 
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
@@ -231,7 +231,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             <Checkbox
               label="Gridvisning"
               checked={node.grid}
-              onChange={(v) => patchNode(node.id, { type: 'Radio', grid: v })}
+              onChange={(v) => patchNode(node.id, { type: 'Checkbox', grid: v })}
             />
           </div>
         </Aside>

@@ -9,8 +9,8 @@ import Icon from '@/components/Icon'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { WizardPage, WizardVersion } from 'types'
-import { getTypeText } from '@/lib/content'
 import NewPage from '../NewPage'
+import { getTypeText, getTypeIcon } from '@/lib/content'
 import { getOrdered } from '@/lib/ordered'
 import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
@@ -38,7 +38,7 @@ const ContentItem = ({
   nodes?: WizardVersion['nodes']
   draggable?: boolean
 }) => {
-  const sortable = useSortable({ id: nodeId })
+  const sortable = useSortable({ id: nodeId, disabled: !draggable })
 
   const node = nodes?.[nodeId]
   if (!node) return null
@@ -58,20 +58,18 @@ const ContentItem = ({
     case 'Input':
     case 'Number':
       return (
-        <li {...bem('item')} key={node.id} ref={setNodeRef} style={style} {...attributes}>
+        <li
+          {...bem('item', { draggable })}
+          key={node.id}
+          ref={setNodeRef}
+          style={style}
+          {...attributes}
+          {...listeners}
+        >
+          <Icon name={getTypeIcon(node.type)} {...bem('icon')} />
           <h3 {...bem('sub-title', { placeholder: !node.heading && !node.text })}>
             {node.heading || contentCleanup(node.text) || `${getTypeText(node.type)}`}
           </h3>
-          {draggable && (
-            <button
-              {...bem('drag')}
-              aria-label="Endre rekkefølge"
-              title="Endre rekkefølge"
-              {...listeners}
-            >
-              <Icon name="Grip" />
-            </button>
-          )}
 
           {/*<span {...bem('icon')}>
             {node.flow === 'continue' && <IconContinue />}
@@ -82,26 +80,17 @@ const ContentItem = ({
     case 'Branch':
       return (
         <li
-          {...bem('item', 'branch')}
+          {...bem('item', { branch: true, draggable })}
           key={node.id}
           ref={setNodeRef}
           style={style}
           {...attributes}
           {...listeners}
         >
+          <Icon name={getTypeIcon(node.type)} {...bem('icon')} />
           <h3 {...bem('sub-title', { placeholder: true /*TODO */ })}>
             {getTypeText(node.preset || 'Branch')}
           </h3>
-          {draggable && (
-            <button
-              {...bem('drag')}
-              aria-label="Endre rekkefølge"
-              title="Endre rekkefølge"
-              {...listeners}
-            >
-              <Icon name="Grip" />
-            </button>
-          )}
           {/* <span {...bem('icon')}>{<Icon name={getTypeIcon(node.preset || 'Branch')} />}</span>*/}
         </li>
       )
@@ -124,7 +113,7 @@ function PageMap({
   allNodes: Props['allNodes']
 }) {
   const { reorderNodes } = useVersion()
-  console.log('PageMap', selected)
+
   const { value, onSort, inSync } = useSortableList(page.content || [], (list) =>
     reorderNodes(page.id, list),
   )
@@ -153,16 +142,14 @@ function PageMap({
       onClick={onPageClick}
     >
       <h2 {...bem('title')} title={`${index + 1}. ${page.heading}`}>
-        <span {...bem('title-text')}>
-          {page.type === 'Page' ? (
-            <span {...bem('title-type')}>{index}.</span>
-          ) : (
-            <span {...bem('title-type')} title={getPageTypeDescription(page.type)}>
-              {getPageTypeTitle(page.type)}
-            </span>
-          )}
-          {page.heading}
-        </span>
+        {page.type === 'Page' ? (
+          <span {...bem('title-type')}>{index}.</span>
+        ) : (
+          <span {...bem('title-type', 'tag')} title={getPageTypeDescription(page.type)}>
+            {getPageTypeTitle(page.type)}
+          </span>
+        )}
+        <span {...bem('title-text')}>{page.heading}</span>
       </h2>
 
       {!value.length && !selected && (

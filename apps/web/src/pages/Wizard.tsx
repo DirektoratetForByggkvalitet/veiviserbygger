@@ -109,7 +109,25 @@ export default function Wizard() {
     }
   }
 
-  const addContentActions: DropdownOptions = page?.id
+  const addResultContentActions: DropdownOptions = page?.id
+    ? [
+        {
+          group: 'Innhold',
+        },
+        contentAction({ pageId: page.id, type: 'Text' }),
+        {
+          group: 'Hendelser',
+        },
+        contentAction({
+          pageId: page.id,
+          type: 'Branch',
+          preset: 'ExtraInformation',
+          defaultContent: { preset: 'ExtraInformation', test: {} },
+        }),
+      ]
+    : []
+
+  const addPageContentActions: DropdownOptions = page?.id
     ? [
         {
           group: 'Innhold',
@@ -260,7 +278,7 @@ export default function Wizard() {
                 )}
 
                 <Dropdown
-                  options={addContentActions}
+                  options={page?.type === 'Page' ? addPageContentActions : addResultContentActions}
                   trigger={({ onClick }) => (
                     <Button type="button" primary icon="Plus" onClick={onClick}>
                       Legg til innhold
