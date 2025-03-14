@@ -14,10 +14,20 @@ const typeMap: Record<
     title: 'Radioknapper',
     icon: 'CircleDot',
     description:
-      'Dette er et flervalgspørsmål vi stiller brukeren som de kan svare på. Avhengig av hva de svarer kan vi respondere med resultater eller informasjon.',
+      'Dette er et flervalgspørsmål vi stiller brukeren hvor de svarer ved å velge ett alternativ. Avhengig av hva de svarer kan vi respondere med resultater eller informasjon.',
   },
-  Checkbox: { title: 'Avkrysningsbokser', icon: 'SquareCheck', description: '' },
-  Select: { title: 'Nedtrekksmeny', icon: 'Rows3', description: '' },
+  Checkbox: {
+    title: 'Avkrysningsbokser',
+    icon: 'SquareCheck',
+    description:
+      'Dette er et flervalgspørsmål vi stiller brukeren hvor de kan velge en eller flere alternativer. Avhengig av hva de svarer kan vi respondere med resultater eller informasjon.',
+  },
+  Select: {
+    title: 'Nedtrekksmeny',
+    icon: 'Rows3',
+    description:
+      'Dette er et flervalgspørsmål vi stiller brukeren hvor de svarer ved å velge ett alternativ. Avhengig av hva de svarer kan vi respondere med resultater eller informasjon.',
+  },
   Input: {
     title: 'Tekstfelt',
     icon: 'PenLine',

@@ -8,10 +8,7 @@ interface Props {
   label?: string
 }
 
-export default function PageExpression({
-  label = 'Vis siden hvis',
-  ...props
-}: Props & ExpressionProps) {
+export default function PageExpression({ label = 'Vis siden', ...props }: Props & ExpressionProps) {
   return (
     <section {...bem('')}>
       <h3 {...bem('title')}>{label}</h3>

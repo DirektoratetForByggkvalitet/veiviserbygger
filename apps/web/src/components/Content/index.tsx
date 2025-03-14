@@ -280,9 +280,8 @@ function Node({ node, pageId, allNodes }: NodeProps) {
       <>
         <Header type={node.preset || node.type} node={node} />
         <Main>
-          <h3 {...bem('sub-title')}>Vises hvis følgende er sant</h3>
-
           <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
+          <h3 {...bem('sub-title')}>Vises følgende melding</h3>
           {node?.content?.map((nodeRef) => {
             const node = allNodes[nodeRef.id]
 
