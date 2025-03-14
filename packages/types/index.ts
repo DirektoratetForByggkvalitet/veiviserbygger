@@ -89,6 +89,10 @@ export type Content = {
   text?: string // HTML
   summary?: string
   details?: string
+  image?: {
+    url?: string
+    alt?: string
+  }
   show?: Expression // Vi har også hide, men tenker vi kan forenkle det til kun vis i første runde.
   flow?: 'stop' | 'continue' | null
 }

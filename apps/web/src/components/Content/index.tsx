@@ -12,6 +12,7 @@ import {
 } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
+import File from '@/components/File'
 import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
@@ -172,7 +173,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             hideIfEmpty
             header
           />
-
           <Editor
             label="Innhold"
             value={node.text || ''}
@@ -211,7 +211,13 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             hideIfEmpty
             onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })}
           />
-
+          <File
+            label="Bilde"
+            image={node?.image?.url}
+            alt={node?.image?.alt}
+            onFileUpload={(file) => console.log(file)}
+            removeFile={() => console.log('remove')}
+          />
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
           <Options node={node} pageId={pageId} />
         </Main>
