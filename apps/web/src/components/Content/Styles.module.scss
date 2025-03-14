@@ -16,7 +16,6 @@
     width: 100%;
     max-width: map.get(vars.$container-width, base);
     padding-top: vars.$spacing--small;
-    margin-bottom: vars.$spacing--xsmall;
 
     @include mixins.min-width(lg) {
         grid-template-areas:
@@ -30,7 +29,7 @@
         display: flex;
         align-items: center;
         gap: vars.$spacing--xsmall;
-        padding: vars.$spacing--small 0;
+        padding: vars.$spacing--xsmall 0;
         padding-top: calc(vars.$spacing--small - 6px);
     }
 

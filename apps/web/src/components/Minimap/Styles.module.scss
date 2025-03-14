@@ -136,29 +136,24 @@
 
         &--draggable {
             cursor: grab;
+            position: relative;
             &:hover,
             &:focus-visible {
-                position: relative;
-                &:before {
-                    content: '';
-                    display: block;
-                    height: calc(100% - 14px);
-                    width: 8px;
-                    position: absolute;
-                    top: 7px;
-                    left: 15px;
-                    background: colors.get(neutral, light);
-                    border-radius: vars.$border-radius;
-                    animation: fade-in 300ms vars.$ease-out-quart backwards;
-                }
                 #{$this}__icon {
-                    color: transparent;
+                    background-color: colors.get(neutral, light);
                 }
             }
+
+            &[aria-pressed='true'] {
+                z-index: vars.$level-1;
+                box-shadow: vars.$shadow;
+                border-color: colors.get(primary, base);
+            }
+
             &#{$this}__item--branch {
-                &:hover:before,
-                &:focus-visible:before {
-                    background: colors.get(neutral, base);
+                &:hover,
+                &:focus-visible {
+                    background: colors.get(neutral, light);
                 }
             }
         }
@@ -168,8 +163,10 @@
         text-align: right;
         flex-shrink: 0;
         width: 16px;
-        margin-top: 2px;
+        padding: 2px 0;
         color: colors.$muted;
+        transition: background-color 200ms vars.$ease-in-out-quint--custom;
+        border-radius: 4px;
     }
 
     &__content {

@@ -44,9 +44,9 @@ const ContentItem = ({
   if (!node) return null
 
   const { attributes, listeners, setNodeRef, transform, transition } = sortable
-
+  console.log(transform)
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
   }
 
@@ -66,7 +66,7 @@ const ContentItem = ({
           {...attributes}
           {...listeners}
         >
-          <Icon name={getTypeIcon(node.type)} {...bem('icon')} />
+          <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
           <h3 {...bem('sub-title', { placeholder: !node.heading && !node.text })}>
             {node.heading || contentCleanup(node.text) || `${getTypeText(node.type)}`}
           </h3>
@@ -87,7 +87,7 @@ const ContentItem = ({
           {...attributes}
           {...listeners}
         >
-          <Icon name={getTypeIcon(node.type)} {...bem('icon')} />
+          <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
           <h3 {...bem('sub-title', { placeholder: true /*TODO */ })}>
             {getTypeText(node.preset || 'Branch')}
           </h3>
