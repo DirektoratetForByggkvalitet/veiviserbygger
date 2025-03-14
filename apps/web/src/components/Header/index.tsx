@@ -104,13 +104,15 @@ export default function Header({ title = siteName, versions, hideMenu }: Props) 
                 Publiser endringer
               </Button>
             ) : null}
-            <Dropdown
-              icon="Settings2"
-              direction="right"
-              options={wizardOptions}
-              label={'Valg for veiviser'}
-              iconOnly
-            />
+            <div {...bem('settings')}>
+              <Dropdown
+                icon="Settings2"
+                direction="right"
+                options={wizardOptions}
+                label={'Valg for veiviser'}
+                iconOnly
+              />
+            </div>
           </>
         )}
         {user && (

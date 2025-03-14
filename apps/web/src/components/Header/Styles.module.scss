@@ -42,7 +42,11 @@
         align-items: center;
         justify-content: center;
         margin-left: auto;
-        gap: vars.$spacing--small;
+        gap: 6px;
+    }
+
+    &__settings {
+        margin: 0 4px;
     }
 
     &--open {

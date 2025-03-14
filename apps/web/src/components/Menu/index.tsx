@@ -49,8 +49,8 @@ export default function Menu({ openWizardId }: Props) {
           <>
             <nav {...bem('content')} ref={menuRef} tabIndex={0}>
               <Link to="/" {...bem('link')} onClick={closeMenu}>
+                <span {...bem('label')}>Oversikt</span>
                 <Icon name="LayoutGrid" />
-                Oversikt
               </Link>
 
               <section {...bem('section')}>

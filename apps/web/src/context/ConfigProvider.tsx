@@ -1,6 +1,8 @@
 import { getConfig } from '@/services/api'
 import PageSimple from '@/components/PageSimple'
 import Message from '@/components/Message'
+import Help from '@/components/Help'
+import Loader from '@/components/Loader'
 import { createContext, ReactNode, useEffect, useState } from 'react'
 
 type Config = Awaited<ReturnType<typeof getConfig>> | null
@@ -57,14 +59,15 @@ export default function ConfigProvider({ children }: { children: ReactNode }) {
 
   if (error && !config) {
     return (
-      <PageSimple title="Page failed to load">
+      <PageSimple title="En feil oppstod">
+        <Help description="Prøv å lukk siden og gå inn på ny." />
         <Message title="Error">{error.message}</Message>
       </PageSimple>
     )
   }
 
   if (!config) {
-    return <PageSimple>Loading...</PageSimple>
+    return <Loader />
   }
 
   if (!configOk(emulatorEnvVars, config) && !configOk(prodEnvVars, config)) {

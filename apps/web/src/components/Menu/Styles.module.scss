@@ -93,16 +93,20 @@
         width: 100%;
         align-items: center;
         gap: 10px;
-        padding: 18px 22px;
+        padding: vars.$spacing--small;
+        background-color: colors.get(neutral, xlight);
         border-radius: vars.$border-radius;
-        transition:
-            background-color 200ms vars.$ease-in-out-quint--custom,
-            border-color 200ms vars.$ease-in-out-quint--custom;
+        transition: background-color 200ms vars.$ease-in-out-quint--custom;
 
         &:hover,
         &:focus:focus-visible {
-            background-color: colors.get(primary, light);
+            background-color: colors.get(neutral, light);
         }
+    }
+
+    &__label {
+        flex-grow: 1;
+        text-align: left;
     }
 
     &__backdrop {
