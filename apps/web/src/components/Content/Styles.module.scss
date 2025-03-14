@@ -111,6 +111,12 @@
                 color: colors.$text;
             }
         }
+        &--placeholder {
+            @include mixins.font-size(small);
+            color: colors.$muted;
+            border-radius: vars.$border-radius;
+            padding: vars.$spacing--xsmall vars.$spacing--small;
+        }
     }
 
     &__option:not(:first-child) > * {

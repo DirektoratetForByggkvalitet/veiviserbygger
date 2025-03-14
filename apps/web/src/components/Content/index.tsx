@@ -144,6 +144,8 @@ function Options({
           {orderedOptions.map((option) => (
             <Option key={option.id} pageId={pageId} nodeId={node.id} {...option} />
           ))}
+          {!orderedOptions ||
+            (orderedOptions.length === 0 && <li {...bem('option', 'placeholder')}>Ingen ...</li>)}
           <li key="add">
             <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
               Legg til svaralternativ
@@ -259,7 +261,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
         </Main>
 
         <Aside>
-          {/* TODO: summary, details, show */}
           <Help description={getTypeDescription(node.type)} />
           <h3 {...bem('sub-title')}>Innstillinger</h3>
           <div {...bem('field-list')}>
@@ -290,7 +291,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
         </Main>
 
         <Aside>
-          <Help description={getTypeDescription(node.type)} />
+          <Help description={getTypeDescription(node.preset || node.type)} />
         </Aside>
       </>
     )
