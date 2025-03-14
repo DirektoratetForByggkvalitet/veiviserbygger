@@ -159,7 +159,9 @@ export default function Wizard() {
           pageId: page.id,
           type: 'Checkbox',
           defaultContent: {
-            [uuid()]: { heading: '', order: 0 },
+            options: {
+              [uuid()]: { heading: '', order: 0 },
+            },
           },
         }),
         contentAction({ pageId: page.id, type: 'Input', disabled: false }),
