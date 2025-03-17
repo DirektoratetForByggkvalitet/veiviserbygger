@@ -43,8 +43,20 @@
         cursor: text;
     }
 
-    &__input {
+    &__file-input {
         display: none;
+    }
+
+    &__alt-input {
+        @include mixins.font-size(small);
+        display: block;
+        padding: vars.$spacing--small;
+        color: colors.$muted;
+        input {
+            @include mixins.font-size(base);
+            padding-left: vars.$spacing--small;
+            color: colors.$text;
+        }
     }
 
     &__preview-container {

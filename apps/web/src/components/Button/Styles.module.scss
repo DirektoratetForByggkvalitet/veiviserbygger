@@ -68,6 +68,17 @@
         }
     }
 
+    &--loading {
+        background-color: colors.get(neutral, xlight);
+        animation: loading 600ms vars.$ease-out-quart infinite;
+        animation-direction: alternate-reverse;
+        color: colors.$muted;
+        &:hover,
+        &:focus:focus-visible {
+            background-color: colors.get(neutral, xlight);
+        }
+    }
+
     &--icon-only {
         padding: 14px;
         background-color: transparent;
@@ -88,4 +99,14 @@
     // &--large {
     //     // TODO: Do we really need this?
     // }
+}
+
+@keyframes loading {
+    from {
+        opacity: 0.25;
+    }
+
+    to {
+        opacity: 1;
+    }
 }

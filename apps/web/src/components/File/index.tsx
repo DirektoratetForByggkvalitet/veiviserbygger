@@ -13,6 +13,7 @@ type FileUploadProps = {
   accept?: string
   onFileUpload: (file: File) => void
   removeFile: () => void
+  onAltChange: (v: string) => void
 }
 
 export default function FileUpload({
@@ -22,15 +23,16 @@ export default function FileUpload({
   accept = 'image/*',
   onFileUpload,
   removeFile,
+  onAltChange,
 }: FileUploadProps) {
-  const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const selectedFile = event.target.files[0]
-      setFile(selectedFile)
+      setIsUploading(true)
       onFileUpload(selectedFile)
 
       // Generate a preview URL
@@ -46,6 +48,16 @@ export default function FileUpload({
     fileInputRef.current?.click()
   }
 
+  const triggerRemoveFile = () => {
+    setIsUploading(false)
+    removeFile()
+  }
+
+  const handleAltChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const alt = event.target.value as HTMLInputElement['value']
+    onAltChange(alt)
+  }
+
   return (
     <label {...bem('')}>
       <div {...bem('wrapper')}>
@@ -54,12 +66,12 @@ export default function FileUpload({
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}
-          {...bem('input')}
+          {...bem('file-input')}
           accept={accept}
         />
         {!image ? (
-          <Button size="small" onClick={triggerFileDialog}>
-            Legg til
+          <Button size="small" onClick={triggerFileDialog} loading={isUploading}>
+            {isUploading ? 'Laster opp...' : 'Legg til'}
           </Button>
         ) : (
           <Dropdown
@@ -69,7 +81,7 @@ export default function FileUpload({
               {
                 value: '0',
                 label: 'Fjern bilde',
-                onClick: removeFile,
+                onClick: triggerRemoveFile,
                 styled: 'delete',
               },
             ]}
@@ -79,9 +91,15 @@ export default function FileUpload({
         )}
       </div>
       {preview || image ? (
-        <div {...bem('preview-container')}>
-          <img src={preview || image} alt={alt} {...bem('preview')} />
-        </div>
+        <>
+          <div {...bem('preview-container')}>
+            <img src={preview || image} alt={alt} {...bem('preview')} />
+          </div>
+          <label {...bem('alt-input')}>
+            Alternativ tekst:
+            <input type="text" onChange={handleAltChange} value={alt} />
+          </label>
+        </>
       ) : null}
     </label>
   )
