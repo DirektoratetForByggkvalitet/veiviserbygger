@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { useSortable, SortableContext } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { v4 as uuid } from 'uuid'
 import {
   PageContent,
   OptionalExcept,
@@ -58,16 +59,7 @@ function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & 
         value: '0',
         label: 'Gir negativt resultat',
         onClick: async () => {
-          const [alertNodeRef, resultRef] = await addNodes(undefined, [
-            {
-              type: 'Error',
-            },
-            {
-              type: 'Result',
-            },
-          ])
-
-          await addNodes(pageId, [
+          await addNodes(pageId, nodeId, [
             {
               type: 'Branch',
               preset: 'NegativeResult',
@@ -76,7 +68,20 @@ function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & 
                 operator: 'eq',
                 value: optionId,
               },
-              content: [alertNodeRef, resultRef],
+              content: (await addNodes(undefined, undefined, [
+                {
+                  type: 'Error',
+                },
+                {
+                  type: 'Result',
+                },
+              ])).reduce((res, node, index) => ({
+                ...res,
+                [uuid()]: {
+                  order: index + 1,
+                  node
+                }
+              }), {}),
             },
           ])
         },
@@ -288,10 +293,9 @@ function Node({ node, pageId, allNodes }: NodeProps) {
         <Main>
           <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
           <h3 {...bem('sub-title')}>Vises følgende melding</h3>
-          {node?.content?.map((nodeRef) => {
-            const node = allNodes[nodeRef.id]
-
-            return <Node node={{ ...node, id: node.id }} pageId={pageId} allNodes={allNodes} />
+          {getOrdered(node?.content)?.map((nodeRef) => {
+            const node = allNodes[nodeRef?.node?.id]
+            return <Node node={{ ...node, id: node.id }} pageId={pageId} allNodes={allNodes} key={nodeRef.id} />
           })}
         </Main>
 

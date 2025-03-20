@@ -24,11 +24,13 @@ type Props = {
 
 export default function Header({ title = siteName, versions, hideMenu }: Props) {
   const { logout, user } = useAuth()
+
   if (hideMenu) {
     return (
       <header {...bem('')}>
         <img src="/header-logo.svg" alt={title} {...bem('logo')} />
         <h1 {...bem('name')}>{title}</h1>
+
         {user && (
           <nav {...bem('actions')}>
             <User

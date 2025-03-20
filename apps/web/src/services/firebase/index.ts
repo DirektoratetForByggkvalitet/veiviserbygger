@@ -1,8 +1,6 @@
 import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
-  arrayRemove,
-  arrayUnion,
   connectFirestoreEmulator,
   deleteField,
   doc,
@@ -10,6 +8,7 @@ import {
   Firestore,
   getDoc,
   getFirestore,
+  increment,
   runTransaction,
 } from 'firebase/firestore'
 
@@ -20,6 +19,8 @@ import {
   Branch,
   DeepPartial,
   OptionalExcept,
+  OrderedArr,
+  Page,
   PageContent,
   PageContentWithOptions,
   Patch,
@@ -80,6 +81,7 @@ export function getFirebaseApp(
 
   if (options?.constants?.FIREBASE_EMULATOR_FIRESTORE_HOST) {
     firestore = getFirestore()
+
     connectFirestoreEmulator(
       firestore,
       options.constants.FIREBASE_EMULATOR_FIRESTORE_HOST,
@@ -92,18 +94,6 @@ export function getFirebaseApp(
 
   return { app, auth, firestore }
 }
-
-// export async function getDocuments(
-//   ref: CollectionReference,
-//   constraint?: QueryFieldFilterConstraint,
-// ) {
-//   if (constraint) {
-//     const res = query(ref, constraint)
-//     return await getDocs(res)
-//   }
-
-//   return await getDocs(ref)
-// }
 
 export async function getDocument(ref: DocumentReference) {
   const doc = await getDoc(ref)
@@ -173,7 +163,7 @@ export async function createPage(
 
     const maxOrder = maxBy(values(current?.data()?.pages), 'order')?.order ?? -1
 
-    await transaction.update(ref, `pages.${uuid()}`, { order: maxOrder + 1, ...page })
+    await transaction.update(ref, `pages.${uuid()}`, { order: maxOrder + 1, content: {}, ...page })
   })
 }
 
@@ -213,21 +203,85 @@ export async function deletePage({ db, wizardId, versionId }: FuncScope, pageId:
 export async function addNodes(
   { db, wizardId, versionId }: FuncScope,
   pageId: string | undefined,
+  /**
+   * If provided, the new nodes will be inserted after the node with this id.
+   * Otherwise they will be appended to the end of the page.
+   */
+  afterNodeId: string | undefined,
   nodes: OptionalExcept<PageContent, 'type'>[],
 ) {
+  console.log('adding nodes', nodes, 'to page', pageId, 'after node', afterNodeId)
+
   const nodeRefs = nodes.map(() => getNodeRef({ db, wizardId, versionId }, uuid()))
 
   await runTransaction(db, async (transaction) => {
     const versionRef = getWizardVersionRef({ db, wizardId, versionId })
+    const current = await transaction.get(versionRef)
 
-    nodeRefs.forEach(async (nodeRef, index) => {
-      pageId &&
-        (await transaction.update(versionRef, {
-          [`pages.${pageId}.content`]: arrayUnion(nodeRef),
-        }))
+    // figure out what the highest order value is
+    const maxOrder = !pageId
+      ? -1
+      : (maxBy(values(current?.data()?.pages?.[pageId]?.content ?? {}), 'order')?.order ?? -1)
 
-      await transaction.set(nodeRef, nodes[index])
-    })
+    // if we're adding after a node, get the order of that node
+    const afterNodeOrder =
+      pageId && afterNodeId
+        ? (values(current?.data()?.pages?.[pageId]?.content).find((n) => n.node.id === afterNodeId)
+            ?.order ?? undefined)
+        : undefined
+
+    // what should be the order value of the first new node
+    const newNodeInitOrder = afterNodeOrder === undefined ? maxOrder + 1 : afterNodeOrder + 1
+
+    console.log('new node init order', newNodeInitOrder)
+
+    // create nodes
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i]
+      const nodeRef = nodeRefs[i]
+
+      // create the node
+      await transaction.set(nodeRef, node)
+
+      // if we're not adding it to the page, skip the rest
+      if (!pageId) {
+        continue
+      }
+
+      if (!current.data()?.pages?.[pageId].content) {
+        console.log('Create missing content map')
+        await transaction.update(versionRef, { [`pages.${pageId}.content`]: {} })
+      }
+
+      // create references to nodes
+      await transaction.update(versionRef, {
+        [`pages.${pageId}.content.${uuid()}`]: {
+          node: nodeRef,
+          order: newNodeInitOrder + i,
+        },
+      })
+
+      console.log('added node to page with order ', newNodeInitOrder + i)
+    }
+
+    // if we're adding after a node, push orders of nodes after the new nodes
+    if (pageId && afterNodeId) {
+      console.log('pushing orders of nodes after the new nodes')
+
+      for (const [key, value] of Object.entries(current.data()?.pages?.[pageId]?.content ?? {})) {
+        console.log(value.order, typeof value.order)
+
+        if (value.order >= newNodeInitOrder) {
+          await transaction.update(
+            versionRef,
+            `pages.${pageId}.content.${key}.order`,
+            increment(nodes.length),
+          )
+
+          console.log('pushed order of node', key, 'to', value.order + nodes.length)
+        }
+      }
+    }
   })
 
   return nodeRefs as DocumentReference[]
@@ -249,7 +303,6 @@ export async function patchNode(
       throw new Error(`Node with id ${nodeId} not found`)
     }
 
-    console.log(ref.path, merge(patchedNode as any, patch))
     await transaction.update(ref, merge(patchedNode as any, patch))
   })
 }
@@ -269,6 +322,7 @@ export async function removeExpressionClause(
       throw new Error(`Clause with id ${clauseId} not found in node with id ${nodeId}`)
     }
 
+    console.log('removeExpressionClause')
     await transaction.update(ref, `test.clauses.${clauseId}`, deleteField())
   })
 }
@@ -276,7 +330,7 @@ export async function removeExpressionClause(
 export async function reorderNodes(
   { db, wizardId, versionId }: FuncScope,
   pageId: string,
-  nodes: WizardPage['content'],
+  nodes: OrderedArr<Page['content']>,
 ) {
   await runTransaction(db, async (transaction) => {
     const ref = getWizardVersionRef({ db, wizardId, versionId })
@@ -288,7 +342,10 @@ export async function reorderNodes(
       throw new Error(`Page with id ${pageId} not found`)
     }
 
-    await transaction.update(ref, `pages.${pageId}.content`, nodes)
+    console.log(nodes)
+
+    console.log('reorderNodes')
+    // await transaction.update(ref, `pages.${pageId}.content`, nodes)
   })
 }
 
@@ -310,15 +367,27 @@ export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId:
     }
 
     await transaction.delete(nodeRef)
+
     await transaction.update(
       versionRef,
-      pageIds.reduce(
-        (res, pageId) => ({
+      pageIds.reduce((res, pageId) => {
+        const content = version.data()?.pages?.[pageId].content || {}
+        const pageNodeKeys = Object.keys(content)
+
+        return {
           ...res,
-          [`pages.${pageId}.content`]: arrayRemove(nodeRef),
-        }),
-        {},
-      ),
+          ...pageNodeKeys.reduce((res, key) => {
+            if (content[key].node.id !== nodeId) {
+              return res
+            }
+
+            return {
+              ...res,
+              [`pages.${pageId}.content.${key}`]: deleteField(),
+            }
+          }, {}),
+        }
+      }, {}),
     )
   })
 }
@@ -375,6 +444,7 @@ export function deleteAnswer(
       return
     }
 
+    console.log('deleteAnswer')
     await transaction.update(ref, `options.${answerId}`, deleteField())
   })
 }

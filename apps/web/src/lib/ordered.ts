@@ -1,13 +1,25 @@
-import { sortBy } from 'lodash'
-import { OrderedMap } from 'types'
+import { OrderedArr, OrderedMap, WithOrder } from 'types'
 
-export function getOrdered<T extends object>(value?: OrderedMap<T>): Array<T & { id: string }> {
-  return sortBy(
-    Object.keys(value || {}).map<T>(
-      (key) => ({ ...(value?.[key] || {}), id: key }) as any,
-    ) as Array<T & { id: string }>,
-    'order',
-  )
+export function getOrdered<T extends Record<string, any>>(map?: OrderedMap<T>): OrderedArr<T> {
+  if (!map) {
+    return []
+  }
+
+  return Object.keys(map || {})
+    .map((id) => ({
+      ...(map[id] as WithOrder<T[keyof T]>), // Preserve full structure
+      id: id as keyof T,
+    }))
+    .sort((a, b) => a.order - b.order)
+}
+
+export function getKeyed<T extends Record<string, any>>(arr: OrderedArr<T>): OrderedMap<T> {
+  return (arr || []).reduce((acc, { id, ...rest }) => {
+    return {
+      ...acc,
+      [id]: rest as WithOrder<T[keyof T]>,
+    }
+  }, {} as OrderedMap<T>)
 }
 
 export function getWithIds<T>(docs?: { [id: string]: T }) {

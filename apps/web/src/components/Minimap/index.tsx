@@ -8,7 +8,7 @@ import Icon from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import { WizardPage, WizardVersion } from 'types'
+import { PageContent, WizardPage, WizardVersion } from 'types'
 import NewPage from '../NewPage'
 import { getTypeText, getTypeIcon } from '@/lib/content'
 import { getOrdered } from '@/lib/ordered'
@@ -21,7 +21,7 @@ interface Props {
   onClick: (id: string) => void
   selected?: string | null
   data: WizardVersion
-  allNodes: WizardVersion['nodes']
+  allNodes: Record<string, PageContent>
 }
 
 const contentCleanup = (value?: string) => {
@@ -35,7 +35,7 @@ const ContentItem = ({
   draggable,
 }: {
   nodeId: string
-  nodes?: WizardVersion['nodes']
+  nodes?: Record<string, PageContent>
   draggable?: boolean
 }) => {
   const sortable = useSortable({ id: nodeId, disabled: !draggable })
@@ -44,7 +44,7 @@ const ContentItem = ({
   if (!node) return null
 
   const { attributes, listeners, setNodeRef, transform, transition } = sortable
-  console.log(transform)
+
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
@@ -114,15 +114,16 @@ function PageMap({
 }) {
   const { reorderNodes } = useVersion()
 
-  const { value, onSort, inSync } = useSortableList(page.content || [], (list) =>
-    reorderNodes(page.id, list),
-  )
+  const content = getOrdered(page.content)
+
+  /* TODO: Implement reordering of content */
+  const { value, onSort, inSync } = useSortableList(content, (list) => reorderNodes(page.id, list))
 
   const handleSortingDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
     if (active.id !== over?.id) {
-      const newIndex = page.content?.findIndex((r) => r.id === over?.id)
+      const newIndex = content?.findIndex((r) => r.node.id === over?.id)
 
       if (newIndex === undefined) {
         console.error('Could not find new index')
@@ -166,7 +167,7 @@ function PageMap({
           <SortableContext items={value} disabled={!selected}>
             <ul {...bem('content')}>
               {value.map((ref) => (
-                <ContentItem nodeId={ref.id} nodes={allNodes} key={ref.id} draggable={selected} />
+                <ContentItem nodeId={ref?.node?.id} nodes={allNodes} key={ref.id} draggable={selected} />
               ))}
             </ul>
           </SortableContext>
@@ -179,7 +180,7 @@ function PageMap({
 export default function Minimap({ onClick, selected, data, allNodes }: Props) {
   const contentRef = useRef<any>(null)
   const [modal, setModal] = useState<'page' | null>(null)
-  console.log('Minimap')
+
   useEffect(() => {
     if (selected && contentRef.current) {
       const selectedElement = document.getElementById(`page-${selected}`)

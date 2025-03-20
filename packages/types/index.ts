@@ -9,11 +9,24 @@ export type DeepPartial<T> = T extends object
 export type WrappedWithId<T> = { id: string; data: T }
 
 /**
+ * Extend a type with an order property
+ */
+export type WithOrder<T> = T & { order: number }
+
+/**
+ * Create array from OrderedMap
+ */
+export type OrderedArr<T extends Record<string, any>> = Array<{ id: keyof T } & WithOrder<T>>
+
+export type OrderedMap<T extends Record<string, any>> = Record<
+  string,
+  WithOrder<T> & { id: string }
+>
+
+/**
  * @deprecated Use OrderedMap instead
  */
 export type Ordered<T> = T & { order: number }
-
-export type OrderedMap<T> = { [key: string]: T & { order: number } }
 
 export type Awaited<T> = T extends PromiseLike<infer U> ? U : T
 
@@ -41,7 +54,6 @@ export type PartialPageContent<T extends PageContent['type']> = OptionalExcept<
 >
 
 export type SimpleExpression = {
-  type: undefined
   field: DocumentReference
   operator:
     | 'gt'
@@ -56,13 +68,16 @@ export type SimpleExpression = {
     | 'isnot'
     | 'required'
   value?: string | number | boolean | { from?: string; to?: string }
-  // errorMessage?: string Trenger vi denne?
+  type?: undefined
+  clauses?: undefined
 }
 
 export type ComplexExpression = {
   type: 'and' | 'or'
   clauses: OrderedMap<SimpleExpression>
-  // errorMessage?: string Trenger vi denne?
+  field?: undefined
+  operator?: undefined
+  value?: undefined
 }
 
 export type Expression = SimpleExpression | ComplexExpression
@@ -181,7 +196,7 @@ export type Branch = PageNode<{
   /**
    * Should not refer to nodes of types other than Information, Error or SimpleResult
    */
-  content: DocumentReference[]
+  content: OrderedMap<{ node: DocumentReference }>
 }>
 
 export type Intro = {
@@ -192,7 +207,7 @@ export type Intro = {
   /**
    * List of ids referencing Text nodes
    */
-  content?: DocumentReference[]
+  content: OrderedMap<{ node: DocumentReference }>
 }
 
 export type Result = {
@@ -204,7 +219,7 @@ export type Result = {
   /**
    * List of ids referencing Text nodes
    */
-  content?: DocumentReference[]
+  content: OrderedMap<{ node: DocumentReference }>
 }
 
 export type PageContent =
@@ -228,7 +243,7 @@ export type Page = {
   /**
    * List of ids referencing PageContent nodes
    */
-  content?: DocumentReference[]
+  content: OrderedMap<{ node: DocumentReference }>
 }
 
 export type Wizard = {
