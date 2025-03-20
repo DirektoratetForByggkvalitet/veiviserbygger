@@ -111,82 +111,82 @@ export default function Wizard() {
 
   const addResultContentActions: DropdownOptions = page?.id
     ? [
-      {
-        group: 'Innhold',
-      },
-      contentAction({ pageId: page.id, type: 'Text' }),
-      {
-        group: 'Hendelser',
-      },
-      contentAction({
-        pageId: page.id,
-        type: 'Branch',
-        preset: 'ExtraInformation',
-        defaultContent: { preset: 'ExtraInformation', test: {} },
-      }),
-    ]
+        {
+          group: 'Innhold',
+        },
+        contentAction({ pageId: page.id, type: 'Text' }),
+        {
+          group: 'Hendelser',
+        },
+        contentAction({
+          pageId: page.id,
+          type: 'Branch',
+          preset: 'ExtraInformation',
+          defaultContent: { preset: 'ExtraInformation', test: {} },
+        }),
+      ]
     : []
 
   const addPageContentActions: DropdownOptions = page?.id
     ? [
-      {
-        group: 'Innhold',
-      },
-      contentAction({ pageId: page.id, type: 'Text' }),
-      {
-        group: 'Spørsmål',
-      },
-      contentAction({
-        pageId: page.id,
-        type: 'Radio',
-        defaultContent: {
-          options: {
+        {
+          group: 'Innhold',
+        },
+        contentAction({ pageId: page.id, type: 'Text' }),
+        {
+          group: 'Spørsmål',
+        },
+        contentAction({
+          pageId: page.id,
+          type: 'Radio',
+          defaultContent: {
+            options: {
+              [uuid()]: { heading: '', order: 0 },
+            },
+          },
+        }),
+        contentAction({
+          pageId: page.id,
+          type: 'Select',
+          disabled: true,
+          defaultContent: {
+            options: {
+              [uuid()]: { heading: '', order: 0 },
+            },
+          },
+        }),
+        contentAction({
+          pageId: page.id,
+          type: 'Checkbox',
+          defaultContent: {
             [uuid()]: { heading: '', order: 0 },
           },
+        }),
+        contentAction({ pageId: page.id, type: 'Input', disabled: false }),
+        contentAction({ pageId: page.id, type: 'Number', disabled: false }),
+        {
+          group: 'Hendelser',
         },
-      }),
-      contentAction({
-        pageId: page.id,
-        type: 'Select',
-        disabled: true,
-        defaultContent: {
-          options: {
-            [uuid()]: { heading: '', order: 0 },
-          },
-        },
-      }),
-      contentAction({
-        pageId: page.id,
-        type: 'Checkbox',
-        defaultContent: {
-          [uuid()]: { heading: '', order: 0 },
-        },
-      }),
-      contentAction({ pageId: page.id, type: 'Input', disabled: false }),
-      contentAction({ pageId: page.id, type: 'Number', disabled: false }),
-      {
-        group: 'Hendelser',
-      },
-      contentAction({
-        pageId: page.id,
-        type: 'Branch',
-        preset: 'ExtraInformation',
-        defaultContent: { preset: 'ExtraInformation', test: {} },
-      }),
-      contentAction({
-        pageId: page.id,
-        type: 'Branch',
-        preset: 'NegativeResult',
-        defaultContent: { preset: 'NegativeResult', test: {} },
-      }),
-      contentAction({
-        pageId: page.id,
-        type: 'Branch',
-        preset: 'NewQuestions',
-        defaultContent: { preset: 'NewQuestions', test: {} },
-      }),
-      contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
-    ]
+        contentAction({
+          pageId: page.id,
+          type: 'Branch',
+          preset: 'ExtraInformation',
+          defaultContent: { preset: 'ExtraInformation', test: {} },
+        }),
+        contentAction({
+          pageId: page.id,
+          type: 'Branch',
+          preset: 'NegativeResult',
+          defaultContent: { preset: 'NegativeResult', test: {} },
+        }),
+        contentAction({
+          pageId: page.id,
+          type: 'Branch',
+          preset: 'NewQuestions',
+          defaultContent: { preset: 'NewQuestions', test: {} },
+        }),
+        contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
+      ]
     : []
 
   return (
@@ -267,15 +267,15 @@ export default function Wizard() {
                         nodeId={nodeId}
                         allNodes={nodes}
                         pageId={page.id}
-                      // allNodes={version?.nodes}
+                        // allNodes={version?.nodes}
                       />
                     )
                   })) || (
-                    <>
-                      <Help description={getPageTypeDescription(page.type)} />
-                      <Message title={getPageTypeAdd(page.type)} subtle />
-                    </>
-                  )}
+                  <>
+                    <Help description={getPageTypeDescription(page.type)} />
+                    <Message title={getPageTypeAdd(page.type)} subtle />
+                  </>
+                )}
 
                 <Dropdown
                   options={page?.type === 'Page' ? addPageContentActions : addResultContentActions}

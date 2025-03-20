@@ -167,7 +167,12 @@ function PageMap({
           <SortableContext items={value} disabled={!selected}>
             <ul {...bem('content')}>
               {value.map((ref) => (
-                <ContentItem nodeId={ref?.node?.id} nodes={allNodes} key={ref.id} draggable={selected} />
+                <ContentItem
+                  nodeId={ref?.node?.id}
+                  nodes={allNodes}
+                  key={ref.id}
+                  draggable={selected}
+                />
               ))}
             </ul>
           </SortableContext>

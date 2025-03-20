@@ -31,7 +31,7 @@ export default function Range({ label, header, hideLabel, ...props }: Props) {
   } = useValue(
     props.value?.from || 0,
     (v) => props.onChange({ ...(props.value || {}), from: v }),
-    fromRef
+    fromRef,
   )
 
   const {
@@ -41,7 +41,7 @@ export default function Range({ label, header, hideLabel, ...props }: Props) {
   } = useValue(
     props.value?.to || 0,
     (v) => props.onChange({ ...(props.value || {}), to: v }),
-    toRef
+    toRef,
   )
 
   const handleChange = (property: 'from' | 'to') => (event: ChangeEvent<HTMLInputElement>) => {

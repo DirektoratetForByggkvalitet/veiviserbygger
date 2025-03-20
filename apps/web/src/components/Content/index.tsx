@@ -68,20 +68,25 @@ function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & 
                 operator: 'eq',
                 value: optionId,
               },
-              content: (await addNodes(undefined, undefined, [
-                {
-                  type: 'Error',
-                },
-                {
-                  type: 'Result',
-                },
-              ])).reduce((res, node, index) => ({
-                ...res,
-                [uuid()]: {
-                  order: index + 1,
-                  node
-                }
-              }), {}),
+              content: (
+                await addNodes(undefined, undefined, [
+                  {
+                    type: 'Error',
+                  },
+                  {
+                    type: 'Result',
+                  },
+                ])
+              ).reduce(
+                (res, node, index) => ({
+                  ...res,
+                  [uuid()]: {
+                    order: index + 1,
+                    node,
+                  },
+                }),
+                {},
+              ),
             },
           ])
         },
@@ -295,7 +300,14 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           <h3 {...bem('sub-title')}>Vises følgende melding</h3>
           {getOrdered(node?.content)?.map((nodeRef) => {
             const node = allNodes[nodeRef?.node?.id]
-            return <Node node={{ ...node, id: node.id }} pageId={pageId} allNodes={allNodes} key={nodeRef.id} />
+            return (
+              <Node
+                node={{ ...node, id: node.id }}
+                pageId={pageId}
+                allNodes={allNodes}
+                key={nodeRef.id}
+              />
+            )
           })}
         </Main>
 
