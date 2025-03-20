@@ -35,6 +35,7 @@ export default function LoginPage() {
             value={form.email}
             onChange={handleChange('email')}
             label="E-post"
+            inputDebounceMs={0}
           />
           <Input
             type="password"
@@ -42,6 +43,7 @@ export default function LoginPage() {
             value={form.password}
             onChange={handleChange('password')}
             label="Passord"
+            inputDebounceMs={0}
           />
 
           <Button type="submit" primary disabled={!form.email || !form.password}>
