@@ -1,4 +1,4 @@
-import { ChangeEvent, HTMLInputTypeAttribute } from 'react'
+import { ChangeEvent, HTMLInputTypeAttribute, RefObject, useRef } from 'react'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -18,8 +18,17 @@ type Props<T extends HTMLInputTypeAttribute = 'text'> = {
   hideLabel?: boolean
   sentence?: boolean
   hideIfEmpty?: boolean
-  forwardedRef?: any
+  forwardedRef?: RefObject<HTMLInputElement>
   onChange: (v: T extends 'number' ? number : string) => void
+
+  /**
+   * The number of milliseconds to debounce the input before calling the onChange
+   * function. Defaults to the 150ms that is used in the useValue hook, but can be
+   * overridden if needed.
+   *
+   * @see useValue
+   */
+  inputDebounceMs?: number
 }
 
 export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
@@ -30,9 +39,13 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   sentence,
   hideIfEmpty,
   forwardedRef,
+  inputDebounceMs,
   ...props
 }: Props<T>) {
-  const { value, inSync, onChange } = useValue(props.value, props.onChange)
+  const internalRef = useRef<HTMLInputElement>(null)
+
+  const ref = forwardedRef || internalRef
+  const { value, inSync, onChange } = useValue(props.value, props.onChange, ref, inputDebounceMs)
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value as Props<T>['value']
@@ -56,7 +69,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
         type={type}
         onChange={handleChange}
         value={value}
-        ref={forwardedRef}
+        ref={ref}
         aria-label={(hideLabel && label) || undefined}
       />
     </label>

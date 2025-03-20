@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, useRef } from 'react'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -17,21 +17,32 @@ type Props = {
   required?: boolean
   autoFocus?: boolean
   hideLabel?: boolean
-  forwardedRef?: any
   onChange: (v: Value) => void
 }
 
-export default function Range({ label, header, hideLabel, forwardedRef, ...props }: Props) {
+export default function Range({ label, header, hideLabel, ...props }: Props) {
+  const fromRef = useRef<HTMLInputElement>(null)
+  const toRef = useRef<HTMLInputElement>(null)
+
   const {
     value: fromValue,
     inSync: fromInSync,
     onChange: onChangeFrom,
-  } = useValue(props.value?.from || 0, (v) => props.onChange({ ...(props.value || {}), from: v }))
+  } = useValue(
+    props.value?.from || 0,
+    (v) => props.onChange({ ...(props.value || {}), from: v }),
+    fromRef
+  )
+
   const {
     value: toValue,
     inSync: toInSync,
     onChange: onChangeTo,
-  } = useValue(props.value?.to || 0, (v) => props.onChange({ ...(props.value || {}), to: v }))
+  } = useValue(
+    props.value?.to || 0,
+    (v) => props.onChange({ ...(props.value || {}), to: v }),
+    toRef
+  )
 
   const handleChange = (property: 'from' | 'to') => (event: ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value)
@@ -54,7 +65,7 @@ export default function Range({ label, header, hideLabel, forwardedRef, ...props
           type="number"
           onChange={handleChange('from')}
           value={fromValue}
-          ref={forwardedRef}
+          ref={fromRef}
           aria-label={(hideLabel && label) || undefined}
         />
       </label>{' '}
@@ -73,7 +84,7 @@ export default function Range({ label, header, hideLabel, forwardedRef, ...props
           type="number"
           onChange={handleChange('to')}
           value={toValue}
-          ref={forwardedRef}
+          ref={toRef}
           aria-label={(hideLabel && label) || undefined}
         />
       </label>
