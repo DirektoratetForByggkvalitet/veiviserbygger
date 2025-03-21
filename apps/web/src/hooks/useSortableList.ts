@@ -1,5 +1,5 @@
 import { useDebounce } from '@uidotdev/usehooks'
-import { isEqual } from 'lodash'
+import { isEqual, isEqualWith } from 'lodash'
 import { useEffect, useState } from 'react'
 
 /**
@@ -60,7 +60,7 @@ export function useSortableList<T extends { id: string | number }>(
 
   return {
     value: localValue,
-    inSync: isEqual(value, localValue),
+    inSync: isEqualWith(value, localValue, (a, b) => a.id === b.id && a.order === b.order),
     onSort: handleSort,
   }
 }

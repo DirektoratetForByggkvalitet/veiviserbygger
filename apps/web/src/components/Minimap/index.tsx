@@ -30,23 +30,22 @@ const contentCleanup = (value?: string) => {
 }
 
 const ContentItem = ({
-  nodeId,
-  nodes,
+  id,
+  node,
   draggable,
 }: {
-  nodeId: string
-  nodes?: Record<string, PageContent>
+  id: string
+  node: PageContent
   draggable?: boolean
 }) => {
-  const sortable = useSortable({ id: nodeId, disabled: !draggable })
+  const sortable = useSortable({ id, disabled: !draggable })
 
-  const node = nodes?.[nodeId]
   if (!node) return null
 
   const { attributes, listeners, setNodeRef, transform, transition } = sortable
 
   const style = {
-    transform: CSS.Translate.toString(transform),
+    transform: CSS.Transform.toString(transform),
     transition,
   }
 
@@ -123,7 +122,7 @@ function PageMap({
     const { active, over } = event
 
     if (active.id !== over?.id) {
-      const newIndex = content?.findIndex((r) => r.node.id === over?.id)
+      const newIndex = content?.findIndex((r) => r.id === over?.id)
 
       if (newIndex === undefined) {
         console.error('Could not find new index')
@@ -140,7 +139,7 @@ function PageMap({
       role="button"
       tabIndex={0}
       id={`page-${page.id}`}
-      onClick={onPageClick}
+      onClick={!selected ? onPageClick : undefined}
     >
       <h2 {...bem('title')} title={`${index + 1}. ${page.heading}`}>
         {page.type === 'Page' ? (
@@ -162,22 +161,24 @@ function PageMap({
         </div>
       )}
 
-      {value && (
-        <DndContext onDragEnd={handleSortingDragEnd}>
+      <DndContext onDragEnd={handleSortingDragEnd}>
+        {value && (
           <SortableContext items={value} disabled={!selected}>
             <ul {...bem('content')}>
-              {value.map((ref) => (
-                <ContentItem
-                  nodeId={ref?.node?.id}
-                  nodes={allNodes}
-                  key={ref.id}
-                  draggable={selected}
-                />
-              ))}
+              {value.map((ref) => {
+                return (
+                  <ContentItem
+                    id={ref.id}
+                    node={allNodes[ref.node.id]}
+                    key={ref.id}
+                    draggable={selected}
+                  />
+                )
+              })}
             </ul>
           </SortableContext>
-        </DndContext>
-      )}
+        )}
+      </DndContext>
     </li>
   )
 }
@@ -192,6 +193,7 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
 
       if (selectedElement) {
         const diff = Math.abs(selectedElement.offsetWidth - contentRef.current.offsetWidth)
+
         requestAnimationFrame(() => {
           contentRef.current.scrollTo({
             left: selectedElement.offsetLeft - diff,

@@ -330,7 +330,7 @@ export async function removeExpressionClause(
 export async function reorderNodes(
   { db, wizardId, versionId }: FuncScope,
   pageId: string,
-  nodes: OrderedArr<Page['content']>,
+  nodes: OrderedArr<Page['content'][0]>,
 ) {
   await runTransaction(db, async (transaction) => {
     const ref = getWizardVersionRef({ db, wizardId, versionId })
@@ -342,10 +342,15 @@ export async function reorderNodes(
       throw new Error(`Page with id ${pageId} not found`)
     }
 
-    console.log(nodes)
-
-    console.log('reorderNodes')
-    // await transaction.update(ref, `pages.${pageId}.content`, nodes)
+    await transaction.update(
+      ref,
+      nodes.reduce((res, node, i) => {
+        return {
+          ...res,
+          [`pages.${pageId}.content.${node.id}.order`]: i,
+        }
+      }, {}),
+    )
   })
 }
 
