@@ -6,6 +6,7 @@ import Wizard from '@/pages/Wizard'
 
 import useAuth from '@/hooks/auth'
 import Loader from './components/Loader'
+import Modals from './modals'
 
 export default function App() {
   const { user, loading } = useAuth()
@@ -15,18 +16,21 @@ export default function App() {
   }
 
   return (
-    <Routes>
-      {!user ? (
-        <>
-          <Route path="/" element={<Login />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </>
-      ) : (
-        <>
-          <Route path="/" element={<Overview />} />
-          <Route path="/wizard/:wizardId?/:versionId?" Component={Wizard} />
-        </>
-      )}
-    </Routes>
+    <>
+      <Routes>
+        {!user ? (
+          <>
+            <Route path="/" element={<Login />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<Overview />} />
+            <Route path="/wizard/:wizardId?/:versionId?" Component={Wizard} />
+          </>
+        )}
+      </Routes>
+      <Modals />
+    </>
   )
 }

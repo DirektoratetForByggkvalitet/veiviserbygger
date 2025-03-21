@@ -13,6 +13,7 @@ import { useNavigate, useParams } from 'react-router'
 import { Wizard, WrappedWithId } from 'types'
 import { Timestamp } from 'firebase/firestore'
 import { siteName } from '@/constants'
+import { useModal } from '@/hooks/useModal'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -47,6 +48,7 @@ export default function Header({ title = siteName, versions, hideMenu }: Props) 
   const { wizardId } = useParams()
   const navigate = useNavigate()
   const [open, setOpen] = useAtom(menuState)
+  const { setModal } = useModal()
   const activeVersion = versions?.find((v) => v.id === versionId)
 
   const toggleMenu = () => {
@@ -67,8 +69,7 @@ export default function Header({ title = siteName, versions, hideMenu }: Props) 
     {
       value: '1',
       label: 'Endre navn',
-      onClick: () => console.log('Åpne en modal for dette. Samme?"'),
-      disabled: true,
+      onClick: () => setModal('rename'),
     },
     {
       value: '2',

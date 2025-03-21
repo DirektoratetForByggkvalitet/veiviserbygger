@@ -10,6 +10,7 @@ import {
   getFirestore,
   increment,
   runTransaction,
+  updateDoc,
 } from 'firebase/firestore'
 
 import { getConfig } from '../api'
@@ -472,4 +473,8 @@ export async function reorderAnswers(
       }, {}),
     )
   })
+}
+
+export async function patchWizard({ db, wizardId }: FuncScope, patch: Patch<Wizard>) {
+  updateDoc(getWizardRef(db, wizardId), patch)
 }

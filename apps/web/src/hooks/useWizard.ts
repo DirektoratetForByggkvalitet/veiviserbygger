@@ -3,12 +3,14 @@ import {
   getWizardsRef,
   getWizardVersionRef,
   getWizardVersionsRef,
+  patchWizard,
 } from '@/services/firebase'
 import { doc, onSnapshot, Timestamp } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import useFirebase from './useFirebase'
 import { OptionalExcept, PageContent, Wizard, WizardVersion, WrappedWithId } from 'types'
 import { sortVersions } from '@/lib/versions'
+import { curry } from 'lodash'
 
 export default function useWizard(id?: string, version?: string) {
   const { firestore } = useFirebase()
@@ -101,6 +103,7 @@ export default function useWizard(id?: string, version?: string) {
     wizard,
     versions: wizardVersions,
     version: wizardVersionData,
+    patch: curry(patchWizard)({ db: firestore, wizardId: id || '', versionId: version || '' }),
     nodes,
   }
 }
