@@ -8,8 +8,11 @@
     width: 100%;
     height: calc(100vh - #{vars.$header-height});
     overflow: auto;
-    transition: width 500ms vars.$ease-in-out-quint--custom;
+    transition:
+        width 500ms vars.$ease-in-out-quint--custom,
+        margin 500ms ease-in-out;
     background-color: colors.get(primary, xlight);
+    margin-left: 0;
 
     @include mixins.no-select;
 
@@ -194,7 +197,6 @@
     }
 
     &--selected {
-        width: calc(100% - var(--panel-width));
         overflow: hidden;
         overscroll-behavior: contain;
         transition: none;

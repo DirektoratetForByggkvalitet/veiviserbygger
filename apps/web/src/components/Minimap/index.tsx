@@ -184,7 +184,7 @@ function PageMap({
 }
 
 export default function Minimap({ onClick, selected, data, allNodes }: Props) {
-  const contentRef = useRef<any>(null)
+  const contentRef = useRef<HTMLElement>(null)
   const [modal, setModal] = useState<'page' | null>(null)
 
   useEffect(() => {
@@ -195,16 +195,16 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
         const diff = Math.abs(selectedElement.offsetWidth - contentRef.current.offsetWidth)
 
         requestAnimationFrame(() => {
-          contentRef.current.scrollTo({
-            left: selectedElement.offsetLeft - diff,
-            behavior: 'smooth',
-          })
+          if (!contentRef.current) return
+          contentRef.current.style.marginLeft = `-${selectedElement.offsetLeft}px`
         })
       }
+    } else {
+      contentRef.current?.style.removeProperty('margin-left')
     }
   }, [selected])
 
-  const draggable = useDraggable(contentRef, {
+  const draggable = useDraggable(contentRef as any, {
     applyRubberBandEffect: true,
     decayRate: 0.95, // 5%
     safeDisplacement: 30, // px
