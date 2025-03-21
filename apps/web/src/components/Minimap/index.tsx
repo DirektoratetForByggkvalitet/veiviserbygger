@@ -192,8 +192,6 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
       const selectedElement = document.getElementById(`page-${selected}`)
 
       if (selectedElement) {
-        const diff = Math.abs(selectedElement.offsetWidth - contentRef.current.offsetWidth)
-
         requestAnimationFrame(() => {
           if (!contentRef.current) return
           contentRef.current.style.marginLeft = `-${selectedElement.offsetLeft}px`
