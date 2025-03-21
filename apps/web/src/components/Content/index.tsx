@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useRef } from 'react'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { useSortable, SortableContext } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -30,6 +30,7 @@ import { useVersion } from '@/hooks/useVersion'
 import { getTypeDescription, getTypeIcon, getTypeText } from '@/lib/content'
 import { getOrdered } from '@/lib/ordered'
 import Expression from '../Expression'
+import { useSortableList } from '@/hooks/useSortableList'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -44,6 +45,7 @@ type NodeProps = {
   pageId: WizardPage['id']
 }
 function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & Answer) {
+  const inputRef = useRef<HTMLInputElement>(null)
   const { getNodeRef, patchAnswer, deleteAnswer, addNodes } = useVersion()
   const sortable = useSortable({ id })
   const { attributes, listeners, setNodeRef, transform, transition } = sortable
@@ -109,12 +111,15 @@ function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & 
       <button type="button" {...bem('option-handle')} {...listeners}>
         <Icon name="GripVertical" />
       </button>
+
       <Input
         hideLabel
         label="Svar"
         value={heading || ''}
+        forwardedRef={inputRef}
         onChange={(v) => patchAnswer(nodeId, id, { heading: v })}
       />
+
       <div {...bem('option-actions')}>
         <Dropdown
           icon="Ellipsis"
@@ -134,29 +139,46 @@ function Options({
   node: OptionalExcept<PageContentWithOptions, 'id'>
   pageId: WizardPage['id']
 }) {
-  const { addAnswer } = useVersion()
+  const { addAnswer, reorderAnswers } = useVersion()
+  const options = getOrdered(node.options)
+
+  const { value, onSort } = useSortableList(options, (list) => reorderAnswers(node.id, list))
 
   const handleSortingDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
-    console.log('TODO: Handle sort as we do in Minimap.tsx just for options', active, over)
+    if (active.id !== over?.id) {
+      const newIndex = options?.findIndex((r) => r.id === over?.id)
+
+      if (newIndex === undefined) {
+        console.error('Could not find new index')
+        return
+      }
+
+      onSort(active.id, newIndex)
+    }
   }
 
   if (!node?.options) {
     return null
   }
 
-  const orderedOptions: Answer[] = useMemo(() => getOrdered(node.options), [node.options]) ?? []
-
   return (
     <DndContext onDragEnd={handleSortingDragEnd}>
-      <SortableContext items={orderedOptions}>
+      <SortableContext items={value}>
         <ul {...bem('options')}>
-          {orderedOptions.map((option) => (
-            <Option key={option.id} pageId={pageId} nodeId={node.id} {...option} />
-          ))}
-          {!orderedOptions ||
-            (orderedOptions.length === 0 && <li {...bem('option', 'placeholder')}>Ingen ...</li>)}
+          {value.map(({ id }) => {
+            const option = options.find((o) => o.id === id)
+
+            if (!option) {
+              return null
+            }
+
+            return <Option key={option.id} pageId={pageId} nodeId={node.id} {...option} />
+          })}
+
+          {!value || (value.length === 0 && <li {...bem('option', 'placeholder')}>Ingen ...</li>)}
+
           <li key="add">
             <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
               Legg til svaralternativ
@@ -355,20 +377,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
       </>
     )
   }
-
-  // if (node.type === 'Result') {
-  //   return (
-  //     <>
-  //       <Input
-  //         label="Resultatside tittel"
-  //         value={node.heading || ''}
-  //         onChange={() => {
-  //           console.log('Hej')
-  //         }}
-  //       />
-  //     </>
-  //   )
-  // }
 }
 
 const Header = ({

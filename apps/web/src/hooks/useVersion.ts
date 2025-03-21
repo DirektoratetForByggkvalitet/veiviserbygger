@@ -10,6 +10,7 @@ import {
   deleteAnswer,
   reorderNodes,
   patchAnswer,
+  reorderAnswers,
   deleteNode,
   getNodeRef,
   removeExpressionClause,
@@ -37,5 +38,6 @@ export function useVersion() {
     addAnswer: curry(addAnswer)({ db: firestore, wizardId, versionId }),
     patchAnswer: curry(patchAnswer)({ db: firestore, wizardId, versionId }),
     deleteAnswer: curry(deleteAnswer)({ db: firestore, wizardId, versionId }),
+    reorderAnswers: curry(reorderAnswers)({ db: firestore, wizardId, versionId }),
   }
 }

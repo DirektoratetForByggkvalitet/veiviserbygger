@@ -184,7 +184,7 @@ function PageMap({
 }
 
 export default function Minimap({ onClick, selected, data, allNodes }: Props) {
-  const contentRef = useRef<HTMLElement>(null)
+  const contentRef = useRef<HTMLUListElement>(null)
   const [modal, setModal] = useState<'page' | null>(null)
 
   useEffect(() => {

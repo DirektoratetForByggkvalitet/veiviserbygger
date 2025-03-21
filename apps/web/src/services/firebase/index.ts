@@ -453,3 +453,23 @@ export function deleteAnswer(
     await transaction.update(ref, `options.${answerId}`, deleteField())
   })
 }
+
+export async function reorderAnswers(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  answers: OrderedArr<Answer>,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+
+    await transaction.update(
+      ref,
+      answers.reduce((res, option, i) => {
+        return {
+          ...res,
+          [`options.${option.id}.order`]: i,
+        }
+      }, {}),
+    )
+  })
+}

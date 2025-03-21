@@ -63,6 +63,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
       })}
     >
       {!hideLabel && <span {...bem('label')}>{label}</span>}
+
       <input
         {...props}
         {...bem('input')}
