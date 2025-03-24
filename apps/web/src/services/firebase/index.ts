@@ -140,12 +140,11 @@ export async function createWizard(db: Firestore, data: Wizard) {
     const newDocId = uuid()
     const newVersionId = uuid()
 
+    const newVersionRef = getWizardVersionRef({ db, wizardId: newDocId, versionId: newVersionId })
+
     await transaction
-      .set(getWizardRef(db, newDocId), {
-        ...data,
-        draftVersionId: newVersionId,
-      })
-      .set(getWizardVersionRef({ db, wizardId: newDocId, versionId: newVersionId }), {})
+      .set(getWizardRef(db, newDocId), { ...data, draftVersion: newVersionRef })
+      .set(newVersionRef, {})
 
     return { id: newDocId, versionId: newVersionId }
   })

@@ -25,7 +25,7 @@ export default function WizardList({
       {wizards?.map((wizard) => (
         <li key={wizard.id}>
           <Link
-            to={`/wizard/${wizard.id}/${wizard.data.publishedVersion?.id || wizard.data.draftVersionId}`}
+            to={`/wizard/${wizard.id}/${wizard.data.publishedVersion?.id || wizard.data.draftVersion?.id}`}
             {...bem('item', { open: selected == wizard.id })}
             onClick={onLinkClick}
           >
