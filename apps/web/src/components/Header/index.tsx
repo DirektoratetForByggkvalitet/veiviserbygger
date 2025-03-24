@@ -23,7 +23,7 @@ type Props = {
   hideMenu?: boolean
 }
 
-export default function Header({ title = siteName, versions, hideMenu }: Props) {
+export default function Header({ title = siteName, versions, hideMenu, wizard }: Props) {
   const { logout, user } = useAuth()
 
   if (hideMenu) {
@@ -79,9 +79,10 @@ export default function Header({ title = siteName, versions, hideMenu }: Props) 
     },
     {
       value: '3',
-      label: 'Slett utkastet',
+      label: 'Slett veiviseren',
       styled: 'delete',
-      onClick: () => console.log('Hvis den ikke er publisert'),
+      disabled: !!wizard?.data.publishedVersionId,
+      onClick: () => setModal('delete'),
     },
   ] as DropdownOptions
 

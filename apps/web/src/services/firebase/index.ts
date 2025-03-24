@@ -1,12 +1,15 @@
 import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
+  collection,
   connectFirestoreEmulator,
+  deleteDoc,
   deleteField,
   doc,
   DocumentReference,
   Firestore,
   getDoc,
+  getDocs,
   getFirestore,
   increment,
   runTransaction,
@@ -477,4 +480,28 @@ export async function reorderAnswers(
 
 export async function patchWizard({ db, wizardId }: FuncScope, patch: Patch<Wizard>) {
   updateDoc(getWizardRef(db, wizardId), patch)
+}
+
+export async function deleteVersion({ db, wizardId, versionId }: FuncScope) {
+  const nodes = await getDocs(collection(db, 'wizards', wizardId, 'versions', versionId, 'nodes'))
+
+  await Promise.all(nodes.docs.map((doc) => deleteDoc(doc.ref)))
+
+  console.log('Deleted all nodes in wizards', wizardId, 'versions', versionId, 'nodes')
+
+  await deleteDoc(getWizardVersionRef({ db, wizardId, versionId }))
+
+  console.log('Deleted version', versionId, 'in wizard', wizardId)
+}
+
+export async function deleteWizard({ db, wizardId }: FuncScope) {
+  const versions = await getDocs(collection(db, 'wizards', wizardId, 'versions'))
+
+  await Promise.all(versions.docs.map((doc) => deleteVersion({ db, wizardId, versionId: doc.id })))
+
+  console.log('Deleted all versions in wizard', wizardId)
+
+  await deleteDoc(getWizardRef(db, wizardId))
+
+  console.log('Deleted wizard', wizardId)
 }

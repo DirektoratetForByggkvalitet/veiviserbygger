@@ -13,7 +13,7 @@ import PageExpression from '@/components/PageExpression'
 import ButtonBar from '@/components/ButtonBar'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import useWizard from '@/hooks/useWizard'
-import { useParams } from 'react-router'
+import { Navigate, useParams } from 'react-router'
 import Page from '@/components/Page'
 import { PageContent, Branch, DeepPartial } from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
@@ -27,7 +27,7 @@ export default function Wizard() {
   const [selected, setSelected] = useState<string | null>(null)
   const [showConfirmDeletePage, setShowConfirmDeletePage] = useState(false)
   const { wizardId, versionId } = useParams<{ wizardId?: string; versionId?: string }>()
-  const { wizard, versions, version, nodes } = useWizard(wizardId, versionId)
+  const { loading, wizard, versions, version, nodes } = useWizard(wizardId, versionId)
   const { patchPage, deletePage, addNodes } = useVersion()
 
   const page = useMemo(() => {
@@ -188,6 +188,10 @@ export default function Wizard() {
         contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
       ]
     : []
+
+  if (!loading && !wizard) {
+    return <Navigate to="/" />
+  }
 
   return (
     <>

@@ -1,4 +1,5 @@
 import {
+  deleteWizard,
   getNodesRef,
   getWizardsRef,
   getWizardVersionRef,
@@ -10,16 +11,29 @@ import { useEffect, useState } from 'react'
 import useFirebase from './useFirebase'
 import { OptionalExcept, PageContent, Wizard, WizardVersion, WrappedWithId } from 'types'
 import { sortVersions } from '@/lib/versions'
-import { curry } from 'lodash'
+import { curry, values } from 'lodash'
 
 export default function useWizard(id?: string, version?: string) {
   const { firestore } = useFirebase()
 
+  const [loading, setLoading] = useState({
+    wizard: true,
+    versions: true,
+    version: true,
+    nodes: true,
+  })
   const [wizard, setWizard] = useState<WrappedWithId<Wizard>>()
   const [wizardVersions, setWizardVersions] =
     useState<{ id: string; title?: string; publishedFrom?: Timestamp; publishedTo?: Timestamp }[]>()
   const [nodes, setNodes] = useState<Record<string, OptionalExcept<PageContent, 'type' | 'id'>>>({})
   const [wizardVersionData, setWizardVersionData] = useState<WizardVersion>()
+
+  const setLoadingState = (key: keyof typeof loading, value: boolean) => {
+    setLoading((prev) => ({
+      ...prev,
+      [key]: value,
+    }))
+  }
 
   useEffect(() => {
     const unsubNodes =
@@ -36,6 +50,8 @@ export default function useWizard(id?: string, version?: string) {
                   {},
                 ),
               )
+
+              setLoadingState('nodes', false)
             },
           )
         : undefined
@@ -56,6 +72,8 @@ export default function useWizard(id?: string, version?: string) {
               })),
             ),
           )
+
+          setLoadingState('versions', false)
         })
       : undefined
 
@@ -67,14 +85,14 @@ export default function useWizard(id?: string, version?: string) {
   useEffect(() => {
     const unsubWizard = id
       ? onSnapshot(doc(getWizardsRef(firestore), id), (snapshot) => {
-          if (!snapshot.exists()) {
-            return
+          if (snapshot.exists()) {
+            setWizard({
+              id: snapshot.id,
+              data: snapshot.data(),
+            })
           }
 
-          setWizard({
-            id: snapshot.id,
-            data: snapshot.data(),
-          })
+          setLoadingState('wizard', false)
         })
       : undefined
 
@@ -90,6 +108,7 @@ export default function useWizard(id?: string, version?: string) {
             getWizardVersionRef({ db: firestore, wizardId: id, versionId: version }),
             (snapshot) => {
               setWizardVersionData(snapshot.data())
+              setLoadingState('version', false)
             },
           )
         : undefined
@@ -100,10 +119,21 @@ export default function useWizard(id?: string, version?: string) {
   }, [id, version])
 
   return {
+    loading: values(loading).some(Boolean),
     wizard,
     versions: wizardVersions,
     version: wizardVersionData,
-    patch: curry(patchWizard)({ db: firestore, wizardId: id || '', versionId: version || '' }),
+    patchWizard: curry(patchWizard)({
+      db: firestore,
+      wizardId: id || '',
+      versionId: version || '',
+    }),
+    deleteWizard: () =>
+      deleteWizard({
+        db: firestore,
+        wizardId: id || '',
+        versionId: version || '',
+      }),
     nodes,
   }
 }

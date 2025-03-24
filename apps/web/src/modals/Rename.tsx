@@ -10,7 +10,7 @@ import { useMatch } from 'react-router'
 
 export default function RenameModal() {
   const match = useMatch('/wizard/:wizardId/:versionId')
-  const { wizard, patch } = useWizard(match?.params.wizardId, match?.params.versionId)
+  const { wizard, patchWizard } = useWizard(match?.params.wizardId, match?.params.versionId)
   const { modal, setModal } = useModal()
 
   if (modal !== 'rename') {
@@ -27,7 +27,7 @@ export default function RenameModal() {
         <Input
           label="Navn"
           value={wizard?.data.title || ''}
-          onChange={(v) => patch({ title: v })}
+          onChange={(v) => patchWizard({ title: v })}
         />
 
         <ButtonBar>
