@@ -12,8 +12,10 @@ import {
   patchAnswer,
   reorderAnswers,
   deleteNode,
+  patchVersion,
   getNodeRef,
   removeExpressionClause,
+  publishVersion,
 } from '@/services/firebase'
 import { curry } from 'lodash'
 
@@ -39,5 +41,7 @@ export function useVersion() {
     patchAnswer: curry(patchAnswer)({ db: firestore, wizardId, versionId }),
     deleteAnswer: curry(deleteAnswer)({ db: firestore, wizardId, versionId }),
     reorderAnswers: curry(reorderAnswers)({ db: firestore, wizardId, versionId }),
+    patchVersion: curry(patchVersion)({ db: firestore, wizardId, versionId }),
+    publishVersion: () => curry(publishVersion)({ db: firestore, wizardId, versionId }),
   }
 }

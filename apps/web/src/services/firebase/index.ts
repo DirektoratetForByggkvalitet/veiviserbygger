@@ -505,3 +505,34 @@ export async function deleteWizard({ db, wizardId }: FuncScope) {
 
   console.log('Deleted wizard', wizardId)
 }
+
+export async function patchVersion(
+  { db, wizardId, versionId }: FuncScope,
+  patch: Patch<Omit<WizardVersion, 'pages'>>,
+) {
+  await updateDoc(getWizardVersionRef({ db, wizardId, versionId }), patch)
+}
+
+export async function publishVersion({ db, wizardId, versionId }: FuncScope) {
+  await runTransaction(db, async (transaction) => {
+    const versionRef = getWizardVersionRef({ db, wizardId, versionId })
+    const wizardRef = getWizardRef(db, wizardId)
+
+    // get current version data
+    const wizard = await transaction.get(wizardRef)
+
+    // if a version is already published, set the date it was published to until
+    const oldVersionId = wizard.data()?.publishedVersion?.id
+    if (oldVersionId) {
+      const oldVersionRef = getWizardVersionRef({ db, wizardId, versionId: oldVersionId })
+      await transaction.update(oldVersionRef, 'publishedTo', new Date())
+    }
+
+    await transaction.update(wizardRef, {
+      publishedVersion: versionRef,
+      draftVersion: deleteField(),
+    })
+
+    await transaction.update(versionRef, { publishedFrom: new Date() })
+  })
+}

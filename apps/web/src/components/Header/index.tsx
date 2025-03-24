@@ -81,7 +81,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
       value: '3',
       label: 'Slett veiviseren',
       styled: 'delete',
-      disabled: !!wizard?.data.publishedVersionId,
+      disabled: !!wizard?.data.publishedVersion?.id,
       onClick: () => setModal('delete'),
     },
   ] as DropdownOptions
@@ -99,7 +99,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
           <>
             <Button size="small">Forhåndsvisning</Button>
             {!activeVersion?.publishedFrom ? (
-              <Button primary size="small">
+              <Button primary size="small" onClick={() => setModal('publish')}>
                 Publiser
               </Button>
             ) : null}

@@ -248,8 +248,8 @@ export type Page = {
 
 export type Wizard = {
   title?: string
-  publishedVersionId?: string
-  draftVersionId?: string
+  publishedVersion?: DocumentReference
+  draftVersion?: DocumentReference
 }
 
 export type WizardVersion = {

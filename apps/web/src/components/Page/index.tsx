@@ -7,6 +7,7 @@ import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { Wizard, WrappedWithId } from 'types'
 import { Timestamp } from 'firebase/firestore'
+import Modals from '@/modals'
 
 const bem = BEMHelper(styles)
 
@@ -21,10 +22,14 @@ interface Props {
 
 export default function Page({ children, title, light, hideMenu, versions, wizard }: Props) {
   return (
-    <main {...bem('', { light })}>
-      <Header title={title} versions={versions} wizard={wizard} hideMenu={hideMenu} />
-      <Menu />
-      {children}
-    </main>
+    <>
+      <main {...bem('', { light })}>
+        <Header title={title} versions={versions} wizard={wizard} hideMenu={hideMenu} />
+        <Menu />
+        {children}
+      </main>
+
+      <Modals />
+    </>
   )
 }

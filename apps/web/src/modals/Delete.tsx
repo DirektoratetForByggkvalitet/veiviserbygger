@@ -17,7 +17,7 @@ export default function DeleteModal() {
     return null
   }
 
-  const deletionAllowed = !wizard?.data.publishedVersionId
+  const deletionAllowed = !wizard?.data.publishedVersion?.id
 
   const onClose = () => setModal()
   const handleDelete = async () => {

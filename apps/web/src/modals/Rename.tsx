@@ -6,11 +6,11 @@ import Input from '@/components/Input'
 import Modal from '@/components/Modal'
 import { useModal } from '@/hooks/useModal'
 import useWizard from '@/hooks/useWizard'
-import { useMatch } from 'react-router'
+import { useParams } from 'react-router'
 
 export default function RenameModal() {
-  const match = useMatch('/wizard/:wizardId/:versionId')
-  const { wizard, patchWizard } = useWizard(match?.params.wizardId, match?.params.versionId)
+  const { wizardId = '', versionId = '' } = useParams()
+  const { wizard, patchWizard } = useWizard(wizardId, versionId)
   const { modal, setModal } = useModal()
 
   if (modal !== 'rename') {

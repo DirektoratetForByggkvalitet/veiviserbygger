@@ -6,6 +6,7 @@ import Meta from '@/components/Meta'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
+import Modals from '@/modals'
 
 const bem = BEMHelper(styles)
 
@@ -25,6 +26,8 @@ export default function PageSimple({ children, title }: Props) {
           {children}
         </Container>
       </main>
+
+      <Modals />
     </>
   )
 }

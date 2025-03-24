@@ -13,8 +13,8 @@ export default function Dashboard() {
   const toggleModal = (value: boolean) => () => {
     setModal(value)
   }
-  const draftWizards = wizards?.filter((wizard) => !wizard.data.publishedVersionId) ?? []
-  const publisedWizards = wizards?.filter((wizard) => wizard.data.publishedVersionId) ?? []
+  const draftWizards = wizards?.filter((wizard) => !wizard.data.publishedVersion?.id) ?? []
+  const publisedWizards = wizards?.filter((wizard) => wizard.data.publishedVersion?.id) ?? []
   return (
     <div {...bem('')}>
       <NewWizard open={modal} toggleModal={toggleModal} />

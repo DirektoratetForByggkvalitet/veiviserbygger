@@ -25,12 +25,12 @@ export default function WizardList({
       {wizards?.map((wizard) => (
         <li key={wizard.id}>
           <Link
-            to={`/wizard/${wizard.id}/${wizard.data.publishedVersionId || wizard.data.draftVersionId}`}
+            to={`/wizard/${wizard.id}/${wizard.data.publishedVersion?.id || wizard.data.draftVersionId}`}
             {...bem('item', { open: selected == wizard.id })}
             onClick={onLinkClick}
           >
             <span {...bem('label')}>{wizard.data.title}</span>
-            {!wizard.data.publishedVersionId ? (
+            {!wizard.data.publishedVersion?.id ? (
               <span {...bem('tag')}>Utkast</span>
             ) : (
               <span {...bem('tag', 'public')}>Publisert</span>

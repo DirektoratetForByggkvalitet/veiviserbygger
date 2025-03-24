@@ -6,7 +6,6 @@ import Wizard from '@/pages/Wizard'
 
 import useAuth from '@/hooks/auth'
 import Loader from './components/Loader'
-import Modals from './modals'
 
 export default function App() {
   const { user, loading } = useAuth()
@@ -30,7 +29,6 @@ export default function App() {
           </>
         )}
       </Routes>
-      <Modals />
     </>
   )
 }
