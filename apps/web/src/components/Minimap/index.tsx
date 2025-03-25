@@ -8,13 +8,14 @@ import Icon from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import { PageContent, WizardPage, WizardVersion } from 'types'
+import { PageContent, Result, WizardPage, WizardVersion } from 'types'
 import NewPage from '../NewPage'
 import { getTypeText, getTypeIcon } from '@/lib/content'
 import { getOrdered } from '@/lib/ordered'
 import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
 import { useSortableList } from '@/hooks/useSortableList'
+import { values } from 'lodash'
 const bem = BEMHelper(styles)
 
 interface Props {
@@ -33,10 +34,12 @@ const ContentItem = ({
   id,
   node,
   draggable,
+  allNodes,
 }: {
   id: string
   node: PageContent
   draggable?: boolean
+  allNodes: Record<string, PageContent>
 }) => {
   const sortable = useSortable({ id, disabled: !draggable })
 
@@ -49,53 +52,60 @@ const ContentItem = ({
     transition,
   }
 
-  switch (node.type) {
-    case 'Text':
-    case 'Radio':
-    case 'Checkbox':
-    case 'Select':
-    case 'Input':
-    case 'Number':
-      return (
-        <li
-          {...bem('item', { draggable })}
-          key={node.id}
-          ref={setNodeRef}
-          style={style}
-          {...attributes}
-          {...listeners}
-        >
-          <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
-          <h3 {...bem('sub-title', { placeholder: !node.heading && !node.text })}>
-            {node.heading || contentCleanup(node.text) || `${getTypeText(node.type)}`}
-          </h3>
+  if (
+    node.type === 'Text' ||
+    node.type === 'Radio' ||
+    node.type === 'Checkbox' ||
+    node.type === 'Select' ||
+    node.type === 'Input' ||
+    node.type === 'Number'
+  ) {
+    return (
+      <li
+        {...bem('item', { draggable })}
+        key={node.id}
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+      >
+        <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
+        <h3 {...bem('sub-title', { placeholder: !node.heading && !node.text })}>
+          {node.heading || contentCleanup(node.text) || `${getTypeText(node.type)}`}
+        </h3>
 
-          {/*<span {...bem('icon')}>
+        {/*<span {...bem('icon')}>
             {node.flow === 'continue' && <IconContinue />}
             {node.flow === 'stop' && <IconStop />}
           </span>*/}
-        </li>
-      )
-    case 'Branch':
-      return (
-        <li
-          {...bem('item', { branch: true, draggable })}
-          key={node.id}
-          ref={setNodeRef}
-          style={style}
-          {...attributes}
-          {...listeners}
-        >
-          <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
-          <h3 {...bem('sub-title', { placeholder: true /*TODO */ })}>
-            {getTypeText(node.preset || 'Branch')}
-          </h3>
-          {/* <span {...bem('icon')}>{<Icon name={getTypeIcon(node.preset || 'Branch')} />}</span>*/}
-        </li>
-      )
-    default:
-      return null
+      </li>
+    )
   }
+
+  if (node.type === 'Branch') {
+    const resultNodeId = values(node.content).find((n) => allNodes?.[n.node.id].type === 'Result')
+      ?.node.id
+    const resultNode = resultNodeId ? (allNodes?.[resultNodeId] as Result) : undefined
+
+    return (
+      <li
+        {...bem('item', { branch: true, draggable })}
+        key={node.id}
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+      >
+        <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
+        <h3 {...bem('sub-title', { placeholder: true /*TODO */ })}>
+          {resultNode?.heading || getTypeText(node.preset || 'Branch')}
+        </h3>
+        {/* <span {...bem('icon')}>{<Icon name={getTypeIcon(node.preset || 'Branch')} />}</span>*/}
+      </li>
+    )
+  }
+
+  return null
 }
 
 function PageMap({
@@ -172,6 +182,7 @@ function PageMap({
                     node={allNodes[ref.node.id]}
                     key={ref.id}
                     draggable={selected}
+                    allNodes={allNodes}
                   />
                 )
               })}

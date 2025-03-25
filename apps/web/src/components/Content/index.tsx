@@ -10,6 +10,8 @@ import {
   WizardPage,
   PageContentWithOptions,
   Answer,
+  Result,
+  Error as ErrorNode,
 } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
@@ -31,6 +33,7 @@ import { getTypeDescription, getTypeIcon, getTypeText } from '@/lib/content'
 import { getOrdered } from '@/lib/ordered'
 import Expression from '../Expression'
 import { useSortableList } from '@/hooks/useSortableList'
+import { values } from 'lodash'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -190,6 +193,35 @@ function Options({
   )
 }
 
+function NegativeResult({ node, nodes }: { node: Branch; nodes: Record<string, PageContent> }) {
+  const { patchNode } = useVersion()
+
+  const resultNodeId = values(node.content).find((n) => nodes[n.node.id].type === 'Result')?.node.id
+  const errorNodeId = values(node.content).find((n) => nodes[n.node.id].type === 'Error')?.node.id
+
+  const resultNode = resultNodeId ? (nodes[resultNodeId] as Result) : undefined
+  const errorNode = errorNodeId ? (nodes[errorNodeId] as ErrorNode) : undefined
+
+  return (
+    <>
+      {resultNodeId && resultNode && (
+        <Input
+          label="Tittel på resultatsiden"
+          value={resultNode.heading || ''}
+          onChange={(v) => patchNode(resultNodeId, { heading: v })}
+        />
+      )}
+      {errorNodeId && errorNode && (
+        <Editor
+          label="Feilmelding"
+          value={errorNode.text || ''}
+          onChange={(v) => patchNode(errorNodeId, { text: v })}
+        />
+      )}
+    </>
+  )
+}
+
 function Node({ node, pageId, allNodes }: NodeProps) {
   const { patchNode } = useVersion()
 
@@ -320,17 +352,21 @@ function Node({ node, pageId, allNodes }: NodeProps) {
         <Main>
           <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
           <h3 {...bem('sub-title')}>Vises følgende melding</h3>
-          {getOrdered(node?.content)?.map((nodeRef) => {
-            const node = allNodes[nodeRef?.node?.id]
-            return (
-              <Node
-                node={{ ...node, id: node.id }}
-                pageId={pageId}
-                allNodes={allNodes}
-                key={nodeRef.id}
-              />
-            )
-          })}
+
+          {node.preset === 'NegativeResult' && <NegativeResult node={node} nodes={allNodes} />}
+
+          {node.preset !== 'NegativeResult' &&
+            getOrdered(node?.content)?.map((nodeRef) => {
+              const node = allNodes[nodeRef?.node?.id]
+              return (
+                <Node
+                  node={{ ...node, id: node.id }}
+                  pageId={pageId}
+                  allNodes={allNodes}
+                  key={nodeRef.id}
+                />
+              )
+            })}
         </Main>
 
         <Aside>
