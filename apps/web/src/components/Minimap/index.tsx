@@ -245,6 +245,9 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
         if (node) {
           // scroll to the node if we found it
           node.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+          // set focus on the first input if it exists
+          node.querySelector('input')?.focus()
         }
       }, 100)
     }
