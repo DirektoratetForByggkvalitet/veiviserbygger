@@ -31,9 +31,18 @@ export default function Wizard() {
   const { patchPage, deletePage, addNodes } = useVersion()
 
   const page = useMemo(() => {
-    if (!selected || !version || !version.pages?.[selected]) {
+    if (!selected || !version) {
       return null
     }
+
+    if (selected === 'intro') {
+      return version.intro
+    }
+
+    if (!version.pages?.[selected]) {
+      return null
+    }
+
     return { ...version?.pages?.[selected], id: selected }
   }, [version, selected])
 
@@ -62,11 +71,49 @@ export default function Wizard() {
     [deletePage, handleClose],
   )
 
+  /**
+   * Returns a bool indicating whether or not there's a page in the given direction
+   */
+  const has = useCallback(
+    (direction: 'prev' | 'next') => {
+      if (!version?.pages || !selected) {
+        return false
+      }
+
+      const ordered = getOrdered(version.pages)
+      const index = ordered.findIndex(({ id }) => id === selected)
+
+      const move = direction === 'prev' ? -1 : 1
+
+      if (ordered[index + move]?.id) {
+        return true
+      }
+
+      // if we're not on the intro page and the index is greater than or equal to 0, there's always the intro page
+      if (direction === 'prev' && selected !== 'intro' && index >= 0) {
+        return true
+      }
+
+      if (direction === 'next' && selected === 'intro' && ordered.length > 0) {
+        return true
+      }
+
+      return false
+    },
+    [version?.pages, selected],
+  )
+
   const handleNext = useCallback(() => {
     if (version?.pages && selected) {
       const ordered = getOrdered(version.pages)
       const index = ordered.findIndex(({ id }) => id === selected)
       const newSelected = ordered[index + 1]?.id || null
+
+      if (selected === 'intro' && ordered.length > 0) {
+        setSelected(ordered[0].id)
+        return
+      }
+
       if (newSelected !== null) {
         setSelected(newSelected)
       }
@@ -78,6 +125,12 @@ export default function Wizard() {
       const ordered = getOrdered(version.pages)
       const currentIndex = ordered.findIndex(({ id }) => id === selected)
       const newSelected = ordered[currentIndex - 1]?.id || null
+
+      if (currentIndex === 0) {
+        setSelected('intro')
+        return
+      }
+
       if (newSelected !== null) {
         setSelected(newSelected)
       }
@@ -201,31 +254,36 @@ export default function Wizard() {
         <Panel
           open={!!page}
           onClose={handleClose}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
+          onPrevious={has('prev') ? handlePrevious : undefined}
+          onNext={has('next') ? handleNext : undefined}
           backdrop={false}
           optionsLabel="Sidevalg"
-          options={[
-            {
-              value: '0',
-              label: 'Vis siden hvis...',
-              onClick: () => console.log('Legg til page.show'),
-              disabled: false,
-            },
-            {
-              value: '1',
-              label: 'Dupliser siden',
-              onClick: () => console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
-              disabled: true,
-            },
-            {
-              value: '2',
-              label: 'Fjern siden',
-              styled: 'delete',
-              onClick: () => setShowConfirmDeletePage(true),
-            },
-          ]}
-          title={panelTitle}
+          options={
+            page?.id !== 'intro'
+              ? [
+                  {
+                    value: '0',
+                    label: 'Vis siden hvis...',
+                    onClick: () => console.log('Legg til page.show'),
+                    disabled: false,
+                  },
+                  {
+                    value: '1',
+                    label: 'Dupliser siden',
+                    onClick: () =>
+                      console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
+                    disabled: true,
+                  },
+                  {
+                    value: '2',
+                    label: 'Fjern siden',
+                    styled: 'delete',
+                    onClick: () => setShowConfirmDeletePage(true),
+                  },
+                ]
+              : undefined
+          }
+          title={panelTitle || 'Uten tittel'}
         >
           <Modal
             title="Fjern siden"

@@ -8,7 +8,7 @@ import Icon from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import { PageContent, Result, WizardPage, WizardVersion } from 'types'
+import { Intro, PageContent, Result, WizardPage, WizardVersion } from 'types'
 import NewPage from '../NewPage'
 import { getTypeText, getTypeIcon } from '@/lib/content'
 import { getOrdered } from '@/lib/ordered'
@@ -120,7 +120,7 @@ function PageMap({
   onNodeClick,
   allNodes,
 }: {
-  page: WizardPage
+  page: WizardPage | Intro
   index: number
   selected: boolean
   onPageClick: MouseEventHandler
@@ -129,7 +129,7 @@ function PageMap({
 }) {
   const { reorderNodes } = useVersion()
 
-  const content = getOrdered(page.content)
+  const content = getOrdered(page?.content)
 
   /* TODO: Implement reordering of content */
   const { value, onSort, inSync } = useSortableList(content, (list) => reorderNodes(page.id, list))
@@ -154,18 +154,18 @@ function PageMap({
       {...bem('page', { selected, dirty: !inSync })}
       role="button"
       tabIndex={0}
-      id={`page-${page.id}`}
+      id={`page-${page?.id}`}
       onClick={!selected ? onPageClick : undefined}
     >
-      <h2 {...bem('title')} title={`${index + 1}. ${page.heading}`}>
-        {page.type === 'Page' ? (
+      <h2 {...bem('title')} title={`${index + 1}. ${page?.heading}`}>
+        {page?.type === 'Page' ? (
           <span {...bem('title-type')}>{index}.</span>
         ) : (
-          <span {...bem('title-type', 'tag')} title={getPageTypeDescription(page.type)}>
-            {getPageTypeTitle(page.type)}
+          <span {...bem('title-type', 'tag')} title={getPageTypeDescription(page?.type)}>
+            {getPageTypeTitle(page?.type)}
           </span>
         )}
-        <span {...bem('title-text')}>{page.heading}</span>
+        <span {...bem('title-text')}>{page?.heading || 'Uten tittel'}</span>
       </h2>
 
       {!value.length && !selected && (
@@ -261,12 +261,22 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
   return (
     <>
       <ul {...bem('', { selected })} ref={contentRef} {...draggableEvents}>
+        <PageMap
+          key="intro"
+          index={0}
+          page={data.intro as any}
+          allNodes={allNodes}
+          onPageClick={handlePageClick('intro')}
+          onNodeClick={handleNodeClick('intro')}
+          selected={selected === 'intro'}
+        />
+
         {orderedPages.map((item, index) => {
           return (
             <PageMap
               key={item.id}
               page={item}
-              index={index}
+              index={index + 2}
               onPageClick={handlePageClick(item.id)}
               onNodeClick={handleNodeClick(item.id)}
               selected={item.id === selected}

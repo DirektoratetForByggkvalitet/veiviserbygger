@@ -1,8 +1,8 @@
-import { WizardPage } from 'types'
+import { Intro, WizardPage } from 'types'
 import { icons } from 'lucide-react'
 
 const typeMap: Record<
-  WizardPage['type'],
+  WizardPage['type'] | Intro['type'],
   { title: string; icon: keyof typeof icons; description: string; add: string }
 > = {
   Intro: {
@@ -28,15 +28,15 @@ const typeMap: Record<
   },
 }
 
-export function getPageTypeTitle(type: WizardPage['type']) {
-  return typeMap[type].title || type
+export function getPageTypeTitle(type?: keyof typeof typeMap) {
+  return (type && typeMap[type]?.title) || type
 }
-export function getPageTypeIcon(type: WizardPage['type']) {
-  return typeMap[type].icon || 'Diamond'
+export function getPageTypeIcon(type?: keyof typeof typeMap) {
+  return (type && typeMap[type]?.icon) || 'Diamond'
 }
-export function getPageTypeDescription(type: WizardPage['type']) {
-  return typeMap[type].description || ''
+export function getPageTypeDescription(type?: keyof typeof typeMap) {
+  return (type && typeMap[type]?.description) || ''
 }
-export function getPageTypeAdd(type: WizardPage['type']) {
-  return typeMap[type].add || ''
+export function getPageTypeAdd(type?: keyof typeof typeMap) {
+  return (type && typeMap[type]?.add) || ''
 }

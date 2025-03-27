@@ -254,6 +254,7 @@ export type WizardVersion = {
   publishedFrom?: Timestamp
   publishedTo?: Timestamp
   pages?: OrderedMap<WizardPage>
+  intro?: Intro
 }
 
-export type WizardPage = Intro | Page | Result
+export type WizardPage = Page | Result

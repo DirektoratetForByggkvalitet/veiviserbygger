@@ -24,6 +24,7 @@ import {
   DeepPartial,
   OptionalExcept,
   OrderedArr,
+  OrderedMap,
   Page,
   PageContent,
   PageContentWithOptions,
@@ -144,7 +145,7 @@ export async function createWizard(db: Firestore, data: Wizard) {
 
     await transaction
       .set(getWizardRef(db, newDocId), { ...data, draftVersion: newVersionRef })
-      .set(newVersionRef, {})
+      .set(newVersionRef, { intro: { id: 'intro', type: 'Intro', heading: '', content: {} } })
 
     return { id: newDocId, versionId: newVersionId }
   })
@@ -179,6 +180,13 @@ export async function patchPage(
     const ref = getWizardVersionRef({ db, wizardId, versionId })
     const current = await transaction.get(ref)
 
+    // if we're patching the intro page, just update the intro field
+    if (pageId === 'intro') {
+      await transaction.update(ref, 'intro', deepExtend(current?.data()?.intro ?? {}, patch))
+      return
+    }
+
+    // if we're patching a regular page, update the page
     const patchedPage = current?.data()?.pages?.[pageId]
 
     if (patchedPage === undefined) {
@@ -221,16 +229,23 @@ export async function addNodes(
     const versionRef = getWizardVersionRef({ db, wizardId, versionId })
     const current = await transaction.get(versionRef)
 
+    let contentPath = `pages.${pageId}.content`
+    let currentContent: OrderedMap<{ node: DocumentReference }> | undefined
+
+    if (pageId === 'intro') {
+      contentPath = 'intro.content'
+      currentContent = current.data()?.intro?.content ?? {}
+    } else if (pageId) {
+      currentContent = current.data()?.pages?.[pageId]?.content ?? {}
+    }
+
     // figure out what the highest order value is
-    const maxOrder = !pageId
-      ? -1
-      : (maxBy(values(current?.data()?.pages?.[pageId]?.content ?? {}), 'order')?.order ?? -1)
+    const maxOrder = !pageId ? -1 : (maxBy(values(currentContent), 'order')?.order ?? -1)
 
     // if we're adding after a node, get the order of that node
     const afterNodeOrder =
       pageId && afterNodeId
-        ? (values(current?.data()?.pages?.[pageId]?.content).find((n) => n.node.id === afterNodeId)
-            ?.order ?? undefined)
+        ? (values(currentContent).find((n) => n.node.id === afterNodeId)?.order ?? undefined)
         : undefined
 
     // what should be the order value of the first new node
@@ -251,14 +266,14 @@ export async function addNodes(
         continue
       }
 
-      if (!current.data()?.pages?.[pageId].content) {
+      if (!currentContent) {
         console.log('Create missing content map')
-        await transaction.update(versionRef, { [`pages.${pageId}.content`]: {} })
+        await transaction.update(versionRef, { [contentPath]: {} })
       }
 
       // create references to nodes
       await transaction.update(versionRef, {
-        [`pages.${pageId}.content.${uuid()}`]: {
+        [`${contentPath}.${uuid()}`]: {
           node: nodeRef,
           order: newNodeInitOrder + i,
         },
@@ -277,7 +292,7 @@ export async function addNodes(
         if (value.order >= newNodeInitOrder) {
           await transaction.update(
             versionRef,
-            `pages.${pageId}.content.${key}.order`,
+            `${contentPath}.${key}.order`,
             increment(nodes.length),
           )
 
@@ -337,20 +352,15 @@ export async function reorderNodes(
 ) {
   await runTransaction(db, async (transaction) => {
     const ref = getWizardVersionRef({ db, wizardId, versionId })
-    const current = await transaction.get(ref)
 
-    const page = current?.data()?.pages?.[pageId]
-
-    if (!page) {
-      throw new Error(`Page with id ${pageId} not found`)
-    }
+    const path = pageId === 'intro' ? 'intro.content' : `pages.${pageId}.content`
 
     await transaction.update(
       ref,
       nodes.reduce((res, node, i) => {
         return {
           ...res,
-          [`pages.${pageId}.content.${node.id}.order`]: i,
+          [`${path}.${node.id}.order`]: i,
         }
       }, {}),
     )
@@ -380,7 +390,9 @@ export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId:
       versionRef,
       pageIds.reduce((res, pageId) => {
         const content = version.data()?.pages?.[pageId].content || {}
+        const introContent = version.data()?.intro?.content || {}
         const pageNodeKeys = Object.keys(content)
+        const introNodeKeys = Object.keys(introContent)
 
         return {
           ...res,
@@ -392,6 +404,18 @@ export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId:
             return {
               ...res,
               [`pages.${pageId}.content.${key}`]: deleteField(),
+            }
+          }, {}),
+          ...introNodeKeys.reduce((res, key) => {
+            if (introContent[key].node.id !== nodeId) {
+              return res
+            }
+
+            console.log(key)
+
+            return {
+              ...res,
+              [`intro.content.${key}`]: deleteField(),
             }
           }, {}),
         }
@@ -507,7 +531,7 @@ export async function deleteWizard({ db, wizardId }: FuncScope) {
 
 export async function patchVersion(
   { db, wizardId, versionId }: FuncScope,
-  patch: Patch<Omit<WizardVersion, 'pages'>>,
+  patch: Patch<Omit<WizardVersion, 'pages' | 'intro'>>,
 ) {
   await updateDoc(getWizardVersionRef({ db, wizardId, versionId }), patch)
 }
