@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo, MouseEventHandler } from 'react'
 import { useDraggable } from 'react-use-draggable-scroll'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { useSortable, SortableContext } from '@dnd-kit/sortable'
@@ -35,11 +35,13 @@ const ContentItem = ({
   node,
   draggable,
   allNodes,
+  onClick,
 }: {
   id: string
   node: PageContent
   draggable?: boolean
   allNodes: Record<string, PageContent>
+  onClick?: MouseEventHandler
 }) => {
   const sortable = useSortable({ id, disabled: !draggable })
 
@@ -63,9 +65,10 @@ const ContentItem = ({
     return (
       <li
         {...bem('item', { draggable })}
-        key={node.id}
+        key={id}
         ref={setNodeRef}
         style={style}
+        onClick={onClick}
         {...attributes}
         {...listeners}
       >
@@ -90,9 +93,10 @@ const ContentItem = ({
     return (
       <li
         {...bem('item', { branch: true, draggable })}
-        key={node.id}
+        key={id}
         ref={setNodeRef}
         style={style}
+        onClick={onClick}
         {...attributes}
         {...listeners}
       >
@@ -113,12 +117,14 @@ function PageMap({
   index,
   selected,
   onPageClick,
+  onNodeClick,
   allNodes,
 }: {
   page: WizardPage
   index: number
   selected: boolean
-  onPageClick: () => void
+  onPageClick: MouseEventHandler
+  onNodeClick: (nodeId: string) => MouseEventHandler
   allNodes: Props['allNodes']
 }) {
   const { reorderNodes } = useVersion()
@@ -183,6 +189,7 @@ function PageMap({
                     key={ref.id}
                     draggable={selected}
                     allNodes={allNodes}
+                    onClick={onNodeClick(ref.id)}
                   />
                 )
               })}
@@ -221,12 +228,26 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
 
   const draggableEvents = selected ? draggable.events : {} // Disable dragging when a page is not selected
 
-  const handlePageClick = useCallback(
-    (id: string) => () => {
-      onClick(id)
-    },
-    [onClick],
-  )
+  const handlePageClick = useCallback((id: string) => () => onClick(id), [onClick])
+
+  const handleNodeClick =
+    (pageId: string) =>
+    (id: string): MouseEventHandler =>
+    (e) => {
+      e.stopPropagation()
+      handlePageClick(pageId)()
+
+      // wait for 100ms to ensure the page has opened before we scroll
+      setTimeout(() => {
+        // find the page node
+        const node = document.getElementById(id)
+
+        if (node) {
+          // scroll to the node if we found it
+          node.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 100)
+    }
 
   const toggleModal = (value: typeof modal) => () => {
     setModal(value)
@@ -244,6 +265,7 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
               page={item}
               index={index}
               onPageClick={handlePageClick(item.id)}
+              onNodeClick={handleNodeClick(item.id)}
               selected={item.id === selected}
               allNodes={allNodes}
             />

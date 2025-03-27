@@ -37,8 +37,8 @@ export default function Wizard() {
     return { ...version?.pages?.[selected], id: selected }
   }, [version, selected])
 
-  const nodeIds = useMemo(() => {
-    return getOrdered(page?.content)?.map((node) => node?.node?.id) || []
+  const orderedNodes = useMemo(() => {
+    return getOrdered(page?.content) || []
   }, [page])
 
   const handleSelect = (id: string) => {
@@ -263,10 +263,11 @@ export default function Wizard() {
                   />
                 )}
 
-                {(nodeIds?.length > 0 &&
-                  nodeIds.map((nodeId) => {
+                {(orderedNodes?.length > 0 &&
+                  orderedNodes.map(({ id, node: { id: nodeId } }) => {
                     return (
                       <Content
+                        id={id}
                         key={nodeId}
                         nodeId={nodeId}
                         allNodes={nodes}

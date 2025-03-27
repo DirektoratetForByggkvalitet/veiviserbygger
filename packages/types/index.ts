@@ -18,10 +18,7 @@ export type WithOrder<T> = T & { order: number }
  */
 export type OrderedArr<T extends Record<string, any>> = Array<{ id: string } & WithOrder<T>>
 
-export type OrderedMap<T extends Record<string, any>> = Record<
-  string,
-  WithOrder<T> & { id: string }
->
+export type OrderedMap<T extends Record<string, any>> = Record<string, WithOrder<T>>
 
 /**
  * @deprecated Use OrderedMap instead

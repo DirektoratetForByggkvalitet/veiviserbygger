@@ -12,6 +12,7 @@ import {
   Answer,
   Result,
   Error as ErrorNode,
+  Information,
 } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
@@ -37,6 +38,11 @@ import { values } from 'lodash'
 const bem = BEMHelper(styles)
 
 type Props = {
+  /**
+   * Unique id for a page content node on this page. This is NOT the id of
+   * the node, but the id of the reference to the node on this page.
+   */
+  id: PageContent['id']
   nodeId: DocumentReference['id']
   allNodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
   pageId: WizardPage['id']
@@ -99,7 +105,31 @@ function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & 
       {
         value: '1',
         label: 'Gir ekstra informasjon',
-        onClick: () => console.log(''),
+        onClick: async () => {
+          await addNodes(pageId, nodeId, [
+            {
+              type: 'Branch',
+              preset: 'ExtraInformation',
+              test: {
+                field: getNodeRef(nodeId),
+                operator: 'eq',
+                value: optionId,
+              },
+              content: {
+                [uuid()]: {
+                  order: 0,
+                  node: (
+                    await addNodes(undefined, undefined, [
+                      {
+                        type: 'Information',
+                      },
+                    ])
+                  )[0],
+                },
+              },
+            },
+          ])
+        },
       },
       {
         value: '2',
@@ -193,8 +223,53 @@ function Options({
   )
 }
 
-function NegativeResult({ node, nodes }: { node: Branch; nodes: Record<string, PageContent> }) {
+function ExtraInformation({
+  node,
+  nodes,
+}: {
+  node: Extract<NodeProps['node'], { type: 'Branch' }>
+  nodes: Props['allNodes']
+}) {
   const { patchNode } = useVersion()
+
+  if (!node || node?.preset !== 'ExtraInformation') {
+    return null
+  }
+
+  const informationNodeId = values(node.content).find(
+    (n) => nodes[n.node.id].type === 'Information',
+  )?.node.id
+  const informationNode = informationNodeId ? (nodes[informationNodeId] as Information) : undefined
+
+  if (!informationNodeId || !informationNode) {
+    return null
+  }
+
+  return (
+    <>
+      <h3 {...bem('sub-title')}>Vises følgende ekstrainformasjon</h3>
+
+      <Editor
+        label="Ekstra informasjon"
+        value={informationNode.text || ''}
+        onChange={(v) => patchNode(informationNodeId, { text: v })}
+      />
+    </>
+  )
+}
+
+function NegativeResult({
+  node,
+  nodes,
+}: {
+  node: Extract<NodeProps['node'], { type: 'Branch' }>
+  nodes: Props['allNodes']
+}) {
+  const { patchNode } = useVersion()
+
+  if (!node || node?.preset !== 'NegativeResult') {
+    return null
+  }
 
   const resultNodeId = values(node.content).find((n) => nodes[n.node.id].type === 'Result')?.node.id
   const errorNodeId = values(node.content).find((n) => nodes[n.node.id].type === 'Error')?.node.id
@@ -204,6 +279,8 @@ function NegativeResult({ node, nodes }: { node: Branch; nodes: Record<string, P
 
   return (
     <>
+      <h3 {...bem('sub-title')}>Vises følgende</h3>
+
       {resultNodeId && resultNode && (
         <Input
           label="Tittel på resultatsiden"
@@ -211,6 +288,7 @@ function NegativeResult({ node, nodes }: { node: Branch; nodes: Record<string, P
           onChange={(v) => patchNode(resultNodeId, { heading: v })}
         />
       )}
+
       {errorNodeId && errorNode && (
         <Editor
           label="Feilmelding"
@@ -351,13 +429,14 @@ function Node({ node, pageId, allNodes }: NodeProps) {
         <Header type={node.preset || node.type} node={node} />
         <Main>
           <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
-          <h3 {...bem('sub-title')}>Vises følgende melding</h3>
-
           {node.preset === 'NegativeResult' && <NegativeResult node={node} nodes={allNodes} />}
+          {node.preset === 'ExtraInformation' && <ExtraInformation node={node} nodes={allNodes} />}
 
           {node.preset !== 'NegativeResult' &&
+            node.preset !== 'ExtraInformation' &&
             getOrdered(node?.content)?.map((nodeRef) => {
               const node = allNodes[nodeRef?.node?.id]
+
               return (
                 <Node
                   node={{ ...node, id: node.id }}
@@ -503,11 +582,11 @@ const Main = ({ children, full }: { children: ReactNode; full?: boolean }) => (
 
 const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
 
-export default function Content({ nodeId, allNodes, pageId }: Props) {
+export default function Content({ id, nodeId, allNodes, pageId }: Props) {
   const node = allNodes?.[nodeId]
 
   return (
-    <section {...bem('')}>
+    <section {...bem('')} id={id}>
       {node ? (
         <Node node={{ ...node, id: nodeId }} pageId={pageId} allNodes={allNodes} />
       ) : (
