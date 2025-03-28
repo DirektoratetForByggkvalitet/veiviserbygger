@@ -192,9 +192,11 @@ function Options({
     }
   }
 
+  /*  TODO: Trengs denne? Hvis ikke vises ingen svaralternativ
+
   if (!node?.options) {
     return null
-  }
+  }*/
 
   return (
     <DndContext onDragEnd={handleSortingDragEnd}>
