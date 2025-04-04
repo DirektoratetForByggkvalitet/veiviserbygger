@@ -6,7 +6,7 @@ const typeMap: Record<
   { title: string; icon: keyof typeof icons; description: string; add: string }
 > = {
   Intro: {
-    title: 'Intro',
+    title: 'Introside',
     icon: 'FileInput',
     description:
       'Introsiden er en obligatorisk start på veiviseren. Her bør man fortelle besøkende kort hva man kan få svar på ved å bruke veiviseren. Introsiden vil avsluttes med en "Start veiviseren" knapp som starter veiviseren. Prøv å hold innholdet på siden kort slik at besøkende ikke trenger å scrolle ned til denne knappen.',
@@ -20,7 +20,7 @@ const typeMap: Record<
     add: 'Legg til spørsmål, tekst eller andre elementer som skal vises på denne siden i veiviseren.',
   },
   Result: {
-    title: 'Resultat',
+    title: 'Resultatside',
     icon: 'FileCheck',
     description:
       'Resultatsiden er en avsluttende side i veiviseren med en oppsummering av svarene brukeren har gitt. Man kan ha flere resultatsider avhengig av hva brukeren har oppgitt av svar i veiviseren.',

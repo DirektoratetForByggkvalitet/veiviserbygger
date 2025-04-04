@@ -4,6 +4,7 @@ import NewWizard from '@/components/NewWizard'
 import WizardList from '@/components/WizardList'
 import Help from '@/components/Help'
 import BEMHelper from '@/lib/bem'
+import { copy } from '@/lib/copy'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
@@ -18,24 +19,21 @@ export default function Dashboard() {
   return (
     <div {...bem('')}>
       <NewWizard open={modal} toggleModal={toggleModal} />
+
+      {publisedWizards.length > 0 && (
+        <section {...bem('section')}>
+          <h2 {...bem('section-title')}>Publisert</h2>
+          <WizardList wizards={publisedWizards} />
+        </section>
+      )}
+
       <section {...bem('section')}>
         <h2 {...bem('section-title')}>Utkast</h2>
         <WizardList wizards={draftWizards} toggleNewModal={toggleModal(true)} />
       </section>
 
       <section {...bem('section')}>
-        <h2 {...bem('section-title')}>Publisert</h2>
-        <WizardList wizards={publisedWizards} />
-      </section>
-
-      <section {...bem('section')}>
-        <h2 {...bem('section-title')}>Hjelp</h2>
-        <Help
-          description='Dette verktøyet lar deg opprette og redigere veivisere for nettstedet dibk.no. Du kan
-          definere spørsmål, sette opp svarlogikk og bestemme hvilke resultater brukerne skal få
-          basert på sine valg. Når en veiviser er klar for publisering, må den legges inn i Enonic
-          ved hjelp av blokken "Veiviser" for å bli synlig på nettsiden.'
-        />
+        <Help description={copy.dashboard.description} />
       </section>
     </div>
   )

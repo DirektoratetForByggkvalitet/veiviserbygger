@@ -2,10 +2,13 @@ import { useState } from 'react'
 
 import useAuth from '@/hooks/auth'
 
+import ButtonBar from '@/components/ButtonBar'
 import Button from '@/components/Button'
 import Form from '@/components/Form'
 import Input from '@/components/Input'
 import PageSimple from '@/components/PageSimple'
+import Message from '@/components/Message'
+import { copy } from '@/lib/copy'
 
 export default function LoginPage() {
   const { user, signUp, login, logout } = useAuth()
@@ -25,10 +28,10 @@ export default function LoginPage() {
   }
 
   return (
-    <PageSimple title="Logg inn">
+    <PageSimple title={copy.login.title}>
       {!user ? (
         <Form onSubmit={handleSubmit}>
-          <p>Et verktøy for å lage og administrere veivisere.</p>
+          <p>{copy.login.description}</p>
           <Input
             type="email"
             name="email"
@@ -45,26 +48,23 @@ export default function LoginPage() {
             label="Passord"
             inputDebounceMs={0}
           />
-
-          <Button type="submit" primary disabled={!form.email || !form.password}>
-            Logg inn
-          </Button>
-
+          <ButtonBar>
+            <Button type="submit" primary disabled={!form.email || !form.password}>
+              Logg inn
+            </Button>
+            <Button subtle onClick={() => signUp(form.email, form.password)}>
+              Registrer deg
+            </Button>
+          </ButtonBar>
           {error === 'auth/user-not-found' ? (
-            <p>
-              Brukeren finnes inn.{' '}
-              <button onClick={() => signUp(form.email, form.password)}>
-                Registrér ny bruker i stedet
-              </button>
-            </p>
+            <Message title="Brukeren finnes ikke i systemet"></Message>
           ) : null}
         </Form>
       ) : (
         <>
-          <p>
-            Det ser ut som du allerede er logget inn. Prøv å last inn siden på ny eller logg ut for
-            å komme tilbake til veiviseren.
-          </p>
+          <Message title="Du er allerede innlogget">
+            Prøv å last inn siden på ny eller logg ut for å komme tilbake til veiviseren.
+          </Message>
           <Button onClick={logout}>Logg ut</Button>
         </>
       )}
