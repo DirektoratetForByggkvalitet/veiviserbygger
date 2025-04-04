@@ -59,6 +59,15 @@ export default function Panel({
           <aside {...bem('panel')} ref={panelRef} tabIndex={0}>
             <header {...bem('header')}>
               <h2 {...bem('title')}>{title}</h2>
+              {options && (
+                <Dropdown
+                  icon="Settings2"
+                  direction="right"
+                  options={options}
+                  label={optionsLabel || 'Valg'}
+                  iconOnly
+                />
+              )}
               <div>
                 {onPrevious && (
                   <Button icon="ArrowLeft" size="small" subtle iconOnly onClick={onPrevious}>
@@ -71,15 +80,6 @@ export default function Panel({
                   </Button>
                 )}
               </div>
-              {options && (
-                <Dropdown
-                  icon="Settings2"
-                  direction="right"
-                  options={options}
-                  label={optionsLabel || 'Valg'}
-                  iconOnly
-                />
-              )}
               <Button onClick={onClose} icon="X" size="small" iconOnly>
                 Lukk panel
               </Button>

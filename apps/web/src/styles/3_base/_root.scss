@@ -29,6 +29,6 @@
     }
 
     @include mixins.min-width(xl) {
-        --panel-width: calc(100% - (var(--minimap-page-width) * 2));
+        --panel-width: calc(100% - (var(--minimap-page-width) * 2.5));
     }
 }

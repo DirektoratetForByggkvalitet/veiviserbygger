@@ -17,7 +17,7 @@ import { Navigate, useParams } from 'react-router'
 import Page from '@/components/Page'
 import { PageContent, Branch, DeepPartial } from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
-import { getPageTypeDescription, getPageTypeAdd } from '@/lib/page'
+import { getPageTypeDescription, getPageTypeAdd, getPageTypeTitle } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
 import { getOrdered } from '@/lib/ordered'
 import { siteName } from '@/constants'
@@ -137,7 +137,14 @@ export default function Wizard() {
     }
   }, [version?.pages, selected])
 
-  const panelTitle = page?.heading ?? 'Uten tittel'
+  const pagesOrdered = version ? getOrdered(version.pages) : []
+  const pageCount = pagesOrdered?.length
+  const currentPageIndex = pagesOrdered.findIndex(({ id }) => id === selected)
+
+  const panelTitle =
+    page?.type === 'Page'
+      ? `${getPageTypeTitle('Page')} ${currentPageIndex + 1} av ${pageCount}`
+      : (getPageTypeTitle(page?.type) ?? 'Uten tittel')
   const wizardTitle = !wizard ? siteName : (wizard?.data?.title ?? 'Uten tittel')
 
   function contentAction<T extends PageContent['type']>({
