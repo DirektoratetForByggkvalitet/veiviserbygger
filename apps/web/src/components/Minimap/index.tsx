@@ -157,9 +157,9 @@ function PageMap({
       id={`page-${page?.id}`}
       onClick={!selected ? onPageClick : undefined}
     >
-      <h2 {...bem('title')} title={`${index + 1}. ${page?.heading}`}>
+      <h2 {...bem('title')} title={page?.heading}>
         {page?.type === 'Page' ? (
-          <span {...bem('title-type')}>{index}.</span>
+          <span {...bem('title-type')}>{index - 1}.</span>
         ) : (
           <span {...bem('title-type', 'tag')} title={getPageTypeDescription(page?.type)}>
             {getPageTypeTitle(page?.type)}
