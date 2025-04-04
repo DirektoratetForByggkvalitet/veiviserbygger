@@ -64,7 +64,7 @@
         width: fit-content;
         &:hover,
         &:focus:focus-visible {
-            background-color: colors.get(neutral, xlight);
+            background-color: colors.get(neutral-transparent, xlight);
         }
     }
 

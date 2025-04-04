@@ -16,10 +16,16 @@ $colors: (
     ),
     neutral: (
         xlight: #f8f8f8,
-        light: color.mix(black, #f8f8f8, 2%),
+        light: #f3f3f3,
+        // color.mix(black, #f8f8f8, 2%),
         base: #e7e7e7,
         dark: #878787,
         xdark: #111111,
+    ),
+    neutral-transparent: (
+        xlight: rgba(0, 0, 0, 0.027),
+        // Equivalent to #f8f8f8
+        light: rgba(0, 0, 0, 0.02754),
     ),
 );
 
