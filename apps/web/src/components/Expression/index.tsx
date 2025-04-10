@@ -238,8 +238,6 @@ export default function Expression({
   const handleExpressionChange = (key: string) => (value: any) => {
     const val = key === 'field' ? getNodeRef(value) : value
 
-    console.log('setting', key, val)
-
     if (clauseId) {
       return patchNode(nodeId, {
         test: {
