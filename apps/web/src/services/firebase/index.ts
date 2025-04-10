@@ -352,12 +352,19 @@ export async function reorderNodes(
 ) {
   await runTransaction(db, async (transaction) => {
     const ref = getWizardVersionRef({ db, wizardId, versionId })
+    const data = (await transaction.get(ref)).data()
 
     const path = pageId === 'intro' ? 'intro.content' : `pages.${pageId}.content`
+    const currentContent =
+      pageId === 'intro' ? data?.intro?.content : data?.pages?.[pageId]?.content
 
     await transaction.update(
       ref,
       nodes.reduce((res, node, i) => {
+        if (!currentContent?.[node.id].node) {
+          return res
+        }
+
         return {
           ...res,
           [`${path}.${node.id}.order`]: i,
@@ -399,7 +406,7 @@ export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId:
         return {
           ...res,
           ...pageNodeKeys.reduce((res, key) => {
-            if (content[key].node.id !== nodeId) {
+            if (content?.[key]?.node?.id !== nodeId) {
               return res
             }
 
@@ -409,7 +416,7 @@ export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId:
             }
           }, {}),
           ...introNodeKeys.reduce((res, key) => {
-            if (introContent[key].node.id !== nodeId) {
+            if (introContent?.[key]?.node?.id !== nodeId) {
               return res
             }
 
@@ -490,10 +497,15 @@ export async function reorderAnswers(
 ) {
   await runTransaction(db, async (transaction) => {
     const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+    const current = (await transaction.get(ref)) as unknown as PageContentWithOptions
 
     await transaction.update(
       ref,
       answers.reduce((res, option, i) => {
+        if (!current?.options?.[option.id]) {
+          return res
+        }
+
         return {
           ...res,
           [`options.${option.id}.order`]: i,
