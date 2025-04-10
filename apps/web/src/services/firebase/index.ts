@@ -368,6 +368,8 @@ export async function reorderNodes(
 }
 
 export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId: string) {
+  console.log('delete node with id', nodeId)
+
   await runTransaction(db, async (transaction) => {
     const nodeRef = getNodeRef({ db, wizardId, versionId }, nodeId)
     const versionRef = getWizardVersionRef({ db, wizardId, versionId })

@@ -28,10 +28,7 @@ export default function Checkbox({
   large,
   ...props
 }: Props) {
-  const handleChange = () => {
-    console.log(!checked)
-    onChange(!checked)
-  }
+  const handleChange = () => onChange(!checked)
 
   return (
     <label {...bem('', { toggle, large, disabled }, className)}>
