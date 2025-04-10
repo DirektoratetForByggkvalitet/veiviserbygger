@@ -329,7 +329,7 @@ export default function Wizard() {
                 )}
 
                 {(orderedNodes?.length > 0 &&
-                  orderedNodes.map(({ id, node: { id: nodeId } }) => {
+                  orderedNodes.map(({ id, node: { id: nodeId } = {} }) => {
                     return (
                       <Content
                         id={id}

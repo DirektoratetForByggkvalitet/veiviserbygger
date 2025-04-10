@@ -185,7 +185,7 @@ function PageMap({
                 return (
                   <ContentItem
                     id={ref.id}
-                    node={allNodes[ref.node.id]}
+                    node={allNodes[ref?.node?.id]}
                     key={ref.id}
                     draggable={selected}
                     allNodes={allNodes}
