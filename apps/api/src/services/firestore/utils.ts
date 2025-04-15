@@ -1,4 +1,4 @@
-import { collection, Firestore, QueryDocumentSnapshot } from 'firebase/firestore'
+import { Firestore, QueryDocumentSnapshot } from 'firebase-admin/firestore'
 import { DataPoint } from 'shared/firestore'
 
 export function converter<T = any>() {
@@ -9,7 +9,5 @@ export function converter<T = any>() {
 }
 
 export function dataPoint<T extends object>(db: Firestore, dataPoint: DataPoint<T>) {
-  return collection(db, dataPoint.path[0], ...dataPoint.path.slice(1)).withConverter(
-    dataPoint.converter,
-  )
+  return db.collection(dataPoint.path.toString()).withConverter(dataPoint.converter)
 }

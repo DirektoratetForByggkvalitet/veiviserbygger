@@ -23,6 +23,7 @@ Depending on what you're trying to do, you'll want to either provide env vars to
 - `PUBLIC_FIREBASE_EMULATOR_FIRESTORE_PORT` - Port number for firestore emulator. Example: `8080`
 
 ### Firebase hosted by Google
+- `GOOGLE_APPLICATION_CREDENTIALS` Base64 encoded service account JSON for accessing firebase from the backend
 - `PUBLIC_FIREBASE_API_KEY` - Firebase API key
 - `PUBLIC_FIREBASE_APP_ID` – Firebase app ID
 - `PUBLIC_FIREBASE_AUTH_DOMAIN` - Firebase auth domain

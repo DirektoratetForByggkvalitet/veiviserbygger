@@ -1,0 +1,15 @@
+{
+  "name": "shared",
+  "private": true,
+  "version": "0.0.0",
+  "exports": {
+    "./firestore": "./firestore.ts",
+    "./error": "./error.ts",
+    "./utils": "./utils.ts"
+  },
+  "dependencies": {
+    "eslint-config-custom": "*",
+    "types": "*",
+    "typescript": "^4"
+  }
+}

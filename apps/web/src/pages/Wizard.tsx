@@ -19,7 +19,7 @@ import { PageContent, Branch, DeepPartial } from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
 import { getPageTypeDescription, getPageTypeAdd, getPageTypeTitle } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
-import { getOrdered } from '@/lib/ordered'
+import { getOrdered } from 'shared/utils'
 import { siteName } from '@/constants'
 import { v4 as uuid } from 'uuid'
 

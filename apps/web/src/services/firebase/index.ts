@@ -37,6 +37,7 @@ import { v4 as uuid } from 'uuid'
 import deepExtend from 'deep-extend'
 import { maxBy, values } from 'lodash'
 import { merge } from '@/lib/merge'
+import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -106,30 +107,23 @@ export async function getDocument(ref: DocumentReference) {
 }
 
 export function getWizardsRef(db: Firestore) {
-  return dataPoint<Wizard>(db, 'wizards')
+  return dataPoint(db, wizardsRef())
 }
 
-export function getWizardRef(db: Firestore, id: string) {
-  return doc(getWizardsRef(db), id)
+export function getWizardRef(db: Firestore, wizardId: string) {
+  return doc(getWizardsRef(db), wizardId)
 }
 
-export function getWizardVersionsRef(db: Firestore, id: string) {
-  return dataPoint<WizardVersion>(db, 'wizards', id, 'versions')
+export function getWizardVersionsRef(db: Firestore, wizardId: string) {
+  return dataPoint(db, wizardVersionsRef(wizardId))
 }
 
 export function getWizardVersionRef({ db, wizardId, versionId }: FuncScope) {
-  return doc(dataPoint<WizardVersion>(db, 'wizards', wizardId, 'versions'), versionId)
+  return doc(getWizardVersionsRef(db, wizardId), versionId)
 }
 
 export function getNodesRef({ db, wizardId, versionId }: FuncScope) {
-  return dataPoint<OptionalExcept<PageContent, 'type'>>(
-    db,
-    'wizards',
-    wizardId,
-    'versions',
-    versionId,
-    'nodes',
-  )
+  return dataPoint(db, nodesRef(wizardId, versionId))
 }
 
 export function getNodeRef({ db, wizardId, versionId }: FuncScope, nodeId: string) {
