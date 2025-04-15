@@ -97,7 +97,9 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
       <nav {...bem('actions')}>
         {activeVersion && (
           <>
-            <Button size="small">Forhåndsvisning</Button>
+            <Button size="small" to={`/wizard/${wizardId}/${versionId}/preview`}>
+              Forhåndsvisning
+            </Button>
             {!activeVersion?.publishedFrom ? (
               <Button primary size="small" onClick={() => setModal('publish')}>
                 Publiser
