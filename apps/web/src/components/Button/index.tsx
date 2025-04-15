@@ -3,6 +3,7 @@ import { icons } from 'lucide-react'
 import Icon from '@/components/Icon'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
+import { Link } from 'react-router-dom'
 
 const bem = BEMHelper(styles)
 
@@ -14,6 +15,8 @@ interface Props {
   warning?: boolean
   disabled?: boolean
   loading?: boolean
+  to?: string
+  href?: string
   onClick?: MouseEventHandler
   icon?: keyof typeof icons
   iconOnly?: boolean
@@ -28,6 +31,8 @@ export default function Button({
   loading,
   subtle,
   warning,
+  to,
+  href,
   onClick,
   iconOnly,
   size,
@@ -35,13 +40,20 @@ export default function Button({
   disabled,
   ...props
 }: Props) {
-  // TODO: Link button as well
+  const Element = to ? Link : href ? 'a' : 'button'
+
+  const typeSpecificProps = {
+    ...(to ? { to } : {}),
+    ...(href ? { href } : {}),
+    ...(onClick ? { onClick } : {}),
+  }
+
   return (
-    <button
+    <Element
       {...props}
       {...bem('', { primary, subtle, warning, [size ?? '']: size, 'icon-only': iconOnly, loading })}
       type={type}
-      onClick={onClick}
+      {...(typeSpecificProps as any)}
       aria-label={iconOnly ? (children as string) : undefined}
       title={iconOnly ? (children as string) : undefined}
       disabled={loading || disabled}
@@ -52,6 +64,6 @@ export default function Button({
         </span>
       )}
       {!iconOnly && children}
-    </button>
+    </Element>
   )
 }
