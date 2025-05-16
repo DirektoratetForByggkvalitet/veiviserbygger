@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Form from '@/components/Form'
 import Input from '@/components/Input'
 import Meta from '@/components/Meta'
@@ -53,21 +53,21 @@ export const addResultContentActions = (
 ): DropdownOptions =>
   pageId
     ? [
-        {
-          group: 'Innhold',
-        },
-        contentAction({ addNodes, pageId, type: 'Text' }),
-        {
-          group: 'Hendelser',
-        },
-        contentAction({
-          addNodes,
-          pageId,
-          type: 'Branch',
-          preset: 'ExtraInformation',
-          defaultContent: { preset: 'ExtraInformation', test: {} },
-        }),
-      ]
+      {
+        group: 'Innhold',
+      },
+      contentAction({ addNodes, pageId, type: 'Text' }),
+      {
+        group: 'Hendelser',
+      },
+      contentAction({
+        addNodes,
+        pageId,
+        type: 'Branch',
+        preset: 'ExtraInformation',
+        defaultContent: { preset: 'ExtraInformation', test: {} },
+      }),
+    ]
     : []
 
 export const addPageContentActions = (
@@ -76,70 +76,70 @@ export const addPageContentActions = (
 ): DropdownOptions =>
   pageId
     ? [
-        {
-          group: 'Innhold',
-        },
-        contentAction({ addNodes, pageId, type: 'Text' }),
-        {
-          group: 'Spørsmål',
-        },
-        contentAction({
-          addNodes,
-          pageId,
-          type: 'Radio',
-          defaultContent: {
-            options: {
-              [uuid()]: { heading: '', order: 0 },
-            },
-          },
-        }),
-        contentAction({
-          addNodes,
-          pageId,
-          type: 'Select',
-          disabled: true,
-          defaultContent: {
-            options: {
-              [uuid()]: { heading: '', order: 0 },
-            },
-          },
-        }),
-        contentAction({
-          addNodes,
-          pageId,
-          type: 'Checkbox',
-          defaultContent: {
+      {
+        group: 'Innhold',
+      },
+      contentAction({ addNodes, pageId, type: 'Text' }),
+      {
+        group: 'Spørsmål',
+      },
+      contentAction({
+        addNodes,
+        pageId,
+        type: 'Radio',
+        defaultContent: {
+          options: {
             [uuid()]: { heading: '', order: 0 },
           },
-        }),
-        contentAction({ addNodes, pageId, type: 'Input', disabled: false }),
-        contentAction({ addNodes, pageId, type: 'Number', disabled: false }),
-        {
-          group: 'Hendelser',
         },
-        contentAction({
-          addNodes,
-          pageId,
-          type: 'Branch',
-          preset: 'ExtraInformation',
-          defaultContent: { preset: 'ExtraInformation', test: {} },
-        }),
-        contentAction({
-          addNodes,
-          pageId,
-          type: 'Branch',
-          preset: 'NegativeResult',
-          defaultContent: { preset: 'NegativeResult', test: {} },
-        }),
-        contentAction({
-          addNodes,
-          pageId,
-          type: 'Branch',
-          preset: 'NewQuestions',
-          defaultContent: { preset: 'NewQuestions', test: {} },
-        }),
-        contentAction({ addNodes, pageId, type: 'Branch', disabled: true }),
-      ]
+      }),
+      contentAction({
+        addNodes,
+        pageId,
+        type: 'Select',
+        disabled: true,
+        defaultContent: {
+          options: {
+            [uuid()]: { heading: '', order: 0 },
+          },
+        },
+      }),
+      contentAction({
+        addNodes,
+        pageId,
+        type: 'Checkbox',
+        defaultContent: {
+          [uuid()]: { heading: '', order: 0 },
+        },
+      }),
+      contentAction({ addNodes, pageId, type: 'Input', disabled: false }),
+      contentAction({ addNodes, pageId, type: 'Number', disabled: false }),
+      {
+        group: 'Hendelser',
+      },
+      contentAction({
+        addNodes,
+        pageId,
+        type: 'Branch',
+        preset: 'ExtraInformation',
+        defaultContent: { preset: 'ExtraInformation', test: {} },
+      }),
+      contentAction({
+        addNodes,
+        pageId,
+        type: 'Branch',
+        preset: 'NegativeResult',
+        defaultContent: { preset: 'NegativeResult', test: {} },
+      }),
+      contentAction({
+        addNodes,
+        pageId,
+        type: 'Branch',
+        preset: 'NewQuestions',
+        defaultContent: { preset: 'NewQuestions', test: {} },
+      }),
+      contentAction({ addNodes, pageId, type: 'Branch', disabled: true }),
+    ]
     : []
 
 export default function Wizard() {
@@ -149,20 +149,28 @@ export default function Wizard() {
   const { loading, wizard, versions, version, nodes } = useWizard(wizardId, versionId)
   const { patchPage, deletePage, addNodes } = useVersion()
 
+  // When the wizardId or versionId changes, reset the selected page
+  // to null to ensure that the user is not stuck on a page that belongs
+  // to a different wizard or version, and make sure to close the delete
+  // confirmation modal
+  useEffect(() => {
+    setShowConfirmDeletePage(false)
+    setSelected(null)
+  }, [wizardId, versionId])
+
   const page = useMemo(() => {
     if (!selected || !version) {
       return null
     }
 
     if (selected === 'intro') {
-      return version.intro
+      return {
+        ...(version.intro || {}),
+        id: 'intro',
+        type: 'Intro',
+      }
     }
 
-    if (!version.pages?.[selected]) {
-      return null
-    }
-
-    return { ...version?.pages?.[selected], id: selected }
   }, [version, selected])
 
   const orderedNodes = useMemo(() => {
@@ -285,26 +293,26 @@ export default function Wizard() {
           options={
             page?.id !== 'intro'
               ? [
-                  {
-                    value: '0',
-                    label: 'Vis siden hvis...',
-                    onClick: () => console.log('Legg til page.show'),
-                    disabled: false,
-                  },
-                  {
-                    value: '1',
-                    label: 'Dupliser siden',
-                    onClick: () =>
-                      console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
-                    disabled: true,
-                  },
-                  {
-                    value: '2',
-                    label: 'Fjern siden',
-                    styled: 'delete',
-                    onClick: () => setShowConfirmDeletePage(true),
-                  },
-                ]
+                {
+                  value: '0',
+                  label: 'Vis siden hvis...',
+                  onClick: () => console.log('Legg til page.show'),
+                  disabled: false,
+                },
+                {
+                  value: '1',
+                  label: 'Dupliser siden',
+                  onClick: () =>
+                    console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
+                  disabled: true,
+                },
+                {
+                  value: '2',
+                  label: 'Fjern siden',
+                  styled: 'delete',
+                  onClick: () => setShowConfirmDeletePage(true),
+                },
+              ]
               : undefined
           }
           title={panelTitle || 'Uten tittel'}
@@ -354,15 +362,15 @@ export default function Wizard() {
                         nodeId={nodeId}
                         allNodes={nodes}
                         pageId={page.id}
-                        // allNodes={version?.nodes}
+                      // allNodes={version?.nodes}
                       />
                     )
                   })) || (
-                  <>
-                    <Help description={getPageTypeDescription(page.type)} />
-                    <Message title={getPageTypeAdd(page.type)} subtle />
-                  </>
-                )}
+                    <>
+                      <Help description={getPageTypeDescription(page.type)} />
+                      <Message title={getPageTypeAdd(page.type)} subtle />
+                    </>
+                  )}
 
                 <Dropdown
                   options={

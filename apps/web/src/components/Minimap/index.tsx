@@ -8,7 +8,7 @@ import Icon from '@/components/Icon'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import { Intro, PageContent, Result, WizardPage, WizardVersion } from 'types'
+import { Intro, OptionalExcept, PageContent, Result, WizardPage, WizardVersion } from 'types'
 import NewPage from '../NewPage'
 import { getTypeText, getTypeIcon } from '@/lib/content'
 import { getOrdered } from 'shared/utils'
@@ -120,7 +120,7 @@ function PageMap({
   onNodeClick,
   allNodes,
 }: {
-  page: WizardPage | Intro
+  page: OptionalExcept<WizardPage | Intro, 'type'>
   index: number
   selected: boolean
   onPageClick: MouseEventHandler
@@ -232,25 +232,25 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
 
   const handleNodeClick =
     (pageId: string) =>
-    (id: string): MouseEventHandler =>
-    (e) => {
-      e.stopPropagation()
-      handlePageClick(pageId)()
+      (id: string): MouseEventHandler =>
+        (e) => {
+          e.stopPropagation()
+          handlePageClick(pageId)()
 
-      // wait for 100ms to ensure the page has opened before we scroll
-      setTimeout(() => {
-        // find the page node
-        const node = document.getElementById(id)
+          // wait for 100ms to ensure the page has opened before we scroll
+          setTimeout(() => {
+            // find the page node
+            const node = document.getElementById(id)
 
-        if (node) {
-          // scroll to the node if we found it
-          node.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            if (node) {
+              // scroll to the node if we found it
+              node.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
-          // set focus on the first input if it exists
-          node.querySelector('input')?.focus()
+              // set focus on the first input if it exists
+              node.querySelector('input')?.focus()
+            }
+          }, 100)
         }
-      }, 100)
-    }
 
   const toggleModal = (value: typeof modal) => () => {
     setModal(value)
@@ -264,7 +264,7 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
         <PageMap
           key="intro"
           index={0}
-          page={data.intro as any}
+          page={{ ...data.intro, type: 'Intro' }}
           allNodes={allNodes}
           onPageClick={handlePageClick('intro')}
           onNodeClick={handleNodeClick('intro')}
