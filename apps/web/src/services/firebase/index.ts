@@ -207,44 +207,78 @@ export async function deletePage({ db, wizardId, versionId }: FuncScope, pageId:
 
 export async function addNodes(
   { db, wizardId, versionId }: FuncScope,
-  pageId: string | undefined,
-  /**
-   * If provided, the new nodes will be inserted after the node with this id.
-   * Otherwise they will be appended to the end of the page.
-   */
-  afterNodeId: string | undefined,
+  {
+    pageId,
+    afterNodeId,
+    parentNodeId,
+  }: {
+    pageId?: string
+    /**
+     * If provided, the new nodes will be inserted after the node with this id.
+     * Otherwise they will be appended to the end of the page.
+     */
+    afterNodeId?: string
+    /**
+     * If provided, the new node will be inserted in the content of the node with this id.
+     */
+    parentNodeId?: string
+  },
   nodes: OptionalExcept<PageContent, 'type'>[],
 ) {
-  console.log('adding nodes', nodes, 'to page', pageId, 'after node', afterNodeId)
+  console.group('[addNodes]')
+
+  console.log(
+    'adding nodes',
+    nodes,
+    `to ${parentNodeId ? `node ${parentNodeId}` : ''}${pageId ? `page ${pageId}` : ''}`,
+    'after node',
+    afterNodeId,
+  )
 
   const nodeRefs = nodes.map(() => getNodeRef({ db, wizardId, versionId }, uuid()))
 
   await runTransaction(db, async (transaction) => {
     const versionRef = getWizardVersionRef({ db, wizardId, versionId })
     const current = await transaction.get(versionRef)
+    const parentNodeRef = parentNodeId
+      ? getNodeRef({ db, wizardId, versionId }, parentNodeId)
+      : undefined
+    const currentParentNode = parentNodeRef ? await transaction.get(parentNodeRef) : undefined
+
+    const updateDocRef = (parentNodeId ? parentNodeRef : versionRef) as DocumentReference
+
+    if (!updateDocRef) {
+      throw new Error('Neither versionRef nor parentNodeRef has been found')
+    }
 
     let contentPath = `pages.${pageId}.content`
     let currentContent: OrderedMap<{ node: DocumentReference }> | undefined
 
     if (pageId === 'intro') {
       contentPath = 'intro.content'
-      currentContent = current.data()?.intro?.content ?? {}
+      currentContent = current.data()?.intro?.content
     } else if (pageId) {
-      currentContent = current.data()?.pages?.[pageId]?.content ?? {}
+      currentContent = current.data()?.pages?.[pageId]?.content
+    } else if (parentNodeId) {
+      contentPath = `content`
+      currentContent = (currentParentNode?.data() as Branch)?.content
     }
 
     // figure out what the highest order value is
-    const maxOrder = !pageId ? -1 : (maxBy(values(currentContent), 'order')?.order ?? -1)
-
+    const maxOrder = maxBy(values(currentContent), 'order')?.order ?? -1
     // if we're adding after a node, get the order of that node
-    const afterNodeOrder =
-      pageId && afterNodeId
-        ? (values(currentContent).find((n) => n.node.id === afterNodeId)?.order ?? undefined)
-        : undefined
+
+    const afterNodeOrder = afterNodeId
+      ? (values(currentContent).find((n) => n.node.id === afterNodeId)?.order ?? undefined)
+      : undefined
+
+    console.log(':::', `add nodes to page ${pageId} after node ${afterNodeId}`, {
+      maxOrder,
+      afterNodeOrder,
+    })
 
     // what should be the order value of the first new node
     const newNodeInitOrder = afterNodeOrder === undefined ? maxOrder + 1 : afterNodeOrder + 1
-
     console.log('new node init order', newNodeInitOrder)
 
     // create nodes
@@ -255,37 +289,39 @@ export async function addNodes(
       // create the node
       await transaction.set(nodeRef, node)
 
-      // if we're not adding it to the page, skip the rest
-      if (!pageId) {
+      // not adding to a page or node, so skip the rest
+      if (!pageId && !parentNodeId) {
         continue
       }
-
+      // there's no content map for the page/node, so create it
       if (!currentContent) {
         console.log('Create missing content map')
-        await transaction.update(versionRef, { [contentPath]: {} })
+        await transaction.update(updateDocRef, { [contentPath]: {} })
       }
 
       // create references to nodes
-      await transaction.update(versionRef, {
+      await transaction.update(updateDocRef, {
         [`${contentPath}.${uuid()}`]: {
           node: nodeRef,
           order: newNodeInitOrder + i,
         },
       })
 
-      console.log('added node to page with order ', newNodeInitOrder + i)
+      console.log(
+        `added node to ${pageId && 'page'}${parentNodeId && 'node'} with order `,
+        newNodeInitOrder + i,
+      )
     }
 
     // if we're adding after a node, push orders of nodes after the new nodes
-    if (pageId && afterNodeId) {
+    if (pageId || afterNodeId) {
       console.log('pushing orders of nodes after the new nodes')
-
-      for (const [key, value] of Object.entries(current.data()?.pages?.[pageId]?.content ?? {})) {
+      for (const [key, value] of Object.entries(currentContent ?? {})) {
         console.log(value.order, typeof value.order)
 
         if (value.order >= newNodeInitOrder) {
           await transaction.update(
-            versionRef,
+            updateDocRef,
             `${contentPath}.${key}.order`,
             increment(nodes.length),
           )
@@ -295,6 +331,8 @@ export async function addNodes(
       }
     }
   })
+
+  console.groupEnd()
 
   return nodeRefs as DocumentReference[]
 }

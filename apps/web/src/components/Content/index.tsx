@@ -13,6 +13,7 @@ import {
   Result,
   Error as ErrorNode,
   Information,
+  DeepPartial,
 } from 'types'
 import Input from '@/components/Input'
 import Editor from '@/components/Editor'
@@ -53,7 +54,78 @@ type NodeProps = {
   node: OptionalExcept<PageContent, 'id' | 'type'>
   pageId: WizardPage['id']
 }
-function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & Answer) {
+
+function contentAction<T extends PageContent['type']>({
+  nodeId,
+  type,
+  preset,
+  disabled,
+  defaultContent,
+  addNodes,
+}: {
+  nodeId: string
+  type: T
+  preset?: Branch['preset']
+  disabled?: boolean
+  defaultContent?: Omit<DeepPartial<Extract<PageContent, { type: T }>>, 'id' | 'type'>
+  addNodes: ReturnType<typeof useVersion>['addNodes']
+}) {
+  return {
+    value: preset || type,
+    label: getTypeText(preset || type),
+    icon: getTypeIcon(preset || type),
+    onClick: () => addNodes({ parentNodeId: nodeId }, [{ type, ...defaultContent }]),
+    disabled: disabled,
+  }
+}
+
+const addNodeContentOptions = (
+  nodeId: Branch['id'],
+  addNodes: ReturnType<typeof useVersion>['addNodes'],
+): DropdownOptions => {
+  return [
+    {
+      group: 'Innhold',
+    },
+    contentAction({ addNodes, nodeId, type: 'Text' }),
+    {
+      group: 'Spørsmål',
+    },
+    contentAction({
+      addNodes,
+      nodeId,
+      type: 'Radio',
+      defaultContent: {
+        options: {
+          [uuid()]: { heading: '', order: 0 },
+        },
+      },
+    }),
+    contentAction({
+      addNodes,
+      nodeId,
+      type: 'Select',
+      disabled: true,
+      defaultContent: {
+        options: {
+          [uuid()]: { heading: '', order: 0 },
+        },
+      },
+    }),
+    contentAction({
+      addNodes,
+      nodeId,
+      type: 'Checkbox',
+      defaultContent: {
+        [uuid()]: { heading: '', order: 0 },
+      },
+    }),
+    contentAction({ addNodes, nodeId, type: 'Input', disabled: false }),
+    contentAction({ addNodes, nodeId, type: 'Number', disabled: false }),
+  ]
+}
+
+function Option({ pageId, nodeId, id, heading }: { pageId: string; nodeId: string } & Answer) {
   const inputRef = useRef<HTMLInputElement>(null)
   const { getNodeRef, patchAnswer, deleteAnswer, addNodes } = useVersion()
   const sortable = useSortable({ id })
@@ -70,7 +142,7 @@ function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & 
         value: '0',
         label: 'Gir negativt resultat',
         onClick: async () => {
-          await addNodes(pageId, nodeId, [
+          await addNodes({ pageId: pageId, afterNodeId: nodeId }, [
             {
               type: 'Branch',
               preset: 'NegativeResult',
@@ -80,7 +152,7 @@ function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & 
                 value: optionId,
               },
               content: (
-                await addNodes(undefined, undefined, [
+                await addNodes({}, [
                   {
                     type: 'Error',
                   },
@@ -106,7 +178,7 @@ function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & 
         value: '1',
         label: 'Gir ekstra informasjon',
         onClick: async () => {
-          await addNodes(pageId, nodeId, [
+          await addNodes({ pageId, afterNodeId: nodeId }, [
             {
               type: 'Branch',
               preset: 'ExtraInformation',
@@ -119,7 +191,7 @@ function Option({ pageId, nodeId, id, heading }: { pageId: any; nodeId: any } & 
                 [uuid()]: {
                   order: 0,
                   node: (
-                    await addNodes(undefined, undefined, [
+                    await addNodes({}, [
                       {
                         type: 'Information',
                       },
@@ -303,7 +375,7 @@ function NegativeResult({
 }
 
 function Node({ node, pageId, allNodes }: NodeProps) {
-  const { patchNode } = useVersion()
+  const { patchNode, addNodes } = useVersion()
 
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
     return (
@@ -434,20 +506,30 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           {node.preset === 'NegativeResult' && <NegativeResult node={node} nodes={allNodes} />}
           {node.preset === 'ExtraInformation' && <ExtraInformation node={node} nodes={allNodes} />}
 
-          {node.preset !== 'NegativeResult' &&
-            node.preset !== 'ExtraInformation' &&
-            getOrdered(node?.content)?.map((nodeRef) => {
-              const node = allNodes[nodeRef?.node?.id]
+          {node.preset === 'NewQuestions' && (
+            <>
+              {getOrdered(node?.content)?.map((nodeRef) => {
+                const node = allNodes[nodeRef?.node?.id]
 
-              return (
-                <Node
-                  node={{ ...node, id: node.id }}
-                  pageId={pageId}
-                  allNodes={allNodes}
-                  key={nodeRef.id}
-                />
-              )
-            })}
+                return (
+                  <Node
+                    node={{ ...node, id: node.id }}
+                    pageId={pageId}
+                    allNodes={allNodes}
+                    key={nodeRef.id}
+                  />
+                )
+              })}
+              <Dropdown
+                options={addNodeContentOptions(node.id, addNodes)}
+                trigger={({ onClick }) => (
+                  <Button type="button" size="small" icon="Plus" onClick={onClick}>
+                    Legg til innhold
+                  </Button>
+                )}
+              />
+            </>
+          )}
         </Main>
 
         <Aside>

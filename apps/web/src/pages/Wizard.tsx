@@ -23,6 +23,125 @@ import { getOrdered } from 'shared/utils'
 import { siteName } from '@/constants'
 import { v4 as uuid } from 'uuid'
 
+function contentAction<T extends PageContent['type']>({
+  pageId,
+  type,
+  preset,
+  disabled,
+  defaultContent,
+  addNodes,
+}: {
+  pageId: string
+  type: T
+  preset?: Branch['preset']
+  disabled?: boolean
+  defaultContent?: Omit<DeepPartial<Extract<PageContent, { type: T }>>, 'id' | 'type'>
+  addNodes: ReturnType<typeof useVersion>['addNodes']
+}) {
+  return {
+    value: preset || type,
+    label: getTypeText(preset || type),
+    icon: getTypeIcon(preset || type),
+    onClick: () => addNodes({ pageId }, [{ type, ...defaultContent }]),
+    disabled: disabled,
+  }
+}
+
+export const addResultContentActions = (
+  pageId: string,
+  addNodes: ReturnType<typeof useVersion>['addNodes'],
+): DropdownOptions =>
+  pageId
+    ? [
+        {
+          group: 'Innhold',
+        },
+        contentAction({ addNodes, pageId, type: 'Text' }),
+        {
+          group: 'Hendelser',
+        },
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Branch',
+          preset: 'ExtraInformation',
+          defaultContent: { preset: 'ExtraInformation', test: {} },
+        }),
+      ]
+    : []
+
+export const addPageContentActions = (
+  pageId: string,
+  addNodes: ReturnType<typeof useVersion>['addNodes'],
+): DropdownOptions =>
+  pageId
+    ? [
+        {
+          group: 'Innhold',
+        },
+        contentAction({ addNodes, pageId, type: 'Text' }),
+        {
+          group: 'Spørsmål',
+        },
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Radio',
+          defaultContent: {
+            options: {
+              [uuid()]: { heading: '', order: 0 },
+            },
+          },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Select',
+          disabled: true,
+          defaultContent: {
+            options: {
+              [uuid()]: { heading: '', order: 0 },
+            },
+          },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Checkbox',
+          defaultContent: {
+            [uuid()]: { heading: '', order: 0 },
+          },
+        }),
+        contentAction({ addNodes, pageId, type: 'Input', disabled: false }),
+        contentAction({ addNodes, pageId, type: 'Number', disabled: false }),
+        {
+          group: 'Hendelser',
+        },
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Branch',
+          preset: 'ExtraInformation',
+          defaultContent: { preset: 'ExtraInformation', test: {} },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Branch',
+          preset: 'NegativeResult',
+          defaultContent: { preset: 'NegativeResult', test: {} },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Branch',
+          preset: 'NewQuestions',
+          defaultContent: { preset: 'NewQuestions', test: {} },
+        }),
+        contentAction({ addNodes, pageId, type: 'Branch', disabled: true }),
+      ]
+    : []
+
 export default function Wizard() {
   const [selected, setSelected] = useState<string | null>(null)
   const [showConfirmDeletePage, setShowConfirmDeletePage] = useState(false)
@@ -147,108 +266,6 @@ export default function Wizard() {
       : (getPageTypeTitle(page?.type) ?? 'Uten tittel')
   const wizardTitle = !wizard ? siteName : (wizard?.data?.title ?? 'Uten tittel')
 
-  function contentAction<T extends PageContent['type']>({
-    pageId,
-    type,
-    preset,
-    disabled,
-    defaultContent,
-  }: {
-    pageId: string
-    type: T
-    preset?: Branch['preset']
-    disabled?: boolean
-    defaultContent?: Omit<DeepPartial<Extract<PageContent, { type: T }>>, 'id' | 'type'>
-  }) {
-    return {
-      value: preset || type,
-      label: getTypeText(preset || type),
-      icon: getTypeIcon(preset || type),
-      onClick: () => addNodes(pageId, undefined, [{ type, ...defaultContent }]),
-      disabled: disabled,
-    }
-  }
-
-  const addResultContentActions: DropdownOptions = page?.id
-    ? [
-        {
-          group: 'Innhold',
-        },
-        contentAction({ pageId: page.id, type: 'Text' }),
-        {
-          group: 'Hendelser',
-        },
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'ExtraInformation',
-          defaultContent: { preset: 'ExtraInformation', test: {} },
-        }),
-      ]
-    : []
-
-  const addPageContentActions: DropdownOptions = page?.id
-    ? [
-        {
-          group: 'Innhold',
-        },
-        contentAction({ pageId: page.id, type: 'Text' }),
-        {
-          group: 'Spørsmål',
-        },
-        contentAction({
-          pageId: page.id,
-          type: 'Radio',
-          defaultContent: {
-            options: {
-              [uuid()]: { heading: '', order: 0 },
-            },
-          },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Select',
-          disabled: true,
-          defaultContent: {
-            options: {
-              [uuid()]: { heading: '', order: 0 },
-            },
-          },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Checkbox',
-          defaultContent: {
-            [uuid()]: { heading: '', order: 0 },
-          },
-        }),
-        contentAction({ pageId: page.id, type: 'Input', disabled: false }),
-        contentAction({ pageId: page.id, type: 'Number', disabled: false }),
-        {
-          group: 'Hendelser',
-        },
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'ExtraInformation',
-          defaultContent: { preset: 'ExtraInformation', test: {} },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'NegativeResult',
-          defaultContent: { preset: 'NegativeResult', test: {} },
-        }),
-        contentAction({
-          pageId: page.id,
-          type: 'Branch',
-          preset: 'NewQuestions',
-          defaultContent: { preset: 'NewQuestions', test: {} },
-        }),
-        contentAction({ pageId: page.id, type: 'Branch', disabled: true }),
-      ]
-    : []
-
   if (!loading && !wizard) {
     return <Navigate to="/" />
   }
@@ -348,7 +365,11 @@ export default function Wizard() {
                 )}
 
                 <Dropdown
-                  options={page?.type === 'Page' ? addPageContentActions : addResultContentActions}
+                  options={
+                    page?.type === 'Page'
+                      ? addPageContentActions(page.id, addNodes)
+                      : addResultContentActions(page.id, addNodes)
+                  }
                   trigger={({ onClick }) => (
                     <Button type="button" primary icon="Plus" onClick={onClick}>
                       Legg til innhold
