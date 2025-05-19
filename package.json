@@ -9,6 +9,7 @@
     "lint": "turbo lint",
     "dev": "turbo dev",
     "test": "turbo test",
+    "test:watch": "turbo test -- --watch",
     "build:docker": "docker build -f Dockerfile .",
     "prepare": "husky"
   },

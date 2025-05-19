@@ -1,4 +1,5 @@
 import {
+  deleteVersion,
   deleteWizard,
   getNodesRef,
   getWizardsRef,
@@ -133,6 +134,12 @@ export default function useWizard(id?: string, version?: string) {
         db: firestore,
         wizardId: id || '',
         versionId: version || '',
+      }),
+    deleteVersion: (versionId: string) =>
+      deleteVersion({
+        db: firestore,
+        wizardId: id || '',
+        versionId,
       }),
     nodes,
   }

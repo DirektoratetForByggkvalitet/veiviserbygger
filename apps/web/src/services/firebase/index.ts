@@ -2,6 +2,7 @@ import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
 import {
   collection,
+  CollectionReference,
   connectFirestoreEmulator,
   deleteDoc,
   deleteField,
@@ -12,6 +13,7 @@ import {
   getDocs,
   getFirestore,
   increment,
+  query,
   runTransaction,
   updateDoc,
 } from 'firebase/firestore'
@@ -37,7 +39,7 @@ import { v4 as uuid } from 'uuid'
 import deepExtend from 'deep-extend'
 import { maxBy, values } from 'lodash'
 import { merge } from '@/lib/merge'
-import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
+import { nodeRef, nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -104,6 +106,11 @@ export function getFirebaseApp(
 export async function getDocument(ref: DocumentReference) {
   const doc = await getDoc(ref)
   return doc.data()
+}
+
+export async function getCollection(ref: CollectionReference) {
+  const snapshot = await getDocs(ref)
+  return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
 }
 
 export function getWizardsRef(db: Firestore) {
@@ -554,13 +561,22 @@ export async function patchWizard({ db, wizardId }: FuncScope, patch: Patch<Wiza
 export async function deleteVersion({ db, wizardId, versionId }: FuncScope) {
   const nodes = await getDocs(collection(db, 'wizards', wizardId, 'versions', versionId, 'nodes'))
 
-  await Promise.all(nodes.docs.map((doc) => deleteDoc(doc.ref)))
+  await runTransaction(db, async (transaction) => {
+    const wizardRef = getWizardRef(db, wizardId)
+    const wizard = await transaction.get(wizardRef)
 
-  console.log('Deleted all nodes in wizards', wizardId, 'versions', versionId, 'nodes')
+    await Promise.all(nodes.docs.map((doc) => deleteDoc(doc.ref)))
 
-  await deleteDoc(getWizardVersionRef({ db, wizardId, versionId }))
+    console.log('Deleted all nodes in wizards', wizardId, 'versions', versionId, 'nodes')
 
-  console.log('Deleted version', versionId, 'in wizard', wizardId)
+    await deleteDoc(getWizardVersionRef({ db, wizardId, versionId }))
+
+    console.log('Deleted version', versionId, 'in wizard', wizardId)
+
+    if (wizard.data()?.draftVersion?.id === versionId) {
+      await transaction.update(wizardRef, { draftVersion: deleteField() })
+    }
+  })
 }
 
 export async function deleteWizard({ db, wizardId }: FuncScope) {
@@ -603,5 +619,44 @@ export async function publishVersion({ db, wizardId, versionId }: FuncScope) {
     })
 
     await transaction.update(versionRef, { publishedFrom: new Date() })
+  })
+}
+
+export async function createDraftVersion(
+  { db, wizardId }: Pick<FuncScope, 'db' | 'wizardId'>,
+  copyFromVersionId?: string,
+) {
+  const nodes = copyFromVersionId
+    ? await getDocs(getNodesRef({ db, wizardId, versionId: copyFromVersionId }))
+    : undefined
+
+  return runTransaction(db, async (transaction) => {
+    const wizardRef = getWizardRef(db, wizardId)
+    const copyFromVersionRef = copyFromVersionId
+      ? getWizardVersionRef({ db, wizardId, versionId: copyFromVersionId })
+      : undefined
+
+    const newVersionRef = getWizardVersionRef({ db, wizardId, versionId: uuid() })
+
+    // if (copyFromVersionId && copyFromVersionRef) {
+    //   const copyFromVersion = transaction.get(copyFromVersionRef)
+
+    //   if(nodes?.docs?.length) {
+    //     for (const node of nodes.docs) {
+    //       const newNodeRef =
+    //       await transaction.set(nodeRef(wizardId, newVersionRef.id, node.id), {
+    //         ...copyFromVersion.data(),
+    //         nodes: nodes.docs.map((doc) => ({ ...doc.data(), id: doc.id })),
+    //       })
+    //     }
+    //   }
+
+    // } else {
+    transaction.set(newVersionRef, {})
+    // }
+
+    transaction.update(wizardRef, { draftVersion: newVersionRef })
+
+    return newVersionRef.id
   })
 }

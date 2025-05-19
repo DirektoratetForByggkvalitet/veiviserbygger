@@ -170,7 +170,6 @@ export default function Wizard() {
         type: 'Intro',
       }
     }
-
   }, [version, selected])
 
   const orderedNodes = useMemo(() => {

@@ -100,16 +100,41 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
             <Button size="small" to={`/wizard/${wizardId}/${versionId}/preview`}>
               Forhåndsvisning
             </Button>
-            {!activeVersion?.publishedFrom ? (
-              <Button primary size="small" onClick={() => setModal('publish')}>
-                Publiser
+
+            {/* A draft exist, but the user is on a different version */}
+            {wizard?.data.draftVersion?.id !== activeVersion.id && wizard?.data.draftVersion ? (
+              <Button size='small' to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}>Gå til utkast</Button>
+            ) : null}
+
+            {/* The user is on the draft version */}
+            {wizard?.data.draftVersion?.id === activeVersion.id ? <>
+              {/* The wizard has not been published before */}
+              {!wizard?.data.publishedVersion && wizard?.data.draftVersion?.id === activeVersion.id ? (
+                <Button size="small" primary onClick={() => setModal('publish')}>
+                  Publiser
+                </Button>
+              ) : null}
+
+              {/* The wizard that has been published before */}
+              {wizard?.data.publishedVersion && wizard?.data.draftVersion?.id === activeVersion.id ? (
+                <>
+                  <Button size="small" primary onClick={() => setModal('publish')}>
+                    Publiser endringer
+                  </Button>
+
+                  <Button warning size="small" onClick={() => setModal('delete-draft')}>
+                    Slett utkast
+                  </Button>
+                </>
+              ) : null}
+            </> : null}
+
+            {!wizard?.data.draftVersion ? (
+              <Button size="small" primary onClick={() => setModal('draft')}>
+                Lag nytt utkast
               </Button>
             ) : null}
-            {activeVersion?.publishedFrom ? (
-              <Button primary size="small">
-                Publiser endringer
-              </Button>
-            ) : null}
+
             <div {...bem('settings')}>
               <Dropdown
                 icon="Settings2"
