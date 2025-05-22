@@ -1,5 +1,5 @@
 import { doc, DocumentReference, Firestore } from 'firebase/firestore'
-import { isBoolean, isDate, isNumber, isString, mapValues } from 'lodash'
+import { mapValues } from 'lodash'
 
 const builtInTypes = [
   'Date',
@@ -22,7 +22,7 @@ const builtInTypes = [
   'JSON',
 ]
 
-export function rewriteRefs<N = any>(
+export function rewriteRefs(
   db: Firestore,
   node: any,
   replaceId: DocumentReference['path'],

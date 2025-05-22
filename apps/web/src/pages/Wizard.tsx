@@ -53,21 +53,21 @@ export const addResultContentActions = (
 ): DropdownOptions =>
   pageId
     ? [
-      {
-        group: 'Innhold',
-      },
-      contentAction({ addNodes, pageId, type: 'Text' }),
-      {
-        group: 'Hendelser',
-      },
-      contentAction({
-        addNodes,
-        pageId,
-        type: 'Branch',
-        preset: 'ExtraInformation',
-        defaultContent: { preset: 'ExtraInformation', test: {} },
-      }),
-    ]
+        {
+          group: 'Innhold',
+        },
+        contentAction({ addNodes, pageId, type: 'Text' }),
+        {
+          group: 'Hendelser',
+        },
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Branch',
+          preset: 'ExtraInformation',
+          defaultContent: { preset: 'ExtraInformation', test: {} },
+        }),
+      ]
     : []
 
 export const addPageContentActions = (
@@ -76,70 +76,70 @@ export const addPageContentActions = (
 ): DropdownOptions =>
   pageId
     ? [
-      {
-        group: 'Innhold',
-      },
-      contentAction({ addNodes, pageId, type: 'Text' }),
-      {
-        group: 'Spørsmål',
-      },
-      contentAction({
-        addNodes,
-        pageId,
-        type: 'Radio',
-        defaultContent: {
-          options: {
+        {
+          group: 'Innhold',
+        },
+        contentAction({ addNodes, pageId, type: 'Text' }),
+        {
+          group: 'Spørsmål',
+        },
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Radio',
+          defaultContent: {
+            options: {
+              [uuid()]: { heading: '', order: 0 },
+            },
+          },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Select',
+          disabled: true,
+          defaultContent: {
+            options: {
+              [uuid()]: { heading: '', order: 0 },
+            },
+          },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Checkbox',
+          defaultContent: {
             [uuid()]: { heading: '', order: 0 },
           },
+        }),
+        contentAction({ addNodes, pageId, type: 'Input', disabled: false }),
+        contentAction({ addNodes, pageId, type: 'Number', disabled: false }),
+        {
+          group: 'Hendelser',
         },
-      }),
-      contentAction({
-        addNodes,
-        pageId,
-        type: 'Select',
-        disabled: true,
-        defaultContent: {
-          options: {
-            [uuid()]: { heading: '', order: 0 },
-          },
-        },
-      }),
-      contentAction({
-        addNodes,
-        pageId,
-        type: 'Checkbox',
-        defaultContent: {
-          [uuid()]: { heading: '', order: 0 },
-        },
-      }),
-      contentAction({ addNodes, pageId, type: 'Input', disabled: false }),
-      contentAction({ addNodes, pageId, type: 'Number', disabled: false }),
-      {
-        group: 'Hendelser',
-      },
-      contentAction({
-        addNodes,
-        pageId,
-        type: 'Branch',
-        preset: 'ExtraInformation',
-        defaultContent: { preset: 'ExtraInformation', test: {} },
-      }),
-      contentAction({
-        addNodes,
-        pageId,
-        type: 'Branch',
-        preset: 'NegativeResult',
-        defaultContent: { preset: 'NegativeResult', test: {} },
-      }),
-      contentAction({
-        addNodes,
-        pageId,
-        type: 'Branch',
-        preset: 'NewQuestions',
-        defaultContent: { preset: 'NewQuestions', test: {} },
-      }),
-      contentAction({ addNodes, pageId, type: 'Branch', disabled: true }),
-    ]
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Branch',
+          preset: 'ExtraInformation',
+          defaultContent: { preset: 'ExtraInformation', test: {} },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Branch',
+          preset: 'NegativeResult',
+          defaultContent: { preset: 'NegativeResult', test: {} },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Branch',
+          preset: 'NewQuestions',
+          defaultContent: { preset: 'NewQuestions', test: {} },
+        }),
+        contentAction({ addNodes, pageId, type: 'Branch', disabled: true }),
+      ]
     : []
 
 export default function Wizard() {
@@ -292,26 +292,26 @@ export default function Wizard() {
           options={
             page?.id !== 'intro'
               ? [
-                {
-                  value: '0',
-                  label: 'Vis siden hvis...',
-                  onClick: () => console.log('Legg til page.show'),
-                  disabled: false,
-                },
-                {
-                  value: '1',
-                  label: 'Dupliser siden',
-                  onClick: () =>
-                    console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
-                  disabled: true,
-                },
-                {
-                  value: '2',
-                  label: 'Fjern siden',
-                  styled: 'delete',
-                  onClick: () => setShowConfirmDeletePage(true),
-                },
-              ]
+                  {
+                    value: '0',
+                    label: 'Vis siden hvis...',
+                    onClick: () => console.log('Legg til page.show'),
+                    disabled: false,
+                  },
+                  {
+                    value: '1',
+                    label: 'Dupliser siden',
+                    onClick: () =>
+                      console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
+                    disabled: true,
+                  },
+                  {
+                    value: '2',
+                    label: 'Fjern siden',
+                    styled: 'delete',
+                    onClick: () => setShowConfirmDeletePage(true),
+                  },
+                ]
               : undefined
           }
           title={panelTitle || 'Uten tittel'}
@@ -361,15 +361,15 @@ export default function Wizard() {
                         nodeId={nodeId}
                         allNodes={nodes}
                         pageId={page.id}
-                      // allNodes={version?.nodes}
+                        // allNodes={version?.nodes}
                       />
                     )
                   })) || (
-                    <>
-                      <Help description={getPageTypeDescription(page.type)} />
-                      <Message title={getPageTypeAdd(page.type)} subtle />
-                    </>
-                  )}
+                  <>
+                    <Help description={getPageTypeDescription(page.type)} />
+                    <Message title={getPageTypeAdd(page.type)} subtle />
+                  </>
+                )}
 
                 <Dropdown
                   options={

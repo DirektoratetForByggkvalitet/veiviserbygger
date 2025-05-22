@@ -4,14 +4,12 @@ import Form from '@/components/Form'
 import Help from '@/components/Help'
 import Modal from '@/components/Modal'
 import { useModal } from '@/hooks/useModal'
-import { useVersion } from '@/hooks/useVersion'
 import useWizard from '@/hooks/useWizard'
 import { useMatch, useNavigate } from 'react-router'
 
 export default function DeleteDraftModal() {
   const match = useMatch('/wizard/:wizardId/:versionId')
   const { wizard, deleteVersion } = useWizard(match?.params.wizardId, match?.params.versionId)
-  const { } = useVersion()
   const { modal, setModal } = useModal()
   const navigate = useNavigate()
 
@@ -19,7 +17,8 @@ export default function DeleteDraftModal() {
     return null
   }
 
-  const deletionAllowed = wizard?.data.publishedVersion && match?.params.versionId === wizard?.data.draftVersion?.id
+  const deletionAllowed =
+    wizard?.data.publishedVersion && match?.params.versionId === wizard?.data.draftVersion?.id
 
   const onClose = () => setModal()
   const handleDelete = async () => {
@@ -41,7 +40,8 @@ export default function DeleteDraftModal() {
       <Help
         description={
           <>
-            Du er i ferd med å slette utkastet på ny versjon av veiviseren. Dette <strong>kan ikke angres</strong>.
+            Du er i ferd med å slette utkastet på ny versjon av veiviseren. Dette{' '}
+            <strong>kan ikke angres</strong>.
           </>
         }
       />

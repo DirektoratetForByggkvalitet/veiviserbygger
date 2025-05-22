@@ -2,12 +2,10 @@ import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
 import Dropdown from '@/components/Dropdown'
 import Form from '@/components/Form'
-import Input from '@/components/Input'
 import Modal from '@/components/Modal'
 import { useModal } from '@/hooks/useModal'
 import { useVersion } from '@/hooks/useVersion'
 import useWizard from '@/hooks/useWizard'
-import { set } from 'lodash'
 import { useState } from 'react'
 import { useMatch, useNavigate } from 'react-router'
 
@@ -44,7 +42,14 @@ export default function DraftModal() {
           value={baseOn}
           onChange={setBaseOn}
           options={[
-            ...(publishedVersion ? [{ value: publishedVersion.id, label: `Siste publiserte versjon (${publishedVersion.title || 'Uten navn'})` }] : []),
+            ...(publishedVersion
+              ? [
+                  {
+                    value: publishedVersion.id,
+                    label: `Siste publiserte versjon (${publishedVersion.title || 'Uten navn'})`,
+                  },
+                ]
+              : []),
             { value: 'from-scratch', label: 'Jeg vil starte fra scratch' },
           ]}
         />

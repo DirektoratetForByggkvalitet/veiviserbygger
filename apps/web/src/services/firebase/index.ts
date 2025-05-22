@@ -13,7 +13,6 @@ import {
   getDocs,
   getFirestore,
   increment,
-  query,
   runTransaction,
   updateDoc,
 } from 'firebase/firestore'
@@ -37,9 +36,10 @@ import {
 } from 'types'
 import { v4 as uuid } from 'uuid'
 import deepExtend from 'deep-extend'
-import { maxBy, values } from 'lodash'
+import { maxBy, pick, values } from 'lodash'
 import { merge } from '@/lib/merge'
-import { nodeRef, nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
+import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
+import { rewriteRefs } from '@/lib/rewrite'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -638,22 +638,32 @@ export async function createDraftVersion(
 
     const newVersionRef = getWizardVersionRef({ db, wizardId, versionId: uuid() })
 
-    // if (copyFromVersionId && copyFromVersionRef) {
-    //   const copyFromVersion = transaction.get(copyFromVersionRef)
+    if (copyFromVersionId && copyFromVersionRef) {
+      const copyFromVersion = await transaction.get(copyFromVersionRef)
+      await transaction.set(
+        newVersionRef,
+        pick(rewriteRefs(db, copyFromVersion.data(), copyFromVersionRef.path, newVersionRef.path), [
+          'content',
+          'intro',
+          'pages',
+        ]),
+      )
+      console.log('copied version', copyFromVersionRef.path, 'to', newVersionRef.path)
 
-    //   if(nodes?.docs?.length) {
-    //     for (const node of nodes.docs) {
-    //       const newNodeRef =
-    //       await transaction.set(nodeRef(wizardId, newVersionRef.id, node.id), {
-    //         ...copyFromVersion.data(),
-    //         nodes: nodes.docs.map((doc) => ({ ...doc.data(), id: doc.id })),
-    //       })
-    //     }
-    //   }
+      if (nodes?.docs?.length) {
+        for (const node of nodes.docs) {
+          const newNodeRef = getNodeRef({ db, wizardId, versionId: newVersionRef.id }, node.id)
 
-    // } else {
-    transaction.set(newVersionRef, {})
-    // }
+          await transaction.set(
+            newNodeRef,
+            rewriteRefs(db, node.data(), copyFromVersionRef.path, newVersionRef.path),
+          )
+          console.log('copied node', node.ref.path, 'to', newNodeRef.path)
+        }
+      }
+    } else {
+      transaction.set(newVersionRef, {})
+    }
 
     transaction.update(wizardRef, { draftVersion: newVersionRef })
 
