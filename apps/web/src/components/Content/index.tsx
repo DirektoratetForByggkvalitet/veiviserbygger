@@ -537,18 +537,24 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           {node.preset === 'NegativeResult' && <NegativeResult node={node} nodes={allNodes} />}
           {node.preset === 'ExtraInformation' && <ExtraInformation node={node} nodes={allNodes} />}
 
+          {/**
+           * This is the "recursive" part of the branch, where the branch can contain a list
+           * of nodes that are displayed when the branch predicate yields a truthy value.
+           */}
           {node.preset === 'NewQuestions' && (
             <>
               {getOrdered(node?.content)?.map((nodeRef) => {
                 const node = allNodes[nodeRef?.node?.id]
 
                 return (
-                  <Node
-                    node={{ ...node, id: node.id }}
-                    pageId={pageId}
-                    allNodes={allNodes}
-                    key={nodeRef.id}
-                  />
+                  <>
+                    <Node
+                      node={{ ...node, id: nodeRef.node.id }}
+                      pageId={pageId}
+                      allNodes={allNodes}
+                      key={nodeRef.id}
+                    />
+                  </>
                 )
               })}
               <Dropdown

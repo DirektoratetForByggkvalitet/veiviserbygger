@@ -289,8 +289,6 @@ export default function Wizard() {
     return <Navigate to="/" />
   }
 
-  console.log(page?.id)
-
   return (
     <EditableContext.Provider value={!version?.publishedFrom}>
       <Page title={wizardTitle} versions={versions} wizard={wizard}>
