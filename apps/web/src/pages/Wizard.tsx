@@ -15,7 +15,7 @@ import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import useWizard from '@/hooks/useWizard'
 import { Navigate, useParams } from 'react-router'
 import Page from '@/components/Page'
-import { PageContent, Branch, DeepPartial } from 'types'
+import { PageContent, Branch, DeepPartial, WizardPage, WithOrder, Intro } from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
 import { getPageTypeDescription, getPageTypeAdd, getPageTypeTitle } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
@@ -160,7 +160,7 @@ export default function Wizard() {
     setSelected(null)
   }, [wizardId, versionId])
 
-  const page = useMemo(() => {
+  const page = useMemo<WithOrder<WizardPage> | Intro | null>(() => {
     if (!selected || !version) {
       return null
     }
@@ -170,6 +170,8 @@ export default function Wizard() {
         ...(version.intro || {}),
         id: 'intro',
         type: 'Intro',
+        heading: '',
+        content: {},
       }
     }
 
@@ -208,6 +210,15 @@ export default function Wizard() {
       handleClose()
     },
     [deletePage, handleClose],
+  )
+
+  const addPageConditional = useCallback(
+    (pageId: string) => {
+      patchPage(pageId, {
+        show: {},
+      })
+    },
+    [patchPage],
   )
 
   /**
@@ -305,19 +316,25 @@ export default function Wizard() {
           options={
             page?.id !== 'intro' && isEditable
               ? [
-                  {
-                    value: '0',
-                    label: 'Vis siden hvis...',
-                    onClick: () => console.log('Legg til page.show'),
-                    disabled: false,
-                  },
-                  {
-                    value: '1',
-                    label: 'Dupliser siden',
-                    onClick: () =>
-                      console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
-                    disabled: true,
-                  },
+                  // Show the button for adding show page clause only if the page is a regular Page type,
+                  // is not the first page and does not already have a show condition.
+                  ...(page?.type === 'Page' && !page?.show && currentPageIndex > 0
+                    ? [
+                        {
+                          value: '0',
+                          label: 'Vis siden hvis...',
+                          onClick: () => addPageConditional(page.id),
+                          disabled: false,
+                        },
+                      ]
+                    : []),
+                  // {
+                  //   value: '1',
+                  //   label: 'Dupliser siden',
+                  //   onClick: () =>
+                  //     console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
+                  //   disabled: true,
+                  // },
                   {
                     value: '2',
                     label: 'Fjern siden',
@@ -358,12 +375,8 @@ export default function Wizard() {
                   header
                 />
 
-                {page?.type !== 'Intro' && page?.show && (
-                  <PageExpression
-                    expression={page?.show}
-                    nodes={nodes}
-                    nodeId={'TODO: Fjernes her'}
-                  />
+                {page?.type !== 'Intro' && page.id && page?.show && (
+                  <PageExpression expression={page?.show} pageId={page.id} nodes={nodes} />
                 )}
 
                 {(orderedNodes?.length > 0 &&
@@ -375,7 +388,6 @@ export default function Wizard() {
                         nodeId={nodeId}
                         allNodes={nodes}
                         pageId={page.id}
-                        // allNodes={version?.nodes}
                       />
                     )
                   })) || (

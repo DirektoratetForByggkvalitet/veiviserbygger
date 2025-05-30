@@ -22,6 +22,7 @@ import { dataPoint } from './utils/db'
 import {
   Answer,
   Branch,
+  ComplexExpression,
   DeepPartial,
   OptionalExcept,
   OrderedArr,
@@ -36,7 +37,7 @@ import {
 } from 'types'
 import { v4 as uuid } from 'uuid'
 import deepExtend from 'deep-extend'
-import { maxBy, pick, values } from 'lodash'
+import { get, maxBy, pick, set, values } from 'lodash'
 import { merge } from '@/lib/merge'
 import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 import { rewriteRefs } from '@/lib/rewrite'
@@ -156,6 +157,25 @@ type FuncScope = {
   db: Firestore
   wizardId: string
   versionId: string
+}
+
+export async function patch(
+  { db }: FuncScope,
+  ref: DocumentReference,
+  path: string | string[],
+  patchData: any,
+) {
+  await runTransaction(db, async (transaction) => {
+    const current = await transaction.get(ref)
+
+    if (!current.exists()) {
+      throw new Error(`Document with id ${ref.id} not found`)
+    }
+
+    console.log(ref.path, current.data(), set({}, path, patchData))
+
+    await transaction.update(ref, deepExtend(current.data(), set({}, path, patchData)))
+  })
 }
 
 export async function createPage(
@@ -365,22 +385,26 @@ export async function patchNode(
 }
 
 export async function removeExpressionClause(
-  { db, wizardId, versionId }: FuncScope,
-  nodeId: string,
+  { db }: FuncScope,
+  docRef: DocumentReference,
+  path: string,
   clauseId: string,
 ) {
   await runTransaction(db, async (transaction) => {
-    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
-    const current = await transaction.get(ref)
+    const current = await transaction.get(docRef)
 
-    const node = current?.data() as Branch
+    const expression = get(current?.data(), path) as ComplexExpression
 
-    if (!node?.test?.type || !node.test.clauses[clauseId]) {
-      throw new Error(`Clause with id ${clauseId} not found in node with id ${nodeId}`)
+    if (!expression) {
+      throw new Error(`Expression not found at path ${path} in document ${docRef.path}`)
+    }
+
+    if (!expression?.clauses?.[clauseId]) {
+      throw new Error(`Clause with id ${clauseId} not found in expression at path ${path}`)
     }
 
     console.log('removeExpressionClause')
-    await transaction.update(ref, `test.clauses.${clauseId}`, deleteField())
+    await transaction.update(docRef, `${path}.clauses.${clauseId}`, deleteField())
   })
 }
 
