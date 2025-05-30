@@ -304,19 +304,50 @@ function ExtraInformation({
   node: Extract<NodeProps['node'], { type: 'Branch' }>
   nodes: Props['allNodes']
 }) {
-  const { patchNode } = useVersion()
-
-  if (!node || node?.preset !== 'ExtraInformation') {
-    return null
-  }
+  const { patchNode, addNodes } = useVersion()
 
   const informationNodeId = values(node.content).find(
     (n) => nodes[n.node.id].type === 'Information',
   )?.node.id
   const informationNode = informationNodeId ? (nodes[informationNodeId] as Information) : undefined
 
-  if (!informationNodeId || !informationNode) {
+  // this shouldn't really happen, but just in case an extra information node
+  // exists without content, we allow it to be created
+  const createContent = async () => {
+    if (!informationNode) {
+      return
+    }
+
+    const newInformationNodeRef = (
+      await addNodes({}, [
+        {
+          type: 'Information',
+        },
+      ])
+    )[0]
+
+    await patchNode(node.id, {
+      content: {
+        [uuid()]: {
+          order: 0,
+          node: newInformationNodeRef,
+        },
+      },
+    })
+  }
+
+  if (!node || node?.preset !== 'ExtraInformation') {
     return null
+  }
+
+  if (!informationNodeId || !informationNode) {
+    return (
+      <div>
+        <Button size="small" onClick={createContent}>
+          Legg til innhold
+        </Button>
+      </div>
+    )
   }
 
   return (
