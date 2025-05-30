@@ -1,7 +1,7 @@
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
-
+import { useEditable } from '@/hooks/useEditable'
 import Icon from '@/components/Icon'
 
 interface Props {
@@ -29,16 +29,17 @@ export default function Checkbox({
   ...props
 }: Props) {
   const handleChange = () => onChange(!checked)
+  const isEditable = useEditable()
 
   return (
-    <label {...bem('', { toggle, large, disabled }, className)}>
+    <label {...bem('', { toggle, large, disabled, 'read-only': !isEditable }, className)}>
       <input
         {...props}
         {...bem('input')}
         type="checkbox"
         checked={checked}
         onChange={handleChange}
-        disabled={disabled}
+        disabled={disabled || !isEditable}
       />
       <span {...bem('indicator')}>
         <Icon name="Check" size={toggle ? 16 : 22} {...bem('icon')} />

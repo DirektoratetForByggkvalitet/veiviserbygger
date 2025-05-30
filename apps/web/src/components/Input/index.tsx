@@ -54,6 +54,9 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
     onChange(value)
   }
 
+  if (!isEditable && !value) {
+    return null
+  }
   return (
     <label
       {...bem('', {
@@ -62,6 +65,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
         'hide-label': hideLabel,
         'hide-if-empty': hideIfEmpty && !value,
         dirty: !inSync,
+        'read-only': !isEditable,
       })}
     >
       {!hideLabel && <span {...bem('label')}>{label}</span>}

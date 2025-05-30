@@ -15,6 +15,7 @@ import { getOrdered } from 'shared/utils'
 import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
 import { useSortableList } from '@/hooks/useSortableList'
+import { useEditable } from '@/hooks/useEditable'
 import { values } from 'lodash'
 const bem = BEMHelper(styles)
 
@@ -48,6 +49,7 @@ const ContentItem = ({
   if (!node) return null
 
   const { attributes, listeners, setNodeRef, transform, transition } = sortable
+  const isEditable = useEditable()
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -64,15 +66,17 @@ const ContentItem = ({
   ) {
     return (
       <li
-        {...bem('item', { draggable })}
+        {...bem('item', { draggable: isEditable && draggable })}
         key={id}
         ref={setNodeRef}
         style={style}
         onClick={onClick}
         {...attributes}
-        {...listeners}
+        {...(isEditable ? listeners : {})}
       >
-        <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
+        {isEditable && (
+          <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
+        )}
         <h3 {...bem('sub-title', { placeholder: !node.heading && !node.text })}>
           {node.heading || contentCleanup(node.text) || `${getTypeText(node.type)}`}
         </h3>
@@ -100,7 +104,9 @@ const ContentItem = ({
         {...attributes}
         {...listeners}
       >
-        <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
+        {isEditable && (
+          <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
+        )}
         <h3 {...bem('sub-title', { placeholder: true /*TODO */ })}>
           {resultNode?.heading || getTypeText(node.preset || 'Branch')}
         </h3>
@@ -130,7 +136,7 @@ function PageMap({
   const { reorderNodes } = useVersion()
 
   const content = getOrdered(page?.content)
-
+  const isEditable = useEditable()
   /* TODO: Implement reordering of content */
   const { value, onSort, inSync } = useSortableList(content, (list) => reorderNodes(page.id, list))
 
@@ -168,7 +174,7 @@ function PageMap({
         <span {...bem('title-text')}>{page?.heading || 'Uten tittel'}</span>
       </h2>
 
-      {!value.length && !selected && (
+      {!value.length && !selected && isEditable && (
         <div {...bem('placeholder')}>
           <span {...bem('placeholder-text')}>Legg til innhold </span>
           <span {...bem('icon')}>
@@ -204,6 +210,7 @@ function PageMap({
 export default function Minimap({ onClick, selected, data, allNodes }: Props) {
   const contentRef = useRef<HTMLUListElement>(null)
   const [modal, setModal] = useState<'page' | null>(null)
+  const isEditable = useEditable()
 
   useEffect(() => {
     if (selected && contentRef.current) {
@@ -284,11 +291,12 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
             />
           )
         })}
-
-        <li {...bem('page', 'placeholder')} role="button" onClick={toggleModal('page')}>
-          <h2 {...bem('title')}>Legg til side +</h2>
-          <div {...bem('content', 'placeholder')}></div>
-        </li>
+        {isEditable && (
+          <li {...bem('page', 'placeholder')} role="button" onClick={toggleModal('page')}>
+            <h2 {...bem('title')}>Legg til side +</h2>
+            <div {...bem('content', 'placeholder')}></div>
+          </li>
+        )}
       </ul>
 
       <NewPage open={modal === 'page'} closeModal={toggleModal(null)} />

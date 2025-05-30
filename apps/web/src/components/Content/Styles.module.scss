@@ -117,6 +117,11 @@
             border-radius: vars.$border-radius;
             padding: vars.$spacing--xsmall vars.$spacing--small;
         }
+        &--read-only,
+        &--read-only:focus-within {
+            border: vars.$border-style;
+            box-shadow: none;
+        }
     }
 
     &__option:not(:first-child) > * {

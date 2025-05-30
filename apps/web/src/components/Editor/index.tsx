@@ -10,6 +10,7 @@ import styles from './Styles.module.scss'
 import { useValue } from '@/hooks/useValue'
 import Superscript from '@tiptap/extension-superscript'
 import Subscript from '@tiptap/extension-subscript'
+import { useEditable } from '@/hooks/useEditable'
 const bem = BEMHelper(styles)
 
 const extensions = [
@@ -37,31 +38,45 @@ interface Props {
 export default function Editor({ label, value, hideIfEmpty, onChange }: Props) {
   const v = useValue(value, onChange)
   const [showInput, setShowInput] = useState<boolean>(!!value || false)
+  const isEditable = useEditable()
 
   if (hideIfEmpty && !value && !showInput) {
     // Shows a small trigger for the input field when empty
-    return (
-      <button {...bem('button-label')} type="button" onClick={() => setShowInput(true)}>
-        {label}
-      </button>
-    )
+    if (isEditable) {
+      return (
+        <button {...bem('button-label')} type="button" onClick={() => setShowInput(true)}>
+          {label}
+        </button>
+      )
+    } else {
+      return null
+    }
   }
 
-  return (
-    <section {...bem('')}>
-      <h3 {...bem('label')}>{label}</h3>
+  if (isEditable) {
+    return (
+      <section {...bem('')}>
+        <h3 {...bem('label')}>{label}</h3>
 
-      <EditorProvider
-        slotBefore={<MenuBar />}
-        extensions={extensions}
-        content={v.value}
-        editorContainerProps={{ ...bem('input') }}
-        autofocus={hideIfEmpty && !value && showInput}
-        onBlur={hideIfEmpty && !value ? () => setShowInput(false) : undefined}
-        onUpdate={(content) => v.onChange(content.editor.getHTML())}
-      />
-    </section>
-  )
+        <EditorProvider
+          slotBefore={<MenuBar />}
+          extensions={extensions}
+          content={v.value}
+          editorContainerProps={{ ...bem('input') }}
+          autofocus={hideIfEmpty && !value && showInput}
+          onBlur={hideIfEmpty && !value ? () => setShowInput(false) : undefined}
+          onUpdate={(content) => v.onChange(content.editor.getHTML())}
+        />
+      </section>
+    )
+  } else {
+    return (
+      <section {...bem('', 'read-only')}>
+        <h3 {...bem('label')}>{label}</h3>
+        <div dangerouslySetInnerHTML={{ __html: v.value }} {...bem('input', '', 'tiptap')}></div>
+      </section>
+    )
+  }
 }
 
 function MenuBar() {

@@ -3,6 +3,7 @@ import BEMHelper from '@/lib/bem'
 import Button from '@/components/Button'
 import Dropdown from '@/components/Dropdown'
 import styles from './Styles.module.scss'
+import { useEditable } from '@/hooks/useEditable'
 
 const bem = BEMHelper(styles)
 
@@ -28,6 +29,7 @@ export default function FileUpload({
   const [preview, setPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const isEditable = useEditable()
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -58,38 +60,44 @@ export default function FileUpload({
     onAltChange(alt)
   }
 
+  if (!isEditable && !image && !preview) {
+    return null
+  }
+
   return (
-    <label {...bem('')}>
-      <div {...bem('wrapper')}>
-        <span {...bem('label')}>{label}</span>
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          {...bem('file-input')}
-          accept={accept}
-        />
-        {!image ? (
-          <Button size="small" onClick={triggerFileDialog} loading={isUploading}>
-            {isUploading ? 'Laster opp...' : 'Legg til'}
-          </Button>
-        ) : (
-          <Dropdown
-            icon="Ellipsis"
-            direction="right"
-            options={[
-              {
-                value: '0',
-                label: 'Fjern bilde',
-                onClick: triggerRemoveFile,
-                styled: 'delete',
-              },
-            ]}
-            label="Valg"
-            iconOnly
+    <label {...bem('', { 'read-only': !isEditable })}>
+      {isEditable && (
+        <div {...bem('wrapper')}>
+          <span {...bem('label')}>{label}</span>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            {...bem('file-input')}
+            accept={accept}
           />
-        )}
-      </div>
+          {!image ? (
+            <Button size="small" onClick={triggerFileDialog} loading={isUploading}>
+              {isUploading ? 'Laster opp...' : 'Legg til'}
+            </Button>
+          ) : (
+            <Dropdown
+              icon="Ellipsis"
+              direction="right"
+              options={[
+                {
+                  value: '0',
+                  label: 'Fjern bilde',
+                  onClick: triggerRemoveFile,
+                  styled: 'delete',
+                },
+              ]}
+              label="Valg"
+              iconOnly
+            />
+          )}
+        </div>
+      )}
       {preview || image ? (
         <>
           <div {...bem('preview-container')}>

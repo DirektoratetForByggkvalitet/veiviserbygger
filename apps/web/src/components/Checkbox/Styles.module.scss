@@ -133,4 +133,8 @@
             }
         }
     }
+
+    &--read-only {
+        cursor: default;
+    }
 }

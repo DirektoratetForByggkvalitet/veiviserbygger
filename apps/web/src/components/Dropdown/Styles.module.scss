@@ -256,6 +256,20 @@
             bottom: calc(35px + vars.$spacing--xsmall);
         }
     }
+
+    &--read-only {
+        padding: 0;
+        #{$this}__trigger,
+        #{$this}__trigger:hover,
+        #{$this}__trigger:focus {
+            border: 1px solid colors.get(neutral, light);
+            background-color: transparent;
+        }
+        #{$this}__value {
+            padding: 0 6px 0 6px;
+            color: colors.$text;
+        }
+    }
 }
 
 @keyframes enter {

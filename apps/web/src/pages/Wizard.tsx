@@ -23,6 +23,7 @@ import { getOrdered } from 'shared/utils'
 import { siteName } from '@/constants'
 import { v4 as uuid } from 'uuid'
 import { EditableContext } from '@/context/EditableContext'
+import { useEditable } from '@/hooks/useEditable'
 
 function contentAction<T extends PageContent['type']>({
   pageId,
@@ -278,7 +279,7 @@ export default function Wizard() {
   const pagesOrdered = version ? getOrdered(version.pages) : []
   const pageCount = pagesOrdered?.length
   const currentPageIndex = pagesOrdered.findIndex(({ id }) => id === selected)
-
+  const isEditable = useEditable()
   const panelTitle =
     page?.type === 'Page'
       ? `${getPageTypeTitle('Page')} ${currentPageIndex + 1} av ${pageCount}`
@@ -302,7 +303,7 @@ export default function Wizard() {
           backdrop={false}
           optionsLabel="Sidevalg"
           options={
-            page?.id !== 'intro'
+            page?.id !== 'intro' && isEditable
               ? [
                   {
                     value: '0',
@@ -384,18 +385,20 @@ export default function Wizard() {
                   </>
                 )}
 
-                <Dropdown
-                  options={
-                    page?.type === 'Page'
-                      ? addPageContentActions(page.id, addNodes)
-                      : addResultContentActions(page.id, addNodes)
-                  }
-                  trigger={({ onClick }) => (
-                    <Button type="button" primary icon="Plus" onClick={onClick}>
-                      Legg til innhold
-                    </Button>
-                  )}
-                />
+                {!isEditable && (
+                  <Dropdown
+                    options={
+                      page?.type === 'Page'
+                        ? addPageContentActions(page.id, addNodes)
+                        : addResultContentActions(page.id, addNodes)
+                    }
+                    trigger={({ onClick }) => (
+                      <Button type="button" primary icon="Plus" onClick={onClick}>
+                        Legg til innhold
+                      </Button>
+                    )}
+                  />
+                )}
               </Form>
             </>
           ) : null}

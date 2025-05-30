@@ -8,6 +8,7 @@ import Transition from '@/components/Transition'
 
 import useClickOutside from '@/hooks/useClickOutside'
 import useKeyPress from '@/hooks/useKeyPress'
+import { useEditable } from '@/hooks/useEditable'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -60,6 +61,7 @@ export default function Dropdown({
   const triggerRef = useRef<HTMLButtonElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [expanded, setExpanded] = useState<boolean>(false)
+  const isEditable = useEditable()
 
   useClickOutside(wrapperRef, () => {
     if (expanded) {
@@ -117,6 +119,21 @@ export default function Dropdown({
   const selectedOption = options.find((option) => 'value' in option && option.value === value)
   const valueString =
     selectedOption && 'label' in selectedOption ? selectedOption?.label : value || label
+
+  if (!isEditable && iconOnly) {
+    return null
+  }
+
+  if (!isEditable) {
+    return (
+      <div {...bem('', { simple, sentence, 'read-only': true })} ref={wrapperRef}>
+        <div {...bem('trigger', { label: !!label })}>
+          {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
+          <span {...bem('value')}>{valueString || ' '}</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div {...bem('', { simple, sentence, iconOnly })} ref={wrapperRef}>

@@ -36,6 +36,7 @@ import { getOrdered } from 'shared/utils'
 import Expression from '../Expression'
 import { useSortableList } from '@/hooks/useSortableList'
 import { values } from 'lodash'
+import { useEditable } from '@/hooks/useEditable'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -130,6 +131,7 @@ function Option({ pageId, nodeId, id, heading }: { pageId: string; nodeId: strin
   const { getNodeRef, patchAnswer, deleteAnswer, addNodes } = useVersion()
   const sortable = useSortable({ id })
   const { attributes, listeners, setNodeRef, transform, transition } = sortable
+  const isEditable = useEditable()
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -212,11 +214,19 @@ function Option({ pageId, nodeId, id, heading }: { pageId: string; nodeId: strin
     ] as DropdownOptions
 
   return (
-    <li {...bem('option')} ref={setNodeRef} style={style} {...attributes}>
-      <button type="button" {...bem('option-handle')} {...listeners}>
-        <Icon name="GripVertical" />
-      </button>
-
+    <li
+      {...bem('option', { 'read-only': !isEditable })}
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+    >
+      {isEditable ? (
+        <button type="button" {...bem('option-handle')} {...listeners}>
+          <Icon name="GripVertical" />
+        </button>
+      ) : (
+        <Icon name="Circle" />
+      )}
       <Input
         hideLabel
         label="Svar"
@@ -224,7 +234,6 @@ function Option({ pageId, nodeId, id, heading }: { pageId: string; nodeId: strin
         forwardedRef={inputRef}
         onChange={(v) => patchAnswer(nodeId, id, { heading: v })}
       />
-
       <div {...bem('option-actions')}>
         <Dropdown
           icon="Ellipsis"
@@ -246,7 +255,7 @@ function Options({
 }) {
   const { addAnswer, reorderAnswers } = useVersion()
   const options = getOrdered(node.options)
-
+  const isEditable = useEditable()
   const { value, onSort } = useSortableList(options, (list) => reorderAnswers(node.id, list))
 
   const handleSortingDragEnd = (event: DragEndEvent) => {
@@ -264,12 +273,6 @@ function Options({
     }
   }
 
-  /*  TODO: Trengs denne? Hvis ikke vises ingen svaralternativ
-
-  if (!node?.options) {
-    return null
-  }*/
-
   return (
     <DndContext onDragEnd={handleSortingDragEnd}>
       <SortableContext items={value}>
@@ -285,12 +288,13 @@ function Options({
           })}
 
           {!value || (value.length === 0 && <li {...bem('option', 'placeholder')}>Ingen ...</li>)}
-
-          <li key="add">
-            <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
-              Legg til svaralternativ
-            </Button>
-          </li>
+          {isEditable && (
+            <li key="add">
+              <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
+                Legg til svaralternativ
+              </Button>
+            </li>
+          )}
         </ul>
       </SortableContext>
     </DndContext>
@@ -462,6 +466,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             label="Bilde"
             image={node?.image?.url}
             alt={node?.image?.alt}
+            onAltChange={() => console.log('update alt')}
             onFileUpload={(file) => console.log(file)}
             removeFile={() => console.log('remove')}
           />

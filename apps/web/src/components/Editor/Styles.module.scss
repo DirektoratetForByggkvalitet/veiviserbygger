@@ -156,6 +156,17 @@
             @include mixins.font-size(heading);
         }
     }
+
+    &--read-only {
+        border: none;
+        background: none;
+        #{$this}__label {
+            padding: 0 0 3px;
+        }
+        #{$this}__input {
+            padding: 0;
+        }
+    }
 }
 
 @keyframes menuFadeIn {
