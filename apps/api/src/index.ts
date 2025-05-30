@@ -10,18 +10,18 @@ require('dotenv').config({
 let credential: AppOptions['credential']
 
 if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  credential = admin.credential.cert(
-    JSON.parse(Buffer.from(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'base64').toString()),
-  )
+  try {
+    credential = admin.credential.cert(
+      JSON.parse(Buffer.from(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'base64').toString()),
+    )
+  } catch (error) {
+    console.error('Failed to parse GOOGLE_APPLICATION_CREDENTIALS:', error)
+  }
 }
-admin.initializeApp({
-  credential,
-  // projectId: process.env.PUBLIC_FIREBASE_PROJECT_ID,
-  // databaseURL: process.env.PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST
-  //   ? `http://${process.env.PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST}:${process.env.PUBLIC_FIREBASE_EMULATOR_FIRESTORE_PORT}`
-  //   : `https://${process.env.PUBLIC_FIREBASE_PROJECT_ID}.firebaseio.com`,
-})
 
+admin.initializeApp({ ...(credential ? { credential } : {}) })
+
+// Set up environment variables for Firebase emulators if they are defined
 if (process.env.PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST) {
   // Firestore Emulator
   process.env.FIRESTORE_EMULATOR_HOST = `${process.env.PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST}:${process.env.PUBLIC_FIREBASE_EMULATOR_FIRESTORE_PORT}`
