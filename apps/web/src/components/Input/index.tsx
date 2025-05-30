@@ -3,6 +3,7 @@ import { ChangeEvent, HTMLInputTypeAttribute, RefObject, useRef } from 'react'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { useValue } from '@/hooks/useValue'
+import { useEditable } from '@/hooks/useEditable'
 const bem = BEMHelper(styles)
 
 type Props<T extends HTMLInputTypeAttribute = 'text'> = {
@@ -43,6 +44,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   ...props
 }: Props<T>) {
   const internalRef = useRef<HTMLInputElement>(null)
+  const isEditable = useEditable()
 
   const ref = forwardedRef || internalRef
   const { value, inSync, onChange } = useValue(props.value, props.onChange, ref, inputDebounceMs)
@@ -68,7 +70,9 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
         {...props}
         {...bem('input')}
         type={type}
-        onChange={handleChange}
+        onChange={isEditable ? handleChange : undefined}
+        disabled={!isEditable}
+        readOnly={!isEditable}
         value={value}
         ref={ref}
         aria-label={(hideLabel && label) || undefined}

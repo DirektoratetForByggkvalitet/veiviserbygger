@@ -22,6 +22,7 @@ import { useVersion } from '@/hooks/useVersion'
 import { getOrdered } from 'shared/utils'
 import { siteName } from '@/constants'
 import { v4 as uuid } from 'uuid'
+import { EditableContext } from '@/context/EditableContext'
 
 function contentAction<T extends PageContent['type']>({
   pageId,
@@ -291,7 +292,7 @@ export default function Wizard() {
   console.log(page?.id)
 
   return (
-    <>
+    <EditableContext.Provider value={!version?.publishedFrom}>
       <Page title={wizardTitle} versions={versions} wizard={wizard}>
         <Meta title={wizardTitle} />
 
@@ -414,6 +415,6 @@ export default function Wizard() {
           />
         ) : null}
       </Page>
-    </>
+    </EditableContext.Provider>
   )
 }
