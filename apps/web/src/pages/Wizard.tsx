@@ -365,54 +365,46 @@ export default function Wizard() {
           </Modal>
 
           {page?.id ? (
-            <>
-              <Form>
-                <Input
-                  label="Sidetittel"
-                  value={page?.heading || ''}
-                  placeholder="Uten tittel"
-                  onChange={(v) => patchPage(page.id, { heading: v })}
-                  header
+            <Form>
+              <Input
+                label="Sidetittel"
+                value={page?.heading || ''}
+                placeholder="Uten tittel"
+                onChange={(v) => patchPage(page.id, { heading: v })}
+                header
+              />
+
+              {page?.type !== 'Intro' && page.id && page?.show && (
+                <PageExpression expression={page?.show} pageId={page.id} nodes={nodes} />
+              )}
+
+              {(orderedNodes?.length > 0 &&
+                orderedNodes.map(({ id, node: { id: nodeId } = {} }) => {
+                  return (
+                    <Content id={id} key={id} nodeId={nodeId!} allNodes={nodes} pageId={page.id} />
+                  )
+                })) || (
+                <>
+                  <Help description={getPageTypeDescription(page.type)} />
+                  <Message title={getPageTypeAdd(page.type)} subtle />
+                </>
+              )}
+
+              {isEditable && (
+                <Dropdown
+                  options={
+                    page?.type === 'Page'
+                      ? addPageContentActions(page.id, addNodes)
+                      : addResultContentActions(page.id, addNodes)
+                  }
+                  trigger={({ onClick }) => (
+                    <Button type="button" primary icon="Plus" onClick={onClick}>
+                      Legg til innhold
+                    </Button>
+                  )}
                 />
-
-                {page?.type !== 'Intro' && page.id && page?.show && (
-                  <PageExpression expression={page?.show} pageId={page.id} nodes={nodes} />
-                )}
-
-                {(orderedNodes?.length > 0 &&
-                  orderedNodes.map(({ id, node: { id: nodeId } = {} }) => {
-                    return (
-                      <Content
-                        id={id}
-                        key={nodeId}
-                        nodeId={nodeId}
-                        allNodes={nodes}
-                        pageId={page.id}
-                      />
-                    )
-                  })) || (
-                  <>
-                    <Help description={getPageTypeDescription(page.type)} />
-                    <Message title={getPageTypeAdd(page.type)} subtle />
-                  </>
-                )}
-
-                {isEditable && (
-                  <Dropdown
-                    options={
-                      page?.type === 'Page'
-                        ? addPageContentActions(page.id, addNodes)
-                        : addResultContentActions(page.id, addNodes)
-                    }
-                    trigger={({ onClick }) => (
-                      <Button type="button" primary icon="Plus" onClick={onClick}>
-                        Legg til innhold
-                      </Button>
-                    )}
-                  />
-                )}
-              </Form>
-            </>
+              )}
+            </Form>
           ) : null}
         </Panel>
 
