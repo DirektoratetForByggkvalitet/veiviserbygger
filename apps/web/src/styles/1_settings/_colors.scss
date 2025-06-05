@@ -19,18 +19,17 @@
 $colors: (
     primary: (
         // base: #3a8ff4,
-        base: #89bad6,
-        dark: #003045,
-        light: #ebf4fa,
+        base: #4287d9,
+        dark: #1f5ca4,
+        light: #ddebfc,
         xlight: color.adjust(#ebf4fa, $lightness: 4.2%),
     ),
     neutral: (
         xlight: #f8f8f8,
-        light: #f3f3f3,
-        // color.mix(black, #f8f8f8, 2%),
+        light: shade(#f3f3f3, 1%),
         base: #e7e7e7,
         dark: #878787,
-        xdark: #111111,
+        xdark: #121213,
     ),
     neutral-transparent: (
         xlight: rgba(0, 0, 0, 0.027),
