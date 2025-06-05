@@ -81,10 +81,16 @@
     }
 
     &--toggle {
+        $padding: 4px;
+        $size: 30px;
+        $width: $size * 1.8;
+
         #{$this}__icon {
             position: relative;
-            transform: translateX(-(($size * 0.5) + 8px));
-            opacity: 0;
+            margin-top: 1px;
+            opacity: 1;
+            left: 0;
+            transform: none;
 
             transition:
                 transform 300ms vars.$ease-in-out-quint--custom,
@@ -93,9 +99,11 @@
 
         #{$this}__indicator {
             position: relative;
-            width: $size * 2 - 8px;
+            width: $width + ($padding * 2);
+            height: $size + ($padding * 2);
             color: colors.$text;
-            border-radius: $size;
+            border-radius: $size * 2;
+            padding: 0;
             border-color: colors.get(neutral, base);
             background-color: colors.$light;
             transition: background-color 200ms vars.$ease-in-out-quint--custom;
@@ -103,12 +111,12 @@
             &:before {
                 content: '';
                 position: absolute;
-                top: 4px;
-                left: 4px;
-                height: $size - 10px;
-                width: $size - 10px;
+                top: $padding;
+                left: $padding;
+                height: $size - (vars.$border-width * 2);
+                width: $size - (vars.$border-width * 2);
                 border-radius: 50%;
-                background-color: colors.get(primary, dark);
+                background-color: colors.get(neutral, dark);
 
                 transition:
                     transform 300ms vars.$ease-in-out-quint--custom,
@@ -119,9 +127,10 @@
         #{$this}__input:checked {
             & + #{$this}__indicator {
                 background-color: colors.get(primary, dark);
+
                 &:before {
                     opacity: 1;
-                    transform: translateX(calc(100%));
+                    transform: translateX(calc($width - $size));
                     background-color: colors.$light;
                 }
             }
@@ -129,7 +138,7 @@
             & + #{$this}__indicator #{$this}__icon {
                 opacity: 1;
                 color: colors.get(primary, dark);
-                transform: translateX(($size * 0.5) - 7px);
+                transform: translateX($size * 0.5 - 3px);
             }
         }
     }
