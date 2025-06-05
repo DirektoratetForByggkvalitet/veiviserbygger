@@ -468,6 +468,11 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             onFileUpload={(file) => console.log(file)}
             removeFile={() => console.log('remove')}
           />
+          <Checkbox
+            label="Gridvisning av svar"
+            checked={node.grid}
+            onChange={(v) => patchNode(node.id, { type: 'Radio', grid: v })}
+          />
           <h3 {...bem('sub-title')}>Svaralternativer</h3>
           <Options node={node} pageId={pageId} />
         </Main>
@@ -475,14 +480,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
         <Aside>
           {/* TODO: summary, details, show */}
           <Help description={getTypeDescription(node.type)} />
-          <h3 {...bem('sub-title')}>Innstillinger</h3>
-          <div {...bem('field-list')}>
-            <Checkbox
-              label="Gridvisning"
-              checked={node.grid}
-              onChange={(v) => patchNode(node.id, { type: 'Radio', grid: v })}
-            />
-          </div>
         </Aside>
       </Fragment>
     )
