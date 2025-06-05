@@ -8,16 +8,6 @@
 @use 'colors';
 @use 'vars';
 
-// Add percentage of white to a color
-@function tint($color, $percent) {
-    @return color.mix(white, $color, $percent);
-}
-
-// Add percentage of black to a color
-@function shade($color, $percent) {
-    @return color.mix(black, $color, $percent);
-}
-
 // Strip units from number
 @function strip-unit($number) {
     @if meta.type-of($number) == 'number' and not math.is-unitless($number) {

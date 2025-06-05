@@ -11,7 +11,7 @@
     background-color: colors.$light;
 
     &:hover {
-        border-color: mixins.shade(colors.get(neutral), 6%);
+        border-color: colors.shade(colors.get(neutral), 6%);
 
         #{$this}__label {
             color: shade(colors.$muted, 20%);
@@ -28,8 +28,8 @@
         text-align: left;
         cursor: text;
         &:hover {
-            border-color: mixins.shade(colors.get(neutral), 6%);
-            color: mixins.shade(colors.$muted, 20%);
+            border-color: colors.shade(colors.get(neutral), 6%);
+            color: colors.shade(colors.$muted, 20%);
         }
     }
 
@@ -37,7 +37,10 @@
         @include mixins.font-size(small);
         font-weight: normal;
         color: colors.$muted;
-        padding: vars.$form-padding-y vars.$form-padding-x 0;
+        padding: vars.$form-padding-y vars.$form-padding-x;
+
+        border-bottom: vars.$border-style;
+        border-color: transparent;
     }
 
     &__input {
@@ -60,8 +63,18 @@
         max-height: 54px;
         padding: 0;
         border-bottom: vars.$border-style;
-        display: none;
         z-index: vars.$level-1;
+
+        opacity: 0;
+        max-height: 0px;
+        border-color: transparent;
+        overflow: hidden;
+
+        transition:
+            opacity 200ms vars.$ease-out-quart,
+            max-height 200ms vars.$ease-out-quart;
+
+        transition-delay: 500ms;
     }
 
     &__control {
@@ -91,13 +104,15 @@
 
         #{$this}__label {
             color: colors.$text;
-            border-bottom: vars.$border-style;
             padding-bottom: vars.$form-padding-y;
+            border-color: rgba(black, 0.075);
         }
 
         #{$this}__menu {
-            display: flex;
-            animation: menuFadeIn 200ms vars.$ease-out-quart both;
+            opacity: 1;
+            max-height: 54px;
+            border-color: rgba(black, 0.075);
+            overflow: visible;
         }
     }
 
