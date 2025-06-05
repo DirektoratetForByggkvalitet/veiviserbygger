@@ -56,6 +56,9 @@
             @include mixins.font-size(base);
             padding-left: vars.$spacing--small;
             color: colors.$text;
+            @include mixins.input-placeholder {
+                color: colors.get(neutral, base);
+            }
         }
     }
 

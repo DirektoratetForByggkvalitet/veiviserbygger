@@ -105,7 +105,7 @@ export default function FileUpload({
           </div>
           <label {...bem('alt-input')}>
             Alternativ tekst:
-            <input type="text" onChange={handleAltChange} value={alt} />
+            <input type="text" onChange={handleAltChange} value={alt} placeholder="Legg til" />
           </label>
         </>
       ) : null}
