@@ -51,6 +51,9 @@
         @include mixins.font(base, normal);
         @include mixins.font-size(base);
         flex-grow: 1;
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
 
     &__close {
