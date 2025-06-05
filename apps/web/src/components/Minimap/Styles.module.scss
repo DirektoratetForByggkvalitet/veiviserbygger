@@ -61,7 +61,8 @@
         }
 
         &--placeholder {
-            background-color: colors.$light;
+            // background-color: colors.$light;
+
             &:hover,
             &:focus:focus-visible {
                 background-color: colors.get(neutral, light);
@@ -177,9 +178,10 @@
 
     &__content {
         flex-grow: 1;
+
         &--placeholder {
             border-radius: vars.$border-radius;
-            border: vars.$border-style--dashed;
+            // border: vars.$border-style--dashed;
             transition: background-color 200ms vars.$ease-in-out-quint--custom;
         }
     }

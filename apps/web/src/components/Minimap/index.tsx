@@ -230,7 +230,7 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
     safeDisplacement: 30, // px
   })
 
-  const draggableEvents = selected ? draggable.events : {} // Disable dragging when a page is not selected
+  const draggableEvents = draggable.events
 
   const handlePageClick = useCallback((id: string) => () => onClick(id), [onClick])
 
@@ -290,7 +290,10 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
         })}
         {isEditable && (
           <li {...bem('page', 'placeholder')} role="button" onClick={toggleModal('page')}>
-            <h2 {...bem('title')}>Legg til side +</h2>
+            <h2 {...bem('title')}>
+              <Icon name="Plus" />
+              Legg til side
+            </h2>
             <div {...bem('content', 'placeholder')}></div>
           </li>
         )}
