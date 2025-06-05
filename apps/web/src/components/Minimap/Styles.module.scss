@@ -202,6 +202,10 @@
 
         width: calc(100vw - vars.$panel-width);
     }
+
+    &--header-message-visible {
+        height: calc(100vh - (#{vars.$header-height} * 2));
+    }
 }
 
 @keyframes fade-in {

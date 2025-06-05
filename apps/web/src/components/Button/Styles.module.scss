@@ -33,6 +33,7 @@
         &:hover,
         &:focus:focus-visible {
             background-color: colors.shade(colors.get(primary, dark), 4%);
+            color: colors.$light;
         }
         &:disabled {
             background-color: colors.get(neutral);
@@ -46,7 +47,8 @@
 
         &:hover,
         &:focus:focus-visible {
-            background-color: shade(colors.$warning, 6%);
+            background-color: colors.shade(colors.$warning, 6%);
+            color: colors.$light;
         }
         &:disabled {
             background-color: colors.get(neutral);

@@ -78,6 +78,13 @@
             animation: fade-out 500ms vars.$ease-in-out-quint--custom forwards;
         }
     }
+
+    &--header-message-visible {
+        #{$this}__panel,
+        #{$this}__backdrop {
+            top: calc(vars.$header-height * 2);
+        }
+    }
 }
 
 @keyframes enter {

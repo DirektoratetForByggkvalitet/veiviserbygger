@@ -22,6 +22,7 @@ export type DropdownOptions = Array<
       icon?: keyof typeof icons
       onClick?: MouseEventHandler
       styled?: 'delete'
+      selected?: boolean
       disabled?: boolean
     }
   | { group: string }
@@ -182,7 +183,7 @@ export default function Dropdown({
                     disabled={option?.disabled}
                     onClick={handleClick}
                     {...bem('option', {
-                      selected: option.value === value,
+                      selected: option.selected || option.value === value,
                       [option.styled ?? '']: !!option.styled,
                       disabled: option?.disabled,
                     })}

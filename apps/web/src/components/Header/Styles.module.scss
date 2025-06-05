@@ -5,17 +5,21 @@
 .header {
     $this: &;
     @include mixins.font-size(base);
-    position: relative;
     display: flex;
-    align-items: center;
-    gap: vars.$spacing--xsmall;
-    height: vars.$header-height;
-    // padding-left: $margin;
-    padding-right: vars.$margin;
+    flex-direction: column;
+    align-items: stretch;
+    position: relative;
     z-index: vars.$level-4;
 
-    border-bottom: vars.$border-style;
-    background-color: colors.$light;
+    &__wrapper {
+        display: flex;
+        align-items: center;
+        height: vars.$header-height;
+        gap: vars.$spacing--xsmall;
+        padding-right: vars.$margin;
+        border-bottom: vars.$border-style;
+        background-color: colors.$light;
+    }
 
     &__logo {
         height: calc(vars.$header-height - vars.$spacing--small);
@@ -49,8 +53,29 @@
         margin: 0 4px;
     }
 
+    &__message {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: vars.$header-height;
+        gap: vars.$spacing--xsmall;
+        padding: vars.$spacing--xsmall;
+        background-color: colors.get(primary, light);
+        border: 1px solid colors.$outline;
+    }
+
+    &__message-title {
+        display: flex;
+        align-items: center;
+        gap: vars.$spacing--xsmall;
+        @include mixins.font-size(small);
+    }
+
     &--open {
         position: sticky;
         top: 0;
+    }
+
+    &--show-message {
     }
 }

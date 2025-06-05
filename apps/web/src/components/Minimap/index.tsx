@@ -264,7 +264,11 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
 
   return (
     <>
-      <ul {...bem('', { selected })} ref={contentRef} {...draggableEvents}>
+      <ul
+        {...bem('', { selected, 'header-message-visible': !isEditable })}
+        ref={contentRef}
+        {...draggableEvents}
+      >
         <PageMap
           key="intro"
           index={0}

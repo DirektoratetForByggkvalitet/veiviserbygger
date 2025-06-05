@@ -4,7 +4,7 @@ import menuState from '@/store/menu'
 
 import Button from '@/components/Button'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
-import { IconMenu } from '@/components/Icon'
+import Icon, { IconMenu } from '@/components/Icon'
 import User from '@/components/User'
 import useAuth from '@/hooks/auth'
 import BEMHelper from '@/lib/bem'
@@ -15,6 +15,7 @@ import { Timestamp } from 'firebase/firestore'
 import { siteName } from '@/constants'
 import { useModal } from '@/hooks/useModal'
 import { EditableContext } from '@/context/EditableContext'
+import { useEditable } from '@/hooks/useEditable'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -30,17 +31,19 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   if (hideMenu) {
     return (
       <header {...bem('')}>
-        <img src="/header-logo.svg" alt={title} {...bem('logo')} />
-        <h1 {...bem('name')}>{title}</h1>
+        <div {...bem('wrapper')}>
+          <img src="/header-logo.svg" alt={title} {...bem('logo')} />
+          <h1 {...bem('name')}>{title}</h1>
 
-        {user && (
-          <nav {...bem('actions')}>
-            <User
-              name={user?.displayName || user?.email}
-              options={[{ value: '', label: 'Logg ut', onClick: logout }]}
-            />
-          </nav>
-        )}
+          {user && (
+            <nav {...bem('actions')}>
+              <User
+                name={user?.displayName || user?.email}
+                options={[{ value: '', label: 'Logg ut', onClick: logout }]}
+              />
+            </nav>
+          )}
+        </div>
       </header>
     )
   }
@@ -50,23 +53,47 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   const navigate = useNavigate()
   const [open, setOpen] = useAtom(menuState)
   const { setModal } = useModal()
+  const isEditable = useEditable()
   const activeVersion = versions?.find((v) => v.id === versionId)
+  const activeVersionIndex = versions?.findIndex((v) => v.id === versionId) || 0
+  const wizardIsPublished = activeVersion && !isEditable
 
   const toggleMenu = () => {
     setOpen(!open)
   }
 
-  const wizardOptions = [
+  const getVersionTitle = (
+    v: { title?: string; publishedFrom?: Timestamp; publishedTo?: Timestamp },
+    index: number,
+  ) => {
+    return v.title
+      ? `${index}. ${v.title}`
+      : `${index}. ${v.publishedFrom && !v.publishedTo ? 'Publisert' : ''}${!v.publishedFrom ? 'Siste utkast' : ''}`
+  }
+
+  const versionOptions = [
     { group: 'Versjoner' },
-    ...(versions || []).map((v, i, arr) => ({
-      label:
-        v.title ||
-        `Versjon ${arr.length - i} ${v.publishedFrom && !v.publishedTo ? '(publisert)' : ''}${!v.publishedFrom ? '(utkast)' : ''}`,
+    ...(versions || []).map((v, i) => ({
+      label: getVersionTitle(v, i + 1),
       value: v.id,
-      selected: v.id === versionId,
+      disabled: v.id === versionId,
       onClick: () => navigate(`/wizard/${wizardId}/${v.id}`),
     })),
-    { group: 'Handlinger' },
+    ...(wizard?.data.publishedVersion && wizard?.data.draftVersion?.id === activeVersion?.id
+      ? [
+          { group: 'Utkast' },
+          {
+            value: '4',
+            label: 'Slett dette utkastet',
+            styled: 'delete',
+            onClick: () => setModal('delete-draft'),
+          },
+        ]
+      : []),
+  ] as DropdownOptions
+
+  const wizardOptions = [
+    { group: 'Veiviser' },
     {
       value: '1',
       label: 'Endre navn',
@@ -88,80 +115,78 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   ] as DropdownOptions
 
   return (
-    <EditableContext.Provider value={true}>
-      <header {...bem('', { open })}>
+    <header {...bem('', { open, 'show-message': wizardIsPublished })}>
+      <div {...bem('wrapper')}>
         <button type="button" {...bem('toggle')} aria-label="Meny" onClick={toggleMenu}>
           <IconMenu />
         </button>
 
-        <h1 {...bem('name')}>{title}</h1>
-
-        <nav {...bem('actions')}>
-          {activeVersion && (
-            <>
-              <Button size="small" to={`/wizard/${wizardId}/${versionId}/preview`}>
-                Forhåndsvisning
-              </Button>
-
-              {/* A draft exist, but the user is on a different version */}
-              {wizard?.data.draftVersion?.id !== activeVersion.id && wizard?.data.draftVersion ? (
-                <Button size="small" to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}>
-                  Gå til utkast
-                </Button>
-              ) : null}
-
-              {/* The user is on the draft version */}
-              {wizard?.data.draftVersion?.id === activeVersion.id ? (
-                <>
-                  {/* The wizard has not been published before */}
-                  {!wizard?.data.publishedVersion &&
-                  wizard?.data.draftVersion?.id === activeVersion.id ? (
-                    <Button size="small" primary onClick={() => setModal('publish')}>
-                      Publiser
-                    </Button>
-                  ) : null}
-
-                  {/* The wizard that has been published before */}
-                  {wizard?.data.publishedVersion &&
-                  wizard?.data.draftVersion?.id === activeVersion.id ? (
-                    <>
-                      <Button size="small" primary onClick={() => setModal('publish')}>
-                        Publiser endringer
-                      </Button>
-
-                      <Button warning size="small" onClick={() => setModal('delete-draft')}>
-                        Slett utkast
-                      </Button>
-                    </>
-                  ) : null}
-                </>
-              ) : null}
-
-              {!wizard?.data.draftVersion ? (
-                <Button size="small" primary onClick={() => setModal('draft')}>
-                  Lag nytt utkast
-                </Button>
-              ) : null}
-
-              <div {...bem('settings')}>
+        <h1 {...bem('name')}>{title} </h1>
+        <EditableContext.Provider value={true}>
+          <nav {...bem('actions')}>
+            {activeVersion && (
+              <>
                 <Dropdown
-                  icon="Settings2"
+                  simple
                   direction="right"
-                  options={wizardOptions}
-                  label={'Valg for veiviser'}
-                  iconOnly
+                  options={versionOptions}
+                  hideLabel
+                  label={
+                    activeVersion
+                      ? getVersionTitle(activeVersion, activeVersionIndex + 1)
+                      : 'Versjon mangler'
+                  }
                 />
-              </div>
-            </>
-          )}
-          {user && (
-            <User
-              name={user?.displayName || user?.email}
-              options={[{ value: '', label: 'Logg ut', onClick: logout }]}
-            />
-          )}
-        </nav>
-      </header>
-    </EditableContext.Provider>
+                <Button size="small" to={`/wizard/${wizardId}/${versionId}/preview`}>
+                  Forhåndsvisning
+                </Button>
+
+                {/* The user is on the draft version */}
+                {wizard?.data.draftVersion?.id === activeVersion.id ? (
+                  <Button size="small" primary onClick={() => setModal('publish')}>
+                    Publiser
+                  </Button>
+                ) : null}
+
+                <div {...bem('settings')}>
+                  <Dropdown
+                    icon="Settings2"
+                    direction="right"
+                    options={wizardOptions}
+                    label={'Valg for veiviser'}
+                    iconOnly
+                  />
+                </div>
+              </>
+            )}
+            {user && (
+              <User
+                name={user?.displayName || user?.email}
+                options={[{ value: '', label: 'Logg ut', onClick: logout }]}
+              />
+            )}
+          </nav>
+        </EditableContext.Provider>
+      </div>
+      {wizardIsPublished && (
+        <div {...bem('message')}>
+          <span {...bem('message-title')}>
+            <Icon name="Info" /> Denne versjonen er publisert og kan ikke endres direkte.
+          </span>
+          {/* A draft exist, but the user is on a different version */}
+          {wizard?.data.draftVersion?.id !== activeVersion.id && wizard?.data.draftVersion ? (
+            <Button size="small" primary to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}>
+              Gå til utkast
+            </Button>
+          ) : null}
+          {/* No draft exist, so the user can create a new one */}
+          {!wizard?.data.draftVersion ? (
+            <Button size="small" primary onClick={() => setModal('draft')}>
+              Lag nytt utkast
+            </Button>
+          ) : null}
+        </div>
+      )}
+    </header>
   )
 }

@@ -3,7 +3,7 @@ import { type ReactNode, useEffect, useRef } from 'react'
 import Transition from '@/components/Transition'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Button from '@/components/Button'
-
+import { useEditable } from '@/hooks/useEditable'
 import useKeyPress from '@/hooks/useKeyPress'
 
 import BEMHelper from '@/lib/bem'
@@ -34,6 +34,7 @@ export default function Panel({
   options,
 }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
+  const isEditable = useEditable()
 
   useEffect(() => {
     if (open && panelRef.current) {
@@ -50,7 +51,7 @@ export default function Panel({
   return (
     <Transition
       updateKey={open.toString()}
-      {...bem('', '', open ? 'overlay' : undefined)}
+      {...bem('', { 'header-message-visible': !isEditable }, open ? 'overlay' : undefined)}
       enter={500}
       exit={500}
     >
