@@ -22,8 +22,10 @@
         gap: vars.$spacing--xsmall;
         height: vars.$header-height;
     }
+
     &__title-type {
         color: colors.$muted;
+
         &--tag {
             background-color: colors.$light;
             color: colors.$text;
@@ -131,6 +133,7 @@
             border: vars.$border-style--dashed;
             margin-top: 14px;
             margin-bottom: 14px;
+
             #{$this}__sub-title {
                 height: auto;
             }
@@ -139,6 +142,7 @@
         &--draggable {
             cursor: grab;
             position: relative;
+
             &:hover,
             &:focus-visible {
                 #{$this}__icon {
