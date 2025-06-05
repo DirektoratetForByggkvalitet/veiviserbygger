@@ -1,16 +1,16 @@
-import { useState } from 'react'
 import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 
 import Dropdown from '@/components/Dropdown'
 import Icon from '@/components/Icon'
 
-import BEMHelper from '@/lib/bem'
-import styles from './Styles.module.scss'
-import { useValue } from '@/hooks/useValue'
-import Superscript from '@tiptap/extension-superscript'
-import Subscript from '@tiptap/extension-subscript'
 import { useEditable } from '@/hooks/useEditable'
+import { useValue } from '@/hooks/useValue'
+import BEMHelper from '@/lib/bem'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
+import { useRef } from 'react'
+import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
 const extensions = [
@@ -36,35 +36,33 @@ interface Props {
 }
 
 export default function Editor({ label, value, hideIfEmpty, onChange }: Props) {
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const v = useValue(value, onChange)
-  const [showInput, setShowInput] = useState<boolean>(!!value || false)
   const isEditable = useEditable()
 
-  if (hideIfEmpty && !value && !showInput) {
-    // Shows a small trigger for the input field when empty
+  const handleLabelClick = () => {
     if (isEditable) {
-      return (
-        <button {...bem('button-label')} type="button" onClick={() => setShowInput(true)}>
-          {label}
-        </button>
-      )
-    } else {
-      return null
+      const input = wrapperRef.current?.querySelector('div[contenteditable="true"]') as HTMLElement
+
+      if (input) {
+        input.focus()
+      }
     }
   }
 
   if (isEditable) {
     return (
-      <section {...bem('')}>
-        <h3 {...bem('label')}>{label}</h3>
+      <section {...bem('')} ref={wrapperRef}>
+        <h3 {...bem('label')} onClick={handleLabelClick}>
+          {label}
+        </h3>
 
         <EditorProvider
           slotBefore={<MenuBar />}
           extensions={extensions}
           content={v.value}
           editorContainerProps={{ ...bem('input') }}
-          autofocus={hideIfEmpty && !value && showInput}
-          onBlur={hideIfEmpty && !value ? () => setShowInput(false) : undefined}
+          autofocus={hideIfEmpty && !value}
           onUpdate={(content) => v.onChange(content.editor.getHTML())}
         />
       </section>
@@ -72,7 +70,7 @@ export default function Editor({ label, value, hideIfEmpty, onChange }: Props) {
   } else {
     return (
       <section {...bem('', 'read-only')}>
-        <h3 {...bem('label')}>{label}</h3>
+        <label {...bem('label')}>{label}</label>
         <div dangerouslySetInnerHTML={{ __html: v.value }} {...bem('input', '', 'tiptap')}></div>
       </section>
     )

@@ -57,6 +57,7 @@
 
     &__input {
         border-radius: 0;
+        min-height: 1em;
         padding: 8px vars.$form-padding-x vars.$form-padding-y;
         background-color: transparent;
 
@@ -64,9 +65,9 @@
             color: colors.$muted;
         }
 
-        &--empty:not(:focus-within) {
-            // TODO: Improve empty styling
-        }
+        // &--empty:not(:focus-within) {
+        //     // TODO: Improve empty styling
+        // }
     }
 
     &__menu {
