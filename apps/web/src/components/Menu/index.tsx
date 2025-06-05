@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import menuState from '@/store/menu'
 import Icon from '@/components/Icon'
+import { useEditable } from '@/hooks/useEditable'
 
 import WizardList from '@/components/WizardList'
 import Transition from '@/components/Transition'
@@ -21,6 +22,7 @@ export default function Menu({ openWizardId }: Props) {
   const [open, setOpen] = useAtom(menuState)
   const { wizards } = useWizards(open)
   const menuRef = useRef<HTMLDivElement>(null)
+  const isEditable = useEditable()
 
   const closeMenu = () => {
     setOpen(false)
@@ -41,7 +43,7 @@ export default function Menu({ openWizardId }: Props) {
     <>
       <Transition
         updateKey={open.toString()}
-        {...bem('', '', open ? 'overlay' : undefined)}
+        {...bem('', { 'header-message-visible': !isEditable }, open ? 'overlay' : undefined)}
         enter={300}
         exit={300}
       >

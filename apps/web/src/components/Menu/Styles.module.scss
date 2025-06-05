@@ -126,6 +126,13 @@
             animation: fade-out 300ms vars.$ease-in-out-quint--custom forwards;
         }
     }
+
+    &--header-message-visible {
+        #{$this}__content,
+        #{$this}__backdrop {
+            top: calc(vars.$header-height * 2);
+        }
+    }
 }
 
 @keyframes enter {
