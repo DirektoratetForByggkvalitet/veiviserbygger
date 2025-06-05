@@ -18,9 +18,8 @@ import { get } from 'lodash'
 
 const bem = BEMHelper(styles)
 
-export interface ExpressionProps {
+export type ExpressionProps = {
   expression?: ExpressionType
-  nodeId: string
   /**
    * Only used when the expression is a clause in a complex expression
    */
@@ -33,6 +32,9 @@ export interface ExpressionProps {
   child?: boolean
   first?: boolean
   type?: 'or' | 'and'
+  property?: string
+  nodeId?: string
+  pageId?: string
 }
 
 type FieldType = {
@@ -193,69 +195,67 @@ export default function Expression({
   first,
   type,
   nodeId,
+  pageId,
+  property = 'test',
   clauseId,
   onlyClause,
 }: ExpressionProps) {
-  const { getNodeRef, patchNode, removeExpressionClause } = useVersion()
+  const { patch, getVersionRef, getNodeRef, removeExpressionClause } = useVersion()
+
+  const patchDocRef = nodeId ? getNodeRef(nodeId) : getVersionRef()
+  const path = pageId ? `pages.${pageId}.${property}` : property
 
   const handleAddClause = () => {
     if (!expression) {
       return
     }
 
+    console.log(path)
+
     // new clause in complex expression
     if (clauseId || 'clauses' in expression) {
-      return patchNode(nodeId, {
-        type: 'Branch',
-        test: {
-          clauses: {
-            [uuid()]: {} as Patch<SimpleExpression>,
-          },
-        },
-      })
-    }
-
-    // turn simple expression into complex expression
-    patchNode(nodeId, {
-      type: 'Branch',
-      test: {
-        field: unset,
-        operator: unset,
-        value: unset,
-        type: 'and',
+      return patch(patchDocRef, path, {
         clauses: {
-          [uuid()]: expression as SimpleExpression,
           [uuid()]: {} as Patch<SimpleExpression>,
         },
+      } satisfies Patch<ExpressionType>)
+    }
+
+    patch(patchDocRef, path, {
+      field: unset,
+      operator: unset,
+      value: unset,
+      type: 'and',
+      clauses: {
+        [uuid()]: expression as SimpleExpression,
+        [uuid()]: {} as Patch<SimpleExpression>,
       },
-    })
+    } satisfies Patch<ExpressionType>)
   }
 
   const handleDeleteClause = (id: string) => {
-    removeExpressionClause(nodeId, id)
+    removeExpressionClause(patchDocRef, path, id)
   }
 
   const handleExpressionChange = (key: string) => (value: any) => {
     const val = key === 'field' ? getNodeRef(value) : value
 
+    console.log(':::', path)
+
     if (clauseId) {
-      return patchNode(nodeId, {
-        test: {
-          clauses: {
-            [clauseId]: {
-              [key]: val,
-              ...(key === 'field' ? { operator: unset, value: unset } : {}),
-            },
+      return patch(patchDocRef, path, {
+        clauses: {
+          [clauseId]: {
+            [key]: val,
+            ...(key === 'field' ? { operator: unset, value: unset } : {}),
           },
         },
       })
     }
 
-    patchNode(nodeId, {
-      test: {
-        [key]: val,
-        ...(key === 'field' ? { operator: unset, value: unset } : {}),
-      },
+    patch(patchDocRef, path, {
+      [key]: val,
+      ...(key === 'field' ? { operator: unset, value: unset } : {}),
     })
   }
 
@@ -297,6 +297,7 @@ export default function Expression({
               <Expression
                 clauseId={clause.id}
                 nodeId={nodeId}
+                pageId={pageId}
                 expression={clause}
                 nodes={nodes}
                 child

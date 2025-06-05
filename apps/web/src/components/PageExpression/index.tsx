@@ -12,7 +12,7 @@ export default function PageExpression({ label = 'Vis siden', ...props }: Props 
   return (
     <section {...bem('')}>
       <h3 {...bem('title')}>{label}</h3>
-      <Expression {...props} />
+      <Expression {...props} property="show" />
     </section>
   )
 }
