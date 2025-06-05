@@ -10,6 +10,9 @@
     border: vars.$border-style;
     background-color: colors.$light;
 
+    --delay: 440ms;
+    $transition: 320ms vars.$ease-out-quart;
+
     &:hover {
         border-color: colors.shade(colors.get(neutral), 6%);
 
@@ -35,12 +38,21 @@
 
     &__label {
         @include mixins.font-size(small);
+        position: relative;
+        z-index: 2;
         font-weight: normal;
         color: colors.$muted;
-        padding: vars.$form-padding-y vars.$form-padding-x;
+        padding: vars.$form-padding-y vars.$form-padding-x 0;
 
         border-bottom: vars.$border-style;
         border-color: transparent;
+        background-color: colors.$light;
+
+        transition:
+            padding $transition,
+            border-color $transition;
+
+        transition-delay: var(--delay);
     }
 
     &__input {
@@ -71,10 +83,11 @@
         overflow: hidden;
 
         transition:
-            opacity 200ms vars.$ease-out-quart,
-            max-height 200ms vars.$ease-out-quart;
+            opacity $transition,
+            max-height $transition,
+            border-color $transition;
 
-        transition-delay: 500ms;
+        transition-delay: var(--delay);
     }
 
     &__control {
@@ -101,6 +114,8 @@
         border-radius: 2px;
         border-color: colors.get(primary);
         box-shadow: 0 0 0 1px colors.get(primary);
+
+        --delay: 0ms;
 
         #{$this}__label {
             color: colors.$text;
