@@ -1,4 +1,3 @@
-import { useState, useRef, Fragment } from 'react'
 import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
 import Checkbox from '@/components/Checkbox'
@@ -12,6 +11,7 @@ import Modal from '@/components/Modal'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Fragment, useRef, useState } from 'react'
 import {
   Answer,
   Branch,
