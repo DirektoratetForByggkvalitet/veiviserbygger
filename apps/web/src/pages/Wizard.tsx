@@ -385,7 +385,7 @@ export default function Wizard() {
                   </>
                 )}
 
-                {!isEditable && (
+                {isEditable && (
                   <Dropdown
                     options={
                       page?.type === 'Page'
