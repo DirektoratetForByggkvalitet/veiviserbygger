@@ -230,6 +230,7 @@ function Option({ pageId, nodeId, id, heading }: { pageId: string; nodeId: strin
       <Input
         hideLabel
         label="Svar"
+        placeholder="Svar"
         value={heading || ''}
         forwardedRef={inputRef}
         onChange={(v) => patchAnswer(nodeId, id, { heading: v })}

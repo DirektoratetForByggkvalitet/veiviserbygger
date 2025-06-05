@@ -29,6 +29,7 @@ export type DropdownOptions = Array<
 
 type Props = {
   label?: string
+  placeholder?: string
   icon?: keyof typeof icons
   value?: string | number | boolean
   position?: 'above' | 'below'
@@ -45,6 +46,7 @@ type Props = {
 export default function Dropdown({
   label,
   value,
+  placeholder,
   icon,
   options,
   direction = 'left',
@@ -118,7 +120,9 @@ export default function Dropdown({
 
   const selectedOption = options.find((option) => 'value' in option && option.value === value)
   const valueString =
-    selectedOption && 'label' in selectedOption ? selectedOption?.label : value || label
+    selectedOption && 'label' in selectedOption
+      ? selectedOption?.label
+      : value || placeholder || label
 
   if (!isEditable && iconOnly) {
     return null
