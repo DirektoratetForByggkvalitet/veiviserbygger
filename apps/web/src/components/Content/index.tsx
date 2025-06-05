@@ -1,3 +1,4 @@
+import { useState, useRef, Fragment } from 'react'
 import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
 import Checkbox from '@/components/Checkbox'
@@ -11,7 +12,6 @@ import Modal from '@/components/Modal'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useRef, useState } from 'react'
 import {
   Answer,
   Branch,
@@ -415,7 +415,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
 
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
     return (
-      <>
+      <Fragment key={node.id}>
         <Header type={node.type} node={node} />
         <Main>
           <Input
@@ -434,13 +434,13 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           <Help description={getTypeDescription(node.type)} />
         </Aside>
         {/* TODO: summary, details, show */}
-      </>
+      </Fragment>
     )
   }
 
   if (node.type === 'Radio') {
     return (
-      <>
+      <Fragment key={node.id}>
         <Header
           type={node.type}
           title={node.heading || 'Hva er det til middag i dag?'}
@@ -484,13 +484,13 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             />
           </div>
         </Aside>
-      </>
+      </Fragment>
     )
   }
 
   if (node.type === 'Checkbox') {
     return (
-      <>
+      <Fragment key={node.id}>
         <Header
           type={node.type}
           title={node.heading || 'Hva er det til middag i dag?'}
@@ -526,13 +526,13 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             />
           </div>
         </Aside>
-      </>
+      </Fragment>
     )
   }
 
   if (node.type === 'Branch') {
     return (
-      <>
+      <Fragment key={node.id}>
         <Header type={node.preset || node.type} node={node} />
         <Main>
           <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
@@ -549,14 +549,12 @@ function Node({ node, pageId, allNodes }: NodeProps) {
                 const node = allNodes[nodeRef?.node?.id]
 
                 return (
-                  <>
-                    <Node
-                      node={{ ...node, id: nodeRef.node.id }}
-                      pageId={pageId}
-                      allNodes={allNodes}
-                      key={nodeRef.id}
-                    />
-                  </>
+                  <Node
+                    node={{ ...node, id: nodeRef.node.id }}
+                    pageId={pageId}
+                    allNodes={allNodes}
+                    key={nodeRef.id}
+                  />
                 )
               })}
               <Dropdown
@@ -574,13 +572,13 @@ function Node({ node, pageId, allNodes }: NodeProps) {
         <Aside>
           <Help description={getTypeDescription(node.preset || node.type)} />
         </Aside>
-      </>
+      </Fragment>
     )
   }
 
   if (node.type === 'Error') {
     return (
-      <>
+      <Fragment key={node.id}>
         <Input
           label="Tittel"
           value={node.heading || ''}
@@ -592,13 +590,13 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           value={node.text || ''}
           onChange={(v) => patchNode(node.id, { type: 'Error', text: v })}
         />
-      </>
+      </Fragment>
     )
   }
 
   if (node.type === 'Information') {
     return (
-      <>
+      <Fragment key={node.id}>
         <Input
           label="Tittel"
           value={node.heading || ''}
@@ -610,7 +608,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           value={node.text || ''}
           onChange={(v) => patchNode(node.id, { type: 'Information', text: v })}
         />
-      </>
+      </Fragment>
     )
   }
 }
