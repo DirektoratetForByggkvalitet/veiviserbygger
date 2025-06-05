@@ -37,6 +37,7 @@ type Props = {
   direction?: 'left' | 'right'
   sentence?: boolean
   simple?: boolean
+  subtle?: boolean
   hideLabel?: boolean
   iconOnly?: boolean
   trigger?: (props: { onClick: MouseEventHandler }) => ReactElement
@@ -58,6 +59,7 @@ export default function Dropdown({
   trigger,
   sentence,
   simple,
+  subtle,
 }: Props) {
   const location = useLocation()
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -131,7 +133,7 @@ export default function Dropdown({
 
   if (!isEditable) {
     return (
-      <div {...bem('', { simple, sentence, 'read-only': true })} ref={wrapperRef}>
+      <div {...bem('', { simple, subtle, sentence, 'read-only': true })} ref={wrapperRef}>
         <div {...bem('trigger', { label: !!label })}>
           {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
           <span {...bem('value')}>{valueString || ' '}</span>
@@ -141,7 +143,7 @@ export default function Dropdown({
   }
 
   return (
-    <div {...bem('', { simple, sentence, iconOnly })} ref={wrapperRef}>
+    <div {...bem('', { simple, subtle, sentence, iconOnly })} ref={wrapperRef}>
       {trigger ? (
         trigger({ onClick: triggerClick })
       ) : (
