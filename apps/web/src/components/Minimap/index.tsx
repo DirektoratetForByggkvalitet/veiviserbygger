@@ -138,7 +138,9 @@ function PageMap({
   const content = getOrdered(page?.content)
   const isEditable = useEditable()
   /* TODO: Implement reordering of content */
-  const { value, onSort, inSync } = useSortableList(content, (list) => reorderNodes(page.id, list))
+  const { value, onSort, inSync } = useSortableList(content, (list) =>
+    page.id ? reorderNodes(page.id, list) : undefined,
+  )
 
   const handleSortingDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -217,16 +219,8 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
       const selectedElement = document.getElementById(`page-${selected}`)
 
       if (selectedElement) {
-        console.log('Selected element:', selectedElement)
         selectedElement.scrollIntoView({ behavior: 'smooth', inline: 'center' })
       }
-      //     requestAnimationFrame(() => {
-      //       if (!contentRef.current) return
-      //       contentRef.current.style.marginLeft = `-${selectedElement.offsetLeft}px`
-      //     })
-      //   }
-      // } else {
-      //   contentRef.current?.style.removeProperty('margin-left')
     }
   }, [selected])
 

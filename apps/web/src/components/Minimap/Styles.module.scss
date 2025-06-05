@@ -92,9 +92,9 @@
             }
         }
 
-        &:has(+ #{$this}__page--selected) {
-            //   border-color: colors.get(primary, light);
-        }
+        // &:has(+ #{$this}__page--selected) {
+        //       border-color: colors.get(primary, light);
+        // }
     }
 
     &__sub-title {
