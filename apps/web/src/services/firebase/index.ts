@@ -22,6 +22,7 @@ import { dataPoint } from './utils/db'
 import {
   Answer,
   Branch,
+  ComplexExpression,
   DeepPartial,
   OptionalExcept,
   OrderedArr,
@@ -35,8 +36,7 @@ import {
   WizardVersion,
 } from 'types'
 import { v4 as uuid } from 'uuid'
-import deepExtend from 'deep-extend'
-import { maxBy, pick, values } from 'lodash'
+import { get, maxBy, pick, set, values } from 'lodash'
 import { merge } from '@/lib/merge'
 import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 import { rewriteRefs } from '@/lib/rewrite'
@@ -158,6 +158,23 @@ type FuncScope = {
   versionId: string
 }
 
+export async function patch(
+  { db }: FuncScope,
+  ref: DocumentReference,
+  path: string | string[],
+  patchData: any,
+) {
+  await runTransaction(db, async (transaction) => {
+    const current = await transaction.get(ref)
+
+    if (!current.exists()) {
+      throw new Error(`Document with id ${ref.id} not found`)
+    }
+
+    await transaction.update(ref, merge(current.data(), set({}, path, patchData)))
+  })
+}
+
 export async function createPage(
   { db, wizardId, versionId }: FuncScope,
   page: Partial<Omit<WizardPage, 'id'>>,
@@ -183,7 +200,7 @@ export async function patchPage(
 
     // if we're patching the intro page, just update the intro field
     if (pageId === 'intro') {
-      await transaction.update(ref, 'intro', deepExtend(current?.data()?.intro ?? {}, patch))
+      await transaction.update(ref, 'intro', merge(current?.data()?.intro ?? {}, patch))
       return
     }
 
@@ -194,7 +211,7 @@ export async function patchPage(
       throw new Error(`Page with id ${pageId} not found`)
     }
 
-    await transaction.update(ref, `pages.${pageId}`, deepExtend(patchedPage, patch))
+    await transaction.update(ref, `pages.${pageId}`, merge(patchedPage, patch))
   })
 }
 
@@ -365,22 +382,26 @@ export async function patchNode(
 }
 
 export async function removeExpressionClause(
-  { db, wizardId, versionId }: FuncScope,
-  nodeId: string,
+  { db }: FuncScope,
+  docRef: DocumentReference,
+  path: string,
   clauseId: string,
 ) {
   await runTransaction(db, async (transaction) => {
-    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
-    const current = await transaction.get(ref)
+    const current = await transaction.get(docRef)
 
-    const node = current?.data() as Branch
+    const expression = get(current?.data(), path) as ComplexExpression
 
-    if (!node?.test?.type || !node.test.clauses[clauseId]) {
-      throw new Error(`Clause with id ${clauseId} not found in node with id ${nodeId}`)
+    if (!expression) {
+      throw new Error(`Expression not found at path ${path} in document ${docRef.path}`)
+    }
+
+    if (!expression?.clauses?.[clauseId]) {
+      throw new Error(`Clause with id ${clauseId} not found in expression at path ${path}`)
     }
 
     console.log('removeExpressionClause')
-    await transaction.update(ref, `test.clauses.${clauseId}`, deleteField())
+    await transaction.update(docRef, `${path}.clauses.${clauseId}`, deleteField())
   })
 }
 
@@ -505,7 +526,7 @@ export function patchAnswer(
       throw new Error(`Answer with id ${answerId} not found in node with id ${nodeId}`)
     }
 
-    await transaction.update(ref, `options.${answerId}`, deepExtend(node.options[answerId], patch))
+    await transaction.update(ref, `options.${answerId}`, merge(node.options[answerId], patch))
   })
 }
 

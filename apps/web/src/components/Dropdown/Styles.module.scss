@@ -82,8 +82,9 @@
         align-items: stretch;
         color: colors.$text;
         border: vars.$border-style;
-        border-radius: 2px;
+        border-radius: 4px;
         background-color: colors.$light;
+        box-shadow: vars.$shadow--small;
 
         max-height: min(50vh, 600px);
         overflow-x: hidden;
@@ -95,14 +96,13 @@
 
     &__wrapper {
         position: absolute;
-        top: 0;
+        top: 1px;
         left: 0;
         outline: 0;
         z-index: 2;
         width: 100%;
         min-width: fit-content;
         max-width: 500px;
-        box-shadow: 0 6px 12px rgba(black, 0.05);
 
         @include mixins.entering {
             animation: enter 300ms vars.$ease-out-quart both;
@@ -289,7 +289,6 @@
     }
 
     to {
-        box-shadow: 0 0 0 rgba(black, 0);
-        clip-path: inset(-20px -20px 100% -20px);
+        clip-path: inset(-20px -20px calc(100% + 10px) -20px);
     }
 }

@@ -17,6 +17,8 @@ import {
   removeExpressionClause,
   publishVersion,
   createDraftVersion,
+  patch,
+  getWizardVersionRef,
 } from '@/services/firebase'
 import { curry } from 'lodash'
 
@@ -29,7 +31,9 @@ export function useVersion() {
   }
 
   return {
+    patch: curry(patch)({ db: firestore, wizardId, versionId }),
     getNodeRef: curry(getNodeRef)({ db: firestore, wizardId, versionId }),
+    getVersionRef: () => getWizardVersionRef({ db: firestore, wizardId, versionId }),
     createPage: curry(createPage)({ db: firestore, wizardId, versionId }),
     patchPage: curry(patchPage)({ db: firestore, wizardId, versionId }),
     deletePage: curry(deletePage)({ db: firestore, wizardId, versionId }),

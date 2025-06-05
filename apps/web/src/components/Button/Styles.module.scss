@@ -32,7 +32,7 @@
 
         &:hover,
         &:focus:focus-visible {
-            background-color: mixins.shade(colors.get(primary, dark), 4%);
+            background-color: colors.shade(colors.get(primary, dark), 4%);
         }
         &:disabled {
             background-color: colors.get(neutral);

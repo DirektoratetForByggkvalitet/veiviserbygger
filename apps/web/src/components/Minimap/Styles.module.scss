@@ -8,9 +8,7 @@
     width: 100%;
     height: calc(100vh - #{vars.$header-height});
     overflow: auto;
-    transition:
-        width 500ms vars.$ease-in-out-quint--custom,
-        margin 500ms ease-in-out;
+    transition: width 500ms vars.$ease-in-out-quint--custom;
     background-color: colors.get(primary, xlight);
     margin-left: 0;
 
@@ -94,9 +92,9 @@
             }
         }
 
-        &:has(+ #{$this}__page--selected) {
-            //   border-color: colors.get(primary, light);
-        }
+        // &:has(+ #{$this}__page--selected) {
+        //       border-color: colors.get(primary, light);
+        // }
     }
 
     &__sub-title {
@@ -107,6 +105,7 @@
         text-wrap: balance;
         flex-grow: 1;
         height: (1em * 2) * $line-height;
+
         &--placeholder {
             color: colors.$muted;
         }
@@ -200,6 +199,8 @@
         overflow: hidden;
         overscroll-behavior: contain;
         transition: none;
+
+        width: calc(100vw - vars.$panel-width);
     }
 }
 
