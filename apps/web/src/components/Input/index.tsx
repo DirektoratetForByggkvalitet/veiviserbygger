@@ -1,9 +1,9 @@
 import { ChangeEvent, HTMLInputTypeAttribute, RefObject, useRef } from 'react'
 
+import { useEditable } from '@/hooks/useEditable'
+import { useValue } from '@/hooks/useValue'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import { useValue } from '@/hooks/useValue'
-import { useEditable } from '@/hooks/useEditable'
 const bem = BEMHelper(styles)
 
 type Props<T extends HTMLInputTypeAttribute = 'text'> = {

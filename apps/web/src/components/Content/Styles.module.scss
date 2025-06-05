@@ -50,8 +50,14 @@
         grid-area: main;
         background-color: colors.$light;
         border: vars.$border-style;
+
         &--full {
             grid-area: full;
+        }
+
+        // TODO: Figure out why this is needed
+        #{$this}__aside {
+            border: vars.$border-style;
         }
     }
 
@@ -60,8 +66,9 @@
         background-color: colors.$light;
         border: vars.$border-style;
         border-top: none;
+
         @include mixins.min-width(lg) {
-            padding-left: vars.$spacing;
+            padding-left: vars.$spacing--small;
             border-top: vars.$border-style;
             border-left: none;
         }
@@ -142,8 +149,8 @@
         }
     }
 
-    &__option-actions {
-    }
+    // &__option-actions {
+    // }
 
     &__field-list > *:not(:first-child) {
         border-top: none;

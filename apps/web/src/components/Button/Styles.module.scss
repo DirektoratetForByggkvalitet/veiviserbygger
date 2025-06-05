@@ -38,6 +38,7 @@
             background-color: colors.shade(colors.get(primary, dark), 4%);
             color: colors.$light;
         }
+
         &:disabled {
             background-color: colors.get(neutral);
             color: colors.$muted;
@@ -53,6 +54,7 @@
             background-color: colors.shade(colors.$warning, 6%);
             color: colors.$light;
         }
+
         &:disabled {
             background-color: colors.get(neutral);
             color: colors.$muted;
@@ -87,17 +89,25 @@
     &--icon-only {
         padding: 14px;
         background-color: transparent;
+
         &:hover,
         &:focus:focus-visible {
             background-color: colors.get(neutral, xlight);
         }
+
         #{$this}__icon {
             padding: 0;
         }
+
         &#{$this}--small {
             padding: 8px;
             height: 35px;
             width: 35px;
+        }
+
+        &:disabled {
+            pointer-events: none;
+            opacity: 0.2;
         }
     }
 
