@@ -36,7 +36,6 @@ import {
   WizardVersion,
 } from 'types'
 import { v4 as uuid } from 'uuid'
-import deepExtend from 'deep-extend'
 import { get, maxBy, pick, set, values } from 'lodash'
 import { merge } from '@/lib/merge'
 import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
@@ -172,9 +171,7 @@ export async function patch(
       throw new Error(`Document with id ${ref.id} not found`)
     }
 
-    console.log(ref.path, current.data(), set({}, path, patchData))
-
-    await transaction.update(ref, deepExtend(current.data(), set({}, path, patchData)))
+    await transaction.update(ref, merge(current.data(), set({}, path, patchData)))
   })
 }
 
@@ -203,7 +200,7 @@ export async function patchPage(
 
     // if we're patching the intro page, just update the intro field
     if (pageId === 'intro') {
-      await transaction.update(ref, 'intro', deepExtend(current?.data()?.intro ?? {}, patch))
+      await transaction.update(ref, 'intro', merge(current?.data()?.intro ?? {}, patch))
       return
     }
 
@@ -214,7 +211,7 @@ export async function patchPage(
       throw new Error(`Page with id ${pageId} not found`)
     }
 
-    await transaction.update(ref, `pages.${pageId}`, deepExtend(patchedPage, patch))
+    await transaction.update(ref, `pages.${pageId}`, merge(patchedPage, patch))
   })
 }
 
@@ -529,7 +526,7 @@ export function patchAnswer(
       throw new Error(`Answer with id ${answerId} not found in node with id ${nodeId}`)
     }
 
-    await transaction.update(ref, `options.${answerId}`, deepExtend(node.options[answerId], patch))
+    await transaction.update(ref, `options.${answerId}`, merge(node.options[answerId], patch))
   })
 }
 
