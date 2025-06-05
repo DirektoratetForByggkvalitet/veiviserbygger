@@ -14,6 +14,7 @@ import { Wizard, WrappedWithId } from 'types'
 import { Timestamp } from 'firebase/firestore'
 import { siteName } from '@/constants'
 import { useModal } from '@/hooks/useModal'
+import { EditableContext } from '@/context/EditableContext'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -87,78 +88,80 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   ] as DropdownOptions
 
   return (
-    <header {...bem('', { open })}>
-      <button type="button" {...bem('toggle')} aria-label="Meny" onClick={toggleMenu}>
-        <IconMenu />
-      </button>
+    <EditableContext.Provider value={true}>
+      <header {...bem('', { open })}>
+        <button type="button" {...bem('toggle')} aria-label="Meny" onClick={toggleMenu}>
+          <IconMenu />
+        </button>
 
-      <h1 {...bem('name')}>{title}</h1>
+        <h1 {...bem('name')}>{title}</h1>
 
-      <nav {...bem('actions')}>
-        {activeVersion && (
-          <>
-            <Button size="small" to={`/wizard/${wizardId}/${versionId}/preview`}>
-              Forhåndsvisning
-            </Button>
-
-            {/* A draft exist, but the user is on a different version */}
-            {wizard?.data.draftVersion?.id !== activeVersion.id && wizard?.data.draftVersion ? (
-              <Button size="small" to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}>
-                Gå til utkast
+        <nav {...bem('actions')}>
+          {activeVersion && (
+            <>
+              <Button size="small" to={`/wizard/${wizardId}/${versionId}/preview`}>
+                Forhåndsvisning
               </Button>
-            ) : null}
 
-            {/* The user is on the draft version */}
-            {wizard?.data.draftVersion?.id === activeVersion.id ? (
-              <>
-                {/* The wizard has not been published before */}
-                {!wizard?.data.publishedVersion &&
-                wizard?.data.draftVersion?.id === activeVersion.id ? (
-                  <Button size="small" primary onClick={() => setModal('publish')}>
-                    Publiser
-                  </Button>
-                ) : null}
+              {/* A draft exist, but the user is on a different version */}
+              {wizard?.data.draftVersion?.id !== activeVersion.id && wizard?.data.draftVersion ? (
+                <Button size="small" to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}>
+                  Gå til utkast
+                </Button>
+              ) : null}
 
-                {/* The wizard that has been published before */}
-                {wizard?.data.publishedVersion &&
-                wizard?.data.draftVersion?.id === activeVersion.id ? (
-                  <>
+              {/* The user is on the draft version */}
+              {wizard?.data.draftVersion?.id === activeVersion.id ? (
+                <>
+                  {/* The wizard has not been published before */}
+                  {!wizard?.data.publishedVersion &&
+                  wizard?.data.draftVersion?.id === activeVersion.id ? (
                     <Button size="small" primary onClick={() => setModal('publish')}>
-                      Publiser endringer
+                      Publiser
                     </Button>
+                  ) : null}
 
-                    <Button warning size="small" onClick={() => setModal('delete-draft')}>
-                      Slett utkast
-                    </Button>
-                  </>
-                ) : null}
-              </>
-            ) : null}
+                  {/* The wizard that has been published before */}
+                  {wizard?.data.publishedVersion &&
+                  wizard?.data.draftVersion?.id === activeVersion.id ? (
+                    <>
+                      <Button size="small" primary onClick={() => setModal('publish')}>
+                        Publiser endringer
+                      </Button>
 
-            {!wizard?.data.draftVersion ? (
-              <Button size="small" primary onClick={() => setModal('draft')}>
-                Lag nytt utkast
-              </Button>
-            ) : null}
+                      <Button warning size="small" onClick={() => setModal('delete-draft')}>
+                        Slett utkast
+                      </Button>
+                    </>
+                  ) : null}
+                </>
+              ) : null}
 
-            <div {...bem('settings')}>
-              <Dropdown
-                icon="Settings2"
-                direction="right"
-                options={wizardOptions}
-                label={'Valg for veiviser'}
-                iconOnly
-              />
-            </div>
-          </>
-        )}
-        {user && (
-          <User
-            name={user?.displayName || user?.email}
-            options={[{ value: '', label: 'Logg ut', onClick: logout }]}
-          />
-        )}
-      </nav>
-    </header>
+              {!wizard?.data.draftVersion ? (
+                <Button size="small" primary onClick={() => setModal('draft')}>
+                  Lag nytt utkast
+                </Button>
+              ) : null}
+
+              <div {...bem('settings')}>
+                <Dropdown
+                  icon="Settings2"
+                  direction="right"
+                  options={wizardOptions}
+                  label={'Valg for veiviser'}
+                  iconOnly
+                />
+              </div>
+            </>
+          )}
+          {user && (
+            <User
+              name={user?.displayName || user?.email}
+              options={[{ value: '', label: 'Logg ut', onClick: logout }]}
+            />
+          )}
+        </nav>
+      </header>
+    </EditableContext.Provider>
   )
 }
