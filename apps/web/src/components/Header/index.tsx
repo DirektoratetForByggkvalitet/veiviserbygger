@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai'
-
+import { useState } from 'react'
 import menuState from '@/store/menu'
 
 import Button from '@/components/Button'
@@ -52,6 +52,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   const { wizardId } = useParams()
   const navigate = useNavigate()
   const [open, setOpen] = useAtom(menuState)
+  const [openActions, setOpenActions] = useState(false)
   const { setModal } = useModal()
   const isEditable = useEditable()
   const activeVersion = versions?.find((v) => v.id === versionId)
@@ -62,10 +63,18 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
     setOpen(!open)
   }
 
+  const toggleActionsMenu = () => {
+    setOpenActions(!openActions)
+  }
+
   const getVersionTitle = (
     v: { title?: string; publishedFrom?: Timestamp; publishedTo?: Timestamp },
     index: number,
+    type?: 'long' | 'short',
   ) => {
+    if (type === 'short') {
+      return `Versjon ${index}`
+    }
     return v.title
       ? `${index}. ${v.title}`
       : `${index}. ${v.publishedFrom && !v.publishedTo ? 'Publisert' : ''}${!v.publishedFrom ? 'Siste utkast' : ''}`
@@ -115,7 +124,9 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   ] as DropdownOptions
 
   return (
-    <header {...bem('', { open, 'show-message': wizardIsPublished })}>
+    <header
+      {...bem('', { open, 'show-message': wizardIsPublished, 'show-actions-mobile': openActions })}
+    >
       <div {...bem('wrapper')}>
         <button type="button" {...bem('toggle')} aria-label="Meny" onClick={toggleMenu}>
           <IconMenu />
@@ -127,23 +138,32 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
             {activeVersion && (
               <>
                 <Dropdown
-                  simple
+                  subtle
                   direction="right"
                   options={versionOptions}
                   hideLabel
                   label={
                     activeVersion
-                      ? getVersionTitle(activeVersion, activeVersionIndex + 1)
+                      ? getVersionTitle(activeVersion, activeVersionIndex + 1, 'short')
                       : 'Versjon mangler'
                   }
                 />
-                <Button size="small" to={`/wizard/${wizardId}/${versionId}/preview`}>
+                <Button
+                  size="small"
+                  iconOnlyOnMobile="Eye"
+                  to={`/wizard/${wizardId}/${versionId}/preview`}
+                >
                   Forhåndsvisning
                 </Button>
 
                 {/* The user is on the draft version */}
                 {wizard?.data.draftVersion?.id === activeVersion.id ? (
-                  <Button size="small" primary onClick={() => setModal('publish')}>
+                  <Button
+                    size="small"
+                    iconOnlyOnMobile="CloudUpload"
+                    primary
+                    onClick={() => setModal('publish')}
+                  >
                     Publiser
                   </Button>
                 ) : null}
@@ -167,6 +187,14 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
             )}
           </nav>
         </EditableContext.Provider>
+        <button
+          type="button"
+          {...bem('toggle', 'mobile-actions')}
+          aria-label={openActions ? 'Skjul funksjoner' : 'Vis funksjoner'}
+          onClick={toggleActionsMenu}
+        >
+          <Icon name={openActions ? 'X' : 'Ellipsis'} />
+        </button>
       </div>
       {wizardIsPublished && (
         <div {...bem('message')}>
@@ -175,13 +203,23 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
           </span>
           {/* A draft exist, but the user is on a different version */}
           {wizard?.data.draftVersion?.id !== activeVersion.id && wizard?.data.draftVersion ? (
-            <Button size="small" primary to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}>
+            <Button
+              size="small"
+              iconOnlyOnMobile="Pencil"
+              primary
+              to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}
+            >
               Gå til utkast
             </Button>
           ) : null}
           {/* No draft exist, so the user can create a new one */}
           {!wizard?.data.draftVersion ? (
-            <Button size="small" primary onClick={() => setModal('draft')}>
+            <Button
+              size="small"
+              iconOnlyOnMobile="Pencil"
+              primary
+              onClick={() => setModal('draft')}
+            >
               Lag nytt utkast
             </Button>
           ) : null}

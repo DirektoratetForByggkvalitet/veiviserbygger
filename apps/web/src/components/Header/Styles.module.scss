@@ -31,22 +31,35 @@
     &__name {
         @include mixins.font-size(base);
         font-weight: 400;
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        @include mixins.max-width(sm) {
+            flex-grow: 1;
+        }
     }
 
     &__toggle {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100%;
         padding: 0 vars.$spacing--small 1px; // 1px = Optical centering
+        &--mobile-actions {
+            @include mixins.min-width(sm) {
+                display: none;
+            }
+        }
     }
 
     &__actions {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-end;
         margin-left: auto;
         gap: 6px;
+        @include mixins.max-width(sm) {
+            display: none;
+        }
     }
 
     &__settings {
@@ -60,7 +73,7 @@
         height: vars.$header-height;
         gap: vars.$spacing--xsmall;
         padding: vars.$spacing--xsmall;
-        background-color: colors.get(primary, light);
+        background-color: colors.$info;
         border: 1px solid colors.$outline;
     }
 
@@ -76,6 +89,31 @@
         top: 0;
     }
 
-    &--show-message {
+    &--show-actions-mobile {
+        @include mixins.max-width(sm) {
+            #{$this}__actions {
+                display: flex;
+                animation: enter 300ms vars.$ease-out-quart both;
+                margin-left: 0;
+                flex-grow: 1;
+                padding-left: vars.$spacing--xsmall;
+                justify-content: flex-start;
+            }
+            #{$this}__logo,
+            #{$this}__name,
+            #{$this}__toggle:not(.header__toggle--mobile-actions) {
+                display: none;
+            }
+        }
+    }
+}
+
+@keyframes enter {
+    from {
+        clip-path: inset(-20px -20px -20px 100%);
+    }
+
+    to {
+        clip-path: inset(-20px -20px -20px -20px);
     }
 }
