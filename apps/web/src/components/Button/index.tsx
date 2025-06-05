@@ -19,6 +19,7 @@ interface Props {
   href?: string
   onClick?: MouseEventHandler
   icon?: keyof typeof icons
+  iconOnlyOnMobile?: keyof typeof icons
   iconOnly?: boolean
   // full?: boolean
   size?: 'small' | 'large'
@@ -35,6 +36,7 @@ export default function Button({
   href,
   onClick,
   iconOnly,
+  iconOnlyOnMobile,
   size,
   icon,
   disabled,
@@ -51,19 +53,32 @@ export default function Button({
   return (
     <Element
       {...props}
-      {...bem('', { primary, subtle, warning, [size ?? '']: size, 'icon-only': iconOnly, loading })}
+      {...bem('', {
+        primary,
+        subtle,
+        warning,
+        [size ?? '']: size,
+        'icon-only': iconOnly,
+        loading,
+        'only-on-mobile': iconOnlyOnMobile,
+      })}
       type={type}
       {...(typeSpecificProps as any)}
-      aria-label={iconOnly ? (children as string) : undefined}
+      aria-label={iconOnly || iconOnlyOnMobile ? (children as string) : undefined}
       title={iconOnly ? (children as string) : undefined}
       disabled={loading || disabled}
     >
+      {iconOnlyOnMobile && (
+        <span {...bem('icon', 'only-on-mobile')}>
+          <Icon name={iconOnlyOnMobile} />
+        </span>
+      )}
       {icon && (
         <span {...bem('icon')}>
           <Icon name={icon} />
         </span>
       )}
-      {!iconOnly && children}
+      {!iconOnly && children && <span {...bem('text')}>{children}</span>}
     </Element>
   )
 }

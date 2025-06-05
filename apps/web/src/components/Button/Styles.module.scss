@@ -24,6 +24,9 @@
         display: inline-flex;
         align-items: center;
         padding-right: vars.$spacing--xsmall;
+        &--only-on-mobile {
+            display: none;
+        }
     }
 
     &--primary {
@@ -98,6 +101,15 @@
         }
     }
 
+    @include mixins.max-width(sm) {
+        &--only-on-mobile #{$this}__text {
+            display: none;
+        }
+        &__icon--only-on-mobile {
+            display: inline-flex;
+            padding: 0;
+        }
+    }
     // &--large {
     //     // TODO: Do we really need this?
     // }
