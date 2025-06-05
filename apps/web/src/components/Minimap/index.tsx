@@ -1,22 +1,22 @@
-import { useEffect, useRef, useState, useCallback, useMemo, MouseEventHandler } from 'react'
-import { useDraggable } from 'react-use-draggable-scroll'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
-import { useSortable, SortableContext } from '@dnd-kit/sortable'
+import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useDraggable } from 'react-use-draggable-scroll'
 
 import Icon from '@/components/Icon'
 
+import { useEditable } from '@/hooks/useEditable'
+import { useSortableList } from '@/hooks/useSortableList'
+import { useVersion } from '@/hooks/useVersion'
 import BEMHelper from '@/lib/bem'
-import styles from './Styles.module.scss'
+import { getTypeIcon, getTypeText } from '@/lib/content'
+import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
+import { values } from 'lodash'
+import { getOrdered } from 'shared/utils'
 import { Intro, OptionalExcept, PageContent, Result, WizardPage, WizardVersion } from 'types'
 import NewPage from '../NewPage'
-import { getTypeText, getTypeIcon } from '@/lib/content'
-import { getOrdered } from 'shared/utils'
-import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
-import { useVersion } from '@/hooks/useVersion'
-import { useSortableList } from '@/hooks/useSortableList'
-import { useEditable } from '@/hooks/useEditable'
-import { values } from 'lodash'
+import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
 interface Props {
@@ -217,13 +217,16 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
       const selectedElement = document.getElementById(`page-${selected}`)
 
       if (selectedElement) {
-        requestAnimationFrame(() => {
-          if (!contentRef.current) return
-          contentRef.current.style.marginLeft = `-${selectedElement.offsetLeft}px`
-        })
+        console.log('Selected element:', selectedElement)
+        selectedElement.scrollIntoView({ behavior: 'smooth', inline: 'center' })
       }
-    } else {
-      contentRef.current?.style.removeProperty('margin-left')
+      //     requestAnimationFrame(() => {
+      //       if (!contentRef.current) return
+      //       contentRef.current.style.marginLeft = `-${selectedElement.offsetLeft}px`
+      //     })
+      //   }
+      // } else {
+      //   contentRef.current?.style.removeProperty('margin-left')
     }
   }, [selected])
 

@@ -18,7 +18,7 @@
         box-shadow: vars.$shadow;
 
         @include mixins.entering {
-            animation: enter 200ms vars.$ease-out-quart backwards;
+            animation: enter 500ms vars.$ease-out-quart backwards;
         }
 
         @include mixins.exiting {
