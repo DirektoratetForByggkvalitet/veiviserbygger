@@ -89,6 +89,11 @@
             border-color $transition;
 
         transition-delay: var(--delay);
+
+        @include mixins.max-width(sm) {
+            max-width: 100%;
+            overflow: hidden !important;
+        }
     }
 
     &__control {
