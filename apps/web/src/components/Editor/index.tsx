@@ -31,11 +31,10 @@ const extensions = [
 interface Props {
   label: string
   value: string
-  hideIfEmpty?: boolean
   onChange: (value: string) => void
 }
 
-export default function Editor({ label, value, hideIfEmpty, onChange }: Props) {
+export default function Editor({ label, value, onChange }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const v = useValue(value, onChange)
   const isEditable = useEditable()
@@ -62,7 +61,6 @@ export default function Editor({ label, value, hideIfEmpty, onChange }: Props) {
           extensions={extensions}
           content={v.value}
           editorContainerProps={{ ...bem('input') }}
-          autofocus={hideIfEmpty && !value}
           onUpdate={(content) => v.onChange(content.editor.getHTML())}
         />
       </section>

@@ -1,42 +1,42 @@
-import { useState, useRef } from 'react'
-import { DndContext, DragEndEvent } from '@dnd-kit/core'
-import { useSortable, SortableContext } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { v4 as uuid } from 'uuid'
-import {
-  PageContent,
-  OptionalExcept,
-  Branch,
-  WizardPage,
-  PageContentWithOptions,
-  Answer,
-  Result,
-  Error as ErrorNode,
-  Information,
-  DeepPartial,
-} from 'types'
-import Input from '@/components/Input'
-import Editor from '@/components/Editor'
-import File from '@/components/File'
 import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
-import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Checkbox from '@/components/Checkbox'
+import Dropdown, { DropdownOptions } from '@/components/Dropdown'
+import Editor from '@/components/Editor'
+import File from '@/components/File'
 import Help from '@/components/Help'
 import Icon from '@/components/Icon'
+import Input from '@/components/Input'
 import Modal from '@/components/Modal'
+import { DndContext, DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { useRef, useState } from 'react'
+import {
+  Answer,
+  Branch,
+  DeepPartial,
+  Error as ErrorNode,
+  Information,
+  OptionalExcept,
+  PageContent,
+  PageContentWithOptions,
+  Result,
+  WizardPage,
+} from 'types'
+import { v4 as uuid } from 'uuid'
 
-import BEMHelper from '@/lib/bem'
-import styles from './Styles.module.scss'
-import { ReactNode } from 'react'
-import { DocumentReference } from 'firebase/firestore'
+import { useEditable } from '@/hooks/useEditable'
+import { useSortableList } from '@/hooks/useSortableList'
 import { useVersion } from '@/hooks/useVersion'
+import BEMHelper from '@/lib/bem'
 import { getTypeDescription, getTypeIcon, getTypeText } from '@/lib/content'
+import { DocumentReference } from 'firebase/firestore'
+import { values } from 'lodash'
+import { ReactNode } from 'react'
 import { getOrdered } from 'shared/utils'
 import Expression from '../Expression'
-import { useSortableList } from '@/hooks/useSortableList'
-import { values } from 'lodash'
-import { useEditable } from '@/hooks/useEditable'
+import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -422,13 +422,11 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             label="Tittel"
             value={node.heading || ''}
             onChange={(v) => patchNode(node.id, { heading: v })}
-            hideIfEmpty
             header
           />
           <Editor
             label="Innhold"
             value={node.text || ''}
-            hideIfEmpty
             onChange={(v) => patchNode(node.id, { text: v })}
           />
         </Main>
@@ -460,7 +458,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           <Editor
             label="Beskrivelse"
             value={node.text || ''}
-            hideIfEmpty
             onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })}
           />
           <File
@@ -511,7 +508,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           <Editor
             label="Beskrivelse"
             value={node.text || ''}
-            hideIfEmpty
             onChange={(v) => patchNode(node.id, { type: 'Checkbox', text: v })}
           />
 
@@ -594,7 +590,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
         <Editor
           label="Beskrivelse"
           value={node.text || ''}
-          hideIfEmpty
           onChange={(v) => patchNode(node.id, { type: 'Error', text: v })}
         />
       </>
@@ -613,7 +608,6 @@ function Node({ node, pageId, allNodes }: NodeProps) {
         <Editor
           label="Beskrivelse"
           value={node.text || ''}
-          hideIfEmpty
           onChange={(v) => patchNode(node.id, { type: 'Information', text: v })}
         />
       </>
