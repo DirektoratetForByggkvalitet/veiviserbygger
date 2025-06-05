@@ -1,8 +1,8 @@
 import { type ReactNode, useEffect, useRef } from 'react'
 
-import Transition from '@/components/Transition'
-import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Button from '@/components/Button'
+import Dropdown, { DropdownOptions } from '@/components/Dropdown'
+import Transition from '@/components/Transition'
 
 import useKeyPress from '@/hooks/useKeyPress'
 
@@ -69,16 +69,26 @@ export default function Panel({
                 />
               )}
               <div>
-                {onPrevious && (
-                  <Button icon="ArrowLeft" size="small" subtle iconOnly onClick={onPrevious}>
-                    Forrige side
-                  </Button>
-                )}
-                {onNext && (
-                  <Button icon="ArrowRight" size="small" subtle iconOnly onClick={onNext}>
-                    Neste side
-                  </Button>
-                )}
+                <Button
+                  icon="ArrowLeft"
+                  size="small"
+                  subtle
+                  iconOnly
+                  disabled={!onPrevious}
+                  onClick={onPrevious}
+                >
+                  Forrige side
+                </Button>
+                <Button
+                  icon="ArrowRight"
+                  size="small"
+                  subtle
+                  iconOnly
+                  disabled={!onNext}
+                  onClick={onNext}
+                >
+                  Neste side
+                </Button>
               </div>
               <Button onClick={onClose} icon="X" size="small" iconOnly>
                 Lukk panel
