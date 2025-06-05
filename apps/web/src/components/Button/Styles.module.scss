@@ -6,7 +6,7 @@
     $this: &;
     @include mixins.font-size(base);
     display: inline-flex;
-    padding: 14px 24px;
+    padding: 14px 20px;
     border-radius: vars.$border-radius;
     background-color: colors.get(neutral, light);
     align-items: center;
@@ -14,6 +14,10 @@
     transition:
         background-color 200ms vars.$ease-in-out-quint--custom,
         color 200ms vars.$ease-in-out-quint--custom;
+
+    @include mixins.min-width(sm) {
+        padding: 14px 24px;
+    }
 
     &:hover,
     &:focus:focus-visible {
@@ -24,8 +28,15 @@
         display: inline-flex;
         align-items: center;
         padding-right: vars.$spacing--xsmall;
+
         &--only-on-mobile {
             display: none;
+
+            @include mixins.max-width(sm) {
+                display: inline-flex;
+                padding: 0;
+                flex-shrink: 0;
+            }
         }
     }
 
@@ -69,6 +80,7 @@
     &--subtle {
         background-color: transparent;
         width: fit-content;
+
         &:hover,
         &:focus:focus-visible {
             background-color: colors.get(neutral-transparent, xlight);
@@ -80,6 +92,7 @@
         animation: loading 600ms vars.$ease-out-quart infinite;
         animation-direction: alternate-reverse;
         color: colors.$muted;
+
         &:hover,
         &:focus:focus-visible {
             background-color: colors.get(neutral, xlight);
@@ -111,18 +124,13 @@
         }
     }
 
-    @include mixins.max-width(sm) {
-        &--only-on-mobile #{$this}__text {
-            display: none;
-        }
-        &__icon--only-on-mobile {
-            display: inline-flex;
-            padding: 0;
+    &--only-on-mobile {
+        #{$this}__text {
+            @include mixins.max-width(sm) {
+                display: none;
+            }
         }
     }
-    // &--large {
-    //     // TODO: Do we really need this?
-    // }
 }
 
 @keyframes loading {

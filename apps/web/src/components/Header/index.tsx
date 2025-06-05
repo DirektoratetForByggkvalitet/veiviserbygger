@@ -1,21 +1,20 @@
-import { useAtom } from 'jotai'
-import { useState } from 'react'
 import menuState from '@/store/menu'
+import { useAtom } from 'jotai'
 
 import Button from '@/components/Button'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Icon, { IconMenu } from '@/components/Icon'
 import User from '@/components/User'
+import { siteName } from '@/constants'
+import { EditableContext } from '@/context/EditableContext'
 import useAuth from '@/hooks/auth'
+import { useEditable } from '@/hooks/useEditable'
+import { useModal } from '@/hooks/useModal'
 import BEMHelper from '@/lib/bem'
-import styles from './Styles.module.scss'
+import { Timestamp } from 'firebase/firestore'
 import { useNavigate, useParams } from 'react-router'
 import { Wizard, WrappedWithId } from 'types'
-import { Timestamp } from 'firebase/firestore'
-import { siteName } from '@/constants'
-import { useModal } from '@/hooks/useModal'
-import { EditableContext } from '@/context/EditableContext'
-import { useEditable } from '@/hooks/useEditable'
+import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -52,7 +51,6 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   const { wizardId } = useParams()
   const navigate = useNavigate()
   const [open, setOpen] = useAtom(menuState)
-  const [openActions, setOpenActions] = useState(false)
   const { setModal } = useModal()
   const isEditable = useEditable()
   const activeVersion = versions?.find((v) => v.id === versionId)
@@ -61,10 +59,6 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
 
   const toggleMenu = () => {
     setOpen(!open)
-  }
-
-  const toggleActionsMenu = () => {
-    setOpenActions(!openActions)
   }
 
   const getVersionTitle = (
@@ -124,15 +118,13 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   ] as DropdownOptions
 
   return (
-    <header
-      {...bem('', { open, 'show-message': wizardIsPublished, 'show-actions-mobile': openActions })}
-    >
+    <header {...bem('', { open, 'show-message': wizardIsPublished })}>
       <div {...bem('wrapper')}>
         <button type="button" {...bem('toggle')} aria-label="Meny" onClick={toggleMenu}>
           <IconMenu />
         </button>
 
-        <h1 {...bem('name')}>{title} </h1>
+        <h1 {...bem('name')}>{title}</h1>
         <EditableContext.Provider value={true}>
           <nav {...bem('actions')}>
             {activeVersion && (
@@ -150,9 +142,10 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                 />
                 <Button
                   size="small"
-                  iconOnlyOnMobile="Eye"
+                  iconOnlyOnMobile="SendHorizontal"
                   to={`/wizard/${wizardId}/${versionId}/preview`}
                 >
+                  {/* The user is on the draft version */}
                   Forhåndsvisning
                 </Button>
 
@@ -187,14 +180,6 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
             )}
           </nav>
         </EditableContext.Provider>
-        <button
-          type="button"
-          {...bem('toggle', 'mobile-actions')}
-          aria-label={openActions ? 'Skjul funksjoner' : 'Vis funksjoner'}
-          onClick={toggleActionsMenu}
-        >
-          <Icon name={openActions ? 'X' : 'Ellipsis'} />
-        </button>
       </div>
       {wizardIsPublished && (
         <div {...bem('message')}>

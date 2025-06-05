@@ -23,6 +23,7 @@
 
     &__logo {
         height: calc(vars.$header-height - vars.$spacing--small);
+
         &:first-child {
             margin-left: vars.$spacing--small;
         }
@@ -30,25 +31,24 @@
 
     &__name {
         @include mixins.font-size(base);
+        display: none;
         font-weight: 400;
         text-wrap: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        @include mixins.max-width(sm) {
-            flex-grow: 1;
+
+        @include mixins.min-width(sm) {
+            display: block;
         }
     }
 
     &__toggle {
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
+        height: 100%;
         padding: 0 vars.$spacing--small 1px; // 1px = Optical centering
-        &--mobile-actions {
-            @include mixins.min-width(sm) {
-                display: none;
-            }
-        }
     }
 
     &__actions {
@@ -57,9 +57,6 @@
         justify-content: flex-end;
         margin-left: auto;
         gap: 6px;
-        @include mixins.max-width(sm) {
-            display: none;
-        }
     }
 
     &__settings {

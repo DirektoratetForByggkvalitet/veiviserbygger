@@ -12,7 +12,7 @@ type Props = {
 
 export default function User({ name, options }: Props) {
   return (
-    <div {...bem()}>
+    <div {...bem('')}>
       {options && (
         <Dropdown
           icon="Ellipsis"

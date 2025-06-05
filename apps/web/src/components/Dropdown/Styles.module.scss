@@ -205,11 +205,16 @@
         }
 
         #{$this}__value {
-            padding: 0 20px 0 6px;
+            padding: 0 20px 0 0;
+
+            @include mixins.min-width(sm) {
+                padding: 0 20px 0 6px;
+            }
         }
 
         #{$this}__icon {
             padding: 0;
+            margin-right: -3px;
         }
     }
 

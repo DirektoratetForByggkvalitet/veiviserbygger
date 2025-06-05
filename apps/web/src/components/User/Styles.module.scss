@@ -17,8 +17,13 @@
         height: 40px;
         width: 40px;
         border-radius: 50%;
-        background-color: colors.$background;
+        background-color: colors.get(neutral, light);
         text-transform: uppercase;
+
+        &:hover,
+        &:focus:focus-visible {
+            background-color: colors.get(neutral, base);
+        }
     }
 
     &__name {
