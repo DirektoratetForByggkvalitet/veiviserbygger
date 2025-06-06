@@ -1,32 +1,25 @@
-import { Link } from 'react-router-dom'
-import Icon from '@/components/Icon'
 import BEMHelper from '@/lib/bem'
+import { NavLink } from 'react-router-dom'
+import { Wizard, WrappedWithId } from 'types'
 import styles from './Styles.module.scss'
-import { WrappedWithId, Wizard } from 'types'
 const bem = BEMHelper(styles)
 
 interface Props {
   wizards?: WrappedWithId<Wizard>[]
-  toggleNewModal?: () => void
   onLinkClick?: () => void
   compact?: boolean
-  selected?: string
 }
 
-export default function WizardList({
-  wizards,
-  toggleNewModal,
-  compact,
-  selected,
-  onLinkClick,
-}: Props) {
+export default function WizardList({ wizards, compact, onLinkClick }: Props) {
   return (
     <ul {...bem('', { compact })}>
       {wizards?.map((wizard) => (
         <li key={wizard.id}>
-          <Link
+          <NavLink
             to={`/wizard/${wizard.id}/${wizard.data.publishedVersion?.id || wizard.data.draftVersion?.id}`}
-            {...bem('item', { open: selected == wizard.id })}
+            className={({ isActive, isPending }) =>
+              bem('item', { active: isActive || isPending }).className
+            }
             onClick={onLinkClick}
           >
             <span {...bem('label')}>{wizard.data.title}</span>
@@ -35,21 +28,12 @@ export default function WizardList({
             ) : (
               <span {...bem('tag', 'public')}>Publisert</span>
             )}
-          </Link>
+          </NavLink>
         </li>
       ))}
-      {(!wizards || wizards.length === 0) && !toggleNewModal && (
+      {(!wizards || wizards.length === 0) && (
         <li key="none">
           <span {...bem('item', 'placeholder')}>Ingen veivisere</span>
-        </li>
-      )}
-
-      {toggleNewModal && (
-        <li>
-          <button {...bem('item', 'new')} onClick={() => toggleNewModal()}>
-            <Icon name="Plus" />
-            <span {...bem('label')}>Ny veiviser</span>
-          </button>
         </li>
       )}
     </ul>

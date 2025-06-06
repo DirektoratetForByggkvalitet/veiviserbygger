@@ -10,7 +10,7 @@
     &__content {
         position: fixed;
         display: flex;
-        gap: vars.$spacing--xsmall;
+        gap: 0.8rem;
         padding: vars.$margin;
         flex-direction: column;
         left: 0;
@@ -34,45 +34,28 @@
         outline: 0;
     }
 
-    &__section,
-    &__menu-items {
+    &__section {
         display: flex;
         flex-direction: column;
-        gap: vars.$spacing--xsmall;
-        margin-bottom: vars.$spacing--xsmall;
+        margin-bottom: vars.$spacing--small;
     }
 
     &__section-title {
         @include mixins.font(base, normal);
         @include mixins.font-size(small);
         color: colors.$muted;
+        margin: 0;
+        padding: 0;
     }
 
-    &__section--bottom {
-        flex-grow: 1;
-        justify-content: flex-end;
-    }
-
-    &__item {
-        @include mixins.font-size(base);
+    &__section-header {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 10px;
-        padding: 18px 22px;
-        border: vars.$border-style;
-
-        &:hover,
-        &:focus:focus-visible {
-            background-color: colors.get(neutral);
-        }
-
-        &--new {
-            border-style: dashed;
-        }
-
-        &--open {
-            background-color: colors.get(neutral);
-        }
+        padding: 0.8rem vars.$margin 0.4rem;
+        margin-left: mixins.invert(vars.$margin);
+        margin-right: mixins.invert(vars.$margin);
+        border-top: vars.$border-style--weak;
     }
 
     &__label {
@@ -89,14 +72,15 @@
 
     &__link {
         @include mixins.font-size(base);
+        $padding: 10px;
         display: flex;
-        width: 100%;
         align-items: center;
         gap: 10px;
-        padding: vars.$spacing--small;
-        background-color: colors.get(neutral, xlight);
+        padding: 10px $padding;
+        margin-left: -($padding);
+        margin-right: -($padding);
+        background-color: transparent;
         border-radius: vars.$border-radius;
-        transition: background-color 200ms vars.$ease-in-out-quint--custom;
 
         &:hover,
         &:focus:focus-visible {

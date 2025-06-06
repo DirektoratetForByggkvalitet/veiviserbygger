@@ -1,23 +1,21 @@
+import Icon from '@/components/Icon'
+import { useEditable } from '@/hooks/useEditable'
+import menuState from '@/store/menu'
 import { useAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import menuState from '@/store/menu'
-import Icon from '@/components/Icon'
-import { useEditable } from '@/hooks/useEditable'
 
-import WizardList from '@/components/WizardList'
 import Transition from '@/components/Transition'
+import WizardList from '@/components/WizardList'
 
-import BEMHelper from '@/lib/bem'
-import styles from './Styles.module.scss'
 import useWizards from '@/hooks/useWizards'
+import BEMHelper from '@/lib/bem'
+import Button from '../Button'
 import NewWizard from '../NewWizard'
+import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
-interface Props {
-  openWizardId?: string
-}
-export default function Menu({ openWizardId }: Props) {
+export default function Menu() {
   const [modal, setModal] = useState(false)
   const [open, setOpen] = useAtom(menuState)
   const { wizards } = useWizards(open)
@@ -56,14 +54,17 @@ export default function Menu({ openWizardId }: Props) {
               </Link>
 
               <section {...bem('section')}>
-                <h2 {...bem('section-title')}>Veivisere</h2>
-                <WizardList
-                  wizards={wizards}
-                  toggleNewModal={toggleModal(true)}
-                  selected={openWizardId}
-                  onLinkClick={closeMenu}
-                  compact
-                />
+                <header {...bem('section-header')}>
+                  <h2 {...bem('section-title')}>Veivisere</h2>
+                  <Button
+                    onClick={toggleModal(true)}
+                    iconOnly
+                    size="small"
+                    icon="Plus"
+                    aria-label="Ny veiviser"
+                  />
+                </header>
+                <WizardList wizards={wizards} onLinkClick={closeMenu} compact />
               </section>
             </nav>
 

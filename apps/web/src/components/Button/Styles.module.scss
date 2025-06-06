@@ -11,9 +11,6 @@
     background-color: colors.get(neutral, light);
     align-items: center;
     justify-content: center;
-    transition:
-        background-color 200ms vars.$ease-in-out-quint--custom,
-        color 200ms vars.$ease-in-out-quint--custom;
 
     @include mixins.min-width(sm) {
         padding: 14px 24px;

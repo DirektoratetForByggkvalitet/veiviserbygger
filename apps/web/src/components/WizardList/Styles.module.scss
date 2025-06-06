@@ -5,57 +5,33 @@
 
 .wizard-list {
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: vars.$spacing--xsmall;
-    margin-bottom: vars.$spacing--small;
-    @include mixins.min-width(md) {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    @include mixins.min-width(lg) {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    &--compact {
-        @include mixins.min-width(md) {
-            grid-template-columns: repeat(1, 1fr);
-        }
-        @include mixins.min-width(lg) {
-            grid-template-columns: repeat(1, 1fr);
-        }
-    }
 
     &__item {
         @include mixins.font-size(base);
+        $padding: 10px;
         display: flex;
-        width: 100%;
         align-items: center;
         gap: 10px;
-        padding: vars.$spacing--small;
-        background-color: colors.get(neutral, xlight);
+        padding: 10px $padding;
+        margin-left: -($padding);
+        margin-right: -($padding);
+        background-color: transparent;
         border-radius: vars.$border-radius;
-        transition: background-color 200ms vars.$ease-in-out-quint--custom;
 
         &:hover,
         &:focus:focus-visible {
             background-color: colors.get(neutral, light);
         }
 
-        &--new {
-            background-color: transparent;
-            border: vars.$border-style--dashed;
-            &:hover,
-            &:focus:focus-visible {
-                background-color: colors.get(neutral, xlight);
-            }
-        }
-
-        &--open {
-            background-color: colors.get(neutral);
+        &--active {
+            background-color: colors.get(primary, light);
         }
 
         &--placeholder {
             border: vars.$border-style--weak;
             background-color: transparent;
             color: colors.$muted;
+
             &:hover,
             &:focus:focus-visible {
                 background-color: transparent;
@@ -75,6 +51,7 @@
         background-color: colors.$light;
         color: colors.$text;
         border: vars.$border-style;
-        padding: 2px 4px;
+        border-radius: 4px;
+        padding: 3px 5px;
     }
 }

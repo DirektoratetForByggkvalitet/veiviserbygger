@@ -1,14 +1,14 @@
-import { ReactNode, MouseEventHandler } from 'react'
-import { icons } from 'lucide-react'
 import Icon from '@/components/Icon'
 import BEMHelper from '@/lib/bem'
-import styles from './Styles.module.scss'
+import { icons } from 'lucide-react'
+import { MouseEventHandler, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import styles from './Styles.module.scss'
 
 const bem = BEMHelper(styles)
 
 interface Props {
-  children: ReactNode
+  children?: ReactNode
   type?: 'button' | 'submit'
   primary?: boolean
   subtle?: boolean

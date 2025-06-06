@@ -90,7 +90,7 @@
             margin-top: 1px;
             opacity: 1;
             left: 0;
-            transform: none;
+            transform: translateX(-($size * 0.5) + 3px);
 
             transition:
                 transform 300ms vars.$ease-in-out-quint--custom,
