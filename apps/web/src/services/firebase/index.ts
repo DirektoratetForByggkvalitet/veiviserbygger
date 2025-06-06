@@ -40,6 +40,7 @@ import { get, maxBy, pick, set, values } from 'lodash'
 import { merge } from '@/lib/merge'
 import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 import { rewriteRefs } from '@/lib/rewrite'
+import findRefs from './utils/findRefs'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -437,6 +438,8 @@ export async function reorderNodes(
 export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId: string) {
   console.log('delete node with id', nodeId)
 
+  // console.log(await getNodeReferences({ db, wizardId, versionId }))
+
   await runTransaction(db, async (transaction) => {
     const nodeRef = getNodeRef({ db, wizardId, versionId }, nodeId)
     const versionRef = getWizardVersionRef({ db, wizardId, versionId })
@@ -690,4 +693,37 @@ export async function createDraftVersion(
 
     return newVersionRef.id
   })
+}
+
+export async function getNodeReferences({ db, wizardId, versionId }: FuncScope) {
+  const nodes = await getDocs(getNodesRef({ db, wizardId, versionId }))
+  const version = await getDoc(getWizardVersionRef({ db, wizardId, versionId }))
+
+  const nodesData: any = []
+  nodes.forEach((doc) => {
+    nodesData.push(doc.data())
+  })
+  console.log([version.data(), ...nodesData])
+
+  const docsWithRefs: {
+    id: string
+    doc: DocumentReference
+    references: ReturnType<typeof findRefs>
+  }[] = [
+    {
+      id: version.id,
+      doc: version.ref,
+      references: findRefs(version.data()),
+    },
+  ]
+
+  nodes.forEach((doc) => {
+    docsWithRefs.push({
+      id: doc.id,
+      doc: doc.ref,
+      references: findRefs(doc.data()),
+    })
+  })
+
+  return docsWithRefs
 }
