@@ -9,14 +9,17 @@
     padding: vars.$spacing;
 
     &__section {
-        display: flex;
-        flex-direction: column;
-        gap: vars.$spacing--small;
-        margin-bottom: vars.$spacing--small;
+        margin-bottom: vars.$spacing;
+
+        &:not(:first-child) {
+            border-top: vars.$border-style;
+            padding-top: vars.$spacing;
+        }
     }
 
     &__section-title {
         @include mixins.font(base, medium);
         @include mixins.font-size(heading);
+        margin-bottom: vars.$spacing;
     }
 }

@@ -7,12 +7,12 @@ const bem = BEMHelper(styles)
 interface Props {
   wizards?: WrappedWithId<Wizard>[]
   onLinkClick?: () => void
-  compact?: boolean
+  large?: boolean
 }
 
-export default function WizardList({ wizards, compact, onLinkClick }: Props) {
+export default function WizardList({ wizards, large, onLinkClick }: Props) {
   return (
-    <ul {...bem('', { compact })}>
+    <ul {...bem('', { large })}>
       {wizards?.map((wizard) => (
         <li key={wizard.id}>
           <NavLink
