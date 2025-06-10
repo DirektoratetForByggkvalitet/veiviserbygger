@@ -31,6 +31,9 @@ export default function Checkbox({
   const handleChange = () => onChange(!checked)
   const isEditable = useEditable()
 
+  if (!isEditable && !checked) {
+    return null
+  }
   return (
     <label {...bem('', { toggle, large, disabled, 'read-only': !isEditable }, className)}>
       <input
