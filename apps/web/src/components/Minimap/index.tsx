@@ -71,16 +71,16 @@ const ContentItem = ({
         ref={setNodeRef}
         style={style}
         onClick={onClick}
-        {...attributes}
-        {...(isEditable ? listeners : {})}
+        {...(isEditable ? attributes : [])}
+        {...(isEditable ? listeners : [])}
       >
-        {isEditable && (
-          <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
-        )}
+        <Icon
+          name={draggable && isEditable ? 'GripVertical' : getTypeIcon(node.type)}
+          {...bem('icon')}
+        />
         <h3 {...bem('sub-title', { placeholder: !node.heading && !node.text })}>
           {node.heading || contentCleanup(node.text) || `${getTypeText(node.type)}`}
         </h3>
-
         {/*<span {...bem('icon')}>
             {node.flow === 'continue' && <IconContinue />}
             {node.flow === 'stop' && <IconStop />}
@@ -96,17 +96,18 @@ const ContentItem = ({
 
     return (
       <li
-        {...bem('item', { branch: true, draggable })}
+        {...bem('item', { branch: true, draggable: isEditable && draggable })}
         key={id}
         ref={setNodeRef}
         style={style}
         onClick={onClick}
-        {...attributes}
-        {...listeners}
+        {...(isEditable ? attributes : [])}
+        {...(isEditable ? listeners : [])}
       >
-        {isEditable && (
-          <Icon name={draggable ? 'GripVertical' : getTypeIcon(node.type)} {...bem('icon')} />
-        )}
+        <Icon
+          name={draggable && isEditable ? 'GripVertical' : getTypeIcon(node.type)}
+          {...bem('icon')}
+        />
         <h3 {...bem('sub-title', { placeholder: true /*TODO */ })}>
           {resultNode?.heading || getTypeText(node.preset || 'Branch')}
         </h3>
