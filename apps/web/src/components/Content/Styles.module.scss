@@ -127,6 +127,7 @@
         &--read-only,
         &--read-only:focus-within {
             border: vars.$border-style;
+            border-radius: vars.$border-radius;
             box-shadow: none;
         }
     }
@@ -151,6 +152,10 @@
 
     // &__option-actions {
     // }
+
+    &__option-icon {
+        color: colors.$muted;
+    }
 
     &__field-list > *:not(:first-child) {
         border-top: none;

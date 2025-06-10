@@ -225,7 +225,7 @@ function Option({ pageId, nodeId, id, heading }: { pageId: string; nodeId: strin
           <Icon name="GripVertical" />
         </button>
       ) : (
-        <Icon name="Circle" />
+        <Icon name="CircleDot" {...bem('option-icon')} />
       )}
       <Input
         hideLabel
