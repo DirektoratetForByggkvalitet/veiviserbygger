@@ -40,7 +40,7 @@ import { get, maxBy, pick, set, values } from 'lodash'
 import { merge } from '@/lib/merge'
 import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 import { rewriteRefs } from '@/lib/rewrite'
-import findRefs from './utils/findRefs'
+import { findRefs } from './utils/refs'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -713,7 +713,7 @@ export async function getNodeReferences({ db, wizardId, versionId }: FuncScope) 
     {
       id: version.id,
       doc: version.ref,
-      references: findRefs(version.data()),
+      references: findRefs(version.ref, version.data()),
     },
   ]
 
@@ -721,7 +721,7 @@ export async function getNodeReferences({ db, wizardId, versionId }: FuncScope) 
     docsWithRefs.push({
       id: doc.id,
       doc: doc.ref,
-      references: findRefs(doc.data()),
+      references: findRefs(version.ref, doc.data()),
     })
   })
 
