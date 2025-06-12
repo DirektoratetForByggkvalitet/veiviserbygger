@@ -32,6 +32,11 @@ export type TreeNode = {
   outgoing: TreeBranch[]
 }
 
+interface DocumentSnapshotLike {
+  get ref(): DocumentReference
+  data(): any
+}
+
 /**
  * Check if the value is uninteresting and can be ignored. Uninteresting values
  * include Date, RegExp, and Function instances since they will never reference a node.
@@ -98,56 +103,36 @@ export function findRefs(sourceRef: DocumentReference, data: any, path?: string[
   return []
 }
 
-export function buildTree(refs: Reference[]): TreeNode[] {
-  const treeNodes: TreeNode[] = []
+/**
+ * Builds a list of documents with their incoming and outgoing references. This can be used to
+ * render a tree of nodes and their references, to check for orphan nodes, check if a node is
+ * deletable, or to visualize the structure of the nodes.
+ *
+ * @param docs - An array of DocumentSnapshotLike objects, each representing a document with its reference and data.
+ * @returns An array of TreeNode objects, each containing the document reference, incoming references, and outgoing references.
+ */
+export function buildTree(docs: DocumentSnapshotLike[]): TreeNode[] {
+  const refs = docs.flatMap((d) => findRefs(d.ref, d.data()))
 
-  return refs.reduce<TreeNode[]>((acc, ref) => {
-    // check if the node already exists in list
-    const nodeIndex = acc.findIndex((n) => n.doc.path === ref.doc.path)
+  return docs.map(({ ref }) => ({
+    doc: ref,
 
-    // no node found, create a new one
-    if (nodeIndex === -1) {
-      return [
-        ...acc,
-        {
-          doc: ref.doc,
+    // incoming references are all references that point to this node
+    incoming: refs
+      .filter((r) => r.ref.path === ref.path)
+      .map((r) => ({
+        path: r.path,
+        ref: r.doc,
+        type: r.type,
+      })),
 
-          // incoming references are all references that point to this node
-          incoming: refs
-            .filter((r) => r.ref.path === ref.doc.path)
-            .map((r) => ({
-              path: r.path,
-              ref: r.doc,
-              type: r.type,
-            })),
-
-          // outgoing references are all references that this node points to
-          outgoing: [
-            {
-              path: ref.path,
-              ref: ref.ref,
-              type: ref.type,
-            },
-          ],
-        },
-      ]
-    }
-
-    // node already exists, add the outgoing reference to it
-    return [
-      ...acc.slice(0, nodeIndex),
-      {
-        ...acc[nodeIndex],
-        outgoing: [
-          ...acc[nodeIndex].outgoing,
-          {
-            path: ref.path,
-            ref: ref.ref,
-            type: ref.type,
-          },
-        ],
-      },
-      ...acc.slice(nodeIndex + 1),
-    ]
-  }, [])
+    // outgoing references are all references that this node points to
+    outgoing: refs
+      .filter((r) => r.doc.path === ref.path)
+      .map((r) => ({
+        path: r.path,
+        ref: r.ref,
+        type: r.type,
+      })),
+  }))
 }

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { doc, DocumentReference, getFirestore } from 'firebase/firestore'
-import { findRefs, determineType, isUninteresting, buildTree, TreeNode } from '../refs'
+import { findRefs, determineType, isUninteresting, buildTree } from '../refs'
 
 beforeEach(() => {
   initializeApp({ projectId: 'ci' })
@@ -123,17 +123,18 @@ describe('refs util', () => {
         e: doc(firestore, 'collection', 'doc-e'),
       }
 
-      const data: { [K in NodeKey]?: any } = {
-        a: { show: { field: refs.d }, content: { b: { node: refs.b } } },
-        b: { content: { c: { node: refs.c }, d: { node: refs.d } } },
-        d: { content: { e: { node: refs.e } } },
-      }
+      const docs = [
+        {
+          ref: refs.a,
+          data: () => ({ show: { field: refs.d }, content: { b: { node: refs.b } } }),
+        },
+        { ref: refs.b, data: () => ({ content: { c: { node: refs.c }, d: { node: refs.d } } }) },
+        { ref: refs.c, data: () => ({}) },
+        { ref: refs.d, data: () => ({ content: { e: { node: refs.e } } }) },
+        { ref: refs.e, data: () => ({}) },
+      ]
 
-      const refsList = (['a', 'b', 'c', 'd', 'e'] as NodeKey[]).flatMap((key) =>
-        findRefs((refs as any)[key], data[key] || {}),
-      )
-
-      const treeNodes = buildTree(refsList)
+      const treeNodes = buildTree(docs)
 
       // The next part is extremely verbose, but it ensures that the tree is built correctly
       expect(treeNodes).toEqual(
@@ -193,7 +194,6 @@ describe('refs util', () => {
             doc: expect.toBeReferenceTo(refs.c),
             incoming: [
               expect.objectContaining({
-                path: ['content', 'c', 'node'],
                 ref: expect.toBeReferenceTo(refs.b),
                 type: 'content-node',
               }),

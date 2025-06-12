@@ -548,7 +548,6 @@ export function deleteAnswer(
       return
     }
 
-    console.log('deleteAnswer')
     await transaction.update(ref, `options.${answerId}`, deleteField())
   })
 }
