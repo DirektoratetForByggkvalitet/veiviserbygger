@@ -130,8 +130,14 @@
     }
 
     &--toggle[aria-pressed='true'] {
+        background-color: colors.get(primary, dark);
+        color: colors.$light;
+    }
+
+    &--toggle[aria-pressed='true']#{$this}--subtle,
+    &--toggle[aria-pressed='true']#{$this}--icon-only {
         background-color: colors.get(neutral, light);
-        border-color: colors.get(neutral, dark);
+        color: colors.$text;
     }
 }
 

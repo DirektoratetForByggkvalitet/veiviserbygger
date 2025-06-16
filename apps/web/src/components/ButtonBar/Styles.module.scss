@@ -11,6 +11,10 @@
             flex-basis: 100%;
         }
     }
+
+    &--margins {
+        margin-bottom: vars.$spacing--xsmall;
+    }
 }
 
 @keyframes enter {
