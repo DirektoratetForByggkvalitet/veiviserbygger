@@ -412,7 +412,7 @@ function NegativeResult({
 
 function Node({ node, pageId, allNodes }: NodeProps) {
   const { patchNode, addNodes } = useVersion()
-
+  const isEditable = useEditable()
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
     return (
       <Fragment key={node.id}>
@@ -468,12 +468,37 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             onFileUpload={(file) => console.log(file)}
             removeFile={() => console.log('remove')}
           />
-          <Checkbox
-            label="Gridvisning av svar"
-            checked={node.grid}
-            onChange={(v) => patchNode(node.id, { type: 'Radio', grid: v })}
-          />
-          <h3 {...bem('sub-title')}>Svaralternativer</h3>
+          <div {...bem('sub-header')}>
+            <h3 {...bem('sub-title')}>Svaralternativer</h3>
+            {isEditable ? (
+              <>
+                <Button
+                  iconOnly
+                  toggle
+                  size="small"
+                  icon="LayoutGrid"
+                  pressed={node.grid}
+                  onClick={() => patchNode(node.id, { type: 'Radio', grid: !node.grid })}
+                >
+                  Vis svaralternativer som grid
+                </Button>
+                <Button
+                  iconOnly
+                  toggle
+                  size="small"
+                  icon="Rows3"
+                  pressed={!node.grid}
+                  onClick={() => patchNode(node.id, { type: 'Radio', grid: !node.grid })}
+                >
+                  Vis svaralternativer som liste
+                </Button>
+              </>
+            ) : (
+              <span title={node.grid ? 'Gridvisning' : 'Listevisning'}>
+                <Icon name={node.grid ? 'LayoutGrid' : 'Rows3'} {...bem('option-icon')} />
+              </span>
+            )}
+          </div>
           <Options node={node} pageId={pageId} />
         </Main>
 

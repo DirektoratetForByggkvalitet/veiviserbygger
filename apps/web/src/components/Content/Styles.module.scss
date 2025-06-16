@@ -84,10 +84,17 @@
         flex-grow: 2;
     }
 
+    &__sub-header {
+        display: flex;
+        align-items: center;
+        gap: vars.$spacing--xsmall;
+    }
+
     &__sub-title {
         @include mixins.font-size(small);
         color: colors.$muted;
         font-weight: normal;
+        flex-grow: 1;
     }
 
     &__options {
@@ -154,7 +161,7 @@
     // }
 
     &__option-icon {
-        color: colors.$muted;
+        color: colors.get(neutral, base);
     }
 
     &__field-list > *:not(:first-child) {

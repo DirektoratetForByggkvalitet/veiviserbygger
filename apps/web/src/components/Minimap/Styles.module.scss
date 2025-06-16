@@ -147,7 +147,7 @@
             &:hover,
             &:focus-visible {
                 #{$this}__icon {
-                    background-color: colors.get(neutral, light);
+                    background-color: colors.get(neutral-transparent, light);
                 }
             }
 
