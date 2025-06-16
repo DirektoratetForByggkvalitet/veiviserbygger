@@ -37,6 +37,7 @@
     }
 
     &__input {
+        -webkit-appearance: none;
         border-radius: 0;
         padding: 3px vars.$form-padding-x vars.$form-padding-y;
         background-color: transparent;

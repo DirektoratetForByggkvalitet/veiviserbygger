@@ -1,6 +1,5 @@
 import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
-import Checkbox from '@/components/Checkbox'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Editor from '@/components/Editor'
 import File from '@/components/File'
@@ -533,20 +532,42 @@ function Node({ node, pageId, allNodes }: NodeProps) {
             onChange={(v) => patchNode(node.id, { type: 'Checkbox', text: v })}
           />
 
-          <h3 {...bem('sub-title')}>Svaralternativer</h3>
+          <div {...bem('sub-header')}>
+            <h3 {...bem('sub-title')}>Svaralternativer</h3>
+            {isEditable ? (
+              <>
+                <Button
+                  iconOnly
+                  toggle
+                  size="small"
+                  icon="LayoutGrid"
+                  pressed={node.grid}
+                  onClick={() => patchNode(node.id, { type: 'Checkbox', grid: !node.grid })}
+                >
+                  Vis svaralternativer som grid
+                </Button>
+                <Button
+                  iconOnly
+                  toggle
+                  size="small"
+                  icon="Rows3"
+                  pressed={!node.grid}
+                  onClick={() => patchNode(node.id, { type: 'Checkbox', grid: !node.grid })}
+                >
+                  Vis svaralternativer som liste
+                </Button>
+              </>
+            ) : (
+              <span title={node.grid ? 'Gridvisning' : 'Listevisning'}>
+                <Icon name={node.grid ? 'LayoutGrid' : 'Rows3'} {...bem('option-icon')} />
+              </span>
+            )}
+          </div>
           <Options node={node} pageId={pageId} />
         </Main>
 
         <Aside>
           <Help description={getTypeDescription(node.type)} />
-          <h3 {...bem('sub-title')}>Innstillinger</h3>
-          <div {...bem('field-list')}>
-            <Checkbox
-              label="Gridvisning"
-              checked={node.grid}
-              onChange={(v) => patchNode(node.id, { type: 'Checkbox', grid: v })}
-            />
-          </div>
         </Aside>
       </Fragment>
     )
