@@ -16,7 +16,7 @@
         padding: 10px $padding;
         margin-left: -($padding);
         margin-right: -($padding);
-        background-color: colors.get(neutral, xlight);
+        background-color: transparent;
         border-radius: vars.$border-radius;
         text-align: left;
 
@@ -55,8 +55,8 @@
         border-radius: 4px;
         padding: 3px 5px;
         &--public {
-            background-color: colors.get(primary, light);
-            color: colors.get(primary, dark);
+            background-color: colors.get(primary, dark);
+            color: colors.$light;
         }
     }
 
@@ -78,6 +78,11 @@
             padding: 10px 10px 12px;
             margin: 0;
             border: vars.$border-style--weak;
+            background-color: colors.get(neutral, xlight);
+            &:hover,
+            &:focus:focus-visible {
+                background-color: colors.get(neutral, light);
+            }
 
             @include mixins.min-width(md) {
                 padding: 1rem 1rem 1.5rem;
