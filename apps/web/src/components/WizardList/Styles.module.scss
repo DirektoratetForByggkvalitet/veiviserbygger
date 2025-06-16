@@ -16,7 +16,7 @@
         padding: 10px $padding;
         margin-left: -($padding);
         margin-right: -($padding);
-        background-color: transparent;
+        background-color: colors.get(neutral, xlight);
         border-radius: vars.$border-radius;
         text-align: left;
 
@@ -54,6 +54,10 @@
         border: vars.$border-style;
         border-radius: 4px;
         padding: 3px 5px;
+        &--public {
+            background-color: colors.get(primary, light);
+            color: colors.get(primary, dark);
+        }
     }
 
     &--large {

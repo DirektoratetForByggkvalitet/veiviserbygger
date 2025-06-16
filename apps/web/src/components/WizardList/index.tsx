@@ -18,7 +18,9 @@ export default function WizardList({ wizards, large, onLinkClick }: Props) {
           <NavLink
             to={`/wizard/${wizard.id}/${wizard.data.publishedVersion?.id || wizard.data.draftVersion?.id}`}
             className={({ isActive, isPending }) =>
-              bem('item', { active: isActive || isPending }).className
+              bem('item', {
+                active: isActive || isPending,
+              }).className
             }
             onClick={onLinkClick}
           >
