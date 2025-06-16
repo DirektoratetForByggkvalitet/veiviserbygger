@@ -66,6 +66,9 @@ export default function Editor({ label, value, onChange }: Props) {
       </section>
     )
   } else {
+    if (!v.value) {
+      return null
+    }
     return (
       <section {...bem('', 'read-only')}>
         <label {...bem('label')}>{label}</label>

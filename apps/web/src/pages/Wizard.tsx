@@ -380,8 +380,11 @@ export default function Wizard() {
 
               {(orderedNodes?.length > 0 &&
                 orderedNodes.map(({ id, node: { id: nodeId } = {} }) => {
+                  if (!nodeId) {
+                    return <Message key={id} title="Feil med lasting av innhold" subtle />
+                  }
                   return (
-                    <Content id={id} key={id} nodeId={nodeId!} allNodes={nodes} pageId={page.id} />
+                    <Content id={id} key={id} nodeId={nodeId} allNodes={nodes} pageId={page.id} />
                   )
                 })) || (
                 <>

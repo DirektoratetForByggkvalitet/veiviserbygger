@@ -23,7 +23,7 @@ interface Props {
   onClick: (id: string) => void
   selected?: string | null
   data: WizardVersion
-  allNodes: Record<string, PageContent>
+  allNodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
 }
 
 const contentCleanup = (value?: string) => {
@@ -39,9 +39,9 @@ const ContentItem = ({
   onClick,
 }: {
   id: string
-  node: PageContent
+  node: OptionalExcept<PageContent, 'type' | 'id'>
   draggable?: boolean
-  allNodes: Record<string, PageContent>
+  allNodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
   onClick?: MouseEventHandler
 }) => {
   const sortable = useSortable({ id, disabled: !draggable })
