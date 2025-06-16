@@ -24,7 +24,7 @@ export default function WizardList({ wizards, large, onLinkClick }: Props) {
             }
             onClick={onLinkClick}
           >
-            <span {...bem('label')}>{wizard.data.title}</span>
+            <span {...bem('label')}>{wizard.data.title || 'Uten tittel'}</span>
             {!wizard.data.publishedVersion?.id ? (
               <span {...bem('tag')}>Utkast</span>
             ) : (
