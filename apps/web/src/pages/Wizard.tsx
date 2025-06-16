@@ -17,7 +17,7 @@ import { Navigate, useParams } from 'react-router'
 import Page from '@/components/Page'
 import { PageContent, Branch, DeepPartial, WizardPage, WithOrder, Intro } from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
-import { getPageTypeDescription, getPageTypeAdd, getPageTypeTitle } from '@/lib/page'
+import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
 import { getOrdered } from 'shared/utils'
 import { siteName } from '@/constants'
@@ -389,7 +389,6 @@ export default function Wizard() {
                 })) || (
                 <>
                   <Help description={getPageTypeDescription(page.type)} />
-                  <Message title={getPageTypeAdd(page.type)} subtle />
                 </>
               )}
 
