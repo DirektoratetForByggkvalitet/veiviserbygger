@@ -21,6 +21,8 @@ interface Props {
   icon?: keyof typeof icons
   iconOnlyOnMobile?: keyof typeof icons
   iconOnly?: boolean
+  toggle?: boolean
+  pressed?: boolean
   // full?: boolean
   size?: 'small' | 'large'
 }
@@ -37,6 +39,8 @@ export default function Button({
   onClick,
   iconOnly,
   iconOnlyOnMobile,
+  toggle,
+  pressed,
   size,
   icon,
   disabled,
@@ -60,6 +64,7 @@ export default function Button({
         [size ?? '']: size,
         'icon-only': iconOnly,
         loading,
+        toggle,
         'only-on-mobile': iconOnlyOnMobile,
       })}
       type={type}
@@ -67,6 +72,7 @@ export default function Button({
       aria-label={iconOnly || iconOnlyOnMobile ? (children as string) : undefined}
       title={iconOnly ? (children as string) : undefined}
       disabled={loading || disabled}
+      aria-pressed={toggle ? pressed : undefined}
     >
       {iconOnlyOnMobile && (
         <span {...bem('icon', 'only-on-mobile')}>

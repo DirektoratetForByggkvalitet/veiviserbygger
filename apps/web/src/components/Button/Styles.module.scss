@@ -128,6 +128,11 @@
             }
         }
     }
+
+    &--toggle[aria-pressed='true'] {
+        background-color: colors.get(neutral, light);
+        border-color: colors.get(neutral, dark);
+    }
 }
 
 @keyframes loading {
