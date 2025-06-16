@@ -410,8 +410,14 @@ export default function Wizard() {
             </Form>
           ) : null}
         </Panel>
-
-        {wizardId ? (
+        {!loading && !version ? (
+          <Message title="Fant ikke veiviseren">
+            Det er noen tekniske problemer med å laste inn denne veiviseren. Er du sikker på at du
+            har riktig lenke? Prøv å laste siden på nytt, eller kontakt administrator hvis problemet
+            vedvarer.
+          </Message>
+        ) : null}
+        {wizardId && versionId ? (
           <Minimap
             onClick={handleSelect}
             selected={selected}
