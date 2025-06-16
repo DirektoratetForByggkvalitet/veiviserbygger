@@ -125,7 +125,17 @@ const addNodeContentOptions = (
   ]
 }
 
-function Option({ pageId, nodeId, id, heading }: { pageId: string; nodeId: string } & Answer) {
+function Option({
+  pageId,
+  nodeId,
+  id,
+  heading,
+  nodeType,
+}: {
+  pageId: string
+  nodeId: string
+  nodeType: 'Radio' | 'Checkbox'
+} & Answer) {
   const inputRef = useRef<HTMLInputElement>(null)
   const { getNodeRef, patchAnswer, deleteAnswer, addNodes } = useVersion()
   const sortable = useSortable({ id })
@@ -224,7 +234,7 @@ function Option({ pageId, nodeId, id, heading }: { pageId: string; nodeId: strin
           <Icon name="GripVertical" />
         </button>
       ) : (
-        <Icon name="CircleDot" {...bem('option-icon')} />
+        <Icon name={getTypeIcon(nodeType)} {...bem('option-icon')} />
       )}
       <Input
         hideLabel
@@ -284,7 +294,15 @@ function Options({
               return null
             }
 
-            return <Option key={option.id} pageId={pageId} nodeId={node.id} {...option} />
+            return (
+              <Option
+                key={option.id}
+                pageId={pageId}
+                nodeType={node.type === 'Radio' ? 'Radio' : 'Checkbox'}
+                nodeId={node.id}
+                {...option}
+              />
+            )
           })}
 
           {!value || (value.length === 0 && <li {...bem('option', 'placeholder')}>Ingen ...</li>)}
