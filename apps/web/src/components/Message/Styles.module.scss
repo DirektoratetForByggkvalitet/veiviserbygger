@@ -4,12 +4,16 @@
 
 .message {
     $this: &;
+    @include mixins.font-size(small);
+    display: block;
+    width: 100%;
     background-color: colors.$info;
     border-radius: vars.$border-radius;
     padding: 16px 18px;
     text-align: left;
-    @include mixins.font-size(small);
     animation: enter 400ms vars.$ease-in-out-quint--custom backwards;
+    margin-bottom: vars.$spacing--small;
+
     &__title {
         @include mixins.font(base, normal);
         @include mixins.font-size(base);
@@ -27,8 +31,9 @@
     }
 
     &--subtle {
-        background-color: colors.get(primary, light);
-        border: 1px solid colors.get(primary, base);
+        background-color: transparent;
+        border: 1px solid colors.get(neutral, base);
+        color: colors.$muted;
         #{$this}__title {
             @include mixins.font-size(small);
             font-weight: normal;

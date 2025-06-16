@@ -389,6 +389,7 @@ export default function Wizard() {
                 })) || (
                 <>
                   <Help description={getPageTypeDescription(page.type)} />
+                  <Message title="Siden er tom" subtle />
                 </>
               )}
 

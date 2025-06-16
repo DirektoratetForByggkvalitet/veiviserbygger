@@ -16,7 +16,7 @@ export default function Message({ title, children, subtle }: Props) {
   return (
     <section role="alert" {...bem('', { subtle })}>
       <p {...bem('title')}>
-        <Icon name="MessageCircleWarning" size="22" {...bem('icon')} />
+        <Icon name="Info" size="22" {...bem('icon')} />
         {title}
       </p>
       {children}
