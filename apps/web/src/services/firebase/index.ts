@@ -8,6 +8,7 @@ import {
   deleteField,
   doc,
   DocumentReference,
+  DocumentSnapshot,
   Firestore,
   getDoc,
   getDocs,
@@ -40,7 +41,8 @@ import { get, maxBy, pick, set, values } from 'lodash'
 import { merge } from '@/lib/merge'
 import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 import { rewriteRefs } from '@/lib/rewrite'
-import { findRefs } from './utils/refs'
+import { buildTree } from './utils/refs'
+import { isDeleteAllowed } from './utils/validator'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -436,10 +438,6 @@ export async function reorderNodes(
 }
 
 export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId: string) {
-  console.log('delete node with id', nodeId)
-
-  // console.log(await getNodeReferences({ db, wizardId, versionId }))
-
   await runTransaction(db, async (transaction) => {
     const nodeRef = getNodeRef({ db, wizardId, versionId }, nodeId)
     const versionRef = getWizardVersionRef({ db, wizardId, versionId })
@@ -482,8 +480,6 @@ export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId:
             if (introContent?.[key]?.node?.id !== nodeId) {
               return res
             }
-
-            console.log(key)
 
             return {
               ...res,
@@ -694,35 +690,40 @@ export async function createDraftVersion(
   })
 }
 
-export async function getNodeReferences({ db, wizardId, versionId }: FuncScope) {
+export async function getDependencyTree({ db, wizardId, versionId }: FuncScope) {
   const nodes = await getDocs(getNodesRef({ db, wizardId, versionId }))
   const version = await getDoc(getWizardVersionRef({ db, wizardId, versionId }))
 
-  const nodesData: any = []
+  const docs: DocumentSnapshot[] = [version]
   nodes.forEach((doc) => {
-    nodesData.push(doc.data())
-  })
-  console.log([version.data(), ...nodesData])
-
-  const docsWithRefs: {
-    id: string
-    doc: DocumentReference
-    references: ReturnType<typeof findRefs>
-  }[] = [
-    {
-      id: version.id,
-      doc: version.ref,
-      references: findRefs(version.ref, version.data()),
-    },
-  ]
-
-  nodes.forEach((doc) => {
-    docsWithRefs.push({
-      id: doc.id,
-      doc: doc.ref,
-      references: findRefs(version.ref, doc.data()),
-    })
+    docs.push(doc)
   })
 
-  return docsWithRefs
+  return buildTree(docs)
+}
+
+export async function validateDelete(
+  funcScope: FuncScope,
+
+  args: {
+    /**
+     * The node that is being checked for deletion
+     */
+    node: DocumentReference
+
+    /**
+     * Reference from which the node is being deleted. When deleting a node that is
+     * visible somewhere, this is the reference to the document in which the node is
+     * being deleted. In addition to the node document reference, we need the path
+     * to the reference inside the document.
+     */
+    ref?: {
+      doc: DocumentReference
+      path: string[]
+    }
+  },
+) {
+  const treeNodes = await getDependencyTree(funcScope)
+
+  return isDeleteAllowed(treeNodes, args.node, args.ref || undefined)
 }

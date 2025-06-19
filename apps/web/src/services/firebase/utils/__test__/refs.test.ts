@@ -1,6 +1,6 @@
-import { initializeApp } from 'firebase/app'
 import { doc, DocumentReference, getFirestore } from 'firebase/firestore'
 import { findRefs, determineType, isUninteresting, buildTree } from '../refs'
+import { initializeApp } from 'firebase/app'
 
 beforeEach(() => {
   initializeApp({ projectId: 'ci' })
