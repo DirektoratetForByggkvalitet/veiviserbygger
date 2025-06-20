@@ -1,5 +1,7 @@
 import useSWR from 'swr'
 import { useVersion } from '@/hooks/useVersion'
+import Help from '@/components/Help'
+import Message from '@/components/Message'
 import { OptionalExcept, PageContent } from 'types'
 import { DocumentReference } from 'firebase/firestore'
 
@@ -25,23 +27,33 @@ export default function ValidateDeps({ children, node, sourceRef }: Props) {
   )
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div>Laster...</div>
   }
 
   if (!deleteValidationResult) {
-    return <div>Error loading validation result</div>
+    return <Message title="Error ved validering av innhold før sletting" />
   }
 
   if (!deleteValidationResult.allowed) {
     return (
       <div>
-        <h3>Noden kan ikke slettes</h3>
-        <p>Dette skyldes at noen er referert til et annet sted i veiviseren.</p>
+        <Message title="Innholdet kan ikke slettes">
+          <p>
+            Dette skyldes at innholdet er referert til et annet sted i veiviseren. Det kan for
+            eksempel være i logikk for vis eller skjul av innhold. Du trenger å fjerne denne
+            referansen før du kan slette innholdet.{' '}
+          </p>
+        </Message>
 
-        <ul>
+        <ul
+          style={{
+            fontSize: '14px',
+            backgroundColor: '#f8f8f8',
+            padding: '10px',
+          }}
+        >
           {deleteValidationResult.blockedBy?.map((dependency, index) => (
-            <li key={index}>
-              <br />
+            <li key={index} style={{ padding: '10px 0' }}>
               <dl style={{ display: 'grid', gridTemplateColumns: '150px auto' }}>
                 <dt>
                   <strong>Type</strong>
@@ -66,17 +78,23 @@ export default function ValidateDeps({ children, node, sourceRef }: Props) {
   if (deleteValidationResult.additionalDeletes?.length) {
     return (
       <>
-        <div>
-          <p>
-            Når noden slettes vil også{' '}
-            <strong>
-              {deleteValidationResult.additionalDeletes?.length} andre noder bli slettet
-            </strong>
-            . Disse refereres ikke til noe sted etter sletting av denne noden, og blir derfor tatt
-            bort.
-          </p>
-        </div>
-        {children}
+        <Help
+          description={
+            <>
+              <p>
+                Dette vil slette alt innhold som ligger under dette elementet. Innholdet refereres
+                ikke til fra noe annet sted etter og blir derfor tatt bort.
+                {/* <strong>
+                  {deleteValidationResult.additionalDeletes?.length} underliggende innhold bli
+                  slettet
+                </strong>
+                . Dette innholdet refereres ikke til fra noe annet sted etter sletting av dette
+                innholdet, og blir derfor tatt bort.*/}
+              </p>
+              {children}
+            </>
+          }
+        />
       </>
     )
   }

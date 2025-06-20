@@ -760,7 +760,7 @@ const Header = ({
         onClose={() => setShowConfirmDelete(false)}
       >
         <Help
-          description={`Vil du slette ${title ? `"${title}"` : 'dette innholdet'} ? Handlingen kan ikke angres.`}
+          description={`Vil du slette ${title ? `"${title}"` : 'dette innholdet'}? Handlingen kan ikke angres.`}
         />
 
         <ValidateDeps node={node} sourceRef={sourceRef}>
