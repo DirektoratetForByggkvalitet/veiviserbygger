@@ -390,8 +390,20 @@ export default function Wizard() {
                   if (!nodeId) {
                     return <Message key={id} title="Feil med lasting av innhold" subtle />
                   }
+
                   return (
-                    <Content id={id} key={id} nodeId={nodeId} allNodes={nodes} pageId={page.id} />
+                    <Content
+                      id={id}
+                      key={id}
+                      nodeId={nodeId}
+                      allNodes={nodes}
+                      pageId={page.id}
+                      path={
+                        page.type === 'Intro'
+                          ? ['intro', 'content', id]
+                          : ['pages', page.id, 'content', id]
+                      }
+                    />
                   )
                 })) || (
                 <>

@@ -36,6 +36,7 @@ import { ReactNode } from 'react'
 import { getOrdered } from 'shared/utils'
 import Expression from '../Expression'
 import styles from './Styles.module.scss'
+import ValidateDeps from '../ValidateDeps'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -47,12 +48,17 @@ type Props = {
   nodeId: DocumentReference['id']
   allNodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
   pageId: WizardPage['id']
+  path: string[]
 }
 
 type NodeProps = {
   allNodes: Props['allNodes']
   node: OptionalExcept<PageContent, 'id' | 'type'>
   pageId: WizardPage['id']
+  sourceRef: {
+    doc: DocumentReference
+    path: string[]
+  }
 }
 
 function contentAction<T extends PageContent['type']>({
@@ -427,13 +433,14 @@ function NegativeResult({
   )
 }
 
-function Node({ node, pageId, allNodes }: NodeProps) {
-  const { patchNode, addNodes } = useVersion()
+function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
+  const { patchNode, addNodes, getNodeRef } = useVersion()
   const isEditable = useEditable()
+
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
     return (
       <Fragment key={node.id}>
-        <Header type={node.type} node={node} />
+        <Header type={node.type} node={node} sourceRef={sourceRef} />
         <Main>
           <Input
             label="Tittel"
@@ -462,6 +469,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           type={node.type}
           title={node.heading || 'Hva er det til middag i dag?'}
           node={node}
+          sourceRef={sourceRef}
         />
 
         <Main>
@@ -534,6 +542,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           type={node.type}
           title={node.heading || 'Hva er det til middag i dag?'}
           node={node}
+          sourceRef={sourceRef}
         />
 
         <Main>
@@ -594,7 +603,8 @@ function Node({ node, pageId, allNodes }: NodeProps) {
   if (node.type === 'Branch') {
     return (
       <Fragment key={node.id}>
-        <Header type={node.preset || node.type} node={node} />
+        <Header type={node.preset || node.type} node={node} sourceRef={sourceRef} />
+
         <Main>
           <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
           {node.preset === 'NegativeResult' && <NegativeResult node={node} nodes={allNodes} />}
@@ -607,17 +617,24 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           {node.preset === 'NewQuestions' && (
             <>
               {getOrdered(node?.content)?.map((nodeRef) => {
-                const node = allNodes[nodeRef?.node?.id]
+                const childNode = allNodes[nodeRef?.node?.id]
 
                 return (
-                  <Node
-                    node={{ ...node, id: nodeRef.node.id }}
-                    pageId={pageId}
-                    allNodes={allNodes}
-                    key={nodeRef.id}
-                  />
+                  <>
+                    <Node
+                      node={{ ...childNode, id: nodeRef.node.id }}
+                      pageId={pageId}
+                      allNodes={allNodes}
+                      key={nodeRef.id}
+                      sourceRef={{
+                        doc: getNodeRef(node.id),
+                        path: ['content', nodeRef.id, 'node'],
+                      }}
+                    />
+                  </>
                 )
               })}
+
               <Dropdown
                 options={addNodeContentOptions(node.id, addNodes)}
                 trigger={({ onClick }) => (
@@ -646,6 +663,7 @@ function Node({ node, pageId, allNodes }: NodeProps) {
           onChange={(v) => patchNode(node.id, { type: 'Error', heading: v })}
           header
         />
+
         <Editor
           label="Beskrivelse"
           value={node.text || ''}
@@ -678,10 +696,19 @@ const Header = ({
   type,
   title,
   node,
+  sourceRef,
 }: {
   type: PageContent['type'] | Branch['preset']
   node: NodeProps['node']
   title?: string
+  /**
+   * The document in which the node is referenced, and the path inside
+   * the document where this refrence is located.
+   */
+  sourceRef: {
+    doc: DocumentReference
+    path: string[]
+  }
 }) => {
   const [showMoveNode, setShowMoveNode] = useState(false)
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
@@ -735,22 +762,25 @@ const Header = ({
         <Help
           description={`Vil du slette ${title ? `"${title}"` : 'dette innholdet'} ? Handlingen kan ikke angres.`}
         />
-        <ButtonBar>
-          <Button
-            type="button"
-            warning
-            onClick={async () => {
-              await deleteNode(node.id)
-              setShowConfirmDelete(false)
-            }}
-          >
-            Slett
-          </Button>
 
-          <Button type="button" onClick={() => setShowConfirmDelete(false)}>
-            Avbryt
-          </Button>
-        </ButtonBar>
+        <ValidateDeps node={node} sourceRef={sourceRef}>
+          <ButtonBar>
+            <Button
+              type="button"
+              warning
+              onClick={async () => {
+                await deleteNode(node.id, sourceRef)
+                setShowConfirmDelete(false)
+              }}
+            >
+              Slett
+            </Button>
+
+            <Button type="button" onClick={() => setShowConfirmDelete(false)}>
+              Avbryt
+            </Button>
+          </ButtonBar>
+        </ValidateDeps>
       </Modal>
     </header>
   )
@@ -762,13 +792,22 @@ const Main = ({ children, full }: { children: ReactNode; full?: boolean }) => (
 
 const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
 
-export default function Content({ id, nodeId, allNodes, pageId }: Props) {
+export default function Content({ id, nodeId, allNodes, pageId, path }: Props) {
   const node = allNodes?.[nodeId]
+  const { getVersionRef } = useVersion()
 
   return (
-    <section {...bem('')} id={id}>
+    <section {...bem('')} id={id} data-path={path.join('.')}>
       {node ? (
-        <Node node={{ ...node, id: nodeId }} pageId={pageId} allNodes={allNodes} />
+        <Node
+          node={{ ...node, id: nodeId }}
+          pageId={pageId}
+          allNodes={allNodes}
+          sourceRef={{
+            doc: getVersionRef(),
+            path: [...path, 'node'],
+          }}
+        />
       ) : (
         <>
           <p {...bem('error')}>Fant ikke node med id: {nodeId}</p>

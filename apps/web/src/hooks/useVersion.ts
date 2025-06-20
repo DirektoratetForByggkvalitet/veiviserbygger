@@ -19,6 +19,7 @@ import {
   createDraftVersion,
   patch,
   getWizardVersionRef,
+  validateDelete,
 } from '@/services/firebase'
 import { curry } from 'lodash'
 
@@ -50,5 +51,6 @@ export function useVersion() {
     createDraftVersion: (copyFromVersionId?: string) =>
       createDraftVersion({ db: firestore, wizardId }, copyFromVersionId),
     publishVersion: () => curry(publishVersion)({ db: firestore, wizardId, versionId }),
+    validateDelete: curry(validateDelete)({ db: firestore, wizardId, versionId }),
   }
 }
