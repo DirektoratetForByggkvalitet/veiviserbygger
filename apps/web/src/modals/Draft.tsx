@@ -8,12 +8,13 @@ import { useModal } from '@/hooks/useModal'
 import { useVersion } from '@/hooks/useVersion'
 import useWizard from '@/hooks/useWizard'
 import { EditableContext } from '@/context/EditableContext'
+import { getVersionTitle } from '@/lib/versions'
 import { useState } from 'react'
 import { useMatch, useNavigate } from 'react-router'
 
 export default function DraftModal() {
   const match = useMatch('/wizard/:wizardId/:versionId')
-  const { loading, wizard, versions } = useWizard(match?.params.wizardId, match?.params.versionId)
+  const { loading, versions } = useWizard(match?.params.wizardId, match?.params.versionId)
   const { modal, setModal } = useModal()
   const { createDraftVersion } = useVersion()
   const [baseOn, setBaseOn] = useState<string>()
@@ -34,7 +35,7 @@ export default function DraftModal() {
     setBaseOn(undefined)
   }
 
-  const publishedVersion = versions?.find?.((v) => v.id === wizard?.data.publishedVersion?.id)
+  const publishedVersions = versions?.filter((v) => v.publishedFrom) || []
 
   return (
     <EditableContext.Provider value={true}>
@@ -46,19 +47,19 @@ export default function DraftModal() {
             value={baseOn}
             onChange={setBaseOn}
             options={[
-              ...(publishedVersion
-                ? [
-                    {
-                      value: publishedVersion.id,
-                      label: `Siste publiserte versjon (${publishedVersion.title || 'Uten navn'})`,
-                    },
-                  ]
-                : []),
-              { value: 'from-scratch', label: 'Jeg vil starte fra scratch' },
+              ...publishedVersions.map((v, i) => ({
+                value: v.id,
+                label: getVersionTitle(v, (versions?.length || 0) - i),
+              })),
+              {
+                value: 'from-scratch',
+                label: 'Jeg vil starte fra scratch',
+                styled: 'delete',
+              },
             ]}
           />
-          <Help description="Det nye utkastet tar utgangspunkt i den valgte versjon, som regel er det siste publiserte versjon. Du kan jobbe videre med innholdet derfra, uten at dette påvirker den versjonen som er publisert. Hvis du publiserer et utkast med endringer vil dette erstatte dagens publiserte versjon." />
-          <ButtonBar>
+
+          <ButtonBar margins>
             <Button type="button" primary onClick={handlePublish} disabled={!baseOn}>
               Lag utkast
             </Button>
@@ -67,6 +68,8 @@ export default function DraftModal() {
               Lukk
             </Button>
           </ButtonBar>
+
+          <Help description="Det nye utkastet tar utgangspunkt i den valgte versjon, som regel er det siste publiserte versjon. Du kan jobbe videre med innholdet derfra, uten at dette påvirker den versjonen som er publisert. Hvis du publiserer et utkast med endringer vil dette erstatte dagens publiserte versjon." />
         </Form>
       </Modal>
     </EditableContext.Provider>

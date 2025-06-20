@@ -36,12 +36,13 @@ export default function DeleteDraftModal() {
   }
 
   return (
-    <Modal title="Slett utkast" expanded onClose={onClose}>
+    <Modal title="Slett siste utkast" expanded onClose={onClose}>
       <Help
         description={
           <>
-            Du er i ferd med å slette utkastet på ny versjon av veiviseren. Dette{' '}
-            <strong>kan ikke angres</strong>.
+            Du er i ferd med å slette det siste utkastet av veiviseren. Dette{' '}
+            <strong>kan ikke angres</strong>. Dette vil ikke påvirke den siste publiserte versjonen
+            av veiviseren.
           </>
         }
       />
