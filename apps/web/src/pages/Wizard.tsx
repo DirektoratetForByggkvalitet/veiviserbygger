@@ -375,7 +375,13 @@ export default function Wizard() {
               />
 
               {page?.type !== 'Intro' && page.id && page?.show && (
-                <PageExpression expression={page?.show} pageId={page.id} nodes={nodes} />
+                <PageExpression
+                  label="Vis siden hvis"
+                  expression={page?.show}
+                  pageId={page.id}
+                  nodes={nodes}
+                  onRemove={() => patchPage(page.id, { show: {} })} // Remove the show condition
+                />
               )}
 
               {(orderedNodes?.length > 0 &&

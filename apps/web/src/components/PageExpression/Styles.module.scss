@@ -6,14 +6,31 @@
     $this: &;
     display: block;
     width: 100%;
-    background-color: colors.$light;
-    border: vars.$border-style;
-    padding: vars.$spacing--small vars.$spacing--small 0 vars.$spacing--small;
 
     &__title {
         @include mixins.font-size(small);
-        color: colors.$muted;
         font-weight: normal;
-        margin-bottom: vars.$spacing--small;
+        @include mixins.font-size(small);
+        font-weight: normal;
+        flex-grow: 2;
+    }
+
+    &__header {
+        grid-area: header;
+        display: flex;
+        align-items: center;
+        gap: vars.$spacing--xsmall;
+        padding: vars.$spacing--xsmall 0;
+        padding-top: calc(vars.$spacing--small - 6px);
+    }
+
+    &__header-icon {
+        color: colors.$muted;
+    }
+
+    &__content {
+        background-color: colors.$light;
+        border: vars.$border-style;
+        padding: vars.$spacing--small vars.$spacing--small 0 vars.$spacing--small;
     }
 }
