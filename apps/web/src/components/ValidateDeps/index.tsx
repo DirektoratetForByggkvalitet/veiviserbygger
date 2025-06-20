@@ -12,9 +12,10 @@ type Props = {
     doc: DocumentReference
     path: string[]
   }
+  title?: string
 }
 
-export default function ValidateDeps({ children, node, sourceRef }: Props) {
+export default function ValidateDeps({ children, node, sourceRef, title }: Props) {
   const { validateDelete, getNodeRef } = useVersion()
 
   const { isLoading, data: deleteValidationResult } = useSWR(
@@ -39,9 +40,9 @@ export default function ValidateDeps({ children, node, sourceRef }: Props) {
       <div>
         <Message title="Innholdet kan ikke slettes">
           <p>
-            Dette skyldes at innholdet er referert til et annet sted i veiviseren. Det kan for
-            eksempel være i logikk for vis eller skjul av innhold. Du trenger å fjerne denne
-            referansen før du kan slette innholdet.{' '}
+            Dette skyldes at {title ? `"${title}` : ' dette innholdet'} referes til fra et annet
+            sted i veiviseren. Det kan for eksempel være i logikk for vis eller skjul av innhold. Du
+            trenger å fjerne denne referansen før du kan slette innholdet.
           </p>
         </Message>
 
@@ -81,20 +82,17 @@ export default function ValidateDeps({ children, node, sourceRef }: Props) {
         <Help
           description={
             <>
-              <p>
-                Dette vil slette alt innhold som ligger under dette elementet. Innholdet refereres
-                ikke til fra noe annet sted etter og blir derfor tatt bort.
-                {/* <strong>
+              Vil du slette {title ? `"${title}"` : 'dette innholdet'} og alt innhold som ligger
+              inni elementet? Handlingen kan ikke angres.
+              {/* <strong>
                   {deleteValidationResult.additionalDeletes?.length} underliggende innhold bli
                   slettet
                 </strong>
-                . Dette innholdet refereres ikke til fra noe annet sted etter sletting av dette
-                innholdet, og blir derfor tatt bort.*/}
-              </p>
-              {children}
+                */}
             </>
           }
         />
+        {children}
       </>
     )
   }

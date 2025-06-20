@@ -440,7 +440,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
     return (
       <Fragment key={node.id}>
-        <Header type={node.type} node={node} sourceRef={sourceRef} />
+        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
         <Main>
           <Input
             label="Tittel"
@@ -759,11 +759,7 @@ const Header = ({
         expanded={showConfirmDelete}
         onClose={() => setShowConfirmDelete(false)}
       >
-        <Help
-          description={`Vil du slette ${title ? `"${title}"` : 'dette innholdet'}? Handlingen kan ikke angres.`}
-        />
-
-        <ValidateDeps node={node} sourceRef={sourceRef}>
+        <ValidateDeps node={node} sourceRef={sourceRef} title={title || getTypeText(type)}>
           <ButtonBar>
             <Button
               type="button"
