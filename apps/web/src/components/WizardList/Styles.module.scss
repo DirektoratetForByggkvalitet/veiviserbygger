@@ -55,7 +55,7 @@
         border-radius: 4px;
         padding: 3px 5px;
         &--public {
-            background-color: colors.get(primary, dark);
+            background-color: colors.$published;
             color: colors.$light;
         }
     }
