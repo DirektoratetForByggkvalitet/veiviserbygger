@@ -38,6 +38,12 @@
 
     &__title-text {
         @include mixins.text-overflow;
+        flex-grow: 1;
+        padding: 3px 0;
+    }
+
+    &__title-icon {
+        color: colors.$muted;
     }
 
     &__page {

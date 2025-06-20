@@ -175,6 +175,7 @@ function PageMap({
           </span>
         )}
         <span {...bem('title-text')}>{page?.heading || 'Uten tittel'}</span>
+        {'show' in page && page.show && <Icon name="EyeOff" {...bem('title-icon')} />}
       </h2>
 
       {!value.length && !selected && isEditable && (
