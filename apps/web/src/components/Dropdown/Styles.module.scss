@@ -56,7 +56,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         overflow: hidden;
-        @include mixins.input-placeholder {
+        &--placeholder {
             color: colors.$muted;
         }
     }

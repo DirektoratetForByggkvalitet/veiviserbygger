@@ -156,7 +156,11 @@ export default function Dropdown({
           ref={triggerRef}
         >
           {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
-          {!iconOnly && <span {...bem('value')}>{valueString || ' '}</span>}
+          {!iconOnly && (
+            <span {...bem('value', { placeholder: !selectedOption && !value && placeholder })}>
+              {valueString || ' '}
+            </span>
+          )}
 
           <span {...bem('icon')}>{icon ? <Icon name={icon} /> : <Icon name="ChevronDown" />}</span>
         </button>
