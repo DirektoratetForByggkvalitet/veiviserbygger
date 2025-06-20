@@ -55,7 +55,10 @@ type NodeProps = {
   allNodes: Props['allNodes']
   node: OptionalExcept<PageContent, 'id' | 'type'>
   pageId: WizardPage['id']
-  path: string[]
+  sourceRef: {
+    doc: DocumentReference
+    path: string[]
+  }
 }
 
 function contentAction<T extends PageContent['type']>({
@@ -430,13 +433,14 @@ function NegativeResult({
   )
 }
 
-function Node({ node, pageId, allNodes, path }: NodeProps) {
-  const { patchNode, addNodes } = useVersion()
+function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
+  const { patchNode, addNodes, getNodeRef } = useVersion()
   const isEditable = useEditable()
+
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
     return (
       <Fragment key={node.id}>
-        <Header type={node.type} node={node} path={path} />
+        <Header type={node.type} node={node} sourceRef={sourceRef} />
         <Main>
           <Input
             label="Tittel"
@@ -465,7 +469,7 @@ function Node({ node, pageId, allNodes, path }: NodeProps) {
           type={node.type}
           title={node.heading || 'Hva er det til middag i dag?'}
           node={node}
-          path={path}
+          sourceRef={sourceRef}
         />
 
         <Main>
@@ -538,7 +542,7 @@ function Node({ node, pageId, allNodes, path }: NodeProps) {
           type={node.type}
           title={node.heading || 'Hva er det til middag i dag?'}
           node={node}
-          path={path}
+          sourceRef={sourceRef}
         />
 
         <Main>
@@ -599,7 +603,8 @@ function Node({ node, pageId, allNodes, path }: NodeProps) {
   if (node.type === 'Branch') {
     return (
       <Fragment key={node.id}>
-        <Header type={node.preset || node.type} node={node} path={path} />
+        <Header type={node.preset || node.type} node={node} sourceRef={sourceRef} />
+
         <Main>
           <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
           {node.preset === 'NegativeResult' && <NegativeResult node={node} nodes={allNodes} />}
@@ -612,18 +617,24 @@ function Node({ node, pageId, allNodes, path }: NodeProps) {
           {node.preset === 'NewQuestions' && (
             <>
               {getOrdered(node?.content)?.map((nodeRef) => {
-                const node = allNodes[nodeRef?.node?.id]
+                const childNode = allNodes[nodeRef?.node?.id]
 
                 return (
-                  <Node
-                    node={{ ...node, id: nodeRef.node.id }}
-                    pageId={pageId}
-                    allNodes={allNodes}
-                    key={nodeRef.id}
-                    path={[...path, 'content', nodeRef.id]}
-                  />
+                  <>
+                    <Node
+                      node={{ ...childNode, id: nodeRef.node.id }}
+                      pageId={pageId}
+                      allNodes={allNodes}
+                      key={nodeRef.id}
+                      sourceRef={{
+                        doc: getNodeRef(node.id),
+                        path: ['content', nodeRef.id, 'node'],
+                      }}
+                    />
+                  </>
                 )
               })}
+
               <Dropdown
                 options={addNodeContentOptions(node.id, addNodes)}
                 trigger={({ onClick }) => (
@@ -685,12 +696,19 @@ const Header = ({
   type,
   title,
   node,
-  path,
+  sourceRef,
 }: {
   type: PageContent['type'] | Branch['preset']
   node: NodeProps['node']
   title?: string
-  path: string[]
+  /**
+   * The document in which the node is referenced, and the path inside
+   * the document where this refrence is located.
+   */
+  sourceRef: {
+    doc: DocumentReference
+    path: string[]
+  }
 }) => {
   const [showMoveNode, setShowMoveNode] = useState(false)
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
@@ -745,13 +763,13 @@ const Header = ({
           description={`Vil du slette ${title ? `"${title}"` : 'dette innholdet'} ? Handlingen kan ikke angres.`}
         />
 
-        <ValidateDeps node={node} path={path}>
+        <ValidateDeps node={node} sourceRef={sourceRef}>
           <ButtonBar>
             <Button
               type="button"
               warning
               onClick={async () => {
-                await deleteNode(node.id)
+                await deleteNode(node.id, sourceRef)
                 setShowConfirmDelete(false)
               }}
             >
@@ -776,6 +794,7 @@ const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>
 
 export default function Content({ id, nodeId, allNodes, pageId, path }: Props) {
   const node = allNodes?.[nodeId]
+  const { getVersionRef } = useVersion()
 
   return (
     <section {...bem('')} id={id} data-path={path.join('.')}>
@@ -784,7 +803,10 @@ export default function Content({ id, nodeId, allNodes, pageId, path }: Props) {
           node={{ ...node, id: nodeId }}
           pageId={pageId}
           allNodes={allNodes}
-          path={[...path, 'node']}
+          sourceRef={{
+            doc: getVersionRef(),
+            path: [...path, 'node'],
+          }}
         />
       ) : (
         <>

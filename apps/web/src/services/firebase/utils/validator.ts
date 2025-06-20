@@ -51,6 +51,24 @@ export function findAdditionalDeletes(
       ]
     })
 
+  // we're at the end of the recursion, so we can return the additional deletes for nodes that has been
+  // orphaned (i.e. they have no incoming references)
+  if (visitedNodes.length === 0) {
+    additionalDeletes.push(
+      ...treeNodes
+        .filter(
+          (n) =>
+            n.incoming.length === 0 &&
+            n.doc.path.includes('/nodes/') &&
+            !additionalDeletes.some((d) => d.doc.path === n.doc.path),
+        )
+        .flatMap((n) => ({
+          doc: n.doc,
+          reason: 'unreferenced' as Reason,
+        })),
+    )
+  }
+
   return additionalDeletes
 }
 

@@ -1,24 +1,27 @@
 import useSWR from 'swr'
 import { useVersion } from '@/hooks/useVersion'
 import { OptionalExcept, PageContent } from 'types'
+import { DocumentReference } from 'firebase/firestore'
 
 type Props = {
   children?: React.ReactNode
   node: OptionalExcept<PageContent, 'id'>
-  path: string[]
+  sourceRef: {
+    doc: DocumentReference
+    path: string[]
+  }
 }
 
-export default function ValidateDeps({ children, node, path }: Props) {
-  const { validateDelete, getNodeRef, getVersionRef } = useVersion()
+export default function ValidateDeps({ children, node, sourceRef }: Props) {
+  const { validateDelete, getNodeRef } = useVersion()
 
-  const { isLoading, data: deleteValidationResult } = useSWR(path, () =>
-    validateDelete({
-      node: getNodeRef(node.id),
-      ref: {
-        doc: getVersionRef(),
-        path,
-      },
-    }),
+  const { isLoading, data: deleteValidationResult } = useSWR(
+    `${sourceRef.doc.path} ${sourceRef.path}`,
+    () =>
+      validateDelete({
+        node: getNodeRef(node.id),
+        ref: sourceRef,
+      }),
   )
 
   if (isLoading) {
@@ -57,6 +60,24 @@ export default function ValidateDeps({ children, node, path }: Props) {
           ))}
         </ul>
       </div>
+    )
+  }
+
+  if (deleteValidationResult.additionalDeletes?.length) {
+    return (
+      <>
+        <div>
+          <p>
+            Når noden slettes vil også{' '}
+            <strong>
+              {deleteValidationResult.additionalDeletes?.length} andre noder bli slettet
+            </strong>
+            . Disse refereres ikke til noe sted etter sletting av denne noden, og blir derfor tatt
+            bort.
+          </p>
+        </div>
+        {children}
+      </>
     )
   }
 

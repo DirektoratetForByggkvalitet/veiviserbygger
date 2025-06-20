@@ -437,58 +437,46 @@ export async function reorderNodes(
   })
 }
 
-export async function deleteNode({ db, wizardId, versionId }: FuncScope, nodeId: string) {
+export async function deleteNode(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  ref: { doc: DocumentReference; path: string[] },
+) {
+  console.log('**', ref.path)
+
+  const nodeRef = getNodeRef({ db, wizardId, versionId }, nodeId)
+
+  const deleteValidationResult = await validateDelete(
+    { db, wizardId, versionId },
+    { node: nodeRef, ref },
+  )
+
+  if (!deleteValidationResult.allowed) {
+    throw new Error(
+      `Node with id ${nodeId} cannot be deleted because it is referenced by other nodes: ${JSON.stringify(
+        deleteValidationResult.blockedBy,
+      )}`,
+    )
+  }
+
   await runTransaction(db, async (transaction) => {
-    const nodeRef = getNodeRef({ db, wizardId, versionId }, nodeId)
-    const versionRef = getWizardVersionRef({ db, wizardId, versionId })
-
-    const [node, version] = await Promise.all([
-      transaction.get(nodeRef),
-      transaction.get(versionRef),
-    ])
-
-    const pageIds = Object.keys(version.data()?.pages || {})
-    const nodeToDelete = node?.data()
-
-    if (!nodeToDelete) {
-      return
-    }
-
+    console.debug('Deleting node', nodeRef.path)
     await transaction.delete(nodeRef)
 
-    await transaction.update(
-      versionRef,
-      pageIds.reduce((res, pageId) => {
-        const content = version.data()?.pages?.[pageId].content || {}
-        const introContent = version.data()?.intro?.content || {}
-        const pageNodeKeys = Object.keys(content)
-        const introNodeKeys = Object.keys(introContent)
+    for (const additionalDeletes of deleteValidationResult.additionalDeletes || []) {
+      // delete the additional nodes that are not referenced anywhere
+      await transaction.delete(additionalDeletes.doc)
 
-        return {
-          ...res,
-          ...pageNodeKeys.reduce((res, key) => {
-            if (content?.[key]?.node?.id !== nodeId) {
-              return res
-            }
+      console.debug(
+        'Deleted additional node',
+        additionalDeletes.doc.path,
+        'because it was not referenced anywhere',
+      )
+    }
 
-            return {
-              ...res,
-              [`pages.${pageId}.content.${key}`]: deleteField(),
-            }
-          }, {}),
-          ...introNodeKeys.reduce((res, key) => {
-            if (introContent?.[key]?.node?.id !== nodeId) {
-              return res
-            }
-
-            return {
-              ...res,
-              [`intro.content.${key}`]: deleteField(),
-            }
-          }, {}),
-        }
-      }, {}),
-    )
+    await transaction.update(ref.doc, {
+      [ref.path.slice(0, -1).join('.')]: deleteField(),
+    })
   })
 }
 

@@ -16,6 +16,43 @@ describe('validator util', () => {
       expect(findAdditionalDeletes([], a)).toEqual([])
     })
 
+    it('should include any node that has no incoming references', () => {
+      const firestore = getFirestore()
+
+      // we're looking for additional deletes when deleting doc a
+      const a = doc(firestore, 'collection', 'doc-a')
+
+      // both of these nodes are not referenced by any other node, but only c is in the nodes collection
+      // and should be included in the additional deletes list
+      const b = doc(firestore, 'collection', 'doc-b')
+      const c = doc(firestore, 'wizards', 'acc', 'nodes', 'node-c')
+
+      const treeNodes: TreeNode[] = [
+        {
+          doc: a,
+          incoming: [],
+          outgoing: [],
+        },
+        {
+          doc: b,
+          incoming: [],
+          outgoing: [],
+        },
+        {
+          doc: c,
+          incoming: [],
+          outgoing: [],
+        },
+      ]
+
+      expect(findAdditionalDeletes(treeNodes, a)).toEqual([
+        {
+          doc: expect.toBeReferenceTo(c),
+          reason: 'unreferenced',
+        },
+      ])
+    })
+
     it('should find additional deletes for a given node', () => {
       const firestore = getFirestore()
       const a = doc(firestore, 'collection', 'doc-a')
