@@ -24,6 +24,7 @@ import { siteName } from '@/constants'
 import { v4 as uuid } from 'uuid'
 import { EditableContext } from '@/context/EditableContext'
 import { useEditable } from '@/hooks/useEditable'
+import { deleteField } from 'firebase/firestore'
 
 function contentAction<T extends PageContent['type']>({
   pageId,
@@ -380,7 +381,7 @@ export default function Wizard() {
                   expression={page?.show}
                   pageId={page.id}
                   nodes={nodes}
-                  onRemove={() => patchPage(page.id, { show: {} })} // Remove the show condition
+                  onRemove={() => patchPage(page.id, { show: deleteField() as any })}
                 />
               )}
 
