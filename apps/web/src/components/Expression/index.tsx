@@ -137,7 +137,8 @@ function FieldValue({
       <Dropdown
         options={activeField.options}
         label="Alternativ"
-        value={(expression?.value as string) || 'Velg alternativ'}
+        value={expression?.value as string}
+        placeholder="Velg alternativ"
         hideLabel
         sentence
         onChange={handleExpressionChange('value')}
@@ -328,6 +329,7 @@ export default function Expression({
             options={fieldOptions}
             value={expression?.field?.id}
             label="Felt"
+            placeholder="Velg felt"
             hideLabel
             sentence
             onChange={handleExpressionChange('field')}
@@ -337,7 +339,8 @@ export default function Expression({
             <Dropdown
               options={getInputOperators(activeField?.type)}
               value={expression?.operator}
-              label="Velg betingelse"
+              label="Betingelse"
+              placeholder="Velg betingelse"
               hideLabel
               sentence
               onChange={handleExpressionChange('operator')}

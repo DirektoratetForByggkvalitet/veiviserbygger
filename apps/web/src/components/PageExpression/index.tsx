@@ -8,7 +8,7 @@ const bem = BEMHelper(styles)
 
 interface Props {
   label?: string
-  onRemove?: () => void
+  onRemove: () => void
 }
 
 export default function PageExpression({
