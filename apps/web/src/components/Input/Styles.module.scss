@@ -36,12 +36,13 @@
         cursor: text;
     }
 
-    &__input {
-        -webkit-appearance: none;
+    &__input,
+    &__input:-webkit-autofill,
+    &__input:-webkit-autofill:hover,
+    &__input:-webkit-autofill:focus {
         border-radius: 0;
         padding: 3px vars.$form-padding-x vars.$form-padding-y;
         background-color: transparent;
-
         @include mixins.input-placeholder {
             color: colors.get(neutral, base);
         }

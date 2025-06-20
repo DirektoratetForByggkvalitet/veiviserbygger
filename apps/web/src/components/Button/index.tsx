@@ -17,6 +17,7 @@ interface Props {
   loading?: boolean
   to?: string
   href?: string
+  target?: '_blank' | '_self' | '_parent' | '_top'
   onClick?: MouseEventHandler
   icon?: keyof typeof icons
   iconOnlyOnMobile?: keyof typeof icons
@@ -36,6 +37,7 @@ export default function Button({
   warning,
   to,
   href,
+  target,
   onClick,
   iconOnly,
   iconOnlyOnMobile,
@@ -49,7 +51,7 @@ export default function Button({
   const Element = to ? Link : href ? 'a' : 'button'
 
   const typeSpecificProps = {
-    ...(to ? { to } : {}),
+    ...(to ? { to, target } : {}),
     ...(href ? { href } : {}),
     ...(onClick ? { onClick } : {}),
   }

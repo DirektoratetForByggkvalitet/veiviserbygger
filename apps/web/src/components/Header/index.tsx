@@ -12,7 +12,8 @@ import { useEditable } from '@/hooks/useEditable'
 import { useModal } from '@/hooks/useModal'
 import BEMHelper from '@/lib/bem'
 import { Timestamp } from 'firebase/firestore'
-import { useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
+import { getVersionTitle } from '@/lib/versions'
 import { Wizard, WrappedWithId } from 'types'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
@@ -49,7 +50,6 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
 
   const { versionId } = useParams()
   const { wizardId } = useParams()
-  const navigate = useNavigate()
   const [open, setOpen] = useAtom(menuState)
   const { setModal } = useModal()
   const isEditable = useEditable()
@@ -60,40 +60,6 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   const toggleMenu = () => {
     setOpen(!open)
   }
-
-  const getVersionTitle = (
-    v: { title?: string; publishedFrom?: Timestamp; publishedTo?: Timestamp },
-    index: number,
-    type?: 'long' | 'short',
-  ) => {
-    if (type === 'short') {
-      return `Versjon ${index}`
-    }
-    return v.title
-      ? `${index}. ${v.title}`
-      : `${index}. ${v.publishedFrom && !v.publishedTo ? 'Publisert' : ''}${!v.publishedFrom ? 'Siste utkast' : ''}`
-  }
-
-  const versionOptions = [
-    { group: 'Versjoner' },
-    ...(versions || []).map((v, i) => ({
-      label: getVersionTitle(v, i + 1),
-      value: v.id,
-      disabled: v.id === versionId,
-      onClick: () => navigate(`/wizard/${wizardId}/${v.id}`),
-    })),
-    ...(wizard?.data.publishedVersion && wizard?.data.draftVersion?.id === activeVersion?.id
-      ? [
-          { group: 'Utkast' },
-          {
-            value: '4',
-            label: 'Slett dette utkastet',
-            styled: 'delete',
-            onClick: () => setModal('delete-draft'),
-          },
-        ]
-      : []),
-  ] as DropdownOptions
 
   const wizardOptions = [
     { group: 'Veiviser' },
@@ -129,17 +95,15 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
           <nav {...bem('actions')}>
             {activeVersion && (
               <>
-                <Dropdown
-                  subtle
-                  direction="right"
-                  options={versionOptions}
-                  hideLabel
-                  label={
-                    activeVersion
-                      ? getVersionTitle(activeVersion, activeVersionIndex + 1, 'short')
-                      : 'Versjon mangler'
-                  }
-                />
+                <Button size="small" subtle icon="Calendar" onClick={() => setModal('versions')}>
+                  {activeVersion
+                    ? getVersionTitle(
+                        activeVersion,
+                        (versions?.length || 0) - activeVersionIndex,
+                        'short',
+                      )
+                    : 'Versjon mangler'}
+                </Button>
                 <Button
                   size="small"
                   iconOnlyOnMobile="SendHorizontal"
@@ -194,7 +158,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
               primary
               to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}
             >
-              Gå til utkast
+              Gå til siste utkast
             </Button>
           ) : null}
           {/* No draft exist, so the user can create a new one */}

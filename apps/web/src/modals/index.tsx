@@ -2,6 +2,7 @@ import RenameModal from './Rename'
 import DeleteModal from './Delete'
 import PublishModal from './Publish'
 import DraftModal from './Draft'
+import VersionsModal from './Versions'
 import DeleteDraftModal from './DeleteDraft'
 import { useParams } from 'react-router'
 
@@ -18,6 +19,7 @@ export default function Modals() {
       <DeleteModal />
       <DeleteDraftModal />
       <DraftModal />
+      <VersionsModal />
       <PublishModal />
     </>
   )

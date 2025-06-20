@@ -1,0 +1,148 @@
+@use 'sass:color';
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
+
+.versions-list {
+    $this: &;
+    display: grid;
+    gap: vars.$spacing--xsmall;
+    margin-bottom: 30px;
+
+    &__item {
+        @include mixins.font-size(base);
+        $padding: 10px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: 10px;
+        padding: 10px $padding;
+        background-color: colors.$background;
+        border-radius: vars.$border-radius;
+        text-align: left;
+
+        &:hover,
+        &:focus:focus-visible {
+            background-color: colors.get(neutral, light);
+        }
+
+        &--active {
+            background-color: colors.get(primary, light);
+        }
+
+        &--placeholder {
+            border: vars.$border-style--weak;
+            background-color: transparent;
+            color: colors.$muted;
+
+            &:hover,
+            &:focus:focus-visible {
+                background-color: transparent;
+            }
+        }
+
+        &--options-right {
+            padding-right: 45px;
+        }
+    }
+
+    &__list-item {
+        position: relative;
+    }
+
+    &__options {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 1;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    &__description {
+        @include mixins.font-size(small);
+        margin: 0;
+        opacity: 0.66;
+        max-width: 75%;
+    }
+
+    &__label {
+        flex-grow: 1;
+    }
+
+    &__date {
+        font-size: 10px;
+        opacity: 0.66;
+    }
+
+    &__tag {
+        @include mixins.font(base, normal);
+        font-size: 10px;
+        display: inline-block;
+        background-color: colors.$light;
+        color: colors.$text;
+        border: vars.$border-style;
+        border-radius: 4px;
+        padding: 3px 5px;
+        &--public {
+            background-color: colors.$published;
+            color: colors.$light;
+        }
+        &--pre-public {
+            background-color: colors.$light;
+        }
+    }
+
+    &--large {
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: vars.$gutter;
+
+        @include mixins.min-width(md) {
+            grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+        }
+
+        #{$this}__item {
+            line-height: 1.2;
+            display: grid;
+            aspect-ratio: 1 / 1;
+            place-items: center;
+            place-content: center;
+            text-align: center;
+            padding: 10px 10px 12px;
+            margin: 0;
+            border: vars.$border-style--weak;
+            background-color: colors.get(neutral, xlight);
+            &:hover,
+            &:focus:focus-visible {
+                background-color: colors.get(neutral, light);
+            }
+
+            @include mixins.min-width(md) {
+                padding: 1rem 1rem 1.5rem;
+                aspect-ratio: 3 / 2;
+                @include mixins.font-size(sub-title);
+            }
+        }
+
+        #{$this}__tag {
+            order: 1;
+            width: fit-content;
+            margin: 0 auto 0.2rem;
+
+            @include mixins.min-width(md) {
+                margin: 0 auto 0.5rem;
+            }
+        }
+
+        #{$this}__label {
+            order: 2;
+            text-wrap: balance;
+            padding-left: 0.4em;
+            padding-right: 0.4em;
+        }
+    }
+}
