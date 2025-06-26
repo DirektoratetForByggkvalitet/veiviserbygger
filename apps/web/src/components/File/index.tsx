@@ -108,31 +108,31 @@ export default function File({
             {...bem('file-input')}
             accept={accept}
           />
-
-          {state && (
-            <Button size="small" onClick={triggerFileDialog} loading={state === 'uploading'}>
-              {state === 'uploading' ? 'Laster opp...' : 'Legg til'}
-            </Button>
-          )}
-
-          {state === 'ready' && (
-            <Dropdown
-              icon="Ellipsis"
-              direction="right"
-              options={[
-                {
-                  value: '0',
-                  label: 'Fjern bilde',
-                  onClick: triggerRemoveFile,
-                  styled: 'delete',
-                },
-              ]}
-              label="Valg"
-              iconOnly
-            />
-          )}
         </div>
       )}
+
+      <span {...bem('options')}>
+        {state === 'ready' ? (
+          <Dropdown
+            icon="Ellipsis"
+            direction="right"
+            options={[
+              {
+                value: '0',
+                label: 'Fjern bilde',
+                onClick: triggerRemoveFile,
+                styled: 'delete',
+              },
+            ]}
+            label="Valg"
+            iconOnly
+          />
+        ) : (
+          <Button size="small" onClick={triggerFileDialog} loading={state === 'uploading'}>
+            {state === 'uploading' ? 'Laster opp...' : 'Legg til'}
+          </Button>
+        )}
+      </span>
 
       {preview || value ? (
         <>
