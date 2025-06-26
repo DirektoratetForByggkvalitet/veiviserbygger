@@ -25,8 +25,8 @@ export default function User({ name, options }: Props) {
               type="button"
               onClick={onClick}
               {...bem('avatar')}
-              role="presentation"
               title={name || undefined}
+              aria-label="Bruker"
             >
               {name?.charAt(0) || ''}
             </button>
