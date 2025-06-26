@@ -43,11 +43,13 @@ import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 import { rewriteRefs } from '@/lib/rewrite'
 import { buildTree } from './utils/refs'
 import { isDeleteAllowed } from './utils/validator'
+import { connectStorageEmulator, FirebaseStorage, getStorage } from 'firebase/storage'
 
 let firebaseApp: {
   app: FirebaseApp
   auth: Auth
   firestore: Firestore
+  storage: FirebaseStorage
 }
 
 /**
@@ -69,7 +71,7 @@ export function getFirebaseApp(
     appId: options?.constants?.FIREBASE_APP_ID ?? '',
     authDomain: options?.constants?.FIREBASE_AUTH_DOMAIN ?? '',
     projectId: options?.constants?.FIREBASE_PROJECT_ID ?? 'veiviserbygger',
-    storageBucket: options?.constants?.FIREBASE_STORAGE_BUCKET ?? '',
+    storageBucket: options?.constants?.FIREBASE_STORAGE_BUCKET ?? 'default-bucket',
     messagingSenderId: options?.constants?.FIREBASE_MESSAGING_SENDER_ID ?? '',
   }
 
@@ -79,8 +81,10 @@ export function getFirebaseApp(
   // }
 
   const app = initializeApp(firebaseConfig)
+
   let auth: Auth
   let firestore: Firestore
+  let storage: FirebaseStorage
 
   if (options?.constants?.FIREBASE_EMULATOR_AUTH_HOST) {
     auth = getAuth()
@@ -92,18 +96,27 @@ export function getFirebaseApp(
 
   if (options?.constants?.FIREBASE_EMULATOR_FIRESTORE_HOST) {
     firestore = getFirestore()
+    storage = getStorage()
 
     connectFirestoreEmulator(
       firestore,
       options.constants.FIREBASE_EMULATOR_FIRESTORE_HOST,
       Number(options.constants.FIREBASE_EMULATOR_FIRESTORE_PORT || 8080),
     )
+
+    connectStorageEmulator(
+      storage,
+      options.constants.FIREBASE_EMULATOR_STORAGE_HOST,
+      Number(options.constants.FIREBASE_EMULATOR_STORAGE_PORT || 9199),
+    )
+
     console.info('Connected to the Firestore emulator')
   } else {
     firestore = getFirestore(app)
+    storage = getStorage(app)
   }
 
-  return { app, auth, firestore }
+  return { app, auth, firestore, storage }
 }
 
 export async function getDocument(ref: DocumentReference) {

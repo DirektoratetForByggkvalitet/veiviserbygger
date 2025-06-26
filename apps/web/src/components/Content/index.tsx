@@ -490,11 +490,12 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
           />
           <File
             label="Bilde"
-            image={node?.image?.url}
-            alt={node?.image?.alt}
-            onAltChange={() => console.log('update alt')}
-            onFileUpload={(file) => console.log(file)}
-            removeFile={() => console.log('remove')}
+            type="image"
+            value={node.image}
+            sourceRef={{
+              doc: getNodeRef(node.id),
+              path: ['image'],
+            }}
           />
           <div {...bem('sub-header')}>
             <h3 {...bem('sub-title')}>Svaralternativer</h3>

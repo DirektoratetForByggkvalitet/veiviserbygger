@@ -1,4 +1,5 @@
 import type { DocumentReference, Timestamp } from 'firebase/firestore'
+import type { StorageReference } from 'firebase/storage'
 
 export type DeepPartial<T> = T extends object
   ? {
@@ -102,8 +103,8 @@ export type Content = {
   summary?: string
   details?: string
   image?: {
-    url?: string
     alt?: string
+    src: StorageReference
   }
   show?: Expression // Vi har også hide, men tenker vi kan forenkle det til kun vis i første runde.
   flow?: 'stop' | 'continue' | null
