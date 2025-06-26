@@ -39,7 +39,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
             <nav {...bem('actions')}>
               <User
                 name={user?.displayName || user?.email}
-                options={[{ value: '', label: 'Logg ut', onClick: logout }]}
+                options={[{ value: '', icon: 'LogOut', label: 'Logg ut', onClick: logout }]}
               />
             </nav>
           )}
@@ -65,17 +65,20 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
     { group: 'Veiviser' },
     {
       value: '1',
+      icon: 'Pencil',
       label: 'Endre navn',
       onClick: () => setModal('rename'),
-    },
+    } /*
     {
       value: '2',
+      icon: 'Copy',
       label: 'Dupliser veiviseren',
       onClick: () => console.log('Åpne en modal med bekreftelse."'),
       disabled: true,
-    },
+    },*/,
     {
       value: '3',
+      icon: 'Trash',
       label: 'Slett veiviseren',
       styled: 'delete',
       disabled: !!wizard?.data.publishedVersion?.id,
@@ -139,7 +142,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
             {user && (
               <User
                 name={user?.displayName || user?.email}
-                options={[{ value: '', label: 'Logg ut', onClick: logout }]}
+                options={[{ value: '', icon: 'LogOut', label: 'Logg ut', onClick: logout }]}
               />
             )}
           </nav>

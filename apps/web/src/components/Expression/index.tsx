@@ -7,6 +7,7 @@ import {
 } from 'types'
 import Dropdown from '@/components/Dropdown'
 import Input from '@/components/Input'
+import { icons } from 'lucide-react'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { getOrdered, getWithIds } from 'shared/utils'
@@ -49,17 +50,17 @@ type FieldType = {
 
 type Operators = 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'neq' | 'between' | 'is' | 'not' | 'required'
 
-const OPERATORS: { value: Operators; label: string }[] = [
-  { value: 'gt', label: 'er større enn' },
-  { value: 'lt', label: 'er mindre enn' },
-  { value: 'gte', label: 'er lik eller større enn' },
-  { value: 'lte', label: 'er lik eller mindre enn' },
-  { value: 'eq', label: 'er lik' },
-  { value: 'neq', label: 'er ikke lik' },
-  { value: 'between', label: 'er mellom' },
-  { value: 'is', label: 'er valgt' },
-  { value: 'not', label: 'er ikke valgt' },
-  { value: 'required', label: 'er utfylt' },
+const OPERATORS: { value: Operators; icon: keyof typeof icons; label: string }[] = [
+  { value: 'gt', icon: 'ChevronLeft', label: 'er større enn' },
+  { value: 'lt', icon: 'ChevronRight', label: 'er mindre enn' },
+  { value: 'gte', icon: 'ChevronsLeft', label: 'er lik eller større enn' },
+  { value: 'lte', icon: 'ChevronsRight', label: 'er lik eller mindre enn' },
+  { value: 'eq', icon: 'Equal', label: 'er lik' },
+  { value: 'neq', icon: 'EqualNot', label: 'er ikke lik' },
+  { value: 'between', icon: 'EqualNot', label: 'er mellom' },
+  { value: 'is', icon: 'SquareCheck', label: 'er valgt' },
+  { value: 'not', icon: 'Square', label: 'er ikke valgt' },
+  { value: 'required', icon: 'SquarePen', label: 'er utfylt' },
 ]
 
 const TYPES = [
@@ -361,6 +362,7 @@ export default function Expression({
           options={[
             {
               value: '0',
+              icon: 'Plus',
               label: 'Legg til flere vilkår',
               onClick: handleAddClause,
             },

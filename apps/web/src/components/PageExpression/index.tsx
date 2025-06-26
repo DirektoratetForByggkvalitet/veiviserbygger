@@ -19,6 +19,7 @@ export default function PageExpression({
   const contentActions: DropdownOptions = [
     {
       value: '0',
+      icon: 'Trash',
       label: 'Fjern logikk',
       onClick: onRemove,
       styled: 'delete',

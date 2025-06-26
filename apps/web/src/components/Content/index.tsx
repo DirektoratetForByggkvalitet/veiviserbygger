@@ -157,6 +157,7 @@ function Option({
     [
       {
         value: '0',
+        icon: 'OctagonX',
         label: 'Gir negativt resultat',
         onClick: async () => {
           await addNodes({ pageId: pageId, afterNodeId: nodeId }, [
@@ -193,6 +194,7 @@ function Option({
       },
       {
         value: '1',
+        icon: 'Info',
         label: 'Gir ekstra informasjon',
         onClick: async () => {
           await addNodes({ pageId, afterNodeId: nodeId }, [
@@ -222,6 +224,7 @@ function Option({
       },
       {
         value: '2',
+        icon: 'Trash',
         label: 'Slett',
         onClick: () => deleteAnswer(nodeId, optionId),
         styled: 'delete',
@@ -717,16 +720,19 @@ const Header = ({
   const contentActions: DropdownOptions = [
     {
       value: '0',
+      icon: 'ArrowRight',
       label: 'Flytt til annen side',
       onClick: () => setShowMoveNode(true),
     },
     {
       value: '0',
+      icon: 'Copy',
       label: 'Dupliser',
       onClick: () => console.log('Dupliser direkte og legg under med "[Header] (kopi)"'),
     },
     {
       value: '0',
+      icon: 'Trash',
       label: 'Fjern innhold',
       onClick: () => setShowConfirmDelete(true),
       styled: 'delete',

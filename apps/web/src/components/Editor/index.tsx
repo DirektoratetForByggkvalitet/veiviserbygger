@@ -93,15 +93,18 @@ function MenuBar() {
 
   const textStyles = [
     {
+      label: 'Tekst',
+      icon: 'Text',
       value: 'p',
-      label: 'Paragraf',
     },
     {
       label: 'Overskrift',
+      icon: 'Heading2',
       value: 'h2',
     },
     {
       label: 'Underoverskrift',
+      icon: 'Heading3',
       value: 'h3',
     },
   ]

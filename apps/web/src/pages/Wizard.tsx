@@ -323,21 +323,16 @@ export default function Wizard() {
                     ? [
                         {
                           value: '0',
+                          icon: 'EyeOff',
                           label: 'Vis siden hvis...',
                           onClick: () => addPageConditional(page.id),
                           disabled: false,
                         },
                       ]
                     : []),
-                  // {
-                  //   value: '1',
-                  //   label: 'Dupliser siden',
-                  //   onClick: () =>
-                  //     console.log('Dupliser siden og gi den navnet "[Heading] (kopi)"'),
-                  //   disabled: true,
-                  // },
                   {
                     value: '2',
+                    icon: 'Trash',
                     label: 'Fjern siden',
                     styled: 'delete',
                     onClick: () => setShowConfirmDeletePage(true),
