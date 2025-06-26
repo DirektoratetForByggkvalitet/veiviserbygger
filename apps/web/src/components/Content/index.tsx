@@ -718,18 +718,20 @@ const Header = ({
   const { deleteNode } = useVersion()
 
   const contentActions: DropdownOptions = [
+    /* TODO
     {
       value: '0',
       icon: 'ArrowRight',
       label: 'Flytt til annen side',
       onClick: () => setShowMoveNode(true),
-    },
+    },*/
+    /* TODO
     {
       value: '0',
       icon: 'Copy',
       label: 'Dupliser',
-      onClick: () => console.log('Dupliser direkte og legg under med "[Header] (kopi)"') /* TODO */,
-    },
+      onClick: () => console.log('Dupliser direkte og legg under med "[Header] (kopi)"')
+    }*/
     {
       value: '0',
       icon: 'Trash',
