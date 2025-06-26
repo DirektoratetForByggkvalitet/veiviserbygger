@@ -96,7 +96,11 @@ const ContentItem = ({
 
     return (
       <li
-        {...bem('item', { branch: true, draggable: isEditable && draggable })}
+        {...bem('item', {
+          branch: true,
+          negative: node.preset == 'NegativeResult',
+          draggable: isEditable && draggable,
+        })}
         key={id}
         ref={setNodeRef}
         style={style}
@@ -105,13 +109,12 @@ const ContentItem = ({
         {...(isEditable ? listeners : [])}
       >
         <Icon
-          name={draggable && isEditable ? 'GripVertical' : getTypeIcon(node.type)}
+          name={draggable && isEditable ? 'GripVertical' : getTypeIcon(node.preset || node.type)}
           {...bem('icon')}
         />
         <h3 {...bem('sub-title', { placeholder: true /*TODO */ })}>
-          {resultNode?.heading || getTypeText(node.preset || 'Branch')}
+          {resultNode?.heading || `${getTypeText(node.preset || node.type)}`}
         </h3>
-        {/* <span {...bem('icon')}>{<Icon name={getTypeIcon(node.preset || 'Branch')} />}</span>*/}
       </li>
     )
   }

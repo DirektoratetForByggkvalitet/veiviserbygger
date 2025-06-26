@@ -31,6 +31,14 @@
         gap: vars.$spacing--xsmall;
         padding: vars.$spacing--xsmall 0;
         padding-top: calc(vars.$spacing--small - 6px);
+        &--negative {
+            #{$this}__header-icon {
+                color: colors.$warning;
+            }
+            #{$this}__title {
+                color: colors.$warning;
+            }
+        }
     }
 
     &__header-icon {

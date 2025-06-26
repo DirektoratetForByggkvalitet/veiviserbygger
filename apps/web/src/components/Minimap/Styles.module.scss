@@ -146,6 +146,15 @@
             }
         }
 
+        &--negative {
+            #{$this}__icon {
+                color: colors.$warning;
+            }
+            #{$this}__sub-title {
+                color: colors.$warning;
+            }
+        }
+
         &--draggable {
             cursor: grab;
             position: relative;
