@@ -100,11 +100,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
               <>
                 <Button size="small" subtle icon="Calendar" onClick={() => setModal('versions')}>
                   {activeVersion
-                    ? getVersionTitle(
-                        activeVersion,
-                        (versions?.length || 0) - activeVersionIndex,
-                        'short',
-                      )
+                    ? getVersionTitle(activeVersion, (versions?.length || 0) - activeVersionIndex)
                     : 'Versjon mangler'}
                 </Button>
                 <Button

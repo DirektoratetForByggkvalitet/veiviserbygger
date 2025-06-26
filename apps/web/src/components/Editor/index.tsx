@@ -1,7 +1,7 @@
 import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 
-import Dropdown from '@/components/Dropdown'
+import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Icon from '@/components/Icon'
 
 import { useEditable } from '@/hooks/useEditable'
@@ -107,7 +107,7 @@ function MenuBar() {
       icon: 'Heading3',
       value: 'h3',
     },
-  ]
+  ] as DropdownOptions
 
   const handleStyleChange = (value: string) => {
     switch (value) {
