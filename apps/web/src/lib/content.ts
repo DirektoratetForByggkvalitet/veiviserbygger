@@ -8,7 +8,7 @@ const typeMap: Record<
   Text: {
     title: 'Tekst',
     icon: 'Text',
-    description: 'Tekst, lister og bilder brukt for ekstra informasjon.',
+    description: 'Tekst, lister og bilder brukt for tilleggsinfo.',
   },
   Radio: {
     title: 'Radioknapper',
@@ -45,13 +45,13 @@ const typeMap: Record<
     title: 'Negativt resultat',
     icon: 'OctagonX',
     description:
-      'Gir et negativt resultat hvor brukeren ikke kan fortsette i veiviseren, men går videre til en resultatside.',
+      'Gir et negativt resultat hvor brukeren ikke kan fortsette i veiviseren, men går videre til en resultatside. Informasjonen blir gjentatt på resultatsiden.',
   },
   ExtraInformation: {
-    title: 'Ekstra informasjon',
+    title: 'Tilleggsinfo',
     icon: 'Info',
     description:
-      'Gir ekstra informasjon til brukeren, mens brukeren får mulighet til å fortsette veiviseren. Ekstra informasjon blir gjentatt på resultatsider.',
+      'Gir ekstra informasjon til brukeren basert på valg de har gjort, mens brukeren får mulighet til å fortsette veiviseren. Tilleggsinfo blir gjentatt på resultatsider.',
   },
   NewQuestions: {
     title: 'Nye spørsmål',

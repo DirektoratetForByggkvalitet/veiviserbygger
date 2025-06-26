@@ -195,7 +195,7 @@ function Option({
       {
         value: '1',
         icon: 'Info',
-        label: 'Gir ekstra informasjon',
+        label: 'Gir tilleggsinfo',
         onClick: async () => {
           await addNodes({ pageId, afterNodeId: nodeId }, [
             {
@@ -383,10 +383,10 @@ function ExtraInformation({
 
   return (
     <>
-      <h3 {...bem('sub-title')}>Vises følgende ekstrainformasjon</h3>
+      <h3 {...bem('sub-title')}>Vises følgende</h3>
 
       <Editor
-        label="Ekstra informasjon"
+        label="Tilleggsinfo"
         value={informationNode.text || ''}
         onChange={(v) => patchNode(informationNodeId, { text: v })}
       />
@@ -728,7 +728,7 @@ const Header = ({
       value: '0',
       icon: 'Copy',
       label: 'Dupliser',
-      onClick: () => console.log('Dupliser direkte og legg under med "[Header] (kopi)"'),
+      onClick: () => console.log('Dupliser direkte og legg under med "[Header] (kopi)"') /* TODO */,
     },
     {
       value: '0',
@@ -740,7 +740,7 @@ const Header = ({
   ]
 
   return (
-    <header {...bem('header')}>
+    <header {...bem('header', { negative: type === 'NegativeResult' })}>
       <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
       <h2 {...bem('title')}>{getTypeText(type)}</h2>
       <Dropdown icon="Ellipsis" direction="right" options={contentActions} label="Valg" iconOnly />
@@ -753,6 +753,7 @@ const Header = ({
         <Help
           description={`Velg hvilken side du ønsker å flytte ${title ? `"${title}"` : 'dette innholdet'} til.`}
         />
+        {/* TODO */}
         <ButtonBar>
           <Button type="button">Side 1</Button>
           <Button type="button">Side 2</Button>
