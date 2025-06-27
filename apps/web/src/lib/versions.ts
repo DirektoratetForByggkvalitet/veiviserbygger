@@ -37,27 +37,11 @@ export function getVersionTitle<
 export function getVersionDate<
   T extends { title?: string; publishedFrom?: Timestamp; publishedTo?: Timestamp },
 >(v: T): string {
-  return `${v.publishedFrom ? formatPublishedDate(v.publishedFrom, 'long') : ''}${v.publishedTo ? ` - ${formatPublishedDate(v.publishedTo, 'long')}` : ''}`
+  return `${v.publishedFrom ? formatTimestamp(v.publishedFrom, 'long') : ''}${v.publishedTo ? ` - ${formatTimestamp(v.publishedTo, 'long')}` : ''}`
 }
 
 export function getVersionState<
   T extends { title?: string; publishedFrom?: Timestamp; publishedTo?: Timestamp },
 >(v: T): string {
   return `${v.publishedFrom ? (!v.publishedTo ? 'Publisert nå' : 'Tidligere publisert') : 'Siste utkast'}`
-}
-
-export function formatPublishedDate(date: Timestamp, type: 'short' | 'long'): string {
-  if (!date) return ''
-  if (type === 'short') {
-    return date.toDate().toLocaleDateString('nb-NO', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-  }
-  return date.toDate().toLocaleDateString('nb-NO', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
 }
