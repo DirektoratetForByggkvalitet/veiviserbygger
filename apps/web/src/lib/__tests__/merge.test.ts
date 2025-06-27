@@ -1,4 +1,10 @@
+import { initializeApp } from 'firebase/app'
 import { merge, unset } from '../merge'
+import { doc, getFirestore } from 'firebase/firestore'
+
+beforeEach(() => {
+  initializeApp({ projectId: 'ci' })
+})
 
 describe('merge', () => {
   it('throws if any argument is an array', () => {
@@ -84,5 +90,14 @@ describe('merge', () => {
 
   it('should handle adding new properties in a patch', () => {
     expect(merge({ a: 1 }, { b: 2 })).toEqual({ a: 1, b: 2 })
+  })
+
+  it('should not merge DocumentReference objects', () => {
+    const db = getFirestore()
+
+    const refA = doc(db, 'collection', 'docA')
+    const refB = doc(db, 'collection', 'docB')
+
+    expect(merge({ myRef: refA }, { myRef: refB })).toEqual({ myRef: refB })
   })
 })
