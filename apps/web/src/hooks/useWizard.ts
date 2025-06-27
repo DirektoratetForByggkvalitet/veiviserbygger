@@ -15,7 +15,7 @@ import { sortVersions } from '@/lib/versions'
 import { curry, values } from 'lodash'
 
 export default function useWizard(id?: string, version?: string) {
-  const { firestore } = useFirebase()
+  const { firestore, storage } = useFirebase()
 
   const [loading, setLoading] = useState({
     wizard: true,
@@ -126,18 +126,21 @@ export default function useWizard(id?: string, version?: string) {
     version: wizardVersionData,
     patchWizard: curry(patchWizard)({
       db: firestore,
+      storage,
       wizardId: id || '',
       versionId: version || '',
     }),
     deleteWizard: () =>
       deleteWizard({
         db: firestore,
+        storage,
         wizardId: id || '',
         versionId: version || '',
       }),
     deleteVersion: (versionId: string) =>
       deleteVersion({
         db: firestore,
+        storage,
         wizardId: id || '',
         versionId,
       }),

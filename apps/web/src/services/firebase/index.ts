@@ -141,16 +141,16 @@ export function getWizardVersionsRef(db: Firestore, wizardId: string) {
   return dataPoint(db, wizardVersionsRef(wizardId))
 }
 
-export function getWizardVersionRef({ db, wizardId, versionId }: FuncScope) {
+export function getWizardVersionRef({ db, wizardId, versionId }: Omit<FuncScope, 'storage'>) {
   return doc(getWizardVersionsRef(db, wizardId), versionId)
 }
 
-export function getNodesRef({ db, wizardId, versionId }: FuncScope) {
+export function getNodesRef({ db, wizardId, versionId }: Omit<FuncScope, 'storage'>) {
   return dataPoint(db, nodesRef(wizardId, versionId))
 }
 
-export function getNodeRef({ db, wizardId, versionId }: FuncScope, nodeId: string) {
-  return doc(getNodesRef({ db, wizardId, versionId }), nodeId)
+export function getNodeRef(funcScope: Omit<FuncScope, 'storage'>, nodeId: string) {
+  return doc(getNodesRef(funcScope), nodeId)
 }
 
 export async function createWizard(db: Firestore, data: Wizard) {
@@ -170,6 +170,7 @@ export async function createWizard(db: Firestore, data: Wizard) {
 
 type FuncScope = {
   db: Firestore
+  storage: FirebaseStorage
   wizardId: string
   versionId: string
 }
@@ -451,7 +452,7 @@ export async function reorderNodes(
 }
 
 export async function deleteNode(
-  { db, wizardId, versionId }: FuncScope,
+  { db, storage, wizardId, versionId }: FuncScope,
   nodeId: string,
   ref: { doc: DocumentReference; path: string[] },
 ) {
@@ -460,7 +461,7 @@ export async function deleteNode(
   const nodeRef = getNodeRef({ db, wizardId, versionId }, nodeId)
 
   const deleteValidationResult = await validateDelete(
-    { db, wizardId, versionId },
+    { db, storage, wizardId, versionId },
     { node: nodeRef, ref },
   )
 
@@ -578,7 +579,9 @@ export async function patchWizard({ db, wizardId }: FuncScope, patch: Patch<Wiza
   updateDoc(getWizardRef(db, wizardId), patch)
 }
 
-export async function deleteVersion({ db, wizardId, versionId }: FuncScope) {
+export async function deleteVersion({ db, storage, wizardId, versionId }: FuncScope) {
+  console.log('Deleting version', versionId, 'in wizard', wizardId)
+
   const nodes = await getDocs(collection(db, 'wizards', wizardId, 'versions', versionId, 'nodes'))
 
   await runTransaction(db, async (transaction) => {
@@ -599,10 +602,12 @@ export async function deleteVersion({ db, wizardId, versionId }: FuncScope) {
   })
 }
 
-export async function deleteWizard({ db, wizardId }: FuncScope) {
+export async function deleteWizard({ db, storage, wizardId }: FuncScope) {
   const versions = await getDocs(collection(db, 'wizards', wizardId, 'versions'))
 
-  await Promise.all(versions.docs.map((doc) => deleteVersion({ db, wizardId, versionId: doc.id })))
+  await Promise.all(
+    versions.docs.map((doc) => deleteVersion({ db, storage, wizardId, versionId: doc.id })),
+  )
 
   console.log('Deleted all versions in wizard', wizardId)
 
@@ -612,10 +617,10 @@ export async function deleteWizard({ db, wizardId }: FuncScope) {
 }
 
 export async function patchVersion(
-  { db, wizardId, versionId }: FuncScope,
+  funcScope: FuncScope,
   patch: Patch<Omit<WizardVersion, 'pages' | 'intro'>>,
 ) {
-  await updateDoc(getWizardVersionRef({ db, wizardId, versionId }), patch)
+  await updateDoc(getWizardVersionRef(funcScope), patch)
 }
 
 export async function publishVersion({ db, wizardId, versionId }: FuncScope) {
@@ -643,7 +648,7 @@ export async function publishVersion({ db, wizardId, versionId }: FuncScope) {
 }
 
 export async function createDraftVersion(
-  { db, wizardId }: Pick<FuncScope, 'db' | 'wizardId'>,
+  { db, storage, wizardId }: Omit<FuncScope, 'versionId'>,
   copyFromVersionId?: string,
 ) {
   const nodes = copyFromVersionId
@@ -691,9 +696,9 @@ export async function createDraftVersion(
   })
 }
 
-export async function getDependencyTree({ db, wizardId, versionId }: FuncScope) {
-  const nodes = await getDocs(getNodesRef({ db, wizardId, versionId }))
-  const version = await getDoc(getWizardVersionRef({ db, wizardId, versionId }))
+export async function getDependencyTree(funcScope: FuncScope) {
+  const nodes = await getDocs(getNodesRef(funcScope))
+  const version = await getDoc(getWizardVersionRef(funcScope))
 
   const docs: DocumentSnapshot[] = [version]
   nodes.forEach((doc) => {
