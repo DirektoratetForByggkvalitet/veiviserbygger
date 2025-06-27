@@ -9,7 +9,6 @@
     border: vars.$border-style;
     background-color: colors.$light;
     position: relative;
-    cursor: pointer;
 
     &:hover {
         border-color: shade(colors.get(neutral), 6%);
@@ -60,10 +59,15 @@
         display: block;
         padding: vars.$spacing--small;
         color: colors.$muted;
+        display: flex;
+
         input {
+            flex-grow: 1;
+
             @include mixins.font-size(base);
             padding-left: vars.$spacing--small;
             color: colors.$text;
+
             @include mixins.input-placeholder {
                 color: colors.get(neutral, base);
             }

@@ -1,14 +1,15 @@
-import { ChangeEvent, MouseEventHandler, useRef, useState } from 'react'
+import { ChangeEvent, useMemo, useRef, useState } from 'react'
 import BEMHelper from '@/lib/bem'
 import Button from '@/components/Button'
 import Dropdown from '@/components/Dropdown'
 import styles from './Styles.module.scss'
 import { useEditable } from '@/hooks/useEditable'
-import { deleteField, DocumentReference } from 'firebase/firestore'
-import { StorageReference, ref as storageRef } from 'firebase/storage'
+import { deleteField, DocumentReference, updateDoc } from 'firebase/firestore'
+import { ref as storageRef } from 'firebase/storage'
 import useFirebase from '@/hooks/useFirebase'
 import useFile from '@/hooks/useFile'
 import { useVersion } from '@/hooks/useVersion'
+import { useValue } from '@/hooks/useValue'
 
 const bem = BEMHelper(styles)
 
@@ -21,7 +22,6 @@ type FileProps = {
      */
     file?: string
   }
-  type?: 'image' | 'file'
   sourceRef: {
     doc: DocumentReference
     path: string[]
@@ -29,21 +29,27 @@ type FileProps = {
   accept?: string
 }
 
-export default function File({
-  label,
-  value,
-  sourceRef,
-  type,
-  accept = 'image/*',
-}: FileProps) {
-  const { file, alt = '' } = value || {}
-
-  const { storage, } = useFirebase()
+export default function File({ label, value, sourceRef, accept = 'image/*' }: FileProps) {
+  const { storage } = useFirebase()
   const { patch } = useVersion()
   const [preview, setPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const altInputRef = useRef<HTMLInputElement>(null)
   const isEditable = useEditable()
-  const { url, state, upload, remove } = useFile(file)
+  const storageRefPath = useMemo(
+    () => storageRef(storage, `${sourceRef.doc.path}/${sourceRef.path.join('/')}`).fullPath,
+    [sourceRef.doc.path, sourceRef.path],
+  )
+  const { url, state, upload, remove } = useFile(storageRefPath)
+
+  const { value: alt, onChange: onAltChange } = useValue(
+    value?.alt || '',
+    (v) =>
+      updateDoc(sourceRef.doc, {
+        [`${sourceRef.path.join('.')}.alt`]: v,
+      }),
+    altInputRef,
+  )
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -58,13 +64,11 @@ export default function File({
 
       // Perform the upload
       try {
-        if (!value?.file) {
-          await patch(sourceRef.doc, sourceRef.path, {
-            file: storageRef(storage, `${sourceRef.doc.path}/${sourceRef.path.join('/')}`).fullPath,
-          })
-        }
-
         await upload(selectedFile)
+        await patch(sourceRef.doc, sourceRef.path, {
+          file: storageRefPath,
+        })
+
         fileReader.onload = null
         setPreview(null)
       } catch (error) {
@@ -75,21 +79,20 @@ export default function File({
   }
 
   const triggerFileDialog = () => {
-    // fileInputRef.current?.click()
-    console.log('asdlkj')
+    fileInputRef.current?.click()
   }
 
   const triggerRemoveFile = async () => {
     await remove()
 
-    await patch(sourceRef.doc, sourceRef.path, {
-      file: deleteField(),
+    await updateDoc(sourceRef.doc, {
+      [`${sourceRef.path.join('.')}.file`]: deleteField(),
     })
   }
 
   const handleAltChange = (event: ChangeEvent<HTMLInputElement>) => {
     const alt = event.target.value as HTMLInputElement['value']
-    // onAltChange(alt)
+    onAltChange(alt)
   }
 
   if (!isEditable && !value && !preview) {
@@ -97,9 +100,9 @@ export default function File({
   }
 
   return (
-    <label {...bem('', { 'read-only': !isEditable })}>
+    <div {...bem('', { 'read-only': !isEditable })}>
       {isEditable && (
-        <div {...bem('wrapper')}>
+        <label {...bem('wrapper')}>
           <span {...bem('label')}>{label}</span>
           <input
             type="file"
@@ -108,7 +111,7 @@ export default function File({
             {...bem('file-input')}
             accept={accept}
           />
-        </div>
+        </label>
       )}
 
       <span {...bem('options')}>
@@ -119,6 +122,11 @@ export default function File({
             options={[
               {
                 value: '0',
+                label: 'Erstatt bilde',
+                onClick: triggerFileDialog,
+              },
+              {
+                value: '1',
                 label: 'Fjern bilde',
                 onClick: triggerRemoveFile,
                 styled: 'delete',
@@ -134,7 +142,7 @@ export default function File({
         )}
       </span>
 
-      {preview || value ? (
+      {preview || url ? (
         <>
           <div {...bem('preview-container')}>
             <img src={preview || url || ''} alt={alt} {...bem('preview')} />
@@ -142,10 +150,16 @@ export default function File({
 
           <label {...bem('alt-input')}>
             Alternativ tekst:
-            <input type="text" onChange={handleAltChange} value={alt} placeholder="Legg til" />
+            <input
+              type="text"
+              ref={altInputRef}
+              onChange={handleAltChange}
+              value={alt}
+              placeholder="Legg til"
+            />
           </label>
         </>
       ) : null}
-    </label>
+    </div>
   )
 }

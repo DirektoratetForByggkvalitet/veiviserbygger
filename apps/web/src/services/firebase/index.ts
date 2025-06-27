@@ -71,7 +71,7 @@ export function getFirebaseApp(
     appId: options?.constants?.FIREBASE_APP_ID ?? '',
     authDomain: options?.constants?.FIREBASE_AUTH_DOMAIN ?? '',
     projectId: options?.constants?.FIREBASE_PROJECT_ID ?? 'veiviserbygger',
-    storageBucket: options?.constants?.FIREBASE_STORAGE_BUCKET ?? 'default-bucket',
+    storageBucket: options?.constants?.FIREBASE_STORAGE_BUCKET ?? 'veiviserbygger.appspot.com',
     messagingSenderId: options?.constants?.FIREBASE_MESSAGING_SENDER_ID ?? '',
   }
 

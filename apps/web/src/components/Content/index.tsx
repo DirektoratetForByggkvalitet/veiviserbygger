@@ -490,7 +490,6 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
           />
           <File
             label="Bilde"
-            type="image"
             value={node.image}
             sourceRef={{
               doc: getNodeRef(node.id),
