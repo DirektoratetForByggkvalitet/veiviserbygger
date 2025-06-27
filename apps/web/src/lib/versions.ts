@@ -4,19 +4,27 @@ export function sortVersions<T extends { publishedFrom?: Timestamp; publishedTo?
   versions: T[],
 ) {
   return [...versions].sort((a, b) => {
-    if (!b.publishedFrom) {
-      return 1
+    const getStatusRank = (item: T): number => {
+      if (!item.publishedFrom && !item.publishedTo) return 0 // Draft
+      if (item.publishedFrom && !item.publishedTo) return 1 // Currently published
+      return 2 // Previously published
     }
 
-    if (!a.publishedFrom) {
-      return -1
+    const rankA = getStatusRank(a)
+    const rankB = getStatusRank(b)
+
+    if (rankA !== rankB) {
+      return rankA - rankB
     }
 
-    if (!a.publishedTo) {
-      return -1
+    // if both versions has been published, sort by publishedTo date
+    if (a.publishedTo && b.publishedTo) {
+      const aTo = a.publishedTo.toMillis()
+      const bTo = b.publishedTo.toMillis()
+      return bTo - aTo // Descending order
     }
 
-    return a.publishedFrom.toMillis() - b.publishedFrom.toMillis()
+    return 0
   })
 }
 
