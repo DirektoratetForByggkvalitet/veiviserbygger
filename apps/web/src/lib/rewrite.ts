@@ -1,5 +1,5 @@
 import { doc, DocumentReference, Firestore } from 'firebase/firestore'
-import { mapValues } from 'lodash'
+import { isString, mapValues } from 'lodash'
 
 const builtInTypes = [
   'Date',
@@ -59,6 +59,11 @@ export function rewriteRefs(
   // rewrite firestore references
   if (node?.firestore && node?.path) {
     return doc(db, node.path.replace(replaceId, replaceWithId))
+  }
+
+  if (isString(node) && node.startsWith(replaceId)) {
+    // if the node is a string and starts with the replaceId, replace it with the replaceWithId
+    return node.replace(replaceId, replaceWithId)
   }
 
   // walk object properties

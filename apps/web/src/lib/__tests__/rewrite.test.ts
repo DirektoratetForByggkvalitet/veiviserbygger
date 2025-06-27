@@ -6,7 +6,7 @@ initializeApp({ projectId: 'test' })
 
 describe('rewrite lib', () => {
   describe('does not touch', () => {
-    it('string', () => {
+    it('string that does not start with replaceId', () => {
       expect(rewriteRefs(getFirestore(), 'foo', '123', '345')).toEqual('foo')
     })
 
@@ -67,6 +67,24 @@ describe('rewrite lib', () => {
         'path',
         'wizards/other456kattkatt/versions/123/nodes/123',
       )
+    })
+
+    it('a string that starts with replaceId', () => {
+      const sourceRef = 'wizards/abc123apekatt/versions/123'
+      const destinationRef = 'wizards/abc123apekatt/versions/456'
+
+      expect(
+        rewriteRefs(
+          getFirestore(),
+          {
+            file: `${sourceRef}/node/789/image`,
+          },
+          sourceRef,
+          destinationRef,
+        ),
+      ).toEqual({
+        file: `${destinationRef}/node/789/image`,
+      })
     })
 
     it('a nested firestore reference', () => {
