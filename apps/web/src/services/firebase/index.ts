@@ -43,7 +43,8 @@ import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 import { rewriteRefs } from '@/lib/rewrite'
 import { buildTree } from './utils/refs'
 import { isDeleteAllowed } from './utils/validator'
-import { connectStorageEmulator, FirebaseStorage, getStorage } from 'firebase/storage'
+import { connectStorageEmulator, FirebaseStorage, getStorage, ref } from 'firebase/storage'
+import { copyFiles, deleteFiles } from './utils/storage'
 
 let firebaseApp: {
   app: FirebaseApp
@@ -599,6 +600,9 @@ export async function deleteVersion({ db, storage, wizardId, versionId }: FuncSc
     if (wizard.data()?.draftVersion?.id === versionId) {
       await transaction.update(wizardRef, { draftVersion: deleteField() })
     }
+
+    console.log('Delete files in storage for version', versionId)
+    await deleteFiles(ref(storage, getWizardVersionRef({ db, wizardId, versionId }).path))
   })
 }
 
@@ -686,6 +690,15 @@ export async function createDraftVersion(
           console.log('copied node', node.ref.path, 'to', newNodeRef.path)
         }
       }
+
+      console.log(
+        'TODO: Copy files in storage from version',
+        copyFromVersionRef.path,
+        'to',
+        newVersionRef.path,
+      )
+
+      await copyFiles(ref(storage, copyFromVersionRef.path), ref(storage, newVersionRef.path))
     } else {
       transaction.set(newVersionRef, {})
     }
