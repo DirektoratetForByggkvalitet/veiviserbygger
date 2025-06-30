@@ -1,4 +1,4 @@
-import { OAuthProvider, onAuthStateChanged, signInWithPopup, User } from 'firebase/auth'
+import { OAuthProvider, onAuthStateChanged, signInWithRedirect, User } from 'firebase/auth'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { ConfigContext } from './ConfigProvider'
 import { getFirebaseApp } from '@/services/firebase'
@@ -34,7 +34,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const result = await signInWithPopup(auth, oidc.provider)
+      const result = await signInWithRedirect(auth, oidc.provider)
       const credential = OAuthProvider.credentialFromResult(result)
       const accessToken = credential?.accessToken
       const idToken = credential?.idToken
