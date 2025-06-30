@@ -1,12 +1,17 @@
-import { getRedirectResult, OAuthProvider, onAuthStateChanged, User } from 'firebase/auth'
+import { OAuthProvider, onAuthStateChanged, signInWithPopup, User } from 'firebase/auth'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { ConfigContext } from './ConfigProvider'
 import { getFirebaseApp } from '@/services/firebase'
 
 export const FirebaseContext = createContext<ReturnType<typeof getFirebaseApp>>(null as any)
-export const AuthContext = createContext<{ loading: boolean; user: User | null }>({
+export const AuthContext = createContext<{
+  loading: boolean
+  user: User | null
+  loginWithOidc: (() => Promise<void>) | null
+}>({
   loading: true,
   user: null,
+  loginWithOidc: null,
 })
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -22,22 +27,32 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     loading && setLoading(false)
   }
 
+  async function loginWithOidc() {
+    if (!oidc?.provider) {
+      console.warn('OIDC provider is not configured')
+      return
+    }
+
+    try {
+      const result = await signInWithPopup(auth, oidc.provider)
+      const credential = OAuthProvider.credentialFromResult(result)
+      const accessToken = credential?.accessToken
+      const idToken = credential?.idToken
+
+      console.log('OIDC login successful:', { accessToken, idToken })
+    } catch (error) {
+      console.error('OIDC login failed:', error)
+      throw error
+    }
+  }
+
   useEffect(() => {
     onAuthStateChanged(auth, handleAuthStateChanged)
-
-    oidc &&
-      getRedirectResult(auth).then((result) => {
-        if (!result) {
-          console.warn('No result from getRedirectResult, user might not be logged in')
-          return
-        }
-
-        const credential = OAuthProvider.credentialFromResult(result)
-        console.log('OIDC login successful:', credential)
-      })
   }, [])
 
-  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ user, loading, loginWithOidc }}>{children}</AuthContext.Provider>
+  )
 }
 
 export default function FirebaseProvider({ children }: { children: React.ReactNode }) {

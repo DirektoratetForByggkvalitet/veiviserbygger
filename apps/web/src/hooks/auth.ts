@@ -1,10 +1,5 @@
 import { AuthContext, FirebaseContext } from '@/context/FirebaseProvider'
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-} from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { useCallback, useContext } from 'react'
 
 export default function useAuth() {
@@ -40,7 +35,6 @@ export default function useAuth() {
     },
     [auth, user],
   )
-
   const logout = useCallback(() => {
     if (!auth || !user) return
 
@@ -49,10 +43,10 @@ export default function useAuth() {
 
   return {
     user,
-    oidc: oidc
+    oidc: authContext.loginWithOidc
       ? {
-          name: oidc.name,
-          login: () => signInWithPopup(auth, oidc.provider),
+          name: oidc?.name || 'OIDC',
+          login: authContext.loginWithOidc,
         }
       : null,
     login,
