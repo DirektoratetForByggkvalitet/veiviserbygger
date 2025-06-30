@@ -2,7 +2,7 @@ import { AuthContext, FirebaseContext } from '@/context/FirebaseProvider'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithRedirect,
+  signInWithPopup,
   signOut,
 } from 'firebase/auth'
 import { useCallback, useContext } from 'react'
@@ -52,7 +52,7 @@ export default function useAuth() {
     oidc: oidc
       ? {
           name: oidc.name,
-          login: () => signInWithRedirect(auth, oidc.provider),
+          login: () => signInWithPopup(auth, oidc.provider),
         }
       : null,
     login,
