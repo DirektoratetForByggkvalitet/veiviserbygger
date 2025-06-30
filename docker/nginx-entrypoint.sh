@@ -6,10 +6,8 @@ PORT=${PORT:-80}
 # Debugging: Print the PORT value to verify it’s set
 echo "Using PORT: $PORT"
 
-# Replace ${PORT} and ${PUBLIC_FIREBASE_PROJECT_ID} in the template with the actual values
-sed -e "s/\${PORT}/$PORT/g" \
-    -e "s/\${PUBLIC_FIREBASE_PROJECT_ID}/$PUBLIC_FIREBASE_PROJECT_ID/g" \
-    /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+# Replace ${PORT} in the template with the actual PORT value using sed
+sed "s/\${PORT}/$PORT/g" /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 # Display the final configuration
 cat /etc/nginx/nginx.conf

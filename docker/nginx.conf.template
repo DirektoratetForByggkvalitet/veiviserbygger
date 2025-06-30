@@ -17,10 +17,6 @@ http {
             try_files $uri $uri/ /index.html;
         }
 
-        location /__/auth {
-            proxy_pass https://<project>.firebaseapp.com;
-        }
-
         # Proxy /api requests to Node.js server
         location /api/ {
             proxy_pass http://localhost:3000/;
