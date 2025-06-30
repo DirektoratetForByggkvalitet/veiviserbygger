@@ -11,7 +11,7 @@ import Message from '@/components/Message'
 import { copy } from '@/lib/copy'
 
 export default function LoginPage() {
-  const { user, signUp, login, logout } = useAuth()
+  const { user, signUp, login, logout, oidc } = useAuth()
   const [error, setError] = useState<string>()
   const [form, setForm] = useState({ email: '', password: '', check: false, color: '' })
 
@@ -30,36 +30,46 @@ export default function LoginPage() {
   return (
     <PageSimple title={copy.login.title}>
       {!user ? (
-        <Form onSubmit={handleSubmit}>
-          <p>{copy.login.description}</p>
-          <Input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange('email')}
-            label="E-post"
-            inputDebounceMs={0}
-          />
-          <Input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange('password')}
-            label="Passord"
-            inputDebounceMs={0}
-          />
-          <ButtonBar>
-            <Button type="submit" primary disabled={!form.email || !form.password}>
-              Logg inn
-            </Button>
-            <Button subtle onClick={() => signUp(form.email, form.password)}>
-              Registrer deg
-            </Button>
-          </ButtonBar>
-          {error === 'auth/user-not-found' ? (
-            <Message title="Brukeren finnes ikke i systemet"></Message>
+        <>
+          <Form onSubmit={handleSubmit}>
+            <p>{copy.login.description}</p>
+            <Input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange('email')}
+              label="E-post"
+              inputDebounceMs={0}
+            />
+            <Input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange('password')}
+              label="Passord"
+              inputDebounceMs={0}
+            />
+            <ButtonBar>
+              <Button type="submit" primary disabled={!form.email || !form.password}>
+                Logg inn
+              </Button>
+              <Button subtle onClick={() => signUp(form.email, form.password)}>
+                Registrer deg
+              </Button>
+            </ButtonBar>
+            {error === 'auth/user-not-found' ? (
+              <Message title="Brukeren finnes ikke i systemet"></Message>
+            ) : null}
+          </Form>
+          <hr />
+          {oidc ? (
+            <ButtonBar>
+              <Button primary onClick={oidc.login}>
+                Logg inn med {oidc.name}
+              </Button>
+            </ButtonBar>
           ) : null}
-        </Form>
+        </>
       ) : (
         <>
           <Message title="Du er allerede innlogget">

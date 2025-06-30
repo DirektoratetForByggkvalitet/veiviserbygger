@@ -1,4 +1,4 @@
-import { onAuthStateChanged, User } from 'firebase/auth'
+import { getRedirectResult, OAuthProvider, onAuthStateChanged, User } from 'firebase/auth'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { ConfigContext } from './ConfigProvider'
 import { getFirebaseApp } from '@/services/firebase'
@@ -11,7 +11,7 @@ export const AuthContext = createContext<{ loading: boolean; user: User | null }
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
-  const { auth } = useContext(FirebaseContext) || {}
+  const { auth, oidc } = useContext(FirebaseContext) || {}
   const [user, setUser] = useState<User | null>(null)
 
   function handleAuthStateChanged(user: User | null) {
@@ -24,6 +24,17 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     onAuthStateChanged(auth, handleAuthStateChanged)
+
+    oidc &&
+      getRedirectResult(auth).then((result) => {
+        if (!result) {
+          console.warn('No result from getRedirectResult, user might not be logged in')
+          return
+        }
+
+        const credential = OAuthProvider.credentialFromResult(result)
+        console.log('OIDC login successful:', credential)
+      })
   }, [])
 
   return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>

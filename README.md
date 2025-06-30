@@ -57,3 +57,22 @@ Pull the docker image `dibk/losen-builder`, bind the desired host port to contai
 ```sh
 docker run -p3333:80 -e PUBLIC_FIREBASE_API_KEY=... -e PUBLIC_FIREBASE_APP_ID=abc123 kbrabrand/losen-veiviserbygger
 ```
+
+## Setting up OIDC login
+While managing users through the authentication page in the Firebase console is possible, it is often not the most practical solution for larger orgs. If you have an identity provider in you organization that supports OIDC you can manage users with access to the wizard builder from your own identity provider.
+
+Steps:
+1. Create an OIDC client in your IDP
+2. Go to the Firebase console > Autentication > Sign-in method and click «Add new provider»
+3. Click OpenID Connect and click to enable OpenID Connect at the top
+4. Enter a name; the client id, issuer url and client secret for your OIDC client
+5. Make a note of the Provider ID (below the name field) – you'll need this later
+6. After clicking next you will get a callback url that you need to add to the list of allowed redirect URLs for your OIDC client (in your IDP)
+
+> Now that the provider has been set up you need to set an environment variable in order for the auth parts of the application to know about the OIDC provider, and what name to show to the user (Log in through My Org Name).
+>
+> Add:
+> - `PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_ID=oidc....`
+> - `PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_NAME="My Org Name"`
+
+After restarting your container/application the option of logging in using the OIDC provider should appear and the users you allow should be able to log in.

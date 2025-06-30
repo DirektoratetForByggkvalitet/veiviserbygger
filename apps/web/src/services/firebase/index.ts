@@ -1,5 +1,5 @@
 import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
-import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth'
+import { Auth, connectAuthEmulator, getAuth, OAuthProvider } from 'firebase/auth'
 import {
   collection,
   CollectionReference,
@@ -46,11 +46,17 @@ import { isDeleteAllowed } from './utils/validator'
 import { connectStorageEmulator, FirebaseStorage, getStorage, ref } from 'firebase/storage'
 import { copyFiles, deleteFiles } from './utils/storage'
 
+type OIDC = {
+  name: string
+  provider: OAuthProvider
+}
+
 let firebaseApp: {
   app: FirebaseApp
   auth: Auth
   firestore: Firestore
   storage: FirebaseStorage
+  oidc: OIDC | null
 }
 
 /**
@@ -70,7 +76,7 @@ export function getFirebaseApp(
       ? { apiKey: 'not-a-real-key' }
       : { apiKey: options?.constants?.FIREBASE_API_KEY ?? '' }),
     appId: options?.constants?.FIREBASE_APP_ID ?? '',
-    authDomain: options?.constants?.FIREBASE_AUTH_DOMAIN ?? '',
+    authDomain: options?.constants?.FIREBASE_AUTH_DOMAIN ?? 'veiviserbygger.firebaseapp.com',
     projectId: options?.constants?.FIREBASE_PROJECT_ID ?? 'veiviserbygger',
     storageBucket: options?.constants?.FIREBASE_STORAGE_BUCKET ?? 'veiviserbygger.appspot.com',
     messagingSenderId: options?.constants?.FIREBASE_MESSAGING_SENDER_ID ?? '',
@@ -86,6 +92,14 @@ export function getFirebaseApp(
   let auth: Auth
   let firestore: Firestore
   let storage: FirebaseStorage
+  let oidc: OIDC | null = null
+
+  if (options?.constants?.FIREBASE_AUTH_OIDC_PROVIDER_ID) {
+    oidc = {
+      provider: new OAuthProvider(options?.constants?.FIREBASE_AUTH_OIDC_PROVIDER_ID),
+      name: options?.constants?.FIREBASE_AUTH_OIDC_PROVIDER_NAME || 'OIDC',
+    }
+  }
 
   if (options?.constants?.FIREBASE_EMULATOR_AUTH_HOST) {
     auth = getAuth()
@@ -117,7 +131,7 @@ export function getFirebaseApp(
     storage = getStorage(app)
   }
 
-  return { app, auth, firestore, storage }
+  return { app, auth, oidc, firestore, storage }
 }
 
 export async function getDocument(ref: DocumentReference) {

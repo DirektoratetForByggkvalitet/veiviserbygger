@@ -21,6 +21,8 @@ const prodEnvVars: EnvVar[] = [
   { key: 'FIREBASE_PROJECT_ID' },
   { key: 'FIREBASE_STORAGE_BUCKET' },
   { key: 'FIREBASE_MESSAGING_SENDER_ID' },
+  { key: 'FIREBASE_AUTH_OIDC_PROVIDER_ID', optional: true },
+  { key: 'FIREBASE_AUTH_OIDC_PROVIDER_NAME', optional: true },
 ]
 
 function configOk(envVars: { key: string; optional?: boolean }[], config: Config) {
