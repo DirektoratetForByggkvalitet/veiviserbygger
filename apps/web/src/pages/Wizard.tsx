@@ -171,7 +171,7 @@ export default function Wizard() {
         ...(version.intro || {}),
         id: 'intro',
         type: 'Intro',
-        heading: '',
+        heading: version.intro?.heading || '',
         content: version.intro?.content || {},
       }
     }
