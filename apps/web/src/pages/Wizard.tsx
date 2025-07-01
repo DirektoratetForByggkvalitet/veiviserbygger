@@ -316,7 +316,7 @@ export default function Wizard() {
           optionsLabel="Sidevalg"
           options={
             page?.id !== 'intro' && isEditable
-              ? [
+              ? ([
                   // Show the button for adding show page clause only if the page is a regular Page type,
                   // is not the first page and does not already have a show condition.
                   ...(page?.type === 'Page' && !page?.show && currentPageIndex > 0
@@ -337,7 +337,7 @@ export default function Wizard() {
                     styled: 'delete',
                     onClick: () => setShowConfirmDeletePage(true),
                   },
-                ]
+                ] as DropdownOptions)
               : undefined
           }
           title={panelTitle || 'Uten tittel'}
