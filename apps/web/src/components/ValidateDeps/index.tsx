@@ -2,8 +2,12 @@ import useSWR from 'swr'
 import { useVersion } from '@/hooks/useVersion'
 import Help from '@/components/Help'
 import Message from '@/components/Message'
-import { OptionalExcept, PageContent } from 'types'
+import { Expression, OptionalExcept, PageContent } from 'types'
 import { DocumentReference } from 'firebase/firestore'
+import useWizard from '@/hooks/useWizard'
+import { useParams } from 'react-router'
+import { get } from 'lodash'
+import { getOrdered } from 'shared/utils'
 
 type Props = {
   children?: React.ReactNode
@@ -16,6 +20,9 @@ type Props = {
 }
 
 export default function ValidateDeps({ children, node, sourceRef, title }: Props) {
+  const { wizardId, versionId } = useParams()
+  const { version, nodes } = useWizard(wizardId, versionId)
+
   const { validateDelete, getNodeRef } = useVersion()
 
   const { isLoading, data: deleteValidationResult } = useSWR(
@@ -26,6 +33,84 @@ export default function ValidateDeps({ children, node, sourceRef, title }: Props
         ref: sourceRef,
       }),
   )
+
+  const vocalizeExpression = (expression?: Expression): string => {
+    if (!expression) {
+      return 'Ukjent uttrykk'
+    }
+
+    const clauses = getOrdered(expression?.clauses)
+    const node = nodes[expression.field?.id || '']
+    const value = get(
+      node,
+      ['options', expression?.value ?? ('' as any), 'heading'],
+      expression.value,
+    )
+
+    if (clauses.length) {
+      return clauses
+        .map((clause) => `(${vocalizeExpression(clause)})`)
+        .join(expression.type === 'and' ? ' og ' : ' eller ')
+    }
+
+    let simpleExpression = `«${get(node, 'heading') || expression.field?.id || 'Ukjent felt'}»`
+
+    if (expression.operator === 'between') {
+      simpleExpression += ` mellom ${expression.value?.from} og ${expression.value?.to}`
+    } else if (expression.operator === 'eq') {
+      simpleExpression += ` er lik «${value}»`
+    } else if (expression.operator === 'neq') {
+      simpleExpression += ` er ikke lik «${value}»`
+    } else if (expression.operator === 'gt') {
+      simpleExpression += ` er større enn «${expression.value}»`
+    } else if (expression.operator === 'lt') {
+      simpleExpression += ` er mindre enn «${expression.value}»`
+    } else if (expression.operator === 'gte') {
+      simpleExpression += ` er større enn eller lik «${expression.value}»`
+    } else if (expression.operator === 'lte') {
+      simpleExpression += ` er mindre enn eller lik «${expression.value}»`
+    } else if (expression.operator === 'is') {
+      simpleExpression += ` er satt`
+    } else if (expression.operator === 'not') {
+      simpleExpression += ` er ikke satt`
+    } else if (expression.operator === 'isnot') {
+      simpleExpression += ` er ikke satt`
+    } else if (expression.operator === 'required') {
+      simpleExpression += ` er påkrevd`
+    } else {
+      simpleExpression += ` ${expression.operator} `
+    }
+
+    return simpleExpression
+  }
+
+  const vocalizeLocation = (docRef: DocumentReference, path: string[]) => {
+    if (docRef.path.includes('/nodes/') && nodes[docRef.id]) {
+      const node = nodes[docRef.id]
+
+      if (node.type !== 'Branch') {
+        // do nothing, we only vocalize branches
+      } else if (node.preset === 'ExtraInformation') {
+        return `Ekstra informasjon hvis: ${vocalizeExpression(node.test)}`
+      } else if (node.preset === 'NegativeResult') {
+        return `Negativt resultat hvis: ${vocalizeExpression(node.test)}`
+      } else if (node.preset === 'NewQuestions') {
+        return `Nye spørsmål hvis: ${vocalizeExpression(node.test)}`
+      }
+
+      if (get(node, 'heading')) {
+        return get(node, 'heading')
+      }
+
+      return `Node: ${docRef.id}`
+    }
+
+    if (path.includes('pages')) {
+      return `Siden «${get(version, [...path.slice(0, 2), 'heading'], 'Ukjent side')}»`
+    }
+
+    return `${docRef.path} ${path.join('.')}`
+  }
 
   if (isLoading) {
     return <div>Laster...</div>
@@ -59,15 +144,18 @@ export default function ValidateDeps({ children, node, sourceRef, title }: Props
                 <dt>
                   <strong>Type</strong>
                 </dt>
-                <dd>{dependency.type}</dd>
+                <dd>
+                  {dependency.type === 'content-node' ? 'Vises på en side' : null}
+                  {dependency.type === 'in-expression' ? 'Er brukt i et logisk uttrykk' : null}
+                  {dependency.type === 'unknown' ? 'Ukjent type' : null}
+                  {dependency.path?.[0] === 'pages' && dependency.path.slice(-2)[0] === 'show'
+                    ? ' som bestemmer om siden vises'
+                    : null}
+                </dd>
                 <dt>
-                  <strong>Dokument</strong>
+                  <strong>Hvor</strong>
                 </dt>
-                <dd>{dependency.doc.path}</dd>
-                <dt>
-                  <strong>Path</strong>
-                </dt>
-                <dd>{dependency.path ? dependency.path.join(' > ') : 'N/A'}</dd>
+                <dd>{vocalizeLocation(dependency.doc, dependency.path)}</dd>
               </dl>
             </li>
           ))}

@@ -50,7 +50,7 @@ type FieldType = {
 
 type Operators = 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'neq' | 'between' | 'is' | 'not' | 'required'
 
-const OPERATORS: { value: Operators; icon: keyof typeof icons; label: string }[] = [
+export const OPERATORS: { value: Operators; icon: keyof typeof icons; label: string }[] = [
   { value: 'gt', icon: 'ChevronLeft', label: 'er større enn' },
   { value: 'lt', icon: 'ChevronRight', label: 'er mindre enn' },
   { value: 'gte', icon: 'ChevronsLeft', label: 'er lik eller større enn' },

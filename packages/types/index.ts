@@ -53,22 +53,18 @@ export type PartialPageContent<T extends PageContent['type']> = OptionalExcept<
 
 export type SimpleExpression = {
   field: DocumentReference
-  operator:
-    | 'gt'
-    | 'lt'
-    | 'gte'
-    | 'lte'
-    | 'eq'
-    | 'neq'
-    | 'between'
-    | 'is'
-    | 'not'
-    | 'isnot'
-    | 'required'
-  value?: string | number | boolean | { from?: string; to?: string }
   type?: undefined
   clauses?: undefined
-}
+} & (
+  | {
+      operator: 'gt' | 'lt' | 'gte' | 'lte' | 'eq' | 'neq' | 'is' | 'not' | 'isnot' | 'required'
+      value?: string | number | boolean
+    }
+  | {
+      operator: 'between'
+      value?: { from?: string; to?: string }
+    }
+)
 
 export type ComplexExpression = {
   type: 'and' | 'or'
