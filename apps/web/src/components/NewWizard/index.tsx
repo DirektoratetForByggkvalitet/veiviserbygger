@@ -7,6 +7,7 @@ import Help from '../Help'
 import { createWizard } from '@/services/firebase'
 import useFirebase from '@/hooks/useFirebase'
 import { useNavigate } from 'react-router'
+import { EditableContext } from '@/context/EditableContext'
 
 type Props = {
   open: boolean
@@ -43,27 +44,29 @@ export default function NewWizard({ open, toggleModal }: Props) {
   }
 
   return (
-    <Modal
-      title="Ny veiviser"
-      expanded={open}
-      onClose={close}
-      afterOpen={() => titleInput && titleInput.current?.focus()}
-    >
-      <Form onSubmit={handleSubmit}>
-        <Input
-          label="Veivisernavn"
-          value={newWizard?.title || ''}
-          onChange={(title) => setNewWizard((v) => ({ ...v, title }))}
-          forwardedRef={titleInput}
-          autoFocus
-        />
+    <EditableContext.Provider value={true}>
+      <Modal
+        title="Ny veiviser"
+        expanded={open}
+        onClose={close}
+        afterOpen={() => titleInput && titleInput.current?.focus()}
+      >
+        <Form onSubmit={handleSubmit}>
+          <Input
+            label="Veivisernavn"
+            value={newWizard?.title || ''}
+            onChange={(title) => setNewWizard((v) => ({ ...v, title }))}
+            forwardedRef={titleInput}
+            autoFocus
+          />
 
-        <Help description="Navnet til veiviseren er synlig for sluttbrukere og bør være kort og beskrivende. Veiviseren vil bli synlig for andre i ditt arbeidsområde som et utkast." />
+          <Help description="Navnet til veiviseren er synlig for sluttbrukere og bør være kort og beskrivende. Veiviseren vil bli synlig for andre i ditt arbeidsområde som et utkast." />
 
-        <Button type="submit" primary disabled={!newWizard.title}>
-          Opprett
-        </Button>
-      </Form>
-    </Modal>
+          <Button type="submit" primary disabled={!newWizard.title}>
+            Opprett
+          </Button>
+        </Form>
+      </Modal>
+    </EditableContext.Provider>
   )
 }
