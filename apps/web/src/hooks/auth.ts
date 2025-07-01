@@ -1,9 +1,12 @@
 import { AuthContext, FirebaseContext } from '@/context/FirebaseProvider'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import {
+  // createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth'
 import { useCallback, useContext } from 'react'
 
 export default function useAuth() {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const firebaseContext = useContext(FirebaseContext)
   const authContext = useContext(AuthContext)
   const auth = firebaseContext?.auth ?? null
@@ -11,16 +14,16 @@ export default function useAuth() {
   const user = authContext?.user ?? null
   const loading = authContext?.loading ?? false
 
-  const signUp = useCallback(
-    (email: string, password: string) => {
-      if (!auth || user) {
-        return
-      }
+  // const signUp = useCallback(
+  //   (email: string, password: string) => {
+  //     if (!auth || user) {
+  //       return
+  //     }
 
-      return createUserWithEmailAndPassword(auth, email, password)
-    },
-    [auth, user],
-  )
+  //     return createUserWithEmailAndPassword(auth, email, password)
+  //   },
+  //   [auth, user],
+  // )
 
   const login = useCallback(
     (type: 'email', credentials?: { email: string; password: string }) => {
@@ -50,7 +53,7 @@ export default function useAuth() {
         }
       : null,
     login,
-    signUp,
+    // signUp,
     logout,
     loading,
   }

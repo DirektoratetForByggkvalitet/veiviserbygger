@@ -12,7 +12,7 @@ import Divider from '@/components/Divider'
 import { copy } from '@/lib/copy'
 
 export default function LoginPage() {
-  const { user, signUp, login, logout, oidc } = useAuth()
+  const { user, login, logout, oidc } = useAuth()
   const [error, setError] = useState<string>()
   const [form, setForm] = useState({ email: '', password: '', check: false, color: '' })
 
@@ -63,9 +63,6 @@ export default function LoginPage() {
             <ButtonBar>
               <Button type="submit" primary disabled={!form.email || !form.password}>
                 Logg inn
-              </Button>
-              <Button subtle onClick={() => signUp(form.email, form.password)}>
-                Registrer deg
               </Button>
             </ButtonBar>
             {error === 'auth/user-not-found' ? (
