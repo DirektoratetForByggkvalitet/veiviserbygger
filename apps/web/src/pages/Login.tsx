@@ -8,6 +8,7 @@ import Form from '@/components/Form'
 import Input from '@/components/Input'
 import PageSimple from '@/components/PageSimple'
 import Message from '@/components/Message'
+import Divider from '@/components/Divider'
 import { copy } from '@/lib/copy'
 
 export default function LoginPage() {
@@ -29,16 +30,26 @@ export default function LoginPage() {
 
   return (
     <PageSimple title={copy.login.title}>
+      <p>{copy.login.description}</p>
       {!user ? (
         <>
+          {oidc ? (
+            <>
+              <ButtonBar margins>
+                <Button primary icon="LogIn" size="large" onClick={oidc.login}>
+                  Logg inn med {oidc.name}
+                </Button>
+              </ButtonBar>
+              <Divider text="eller" />
+            </>
+          ) : null}
           <Form onSubmit={handleSubmit}>
-            <p>{copy.login.description}</p>
             <Input
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange('email')}
-              label="E-post"
+              label="Epost"
               inputDebounceMs={0}
             />
             <Input
@@ -61,14 +72,6 @@ export default function LoginPage() {
               <Message title="Brukeren finnes ikke i systemet"></Message>
             ) : null}
           </Form>
-          <hr />
-          {oidc ? (
-            <ButtonBar>
-              <Button primary onClick={oidc.login}>
-                Logg inn med {oidc.name}
-              </Button>
-            </ButtonBar>
-          ) : null}
         </>
       ) : (
         <>
