@@ -10,7 +10,7 @@ import Modal from '@/components/Modal'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Fragment, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import {
   Answer,
   Branch,
@@ -169,25 +169,6 @@ function Option({
                 operator: 'eq',
                 value: optionId,
               },
-              content: (
-                await addNodes({}, [
-                  {
-                    type: 'Error',
-                  },
-                  {
-                    type: 'Result',
-                  },
-                ])
-              ).reduce(
-                (res, node, index) => ({
-                  ...res,
-                  [uuid()]: {
-                    order: index + 1,
-                    node,
-                  },
-                }),
-                {},
-              ),
             },
           ])
         },
@@ -205,18 +186,6 @@ function Option({
                 field: getNodeRef(nodeId),
                 operator: 'eq',
                 value: optionId,
-              },
-              content: {
-                [uuid()]: {
-                  order: 0,
-                  node: (
-                    await addNodes({}, [
-                      {
-                        type: 'Information',
-                      },
-                    ])
-                  )[0],
-                },
               },
             },
           ])
@@ -342,43 +311,38 @@ function ExtraInformation({
   )?.node.id
   const informationNode = informationNodeId ? (nodes[informationNodeId] as Information) : undefined
 
-  // this shouldn't really happen, but just in case an extra information node
-  // exists without content, we allow it to be created
-  const createContent = async () => {
-    if (!informationNode) {
-      return
+  // check if the branch has been created without an information node
+  useEffect(() => {
+    const createContent = async () => {
+      // if the information node already exists, we don't need to create it again
+      if (informationNode) {
+        return
+      }
+
+      // create a new information node with default content and create a reference to it
+      await patchNode(node.id, {
+        content: {
+          [uuid()]: {
+            order: 0,
+            node: (
+              await addNodes({}, [
+                {
+                  type: 'Information',
+                },
+              ])
+            )[0],
+          },
+        },
+      })
     }
 
-    const newInformationNodeRef = (
-      await addNodes({}, [
-        {
-          type: 'Information',
-        },
-      ])
-    )[0]
+    if (!informationNode) {
+      createContent()
+    }
+  }, [informationNode])
 
-    await patchNode(node.id, {
-      content: {
-        [uuid()]: {
-          order: 0,
-          node: newInformationNodeRef,
-        },
-      },
-    })
-  }
-
-  if (!node || node?.preset !== 'ExtraInformation') {
+  if (!node || node?.preset !== 'ExtraInformation' || !informationNodeId || !informationNode) {
     return null
-  }
-
-  if (!informationNodeId || !informationNode) {
-    return (
-      <div>
-        <Button size="small" onClick={createContent}>
-          Legg til innhold
-        </Button>
-      </div>
-    )
   }
 
   return (
@@ -401,17 +365,57 @@ function NegativeResult({
   node: Extract<NodeProps['node'], { type: 'Branch' }>
   nodes: Props['allNodes']
 }) {
-  const { patchNode } = useVersion()
-
-  if (!node || node?.preset !== 'NegativeResult') {
-    return null
-  }
+  const { patchNode, addNodes } = useVersion()
 
   const resultNodeId = values(node.content).find((n) => nodes[n.node.id].type === 'Result')?.node.id
   const errorNodeId = values(node.content).find((n) => nodes[n.node.id].type === 'Error')?.node.id
 
   const resultNode = resultNodeId ? (nodes[resultNodeId] as Result) : undefined
   const errorNode = errorNodeId ? (nodes[errorNodeId] as ErrorNode) : undefined
+
+  // check if the branch has been created without a result or error node
+  useEffect(() => {
+    const createContent = async () => {
+      // if the result or error node already exists, we don't need to create them again
+      if (resultNode || errorNode) {
+        return
+      }
+
+      // create new result and error nodes with default content and create references to them
+      await patchNode(node.id, {
+        content: (
+          await addNodes({}, [
+            {
+              type: 'Error',
+            },
+            {
+              type: 'Result',
+            },
+          ])
+        ).reduce(
+          (res, node, index) => ({
+            ...res,
+            [uuid()]: {
+              order: index + 1,
+              node,
+            },
+          }),
+          {},
+        ),
+      })
+    }
+
+    // if the branch has been created without a result or error node, we create it
+    if (!resultNodeId || !errorNodeId) {
+      createContent()
+    }
+  }, [resultNodeId, errorNodeId])
+
+  // if the branch has been created without a result or error node, we allow it to be created
+
+  if (!node || node?.preset !== 'NegativeResult') {
+    return null
+  }
 
   return (
     <>
