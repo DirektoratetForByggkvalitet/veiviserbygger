@@ -1,0 +1,32 @@
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
+@use '@/styles/1_settings/mixins';
+
+.divider {
+    position: relative;
+    margin: calc(vars.$spacing--large / 2) 0;
+    text-align: center;
+
+    &__line {
+        border: none;
+        border-top: vars.$border-style;
+        margin: 0;
+    }
+
+    &__text {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        background: #f8f8f8;
+        padding-right: vars.$spacing--small;
+        color: #000;
+        @include mixins.font-size(base);
+        pointer-events: none;
+        white-space: nowrap;
+        text-align: left;
+        max-width: 50%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
