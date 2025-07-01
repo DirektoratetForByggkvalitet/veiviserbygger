@@ -25,7 +25,7 @@ interface Props {
   toggle?: boolean
   pressed?: boolean
   // full?: boolean
-  size?: 'small' | 'large'
+  size?: 'small' | 'large' | 'full'
 }
 
 export default function Button({
