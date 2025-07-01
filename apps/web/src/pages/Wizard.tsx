@@ -25,6 +25,7 @@ import { v4 as uuid } from 'uuid'
 import { EditableContext } from '@/context/EditableContext'
 import { useEditable } from '@/hooks/useEditable'
 import { deleteField } from 'firebase/firestore'
+import { icons } from 'lucide-react'
 
 function contentAction<T extends PageContent['type']>({
   pageId,
@@ -171,7 +172,7 @@ export default function Wizard() {
         ...(version.intro || {}),
         id: 'intro',
         type: 'Intro',
-        heading: '',
+        heading: version.intro?.heading || '',
         content: version.intro?.content || {},
       }
     }
@@ -323,7 +324,7 @@ export default function Wizard() {
                     ? [
                         {
                           value: '0',
-                          icon: 'EyeOff',
+                          icon: 'EyeOff' as keyof typeof icons,
                           label: 'Vis siden hvis...',
                           onClick: () => addPageConditional(page.id),
                           disabled: false,
@@ -332,7 +333,7 @@ export default function Wizard() {
                     : []),
                   {
                     value: '2',
-                    icon: 'Trash',
+                    icon: 'Trash' as keyof typeof icons,
                     label: 'Fjern siden',
                     styled: 'delete',
                     onClick: () => setShowConfirmDeletePage(true),
