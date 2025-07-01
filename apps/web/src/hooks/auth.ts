@@ -45,7 +45,7 @@ export default function useAuth() {
     user,
     oidc: authContext.loginWithOidc
       ? {
-          name: oidc?.name || 'OIDC',
+          name: oidc?.name || 'OpenID',
           login: authContext.loginWithOidc,
         }
       : null,
