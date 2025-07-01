@@ -61,16 +61,6 @@ export const addResultContentActions = (
           group: 'Innhold',
         },
         contentAction({ addNodes, pageId, type: 'Text' }),
-        {
-          group: 'Hendelser',
-        },
-        contentAction({
-          addNodes,
-          pageId,
-          type: 'Branch',
-          preset: 'ExtraInformation',
-          defaultContent: { preset: 'ExtraInformation', test: {} },
-        }),
       ]
     : []
 
