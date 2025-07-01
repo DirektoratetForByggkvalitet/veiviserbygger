@@ -1,0 +1,92 @@
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
+@use '@/styles/1_settings/mixins';
+
+.tooltip {
+    display: inline-block;
+    position: relative;
+
+    &__icon {
+        padding: 8px;
+        height: 35px;
+        width: 35px;
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        background: none;
+        color: colors.$dark;
+        border-radius: vars.$border-radius;
+        transition: background 0.15s;
+
+        &:hover,
+        &:focus-visible,
+        &:has([aria-expanded='true']) {
+            background: colors.get(neutral, light);
+            outline: none;
+        }
+    }
+
+    &__animation {
+        // Transition handled by Transition component
+    }
+
+    &__popup {
+        @include mixins.font-size(small);
+        position: absolute;
+        z-index: 4;
+        min-width: 300px;
+        max-width: 600px;
+        background: #fff;
+        color: #222;
+        border-radius: vars.$border-radius;
+        box-shadow: vars.$shadow--small;
+        padding: vars.$spacing--small;
+        text-align: left;
+        white-space: normal;
+        @include mixins.entering {
+            animation: enter 300ms vars.$ease-out-quart both;
+        }
+
+        @include mixins.exiting {
+            animation: exit 300ms vars.$ease-in-out-quint--custom forwards;
+        }
+
+        // Placement logic
+        &--left {
+            right: 0;
+            transform-origin: left center;
+        }
+        &--right {
+            left: 0;
+            transform-origin: right center;
+        }
+        &--top {
+            bottom: 120%;
+        }
+        &--bottom {
+            bottom: 120%;
+        }
+    }
+}
+
+@keyframes enter {
+    from {
+        box-shadow: 0 0 0 rgba(black, 0);
+        clip-path: inset(-20px -20px 100% -20px);
+    }
+
+    to {
+        clip-path: inset(-20px -20px -20px -20px);
+    }
+}
+
+@keyframes exit {
+    from {
+        clip-path: inset(-20px -20px -20px -20px);
+    }
+
+    to {
+        box-shadow: 0 0 0 rgba(black, 0);
+        clip-path: inset(-20px -20px calc(100% + 10px) -20px);
+    }
+}
