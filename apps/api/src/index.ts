@@ -3,7 +3,7 @@ import admin from 'firebase-admin'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config({
   path: ['.env.local', '.env.development', '.env'],
-  debug: process.env.NODE_ENV === 'production',
+  debug: true,
 })
 
 // Assuming you have your service account JSON as base64 in an env variable
@@ -19,7 +19,10 @@ if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
   }
 }
 
-admin.initializeApp({ ...(credential ? { credential } : {}) })
+admin.initializeApp({
+  ...(credential ? { credential } : {}),
+  storageBucket: process.env.PUBLIC_FIREBASE_STORAGE_BUCKET ?? 'veiviserbygger.appspot.com',
+})
 
 // Set up environment variables for Firebase emulators if they are defined
 if (process.env.PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST) {
@@ -31,21 +34,24 @@ if (process.env.PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST) {
     process.env.PUBLIC_FIREBASE_EMULATOR_AUTH_HOST || 'http://localhost:9099'
 
   // Cloud Storage Emulator (if needed)
-  process.env.FIREBASE_STORAGE_EMULATOR_HOST =
-    process.env.PUBLIC_FIREBASE_EMULATOR_STORAGE_HOST || 'http://localhost:9199'
+  process.env.FIREBASE_STORAGE_EMULATOR_HOST = process.env.PUBLIC_FIREBASE_EMULATOR_STORAGE_HOST
+    ? `${process.env.PUBLIC_FIREBASE_EMULATOR_STORAGE_HOST}:${process.env.PUBLIC_FIREBASE_EMULATOR_STORAGE_PORT}`
+    : 'http://localhost:9199'
 }
 
 import express from 'express'
 import setupServer from './server'
 import { getFirestore } from 'firebase-admin/firestore'
 import { AppOptions } from 'firebase-admin/app'
+import { getStorage } from 'firebase-admin/storage'
 
 const app = express()
 
 ;(async () => {
   const db = getFirestore()
+  const storage = getStorage()
 
-  const server = await setupServer(app, { dependencies: { db } })
+  const server = await setupServer(app, { dependencies: { db, storage } })
 
   server.start()
 

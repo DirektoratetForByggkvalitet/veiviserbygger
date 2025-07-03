@@ -1,5 +1,4 @@
 import type { DocumentReference, Timestamp } from 'firebase/firestore'
-import type { StorageReference } from 'firebase/storage'
 
 export type DeepPartial<T> = T extends object
   ? {
@@ -100,7 +99,13 @@ export type Content = {
   details?: string
   image?: {
     alt?: string
-    src: StorageReference
+    /**
+     * path to image in Firebase storage _RELATIVE_ to the wizard version it is referenced from,
+     * meaning that if the wizard version is at `wizards/123/versions/456` and the image src says
+     * `some/folder/image.png` the full path to the image in storage will be
+     * `wizards/123/versions/456/some/folder/image.png`
+     */
+    file: string
   }
   show?: Expression // Vi har også hide, men tenker vi kan forenkle det til kun vis i første runde.
   flow?: 'stop' | 'continue' | null

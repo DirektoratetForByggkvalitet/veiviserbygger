@@ -2,6 +2,7 @@
 // import type { RedisClientType } from '@redis/client'
 // import { RequestHandler } from 'express'
 import { Firestore } from 'firebase-admin/firestore'
+import { Storage } from 'firebase-admin/storage'
 
 declare global {
   /**
@@ -9,6 +10,7 @@ declare global {
    */
   type DependencyContainer = {
     db: Firestore
+    storage: Storage
     // postgres: Pool
     // redis?: RedisClientType
     // /**

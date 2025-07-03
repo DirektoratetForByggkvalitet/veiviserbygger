@@ -1,13 +1,13 @@
-import { state } from 'losen'
+import { state, WizardDefinition } from 'losen'
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 
 /**
  * Create the store with middleware
  */
-const store = configureStore({
-  reducer: combineReducers({
-    [state.NAME]: state.reducer,
-  }),
-})
-
-export default store
+export const getStore = (wizardDef: WizardDefinition) =>
+  configureStore({
+    preloadedState: {},
+    reducer: combineReducers({
+      [state.NAME]: state.reducer(wizardDef),
+    }),
+  })

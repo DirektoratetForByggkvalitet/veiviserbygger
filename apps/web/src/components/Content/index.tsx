@@ -319,6 +319,8 @@ function ExtraInformation({
         return
       }
 
+      console.log('create content for extra information branch', node.id)
+
       // create a new information node with default content and create a reference to it
       await patchNode(node.id, {
         content: {
@@ -423,7 +425,8 @@ function NegativeResult({
 
       {resultNodeId && resultNode && (
         <Input
-          label="Tittel på resultatsiden"
+          label="Overskrift på resultat"
+          header
           value={resultNode.heading || ''}
           onChange={(v) => patchNode(resultNodeId, { heading: v })}
         />
@@ -431,7 +434,7 @@ function NegativeResult({
 
       {errorNodeId && errorNode && (
         <Editor
-          label="Feilmelding"
+          label="Forklaring"
           value={errorNode.text || ''}
           onChange={(v) => patchNode(errorNodeId, { text: v })}
         />

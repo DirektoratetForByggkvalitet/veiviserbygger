@@ -2,6 +2,7 @@ import { DocumentReference, Firestore } from 'firebase-admin/firestore'
 import { dataPoint } from './utils'
 import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
 import { CustomError } from 'shared/error'
+import { OptionalExcept, PageContent } from 'types'
 
 type FuncScope = {
   db: Firestore
@@ -73,9 +74,17 @@ export async function getCompleteWizard(db: Firestore, wizardId: string, version
   return {
     wizard: wizard.data(),
     version: version.data(),
-    nodes: nodes.docs.map((node) => ({
-      id: node.id,
-      ...node.data(),
-    })),
+    nodes: nodes.docs.reduce<{
+      [id: string]: { id: string } & OptionalExcept<PageContent, 'type'>
+    }>(
+      (res, node) => ({
+        ...res,
+        [node.id]: {
+          id: node.id,
+          ...node.data(),
+        },
+      }),
+      {},
+    ),
   }
 }

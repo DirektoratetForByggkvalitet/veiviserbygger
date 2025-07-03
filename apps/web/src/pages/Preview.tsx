@@ -1,5 +1,5 @@
 import usePreview from '@/hooks/usePreview'
-import store from '@/store/preview'
+import { getStore } from '@/store/preview'
 import { Wizard } from 'losen'
 import { Provider } from 'react-redux'
 
@@ -19,7 +19,7 @@ export default function PreviewPage() {
   }
 
   return (
-    <Provider store={store}>
+    <Provider store={getStore(data)}>
       <Wizard wizard={data} />
     </Provider>
   )
