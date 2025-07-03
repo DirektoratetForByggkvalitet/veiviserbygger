@@ -58,6 +58,12 @@ const typeMap: Record<
     icon: 'ListPlus',
     description: 'Viser et nytt spørsmål som ikke tidligere var synlig.',
   },
+  Result: {
+    title: 'Resultatside',
+    icon: 'FileCheck',
+    description:
+      'En resultatside som viser et resultat basert på svarene brukeren har gitt. Resultatsiden kan også inneholde tilleggsinformasjon.',
+  },
 }
 
 export function getTypeText(type: PageContent['type'] | Branch['preset']) {

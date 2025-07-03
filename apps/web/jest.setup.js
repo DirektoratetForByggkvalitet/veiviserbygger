@@ -1,6 +1,7 @@
 expect.extend({
   toBeReferenceTo(received, expected) {
     const pass = received.path === expected.path
+
     return {
       pass,
       message: () =>

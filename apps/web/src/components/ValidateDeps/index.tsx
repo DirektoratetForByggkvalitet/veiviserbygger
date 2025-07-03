@@ -8,9 +8,10 @@ import useWizard from '@/hooks/useWizard'
 import { useParams } from 'react-router'
 import { get } from 'lodash'
 import { getOrdered } from 'shared/utils'
+import { ReactNode } from 'react'
 
 type Props = {
-  children?: React.ReactNode
+  children: ReactNode
   node: OptionalExcept<PageContent, 'id'>
   sourceRef: {
     doc: DocumentReference
@@ -19,7 +20,7 @@ type Props = {
   title?: string
 }
 
-export default function ValidateDeps({ children, node, sourceRef, title }: Props) {
+export default function ValidateDeps({ children, node, sourceRef, title }: Props): ReactNode {
   const { wizardId, versionId } = useParams()
   const { version, nodes } = useWizard(wizardId, versionId)
 

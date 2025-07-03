@@ -14,7 +14,7 @@ declare global {
     }
 
     interface Expect {
-      toBeReferenceTo(expected: DocumentReference): R
+      toBeReferenceTo(expected: DocumentReference): CustomMatcherResult
     }
   }
 }

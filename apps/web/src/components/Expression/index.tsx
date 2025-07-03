@@ -188,6 +188,8 @@ function FieldValue({
       />
     )
   }
+
+  return null
 }
 
 export default function Expression({

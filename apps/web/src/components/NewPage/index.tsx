@@ -22,8 +22,8 @@ const defaultState: Partial<WizardPage> = { heading: '', type: 'Page' }
 export default function NewPage({ open, closeModal }: Props) {
   const { wizardId, versionId } = useParams()
   const [newPage, setNewPage] = useState<Partial<WizardPage>>(defaultState)
-  const { firestore } = useFirebase()
-  const titleInput = useRef<HTMLElement>(null)
+  const { firestore, storage } = useFirebase()
+  const titleInput = useRef<HTMLInputElement>(null)
 
   useEffect(
     () => () => {
@@ -44,7 +44,7 @@ export default function NewPage({ open, closeModal }: Props) {
       return
     }
 
-    await createPage({ db: firestore, wizardId, versionId }, newPage)
+    await createPage({ db: firestore, storage, wizardId, versionId }, newPage)
 
     close()
   }

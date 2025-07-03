@@ -697,6 +697,8 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
       </Fragment>
     )
   }
+
+  return null
 }
 
 const Header = ({

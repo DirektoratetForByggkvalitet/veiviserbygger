@@ -19,7 +19,7 @@ const defaultState = { title: '' }
 export default function NewWizard({ open, toggleModal }: Props) {
   const [newWizard, setNewWizard] = useState<{ title: string }>(defaultState)
   const navigate = useNavigate()
-  const titleInput = useRef<HTMLElement>(null)
+  const titleInput = useRef<HTMLInputElement>(null)
   const { firestore } = useFirebase()
 
   useEffect(

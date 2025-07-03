@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import Icon from '@/components/Icon'
@@ -12,7 +12,7 @@ const KEY_ESC = 27
 const ANIMATION_DURATION = 500
 
 interface Props {
-  children: React.ReactNode
+  children: ReactNode
   title: string
   expanded: boolean
   onClose: () => void

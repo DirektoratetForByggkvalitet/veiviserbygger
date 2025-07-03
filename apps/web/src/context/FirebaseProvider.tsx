@@ -1,5 +1,5 @@
 import { OAuthProvider, onAuthStateChanged, signInWithRedirect, User } from 'firebase/auth'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import { ConfigContext } from './ConfigProvider'
 import { getFirebaseApp } from '@/services/firebase'
 
@@ -14,7 +14,7 @@ export const AuthContext = createContext<{
   loginWithOidc: null,
 })
 
-function AuthProvider({ children }: { children: React.ReactNode }) {
+function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const { auth, oidc } = useContext(FirebaseContext) || {}
   const [user, setUser] = useState<User | null>(null)
@@ -55,7 +55,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function FirebaseProvider({ children }: { children: React.ReactNode }) {
+export default function FirebaseProvider({ children }: { children: ReactNode }) {
   const config = useContext(ConfigContext)
 
   if (!config) {
