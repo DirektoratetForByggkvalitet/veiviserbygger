@@ -68,9 +68,9 @@ const transformRadio: TransformerFunc<'Radio'> = (node, data, deps) => {
     {
       id: node.id,
       type: 'Radio',
-      heading: node.heading || 'Valg uten navn',
       property: node.id,
-      description: trimText(node.text),
+      heading: node.heading || 'Mangler navn',
+      text: trimText(node.text),
       show: node.show ? transformExpression(node.show, data) : undefined,
       image: node.image?.file
         ? {
@@ -78,6 +78,34 @@ const transformRadio: TransformerFunc<'Radio'> = (node, data, deps) => {
             alt: node.image.alt || '',
           }
         : undefined,
+      grid: node.grid,
+      options: getOrdered(node.options).map((o) => ({
+        id: o.id,
+        heading: o.heading,
+        value: o.id,
+        type: 'Answer',
+        // image: o.image, // TODO: Implement image support
+      })),
+    },
+  ]
+}
+
+const transformCheckbox: TransformerFunc<'Checkbox'> = (node, data, deps) => {
+  return [
+    {
+      id: node.id,
+      type: 'Checkbox',
+      property: node.id,
+      heading: node.heading || 'Mangler navn',
+      text: trimText(node.text),
+      show: node.show ? transformExpression(node.show, data) : undefined,
+      image: node.image?.file
+        ? {
+            url: getImageUrl(node.image?.file, deps),
+            alt: node.image.alt || '',
+          }
+        : undefined,
+      grid: node.grid,
       options: getOrdered(node.options).map((o) => ({
         id: o.id,
         heading: o.heading,
@@ -241,6 +269,10 @@ function transformNode(
 
   if (node.type === 'Radio') {
     return transformRadio(node, data, deps)
+  }
+
+  if (node.type === 'Checkbox') {
+    return transformCheckbox(node, data, deps)
   }
 
   if (node.type === 'Branch') {
