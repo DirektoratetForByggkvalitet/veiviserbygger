@@ -7,6 +7,9 @@ export default function usePreview() {
   const { data, isLoading, mutate } = useSWR(
     `/api/wizard/${wizardId}/${versionId}/preview`,
     async (url: string) => (await (await fetch(url)).json()) as WizardDefinition,
+    {
+      refreshInterval: 5000,
+    },
   )
 
   return {
