@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = mode === 'development' ? loadEnv(mode, process.cwd(), '') : {}
+  const isEmbedBuild = process.env.BUILD_TARGET === 'embed'
 
   return {
     clearScreen: false,
@@ -19,9 +20,22 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [react()],
+    ...(isEmbedBuild
+      ? {
+          define: {
+            'process.env': {},
+            process: 'process',
+          },
+        }
+      : {}),
     resolve: {
       alias: {
         '@': resolve(__dirname, './src'),
+        ...(isEmbedBuild
+          ? {
+              process: 'process/browser',
+            }
+          : {}),
       },
     },
     css: {
@@ -31,6 +45,29 @@ export default defineConfig(({ mode }) => {
           api: 'modern',
         },
       },
+    },
+    build: {
+      emptyOutDir: false,
+      ...(isEmbedBuild
+        ? {
+            sourcemap: true,
+            outDir: 'dist',
+            lib: {
+              entry: resolve(__dirname, 'src/embed/main.tsx'),
+              name: 'ResourceEmbed',
+              formats: ['iife'],
+              fileName: () => `embed.js`,
+            },
+            rollupOptions: {
+              output: {
+                globals: {
+                  react: 'React',
+                  'react-dom': 'ReactDOM',
+                },
+              },
+            },
+          }
+        : {}),
     },
   }
 })

@@ -6,7 +6,7 @@ import { transformWizardDataToLosen } from '../utils/losen'
 export const wizardRouter = (di: DependencyContainer) => {
   const router = Router()
 
-  router.get('/:wizardId/:versionId?/preview', async (req, res) => {
+  router.get('/:wizardId/:versionId?', async (req, res) => {
     try {
       const wizardData = await getCompleteWizard(di.db, req.params.wizardId, req.params.versionId)
       res.send(transformWizardDataToLosen(wizardData, di))

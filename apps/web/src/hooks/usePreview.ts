@@ -11,7 +11,7 @@ type PreviewError = Error & {
 export default function usePreview() {
   const { wizardId, versionId } = useParams()
   const { data, error, isLoading, mutate } = useSWR<PreviewResult, PreviewError>(
-    `/api/wizard/${wizardId}/${versionId}/preview`,
+    `/api/wizard/${wizardId}/${versionId}`,
     async (url: string) => {
       const res = await fetch(url)
 

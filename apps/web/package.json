@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "predev": "npm run build:embed && cp dist/embed* public/",
+    "build": "npm run build:base && npm run build:embed",
+    "build:base": "vite build --mode production",
+    "build:embed": "BUILD_TARGET=embed npm run build:base",
     "start": "echo \"Serve properly with either vercel or an nginx server\"",
     "test": "jest --coverage",
     "test:watch": "npm test -- --watchAll",
