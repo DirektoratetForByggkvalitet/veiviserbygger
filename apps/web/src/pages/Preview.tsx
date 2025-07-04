@@ -2,20 +2,34 @@ import usePreview from '@/hooks/usePreview'
 import { getStore } from '@/store/preview'
 import { Wizard } from 'losen'
 import { Provider } from 'react-redux'
+import { useParams } from 'react-router'
 
 export default function PreviewPage() {
-  const {
-    loading,
-    data,
-    // reload
-  } = usePreview()
+  const { versionId } = useParams()
+
+  const { loading, data, error } = usePreview()
 
   if (loading) {
     return null
   }
 
+  if (error?.status === 404) {
+    return (
+      <div>
+        <h1>Fant ikke veiviseren</h1>
+
+        {versionId ? (
+          <p>
+            URLen du har åpnet refererer til en spesifikk versjon av veiviseren. Denne versjonen{' '}
+            <em>kan</em> være slettet etter at du fikk lenken.
+          </p>
+        ) : null}
+      </div>
+    )
+  }
+
   if (!data) {
-    return <div>Fant ikke veiviseren</div>
+    return <div>Ingen data</div>
   }
 
   return (
