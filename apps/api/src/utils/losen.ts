@@ -317,6 +317,7 @@ function transformPage(
       heading: page.heading,
       lead: page.lead,
       children: getOrdered(page.content || {}).flatMap((n) => transformNode(n, data, deps)),
+      show: page.show ? transformExpression(page.show, data) : undefined,
     },
   ]
 }
