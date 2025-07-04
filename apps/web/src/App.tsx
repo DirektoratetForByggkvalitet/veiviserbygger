@@ -19,6 +19,8 @@ export default function App() {
   return (
     <EditableContext.Provider value={true}>
       <Routes>
+        <Route path="/wizard/:wizardId/:versionId/preview" Component={Preview} />
+
         {!user ? (
           <>
             <Route path="/" element={<Login />} />
@@ -28,7 +30,6 @@ export default function App() {
           <>
             <Route path="/" element={<Overview />} />
             <Route path="/wizard/:wizardId?/:versionId?" Component={Wizard} />
-            <Route path="/wizard/:wizardId/:versionId/preview" Component={Preview} />
           </>
         )}
       </Routes>
