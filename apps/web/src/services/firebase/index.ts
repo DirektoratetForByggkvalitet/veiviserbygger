@@ -262,7 +262,7 @@ export async function deletePage({ db, wizardId, versionId }: FuncScope, pageId:
 }
 
 export async function addNodes(
-  { db, wizardId, versionId }: FuncScope,
+  { db, storage, wizardId, versionId }: FuncScope,
   {
     pageId,
     afterNodeId,
@@ -279,7 +279,7 @@ export async function addNodes(
      */
     parentNodeId?: string
   },
-  nodes: OptionalExcept<PageContent, 'type'>[],
+  nodes: OptionalExcept<PageContent<true>, 'type'>[],
 ) {
   console.group('[addNodes]')
 
@@ -343,7 +343,29 @@ export async function addNodes(
       const nodeRef = nodeRefs[i]
 
       // create the node
-      await transaction.set(nodeRef, node)
+      await transaction.set(nodeRef, {
+        ...node,
+
+        // Branches are special as they can contain other nodes. We need to allow adding them on creation
+        // so we allow content to be an array of nodes (instead of an OrderedMap of node references) and
+        // create them and create the OrderedMap from the created nodes
+        ...(node.type === 'Branch' && Array.isArray(node.content)
+          ? {
+              content: (
+                await addNodes({ db, storage, wizardId, versionId }, {}, node.content)
+              ).reduce(
+                (res, node, index) => ({
+                  ...res,
+                  [uuid()]: {
+                    order: index + 1,
+                    node,
+                  },
+                }),
+                {},
+              ),
+            }
+          : {}),
+      })
 
       // not adding to a page or node, so skip the rest
       if (!pageId && !parentNodeId) {

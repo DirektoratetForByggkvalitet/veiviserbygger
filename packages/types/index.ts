@@ -144,7 +144,10 @@ export type Checkbox = PageNode<
   }
 >
 
-export type PageContentWithOptions = Extract<PageContent, { options?: OrderedMap<Answer> }>
+export type PageContentWithOptions<Creation = false> = Extract<
+  PageContent<Creation>,
+  { options?: OrderedMap<Answer> }
+>
 
 export type Input = PageNode<
   Content &
@@ -187,7 +190,7 @@ export type SimpleResult = {
   lead?: string // HTML
 }
 
-export type Branch = PageNode<{
+export type Branch<Creation = false> = PageNode<{
   id: string
   type: 'Branch'
   preset: 'NegativeResult' | 'ExtraInformation' | 'NewQuestions'
@@ -195,7 +198,9 @@ export type Branch = PageNode<{
   /**
    * Should not refer to nodes of types other than Information, Error or SimpleResult
    */
-  content: OrderedMap<{ node: DocumentReference }>
+  content: Creation extends true
+    ? OrderedMap<{ node: DocumentReference }> | OptionalExcept<PageContent, 'type'>[]
+    : OrderedMap<{ node: DocumentReference }>
 }>
 
 export type Intro = {
@@ -221,14 +226,14 @@ export type Result = {
   content: OrderedMap<{ node: DocumentReference }>
 }
 
-export type PageContent =
+export type PageContent<Creation = false> =
   | Text
   | Radio
   | Checkbox
   | Select
   | Input
   | NumberInput
-  | Branch
+  | Branch<Creation>
   | Error
   | Information
   | SimpleResult

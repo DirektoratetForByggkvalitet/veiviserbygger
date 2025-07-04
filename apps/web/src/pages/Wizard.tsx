@@ -39,7 +39,7 @@ function contentAction<T extends PageContent['type']>({
   type: T
   preset?: Branch['preset']
   disabled?: boolean
-  defaultContent?: Omit<DeepPartial<Extract<PageContent, { type: T }>>, 'id' | 'type'>
+  defaultContent?: Omit<DeepPartial<Extract<PageContent<true>, { type: T }>>, 'id' | 'type'>
   addNodes: ReturnType<typeof useVersion>['addNodes']
 }) {
   return {
@@ -116,14 +116,22 @@ export const addPageContentActions = (
           pageId,
           type: 'Branch',
           preset: 'ExtraInformation',
-          defaultContent: { preset: 'ExtraInformation', test: {} },
+          defaultContent: {
+            preset: 'ExtraInformation',
+            test: {},
+            content: [{ type: 'Information' }],
+          },
         }),
         contentAction({
           addNodes,
           pageId,
           type: 'Branch',
           preset: 'NegativeResult',
-          defaultContent: { preset: 'NegativeResult', test: {} },
+          defaultContent: {
+            preset: 'NegativeResult',
+            test: {},
+            content: [{ type: 'Error' }, { type: 'Result' }],
+          },
         }),
         contentAction({
           addNodes,
