@@ -11,6 +11,19 @@ http {
     server {
         listen ${PORT};  # This will be replaced by sed
 
+        # CORS headers for all responses
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Authorization,Content-Type,Accept,Origin,X-Requested-With' always;
+
+        # Handle preflight (OPTIONS) requests for all locations
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Max-Age' 3600;
+            add_header 'Content-Length' 0;
+            add_header 'Content-Type' 'text/plain charset=UTF-8';
+            return 204;
+        }
+
         # Serve static files
         location / {
             root /usr/share/nginx/html;

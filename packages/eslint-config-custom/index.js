@@ -29,5 +29,5 @@ module.exports = {
     ],
   },
   parser: "@typescript-eslint/parser",
-  ignorePatterns: ["build", "dist"],
+  ignorePatterns: ["build", "dist", "public"],
 };
