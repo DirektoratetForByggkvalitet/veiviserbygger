@@ -1,3 +1,4 @@
+import Intro from '@/components/Intro'
 import usePreview from '@/hooks/usePreview'
 import { getStore } from '@/store/preview'
 import { Wizard } from 'losen'
@@ -34,7 +35,10 @@ export default function PreviewPage() {
 
   return (
     <Provider store={getStore(data)}>
-      <Wizard wizard={data} />
+      <Intro
+        wizard={data}
+        render={({ toggleIntro }) => <Wizard wizard={data} showIntro={toggleIntro(true)} />}
+      />
     </Provider>
   )
 }

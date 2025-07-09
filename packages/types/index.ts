@@ -265,3 +265,13 @@ export type WizardVersion = {
 }
 
 export type WizardPage = Page | Result
+
+export type WizardIntro = {
+  heading?: string | undefined
+  lead?: string | undefined
+  content: {
+    id: string
+    heading?: string
+    text?: string
+  }[]
+}

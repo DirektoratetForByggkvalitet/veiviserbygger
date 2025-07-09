@@ -1,7 +1,7 @@
 import { Error, Page, Result, WizardDefinition } from 'losen'
 import { getCompleteWizard } from '../services/firestore'
 import { getOrdered } from 'shared/utils'
-import { Expression, OptionalExcept, PageContent, WizardPage } from 'types'
+import { Expression, Intro, OptionalExcept, PageContent, WizardIntro, WizardPage } from 'types'
 import { Expression as LosenExpression } from 'losen/utils/dsl'
 
 type CompleteWizardData = Awaited<ReturnType<typeof getCompleteWizard>>
@@ -322,15 +322,52 @@ function transformPage(
   ]
 }
 
+function transformIntro(
+  intro: Intro | undefined,
+  data: CompleteWizardData,
+  deps: DependencyContainer,
+): WizardIntro | null {
+  if (!intro) {
+    return null
+  }
+
+  return {
+    heading: intro.heading,
+    lead: intro.lead,
+    content: getOrdered(intro.content || []).flatMap(({ node: { id } }) => {
+      const node = data.nodes[id]
+
+      if (node?.type !== 'Text') {
+        return []
+      }
+
+      if (node.type === 'Text') {
+        return transformText(node, data, deps).map((n) => ({
+          id: n.id,
+          heading: n.heading || '',
+          text: n.text || '',
+        }))
+      }
+
+      return []
+    }),
+  }
+}
+
 export function transformWizardDataToLosen(
   data: CompleteWizardData,
   deps: DependencyContainer,
-): WizardDefinition {
+): WizardDefinition & {
+  intro?: WizardIntro
+} {
+  const intro = transformIntro(data.version?.intro, data, deps)
+
   return {
     meta: {
       name: data.wizard?.title || 'Veiviser uten navn',
       title: data.wizard?.title || 'Veiviser uten navn',
     },
     schema: getOrdered(data.version?.pages).flatMap((p) => transformPage(p, data, deps)),
+    ...(intro ? { intro } : {}),
   }
 }

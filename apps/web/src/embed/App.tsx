@@ -4,9 +4,10 @@ type Props = {
 }
 
 import { getStore } from '@/store/preview'
-import { useApi } from './hooks/api'
 import { Wizard } from 'losen'
 import { Provider } from 'react-redux'
+import Intro from '@/components/Intro'
+import { useApi } from './hooks/api'
 
 export function EmbedApp({ wizardId, host }: Props) {
   const { loading, data, error } = useApi(host, wizardId)
@@ -29,7 +30,9 @@ export function EmbedApp({ wizardId, host }: Props) {
 
   return (
     <Provider store={getStore(data)}>
-      <Wizard wizard={data} />
+      <Intro wizard={data}>
+        <Wizard wizard={data} />
+      </Intro>
     </Provider>
   )
 }
