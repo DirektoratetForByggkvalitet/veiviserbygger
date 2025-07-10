@@ -361,6 +361,7 @@ export function transformWizardDataToLosen(
   intro?: WizardIntro
 } {
   const intro = transformIntro(data.version?.intro, data, deps)
+  const schema = getOrdered(data.version?.pages).flatMap((p) => transformPage(p, data, deps))
 
   return {
     meta: {
@@ -368,7 +369,23 @@ export function transformWizardDataToLosen(
       title: data.wizard?.title || 'Veiviser uten navn',
       localStorageKey: data.version.id,
     },
-    schema: getOrdered(data.version?.pages).flatMap((p) => transformPage(p, data, deps)),
+    schema: !schema?.[0]?.children?.[0]?.type
+      ? [
+          {
+            type: 'Page',
+            id: schema?.[0]?.id || 'empty',
+            heading: schema?.[0]?.heading || 'Tom veiviser',
+            children: [
+              {
+                id: 'empty-text',
+                type: 'Text',
+                heading: schema?.[0]?.id ? 'Tom side' : 'Ingen sider',
+                text: `${schema?.[0]?.id ? 'Denne veiviseren har en side, men ikke noe innhold' : 'Denne veiviseren har ingen sider'}. Legg til innhold i redigeringsverktøyet.`,
+              },
+            ],
+          },
+        ]
+      : schema,
     ...(intro ? { intro } : {}),
   }
 }
