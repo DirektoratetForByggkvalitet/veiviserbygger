@@ -176,6 +176,25 @@ function Option({
       },
       {
         value: '1',
+        icon: 'ListPlus',
+        label: 'Gir ekstra spørsmål',
+        onClick: async () => {
+          await addNodes({ pageId, afterNodeId: nodeId }, [
+            {
+              type: 'Branch',
+              preset: 'NewQuestions',
+              test: {
+                field: getNodeRef(nodeId),
+                operator: 'eq',
+                value: optionId,
+              },
+              content: [],
+            },
+          ])
+        },
+      },
+      {
+        value: '2',
         icon: 'Info',
         label: 'Gir tilleggsinfo',
         onClick: async () => {
