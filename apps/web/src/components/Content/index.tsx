@@ -213,7 +213,7 @@ function Option({
         },
       },
       {
-        value: '2',
+        value: '3',
         icon: 'Trash',
         label: 'Slett',
         onClick: () => deleteAnswer(nodeId, optionId),

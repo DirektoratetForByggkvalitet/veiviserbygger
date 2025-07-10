@@ -36,11 +36,38 @@ function getImageUrl(image: string, deps: DependencyContainer) {
   return deps.storage.bucket().file(image).publicUrl()
 }
 
+function expressionFilter(e: Expression) {
+  // if the expression has a type, it's a complex expression and should be included
+  if (e.type) {
+    return true
+  }
+
+  // if the expression has no field or operator, it's not a valid expression
+  if (!e.field?.id || !e.operator) {
+    return false
+  }
+
+  // if the operator is one of these, we don't need a value
+  if (['is', 'isNot', 'not', 'required'].includes(e.operator)) {
+    return true
+  }
+
+  // if the value is undefined, it's not a valid expression
+  if (typeof e.value === 'undefined') {
+    return false
+  }
+
+  // if the value is not undefined, all is good
+  return true
+}
+
 function transformExpression(expression: Expression, data: CompleteWizardData): LosenExpression {
   if (expression.type) {
     return {
       type: expression.type,
-      clauses: getOrdered(expression.clauses).map((c) => transformExpression(c, data)),
+      clauses: getOrdered(expression.clauses)
+        .filter(expressionFilter)
+        .map((c) => transformExpression(c, data)),
     }
   }
 
