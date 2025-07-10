@@ -1,5 +1,6 @@
 import { WizardDefinition } from 'losen'
 import { useEffect, useState } from 'react'
+import { WizardIntro } from 'types'
 
 type PreviewError = Error & {
   info: any
@@ -7,9 +8,7 @@ type PreviewError = Error & {
 }
 
 export function useApi(host: string, wizardId: string) {
-  console.log('useApi', host, wizardId)
-
-  const [data, setData] = useState<WizardDefinition | null>(null)
+  const [data, setData] = useState<WizardDefinition & { intro?: WizardIntro }>()
   const [error, setError] = useState<PreviewError | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -27,7 +26,7 @@ export function useApi(host: string, wizardId: string) {
           return
         }
 
-        const result = (await res.json()) as WizardDefinition
+        const result = (await res.json()) as typeof data
         setData(result)
         setIsLoading(false)
       })

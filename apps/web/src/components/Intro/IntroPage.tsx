@@ -1,7 +1,8 @@
 import { isEqual } from 'lodash'
-import { WizardDefinition } from 'losen'
+import { Primitives, WizardDefinition } from 'losen'
 import { useEffect, useMemo } from 'react'
 import { connect } from 'react-redux'
+import { WizardIntro } from 'types'
 
 function IntroPage({
   wizard,
@@ -9,7 +10,7 @@ function IntroPage({
   close,
 }: {
   data: any
-  wizard: WizardDefinition
+  wizard: WizardDefinition & { intro?: WizardIntro }
   close: () => void
 }) {
   const hasData = useMemo(() => {
@@ -30,9 +31,30 @@ function IntroPage({
   }
 
   return (
-    <div>
-      Introooo <button onClick={close}>Lukk meg!</button>
-    </div>
+    <Primitives.Wizard>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <Primitives.Heading.H1>{wizard.intro?.heading}</Primitives.Heading.H1>
+        {wizard.intro?.lead ? (
+          <Primitives.Paragraphs.Lead>{wizard.intro?.lead}</Primitives.Paragraphs.Lead>
+        ) : null}
+        {wizard?.intro?.content.map((content, index) => {
+          return (
+            <>
+              <Primitives.Heading.H2 key={`intro-content-${index}`}>
+                {content.heading}
+              </Primitives.Heading.H2>
+              <Primitives.Block.TextBlock
+                dangerouslySetInnerHTML={{ __html: content.text }}
+                key={`intro-text-${index}`}
+              />
+            </>
+          )
+        })}
+        <Primitives.Button.MainButton type="button" onClick={close}>
+          Sett i gang
+        </Primitives.Button.MainButton>
+      </div>
+    </Primitives.Wizard>
   )
 }
 

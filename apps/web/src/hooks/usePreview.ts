@@ -1,8 +1,9 @@
 import { WizardDefinition } from 'losen'
 import { useParams } from 'react-router'
 import useSWR from 'swr'
+import { WizardIntro } from 'types'
 
-type PreviewResult = WizardDefinition
+type PreviewResult = WizardDefinition & { intro?: WizardIntro }
 type PreviewError = Error & {
   info: any
   status: number
