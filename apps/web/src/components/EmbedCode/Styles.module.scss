@@ -1,0 +1,69 @@
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
+
+.embed-code {
+    $this: &;
+    @include mixins.font-size(base);
+    display: grid;
+    width: 100%;
+    border: vars.$border-style;
+    background-color: colors.$light;
+    position: relative;
+    cursor: pointer;
+
+    &:hover {
+        border-color: shade(colors.get(neutral), 6%);
+
+        #{$this}__label {
+            color: shade(colors.$muted, 20%);
+        }
+    }
+
+    &:focus-within {
+        border-radius: 2px;
+        border-color: colors.get(primary);
+        box-shadow: 0 0 0 1px colors.get(primary);
+
+        #{$this}__label {
+            color: colors.$text;
+        }
+    }
+
+    &__wrapper {
+        display: grid;
+        gap: vars.$form-padding-y;
+    }
+
+    &__label {
+        @include mixins.font-size(small);
+        color: colors.$muted;
+        padding: vars.$form-padding-y vars.$form-padding-x 3px;
+    }
+
+    &__input,
+    &__input:-webkit-autofill,
+    &__input:-webkit-autofill:hover,
+    &__input:-webkit-autofill:focus {
+        field-sizing: content;
+        border-radius: 0;
+        padding: 3px vars.$form-padding-x vars.$form-padding-y;
+        background-color: transparent;
+        @include mixins.input-placeholder {
+            color: colors.get(neutral, base);
+        }
+        cursor: pointer;
+    }
+
+    &__input:-webkit-autofill {
+        -webkit-background-clip: text; // Remove blue backgrunds in Chrome for saved passwords
+    }
+
+    &--header #{$this}__input {
+        font-weight: bold;
+    }
+
+    &__message {
+        margin-bottom: 0 !important;
+    }
+}

@@ -112,6 +112,17 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                   Forhåndsvisning
                 </Button>
 
+                {wizard?.data.publishedVersion?.id ? (
+                  <Button
+                    size="small"
+                    iconOnlyOnMobile="CodeXml"
+                    primary
+                    onClick={() => setModal('embed')}
+                  >
+                    Embed
+                  </Button>
+                ) : null}
+
                 {/* The user is on the draft version */}
                 {wizard?.data.draftVersion?.id === activeVersion.id ? (
                   <Button

@@ -4,6 +4,7 @@ import PublishModal from './Publish'
 import DraftModal from './Draft'
 import VersionsModal from './Versions'
 import DeleteDraftModal from './DeleteDraft'
+import EmbedModal from './Embed'
 import { useParams } from 'react-router'
 
 export default function Modals() {
@@ -21,6 +22,7 @@ export default function Modals() {
       <DraftModal />
       <VersionsModal />
       <PublishModal />
+      <EmbedModal />
     </>
   )
 }
