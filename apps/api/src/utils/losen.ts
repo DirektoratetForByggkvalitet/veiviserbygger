@@ -366,6 +366,7 @@ export function transformWizardDataToLosen(
     meta: {
       name: data.wizard?.title || 'Veiviser uten navn',
       title: data.wizard?.title || 'Veiviser uten navn',
+      localStorageKey: data.version.id,
     },
     schema: getOrdered(data.version?.pages).flatMap((p) => transformPage(p, data, deps)),
     ...(intro ? { intro } : {}),

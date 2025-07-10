@@ -72,8 +72,14 @@ export async function getCompleteWizard(db: Firestore, wizardId: string, version
   const nodes = await getNodesRef({ db, wizardId, versionId: version.id }).get()
 
   return {
-    wizard: wizard.data(),
-    version: version.data(),
+    wizard: {
+      ...wizard.data(),
+      id: wizard.id,
+    },
+    version: {
+      ...version.data(),
+      id: version.id,
+    },
     nodes: nodes.docs.reduce<{
       [id: string]: { id: string } & OptionalExcept<PageContent, 'type'>
     }>(
