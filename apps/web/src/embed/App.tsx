@@ -3,14 +3,17 @@ type Props = {
   host: string
 }
 
-import { getStore } from '@/store/preview'
 import { Wizard } from 'losen'
 import { Provider } from 'react-redux'
 import Intro from '@/components/Intro'
 import { useApi } from './hooks/api'
+import { PersistGate } from '@/components/PersistGate'
+import { useMemo } from 'react'
+import getStore from './store/state'
 
 export function EmbedApp({ wizardId, host }: Props) {
   const { loading, data, error } = useApi(host, wizardId)
+  const store = useMemo(() => data && getStore(data), [data])
 
   if (loading) {
     return null
@@ -24,15 +27,18 @@ export function EmbedApp({ wizardId, host }: Props) {
     )
   }
 
-  if (!data) {
+  if (!data || !store) {
     return <div>Ingen data</div>
   }
 
   return (
-    <Provider store={getStore(data)}>
-      <Intro wizard={data}>
-        <Wizard wizard={data} />
-      </Intro>
+    <Provider store={store.store}>
+      <PersistGate persistor={store.persistor}>
+        <Intro
+          wizard={data}
+          render={({ toggleIntro }) => <Wizard wizard={data} showIntro={toggleIntro(true)} />}
+        />
+      </PersistGate>
     </Provider>
   )
 }
