@@ -71,6 +71,16 @@ function transformExpression(expression: Expression, data: CompleteWizardData): 
     }
   }
 
+  const field = data.nodes[expression.field.id]
+
+  if (field?.type === 'Checkbox') {
+    return {
+      operator: expression.operator,
+      field: `${expression.field.id}.${expression.value}`,
+      value: true,
+    }
+  }
+
   return {
     operator: expression.operator,
     field: expression.field.id,

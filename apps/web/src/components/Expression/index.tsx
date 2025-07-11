@@ -58,8 +58,8 @@ export const OPERATORS: { value: Operators; icon: keyof typeof icons; label: str
   { value: 'eq', icon: 'Equal', label: 'er lik' },
   { value: 'neq', icon: 'EqualNot', label: 'er ikke lik' },
   { value: 'between', icon: 'EqualNot', label: 'er mellom' },
-  { value: 'is', icon: 'SquareCheck', label: 'er valgt' },
-  { value: 'not', icon: 'Square', label: 'er ikke valgt' },
+  { value: 'is', icon: 'SquareCheck', label: 'har en verdi' },
+  { value: 'not', icon: 'Square', label: 'ikke har en verdi' },
   { value: 'required', icon: 'SquarePen', label: 'er utfylt' },
 ]
 
@@ -133,7 +133,7 @@ function FieldValue({
     return null
   }
 
-  if (fieldValueType === 'single') {
+  if (fieldValueType === 'single' || fieldValueType === 'multi') {
     return (
       <Dropdown
         options={activeField.options}
@@ -145,10 +145,6 @@ function FieldValue({
         onChange={handleExpressionChange('value')}
       />
     )
-  }
-
-  if (fieldValueType === 'multi') {
-    return <div>Multi-select</div>
   }
 
   if (fieldValueType === 'text') {
