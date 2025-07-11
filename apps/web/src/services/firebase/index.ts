@@ -594,7 +594,7 @@ export async function reorderAnswers(
 ) {
   await runTransaction(db, async (transaction) => {
     const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
-    const current = (await transaction.get(ref)) as unknown as PageContentWithOptions
+    const current = (await transaction.get(ref)).data() as unknown as PageContentWithOptions
 
     await transaction.update(
       ref,
