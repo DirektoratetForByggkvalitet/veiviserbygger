@@ -58,7 +58,41 @@ Pull the docker image `dibk/losen-builder`, bind the desired host port to contai
 docker run -p3333:80 -e PUBLIC_FIREBASE_API_KEY=... -e PUBLIC_FIREBASE_APP_ID=abc123 kbrabrand/losen-veiviserbygger
 ```
 
-## Setting up OIDC login
+### Firebase security rules
+You need to set the security rules for your firestore database and the storage service.
+
+#### Firestore
+Since this is a single tenant service at the moment, meaning that each organization will deploy their own firestore database and server, we allow anyone who've authenticated to see and edit everything under `/wizards/` in the database.
+
+```
+rules_version = "2";
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /wizards/{document=**} {
+      allow read, write: if request.auth != null
+    }
+  }
+}
+```
+
+#### Storage
+Only authenticated users should be allowed to add/edit/remove files in the storage service, but anyone should be able to see the files, since these are uploaded to be shown in the publicly available wizards.
+
+```
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow write: if request.auth != null;
+      allow read: if true;
+    }
+  }
+}
+```
+
+### Setting up OIDC login
 While managing users through the authentication page in the Firebase console is possible, it is often not the most practical solution for larger orgs. If you have an identity provider in you organization that supports OIDC you can manage users with access to the wizard builder from your own identity provider.
 
 Steps:
