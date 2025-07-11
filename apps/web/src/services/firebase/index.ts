@@ -587,6 +587,32 @@ export function deleteAnswer(
   })
 }
 
+export function updateAnswerImage(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  answerId: string,
+  storagePath: string | undefined,
+) {
+  return runTransaction(db, async (transaction) => {
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+    const current = await transaction.get(ref)
+
+    const node = current?.data() as PageContentWithOptions
+
+    if (!node || !node.options || !node.options[answerId]) {
+      throw new Error(`Answer with id ${answerId} not found in node with id ${nodeId}`)
+    }
+
+    await transaction.update(ref, {
+      [`options.${answerId}.image`]: storagePath
+        ? {
+            file: storagePath,
+          }
+        : deleteField(),
+    })
+  })
+}
+
 export async function reorderAnswers(
   { db, wizardId, versionId }: FuncScope,
   nodeId: string,

@@ -165,11 +165,25 @@
         }
     }
 
-    // &__option-actions {
-    // }
+    &__option-actions {
+        display: flex;
+        align-items: center;
+    }
 
     &__option-icon {
         color: colors.get(neutral, base);
+    }
+
+    &__option-image {
+        height: 120px;
+        aspect-ratio: 1 / 1;
+        flex-grow: 0;
+        flex-shrink: 0;
+        background-color: #f8f8f8;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+        border: vars.$border-style;
     }
 
     &__field-list > *:not(:first-child) {

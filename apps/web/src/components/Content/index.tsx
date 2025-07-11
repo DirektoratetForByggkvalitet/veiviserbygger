@@ -10,7 +10,7 @@ import Modal from '@/components/Modal'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Fragment, useRef, useState } from 'react'
+import { Fragment, useMemo, useRef, useState } from 'react'
 import {
   Answer,
   Branch,
@@ -31,12 +31,17 @@ import { useVersion } from '@/hooks/useVersion'
 import BEMHelper from '@/lib/bem'
 import { getTypeDescription, getTypeIcon, getTypeText } from '@/lib/content'
 import { DocumentReference } from 'firebase/firestore'
+
+import { ref as storageRef } from 'firebase/storage'
+
 import { values } from 'lodash'
 import { ReactNode } from 'react'
 import { getOrdered } from 'shared/utils'
 import Expression from '../Expression'
 import styles from './Styles.module.scss'
 import ValidateDeps from '../ValidateDeps'
+import useFile from '@/hooks/useFile'
+import useFirebase from '@/hooks/useFirebase'
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -143,7 +148,13 @@ function Option({
   nodeType: 'Radio' | 'Checkbox'
 } & Answer) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const { getNodeRef, patchAnswer, deleteAnswer, addNodes } = useVersion()
+  const { storage } = useFirebase()
+  const { getNodeRef, patchAnswer, deleteAnswer, addNodes, updateAnswerImage } = useVersion()
+  const imagePath = useMemo(
+    () => storageRef(storage, `${getNodeRef(nodeId).path}/options/${id}/image`).fullPath,
+    [nodeId, getNodeRef, id],
+  )
+  const { url, upload, remove } = useFile(imagePath)
   const sortable = useSortable({ id })
   const { attributes, listeners, setNodeRef, transform, transition } = sortable
   const isEditable = useEditable()
@@ -156,7 +167,70 @@ function Option({
   const optionActions = (nodeId: string, optionId: string) =>
     [
       {
+        group: 'Bilde',
+      },
+      {
         value: '0',
+        icon: url ? 'Image' : 'ImagePlus',
+        label: url ? 'Erstatt bilde' : 'Legg til bilde',
+        onClick: async () => {
+          const fileInput = document.createElement('input')
+          fileInput.type = 'file'
+          fileInput.accept = 'image/png, image/jpeg'
+          fileInput.style.display = 'none'
+          document.body.appendChild(fileInput)
+
+          fileInput.onchange = async (event: Event) => {
+            const file = (event.target as HTMLInputElement).files?.[0]
+
+            if (file) {
+              await upload(file)
+              await updateAnswerImage(nodeId, optionId, imagePath)
+              document.body.removeChild(fileInput)
+            }
+          }
+
+          fileInput.click()
+        },
+      },
+      ...(url
+        ? [
+            {
+              value: '1',
+              icon: 'Trash',
+              label: 'Slett bilde',
+              onClick: async () => {
+                await remove()
+                await updateAnswerImage(nodeId, optionId, undefined)
+              },
+              styled: 'delete',
+            },
+          ]
+        : []),
+      {
+        group: 'Handlinger',
+      },
+      {
+        value: '2',
+        icon: 'Plus',
+        label: 'Legg til innhold',
+        onClick: async () => {
+          await addNodes({ pageId, afterNodeId: nodeId }, [
+            {
+              type: 'Branch',
+              preset: 'NewQuestions',
+              test: {
+                field: getNodeRef(nodeId),
+                operator: 'eq',
+                value: optionId,
+              },
+              content: [],
+            },
+          ])
+        },
+      },
+      {
+        value: '3',
         icon: 'OctagonX',
         label: 'Gir negativt resultat',
         onClick: async () => {
@@ -175,7 +249,7 @@ function Option({
         },
       },
       {
-        value: '1',
+        value: '4',
         icon: 'ListPlus',
         label: 'Gir ekstra spørsmål',
         onClick: async () => {
@@ -194,7 +268,7 @@ function Option({
         },
       },
       {
-        value: '2',
+        value: '5',
         icon: 'Info',
         label: 'Gir tilleggsinfo',
         onClick: async () => {
@@ -213,7 +287,7 @@ function Option({
         },
       },
       {
-        value: '3',
+        value: '6',
         icon: 'Trash',
         label: 'Slett',
         onClick: () => deleteAnswer(nodeId, optionId),
@@ -243,6 +317,7 @@ function Option({
         forwardedRef={inputRef}
         onChange={(v) => patchAnswer(nodeId, id, { heading: v })}
       />
+      {url && <div {...bem('option-image')} style={{ backgroundImage: `url(${url})` }} />}
       <div {...bem('option-actions')}>
         <Dropdown
           icon="Ellipsis"

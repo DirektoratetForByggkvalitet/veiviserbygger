@@ -29,7 +29,12 @@ type FileProps = {
   accept?: string
 }
 
-export default function File({ label, value, sourceRef, accept = 'image/*' }: FileProps) {
+export default function File({
+  label,
+  value,
+  sourceRef,
+  accept = 'image/png, image/jpeg',
+}: FileProps) {
   const { storage } = useFirebase()
   const { patch } = useVersion()
   const [preview, setPreview] = useState<string | null>(null)

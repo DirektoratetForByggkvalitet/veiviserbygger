@@ -121,7 +121,12 @@ const transformRadio: TransformerFunc<'Radio'> = (node, data, deps) => {
         heading: o.heading,
         value: o.id,
         type: 'Answer',
-        // image: o.image, // TODO: Implement image support
+        image: o.image?.file
+          ? {
+              url: getImageUrl(o.image?.file, deps),
+              alt: '',
+            }
+          : undefined,
       })),
     },
   ]
@@ -148,7 +153,12 @@ const transformCheckbox: TransformerFunc<'Checkbox'> = (node, data, deps) => {
         heading: o.heading,
         value: o.id,
         type: 'Answer',
-        // image: o.image, // TODO: Implement image support
+        image: o.image?.file
+          ? {
+              url: getImageUrl(o.image?.file, deps),
+              alt: '',
+            }
+          : undefined,
       })),
     },
   ]
