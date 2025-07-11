@@ -20,7 +20,7 @@ interface Props {
   globalStyles?: boolean
 }
 
-export default function PageSimple({ children, title, globalStyles }: Props) {
+export default function PageSimple({ children, title, globalStyles = true }: Props) {
   return (
     <>
       {globalStyles && <GlobalStyles />}
