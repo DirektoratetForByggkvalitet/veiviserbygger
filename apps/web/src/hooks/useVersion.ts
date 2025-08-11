@@ -21,6 +21,7 @@ import {
   getWizardVersionRef,
   validateDelete,
   updateAnswerImage,
+  moveNode,
 } from '@/services/firebase'
 import { curry } from 'lodash'
 
@@ -49,6 +50,7 @@ export function useVersion() {
     }),
     reorderNodes: curry(reorderNodes)({ db: firestore, storage, wizardId, versionId }),
     deleteNode: curry(deleteNode)({ db: firestore, storage, wizardId, versionId }),
+    moveNode: curry(moveNode)({ db: firestore, storage, wizardId, versionId }),
     addAnswer: curry(addAnswer)({ db: firestore, storage, wizardId, versionId }),
     patchAnswer: curry(patchAnswer)({ db: firestore, storage, wizardId, versionId }),
     updateAnswerImage: curry(updateAnswerImage)({ db: firestore, storage, wizardId, versionId }),

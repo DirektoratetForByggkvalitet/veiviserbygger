@@ -45,6 +45,7 @@ import { buildTree } from './utils/refs'
 import { isDeleteAllowed } from './utils/validator'
 import { connectStorageEmulator, FirebaseStorage, getStorage, ref } from 'firebase/storage'
 import { copyFiles, deleteFiles } from './utils/storage'
+import { getOrdered } from 'shared/utils'
 
 type OIDC = {
   name: string
@@ -527,6 +528,50 @@ export async function deleteNode(
 
     await transaction.update(ref.doc, {
       [ref.path.slice(0, -1).join('.')]: deleteField(),
+    })
+  })
+}
+
+export async function moveNode(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  newPageId: string,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getWizardVersionRef({ db, wizardId, versionId })
+    const current = await transaction.get(ref)
+
+    // get the current page where the node is located
+    const currentPage = getOrdered(current.data()?.pages).find((page) =>
+      getOrdered(page.content || {}).find((node) => node.node.id === nodeId),
+    )
+
+    // get the new page where it will move, and the current content order max value of that page
+    const newPage = current.data()?.pages?.[newPageId]
+    const currentPageMaxOrder = maxBy(getOrdered(newPage?.content), 'order')?.order ?? -1
+
+    // get the current node reference id in the current page
+    const currentNodeRefId = getOrdered(currentPage?.content)?.find(
+      (node) => node.node.id === nodeId,
+    )?.id
+
+    if (!currentPage || !currentNodeRefId) {
+      throw new Error(`Node with id ${nodeId} not found`)
+    }
+
+    if (!newPage) {
+      throw new Error(`Page with id ${newPageId} not found`)
+    }
+
+    await transaction.update(ref, {
+      // remove the node from the current page
+      [`pages.${currentPage.id}.content.${currentNodeRefId}`]: deleteField(),
+
+      // add the node to the new page
+      [`pages.${newPageId}.content.${uuid()}`]: {
+        node: getNodeRef({ db, wizardId, versionId }, nodeId),
+        order: currentPageMaxOrder + 1,
+      },
     })
   })
 }
