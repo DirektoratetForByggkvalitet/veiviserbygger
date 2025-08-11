@@ -17,7 +17,7 @@ export default function PatchModal() {
   const { modal, setModal } = useModal()
   const titleInput = useRef<HTMLInputElement>(null)
 
-  if (modal !== 'publish') {
+  if (modal?.key !== 'publish') {
     return null
   }
 

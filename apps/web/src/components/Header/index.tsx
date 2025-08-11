@@ -67,7 +67,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
       value: '1',
       icon: 'Pencil',
       label: 'Endre navn',
-      onClick: () => setModal('rename'),
+      onClick: () => setModal({ key: 'rename' }),
     } /*
     {
       value: '2',
@@ -82,7 +82,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
       label: 'Slett veiviseren',
       styled: 'delete',
       disabled: !!wizard?.data.publishedVersion?.id,
-      onClick: () => setModal('delete'),
+      onClick: () => setModal({ key: 'delete' }),
     },
   ] as DropdownOptions
 
@@ -98,7 +98,12 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
           <nav {...bem('actions')}>
             {activeVersion && (
               <>
-                <Button size="small" subtle icon="Calendar" onClick={() => setModal('versions')}>
+                <Button
+                  size="small"
+                  subtle
+                  icon="Calendar"
+                  onClick={() => setModal({ key: 'versions' })}
+                >
                   {activeVersion
                     ? getVersionTitle(activeVersion, (versions?.length || 0) - activeVersionIndex)
                     : 'Versjon mangler'}
@@ -117,7 +122,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                     size="small"
                     iconOnlyOnMobile="CodeXml"
                     primary
-                    onClick={() => setModal('embed')}
+                    onClick={() => setModal({ key: 'embed' })}
                   >
                     Embed
                   </Button>
@@ -129,7 +134,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                     size="small"
                     iconOnlyOnMobile="CloudUpload"
                     primary
-                    onClick={() => setModal('publish')}
+                    onClick={() => setModal({ key: 'publish' })}
                   >
                     Publiser
                   </Button>
@@ -177,7 +182,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
               size="small"
               iconOnlyOnMobile="Pencil"
               primary
-              onClick={() => setModal('draft')}
+              onClick={() => setModal({ key: 'draft' })}
             >
               Lag nytt utkast
             </Button>

@@ -13,7 +13,7 @@ export default function DeleteDraftModal() {
   const { modal, setModal } = useModal()
   const navigate = useNavigate()
 
-  if (modal !== 'delete-draft') {
+  if (modal?.key !== 'delete-draft') {
     return null
   }
 

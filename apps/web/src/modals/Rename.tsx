@@ -13,7 +13,7 @@ export default function RenameModal() {
   const { wizard, patchWizard } = useWizard(wizardId, versionId)
   const { modal, setModal } = useModal()
 
-  if (modal !== 'rename') {
+  if (modal?.key !== 'rename') {
     return null
   }
 

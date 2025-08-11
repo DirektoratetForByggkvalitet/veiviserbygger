@@ -10,7 +10,7 @@ export default function EmbedModal() {
   const { wizardId } = useParams()
   const { modal, setModal } = useModal()
 
-  if (modal !== 'embed') {
+  if (modal?.key !== 'embed') {
     return null
   }
 

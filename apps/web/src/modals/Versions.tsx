@@ -11,7 +11,7 @@ export default function VersionsModal() {
   const { versions } = useWizard(wizardId, versionId)
   const { modal, setModal } = useModal()
 
-  if (modal !== 'versions') {
+  if (modal?.key !== 'versions') {
     return null
   }
 

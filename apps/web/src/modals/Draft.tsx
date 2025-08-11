@@ -20,7 +20,7 @@ export default function DraftModal() {
   const [baseOn, setBaseOn] = useState<string>()
   const navigate = useNavigate()
 
-  if (modal !== 'draft' || loading) {
+  if (modal?.key !== 'draft' || loading) {
     return null
   }
 

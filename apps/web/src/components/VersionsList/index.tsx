@@ -23,7 +23,7 @@ export default function VersionsList({ versions, wizardId, activeId, onLinkClick
       value: '4',
       label: 'Slett dette utkastet',
       styled: 'delete',
-      onClick: () => setModal('delete-draft'),
+      onClick: () => setModal({ key: 'delete-draft' }),
     },
   ] as DropdownOptions
   const noDraftVersion = versions && versions[0].publishedFrom !== undefined
@@ -68,7 +68,7 @@ export default function VersionsList({ versions, wizardId, activeId, onLinkClick
       ))}
       {noDraftVersion ? (
         <li key="new">
-          <Button icon="Plus" size="small" onClick={() => setModal('draft')}>
+          <Button icon="Plus" size="small" onClick={() => setModal({ key: 'draft' })}>
             Lag nytt utkast
           </Button>
         </li>

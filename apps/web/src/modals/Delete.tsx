@@ -13,7 +13,7 @@ export default function DeleteModal() {
   const { modal, setModal } = useModal()
   const navigate = useNavigate()
 
-  if (modal !== 'delete') {
+  if (modal?.key !== 'delete') {
     return null
   }
 

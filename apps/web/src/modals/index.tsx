@@ -6,6 +6,7 @@ import VersionsModal from './Versions'
 import DeleteDraftModal from './DeleteDraft'
 import EmbedModal from './Embed'
 import { useParams } from 'react-router'
+import MoveNodeModal from './MoveNode'
 
 export default function Modals() {
   const { wizardId = '', versionId = '' } = useParams()
@@ -23,6 +24,7 @@ export default function Modals() {
       <VersionsModal />
       <PublishModal />
       <EmbedModal />
+      <MoveNodeModal />
     </>
   )
 }
