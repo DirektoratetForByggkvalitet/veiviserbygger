@@ -42,6 +42,8 @@ import styles from './Styles.module.scss'
 import ValidateDeps from '../ValidateDeps'
 import useFile from '@/hooks/useFile'
 import useFirebase from '@/hooks/useFirebase'
+import { useModal } from '@/hooks/useModal'
+
 const bem = BEMHelper(styles)
 
 type Props = {
@@ -746,18 +748,17 @@ const Header = ({
     path: string[]
   }
 }) => {
-  const [showMoveNode, setShowMoveNode] = useState(false)
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const { deleteNode } = useVersion()
+  const { setModal } = useModal()
 
   const contentActions: DropdownOptions = [
-    /* TODO
     {
       value: '0',
       icon: 'ArrowRight',
       label: 'Flytt til annen side',
-      onClick: () => setShowMoveNode(true),
-    },*/
+      onClick: () => setModal({ key: 'move-node', data: { nodeId: node.id } }),
+    },
     /* TODO
     {
       value: '0',
@@ -779,22 +780,6 @@ const Header = ({
       <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
       <h2 {...bem('title')}>{getTypeText(type)}</h2>
       <Dropdown icon="Ellipsis" direction="right" options={contentActions} label="Valg" iconOnly />
-
-      <Modal
-        title="Flytt til annen side"
-        expanded={showMoveNode}
-        onClose={() => setShowMoveNode(false)}
-      >
-        <Help
-          description={`Velg hvilken side du ønsker å flytte ${title ? `"${title}"` : 'dette innholdet'} til.`}
-        />
-        {/* TODO */}
-        <ButtonBar>
-          <Button type="button">Side 1</Button>
-          <Button type="button">Side 2</Button>
-          <Button type="button">Side 3</Button>
-        </ButtonBar>
-      </Modal>
 
       <Modal
         title="Fjern innhold"
