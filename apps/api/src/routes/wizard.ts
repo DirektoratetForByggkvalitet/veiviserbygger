@@ -9,7 +9,7 @@ export const wizardRouter = (di: DependencyContainer) => {
   router.get('/:wizardId/:versionId?', async (req, res) => {
     try {
       const wizardData = await getCompleteWizard(di.db, req.params.wizardId, req.params.versionId)
-      res.send(transformWizardDataToLosen(wizardData, di))
+      res.send(await transformWizardDataToLosen(wizardData, di))
     } catch (err) {
       respondWithError(res, err)
     }

@@ -16,7 +16,7 @@ type TransformerFunc<
   node: ResolvedNode<SourceType>,
   data: CompleteWizardData,
   deps: DependencyContainer,
-) => Extract<Page['children'][number], { type: DestType }>[]
+) => Promise<Extract<Page['children'][number], { type: DestType }>[]>
 
 function trimText(text?: string) {
   if (!text) {
@@ -30,10 +30,13 @@ function trimText(text?: string) {
   return text
 }
 
-function getImageUrl(image: string, deps: DependencyContainer) {
-  // const base = process.env.FIREBASE_STORAGE_EMULATOR_HOST
+async function getImageUrl(image: string, deps: DependencyContainer) {
+  const [url] = await deps.storage.bucket().file(image).getSignedUrl({
+    action: 'read',
+    expires: '2099-01-01',
+  })
 
-  return deps.storage.bucket().file(image).publicUrl()
+  return url
 }
 
 function expressionFilter(e: Expression) {
@@ -88,7 +91,7 @@ function transformExpression(expression: Expression, data: CompleteWizardData): 
   }
 }
 
-const transformText: TransformerFunc<'Text'> = (node, data) => {
+const transformText: TransformerFunc<'Text'> = async (node, data) => {
   return [
     {
       id: node.id,
@@ -100,7 +103,7 @@ const transformText: TransformerFunc<'Text'> = (node, data) => {
   ]
 }
 
-const transformRadio: TransformerFunc<'Radio'> = (node, data, deps) => {
+const transformRadio: TransformerFunc<'Radio'> = async (node, data, deps) => {
   return [
     {
       id: node.id,
@@ -111,28 +114,30 @@ const transformRadio: TransformerFunc<'Radio'> = (node, data, deps) => {
       show: node.show ? transformExpression(node.show, data) : undefined,
       image: node.image?.file
         ? {
-            url: getImageUrl(node.image?.file, deps),
+            url: await getImageUrl(node.image?.file, deps),
             alt: node.image.alt || '',
           }
         : undefined,
       grid: node.grid,
-      options: getOrdered(node.options).map((o) => ({
-        id: o.id,
-        heading: o.heading,
-        value: o.id,
-        type: 'Answer',
-        image: o.image?.file
-          ? {
-              url: getImageUrl(o.image?.file, deps),
-              alt: '',
-            }
-          : undefined,
-      })),
+      options: await Promise.all(
+        getOrdered(node.options).map(async (o) => ({
+          id: o.id,
+          heading: o.heading,
+          value: o.id,
+          type: 'Answer',
+          image: o.image?.file
+            ? {
+                url: await getImageUrl(o.image?.file, deps),
+                alt: '',
+              }
+            : undefined,
+        })),
+      ),
     },
   ]
 }
 
-const transformCheckbox: TransformerFunc<'Checkbox'> = (node, data, deps) => {
+const transformCheckbox: TransformerFunc<'Checkbox'> = async (node, data, deps) => {
   return [
     {
       id: node.id,
@@ -143,28 +148,34 @@ const transformCheckbox: TransformerFunc<'Checkbox'> = (node, data, deps) => {
       show: node.show ? transformExpression(node.show, data) : undefined,
       image: node.image?.file
         ? {
-            url: getImageUrl(node.image?.file, deps),
+            url: await getImageUrl(node.image?.file, deps),
             alt: node.image.alt || '',
           }
         : undefined,
       grid: node.grid,
-      options: getOrdered(node.options).map((o) => ({
-        id: o.id,
-        heading: o.heading,
-        value: o.id,
-        type: 'Answer',
-        image: o.image?.file
-          ? {
-              url: getImageUrl(o.image?.file, deps),
-              alt: '',
-            }
-          : undefined,
-      })),
+      options: await Promise.all(
+        getOrdered(node.options).map(async (o) => ({
+          id: o.id,
+          heading: o.heading,
+          value: o.id,
+          type: 'Answer',
+          image: o.image?.file
+            ? {
+                url: await getImageUrl(o.image?.file, deps),
+                alt: '',
+              }
+            : undefined,
+        })),
+      ),
     },
   ]
 }
 
-const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = (node, data, deps) => {
+const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = async (
+  node,
+  data,
+  deps,
+) => {
   if (node.preset === 'NegativeResult') {
     const content = getOrdered(node.content).map((n) => data.nodes[n.node.id])
     const errorNode = content.find((n) => n.type === 'Error')
@@ -229,6 +240,10 @@ const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = (node, d
     ]
   }
 
+  const branchChildren = (
+    await Promise.all(getOrdered(node.content).flatMap((n) => transformNode(n, data, deps)))
+  ).flat()
+
   return [
     {
       id: node.id,
@@ -236,14 +251,14 @@ const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = (node, d
       branches: [
         {
           test: transformExpression(node.test!, data),
-          children: getOrdered(node.content).flatMap((n) => transformNode(n, data, deps)),
+          children: branchChildren,
         },
       ],
     },
   ]
 }
 
-const transformInformation: TransformerFunc<'Information'> = (node) => {
+const transformInformation: TransformerFunc<'Information'> = async (node) => {
   return [
     {
       id: node.id,
@@ -254,7 +269,7 @@ const transformInformation: TransformerFunc<'Information'> = (node) => {
   ]
 }
 
-const transformInput: TransformerFunc<'Input'> = (node, data) => {
+const transformInput: TransformerFunc<'Input'> = async (node, data) => {
   return [
     {
       id: node.id,
@@ -267,7 +282,7 @@ const transformInput: TransformerFunc<'Input'> = (node, data) => {
   ]
 }
 
-const transformNumber: TransformerFunc<'Number'> = (node, data) => {
+const transformNumber: TransformerFunc<'Number'> = async (node, data) => {
   return [
     {
       id: node.id,
@@ -280,7 +295,7 @@ const transformNumber: TransformerFunc<'Number'> = (node, data) => {
   ]
 }
 
-const transformError: TransformerFunc<'Error'> = (node) => {
+const transformError: TransformerFunc<'Error'> = async (node) => {
   return [
     {
       id: node.id,
@@ -299,11 +314,11 @@ const transformError: TransformerFunc<'Error'> = (node) => {
   ]
 }
 
-function transformNode(
+async function transformNode(
   nodeRef: WizardPage['content'][number],
   data: CompleteWizardData,
   deps: DependencyContainer,
-): Page['children'] {
+): Promise<Page['children']> {
   const node = data.nodes[nodeRef.node.id]
 
   if (!node) {
@@ -352,63 +367,77 @@ function transformNode(
   ]
 }
 
-function transformPage(
+async function transformPage(
   page: WizardPage,
   data: CompleteWizardData,
   deps: DependencyContainer,
-): Page[] {
+): Promise<Page[]> {
+  const children = await (
+    await Promise.all(getOrdered(page.content || []).map((n) => transformNode(n, data, deps)))
+  ).flat()
+
   return [
     {
       id: page.id,
       type: page.type as any,
       heading: page.heading,
       lead: page.lead,
-      children: getOrdered(page.content || {}).flatMap((n) => transformNode(n, data, deps)),
+      children,
       show: page.show ? transformExpression(page.show, data) : undefined,
     },
   ]
 }
 
-function transformIntro(
+async function transformIntro(
   intro: Intro | undefined,
   data: CompleteWizardData,
   deps: DependencyContainer,
-): WizardIntro | null {
+): Promise<WizardIntro | null> {
   if (!intro) {
     return null
   }
 
+  const content = (
+    await Promise.all(
+      getOrdered(intro.content || []).flatMap(async ({ node: { id } }) => {
+        const node = data.nodes[id]
+
+        if (node?.type !== 'Text') {
+          return []
+        }
+
+        if (node.type === 'Text') {
+          return (await transformText(node, data, deps)).map((n) => ({
+            id: n.id,
+            heading: n.heading || '',
+            text: n.text || '',
+          }))
+        }
+
+        return []
+      }),
+    )
+  ).flat()
+
   return {
     heading: intro.heading,
     lead: intro.lead,
-    content: getOrdered(intro.content || []).flatMap(({ node: { id } }) => {
-      const node = data.nodes[id]
-
-      if (node?.type !== 'Text') {
-        return []
-      }
-
-      if (node.type === 'Text') {
-        return transformText(node, data, deps).map((n) => ({
-          id: n.id,
-          heading: n.heading || '',
-          text: n.text || '',
-        }))
-      }
-
-      return []
-    }),
+    content,
   }
 }
 
-export function transformWizardDataToLosen(
+export async function transformWizardDataToLosen(
   data: CompleteWizardData,
   deps: DependencyContainer,
-): WizardDefinition & {
-  intro?: WizardIntro
-} {
-  const intro = transformIntro(data.version?.intro, data, deps)
-  const schema = getOrdered(data.version?.pages).flatMap((p) => transformPage(p, data, deps))
+): Promise<
+  WizardDefinition & {
+    intro?: WizardIntro
+  }
+> {
+  const intro = await transformIntro(data.version?.intro, data, deps)
+  const schema = (
+    await Promise.all(getOrdered(data.version?.pages).flatMap((p) => transformPage(p, data, deps)))
+  ).flat()
 
   return {
     meta: {
