@@ -201,7 +201,7 @@ const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = async (
                   {
                     id: `${errorNode.id}.msg`,
                     type: 'Text',
-                    heading: resultNode?.heading,
+                    heading: errorNode?.heading,
                     text: trimText(errorNode?.text),
                     warning: true,
                   },
@@ -225,6 +225,7 @@ const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = async (
                           {
                             id: `${resultNode?.id}.error.msg`,
                             type: 'Text',
+                            heading: errorNode?.heading,
                             text: trimText(errorNode?.text),
                             warning: true,
                           },

@@ -417,6 +417,13 @@ function ExtraInformation({
     <>
       <h3 {...bem('sub-title')}>Vises følgende</h3>
 
+      <Input
+        label="Overskrift på tilleggsinfo"
+        header
+        value={informationNode.heading || ''}
+        onChange={(v) => patchNode(informationNodeId, { heading: v })}
+      />
+
       <Editor
         label="Tilleggsinfo"
         value={informationNode.text || ''}
@@ -449,20 +456,29 @@ function NegativeResult({
     <>
       <h3 {...bem('sub-title')}>Vises følgende</h3>
 
+      {errorNodeId && errorNode && (
+        <>
+          <Input
+            label="Overskrift på feilmelding"
+            header
+            value={errorNode.heading || ''}
+            onChange={(v) => patchNode(errorNodeId, { heading: v })}
+          />
+
+          <Editor
+            label="Feilforklaring"
+            value={errorNode.text || ''}
+            onChange={(v) => patchNode(errorNodeId, { text: v })}
+          />
+        </>
+      )}
+
       {resultNodeId && resultNode && (
         <Input
-          label="Overskrift på resultat"
+          label="Overskrift på resultatside"
           header
           value={resultNode.heading || ''}
           onChange={(v) => patchNode(resultNodeId, { heading: v })}
-        />
-      )}
-
-      {errorNodeId && errorNode && (
-        <Editor
-          label="Forklaring"
-          value={errorNode.text || ''}
-          onChange={(v) => patchNode(errorNodeId, { text: v })}
         />
       )}
     </>
