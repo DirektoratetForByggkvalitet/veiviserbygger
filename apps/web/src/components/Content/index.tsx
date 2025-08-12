@@ -58,13 +58,22 @@ type Props = {
   path: string[]
 }
 
+type SourceRef = {
+  doc: DocumentReference
+  path: string[]
+}
+
 type NodeProps = {
   allNodes: Props['allNodes']
   node: OptionalExcept<PageContent, 'id' | 'type'>
   pageId: WizardPage['id']
-  sourceRef: {
-    doc: DocumentReference
-    path: string[]
+  sourceRef: SourceRef
+}
+
+function inRef(sourceRef: SourceRef, ...path: string[]): SourceRef {
+  return {
+    doc: sourceRef.doc,
+    path: [...sourceRef.path, ...path],
   }
 }
 
@@ -402,7 +411,7 @@ function ExtraInformation({
   node: Extract<NodeProps['node'], { type: 'Branch' }>
   nodes: Props['allNodes']
 }) {
-  const { patchNode } = useVersion()
+  const { patchNode, getNodeRef } = useVersion()
 
   const informationNodeId = values(node.content).find(
     (n) => nodes[n.node.id].type === 'Information',
@@ -428,6 +437,7 @@ function ExtraInformation({
         label="Tilleggsinfo"
         value={informationNode.text || ''}
         onChange={(v) => patchNode(informationNodeId, { text: v })}
+        sourceRef={{ doc: getNodeRef(informationNodeId), path: ['text'] }}
       />
     </>
   )
@@ -440,7 +450,7 @@ function NegativeResult({
   node: Extract<NodeProps['node'], { type: 'Branch' }>
   nodes: Props['allNodes']
 }) {
-  const { patchNode } = useVersion()
+  const { patchNode, getNodeRef } = useVersion()
 
   const resultNodeId = values(node.content).find((n) => nodes[n.node.id].type === 'Result')?.node.id
   const errorNodeId = values(node.content).find((n) => nodes[n.node.id].type === 'Error')?.node.id
@@ -469,6 +479,7 @@ function NegativeResult({
             label="Feilforklaring"
             value={errorNode.text || ''}
             onChange={(v) => patchNode(errorNodeId, { text: v })}
+            sourceRef={inRef({ doc: getNodeRef(errorNodeId), path: ['text'] })}
           />
         </>
       )}
@@ -504,6 +515,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
             label="Innhold"
             value={node.text || ''}
             onChange={(v) => patchNode(node.id, { text: v })}
+            sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
           />
         </Main>
         <Aside>
@@ -536,6 +548,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
             label="Beskrivelse"
             value={node.text || ''}
             onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })}
+            sourceRef={inRef(sourceRef, 'text')}
           />
           <File
             label="Bilde"
@@ -609,6 +622,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
             label="Beskrivelse"
             value={node.text || ''}
             onChange={(v) => patchNode(node.id, { type: 'Checkbox', text: v })}
+            sourceRef={inRef(sourceRef, 'text')}
           />
 
           <div {...bem('sub-header')}>
@@ -720,6 +734,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
           label="Beskrivelse"
           value={node.text || ''}
           onChange={(v) => patchNode(node.id, { type: 'Error', text: v })}
+          sourceRef={inRef(sourceRef, 'text')}
         />
       </Fragment>
     )
@@ -738,6 +753,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
           label="Beskrivelse"
           value={node.text || ''}
           onChange={(v) => patchNode(node.id, { type: 'Information', text: v })}
+          sourceRef={inRef(sourceRef, 'text')}
         />
       </Fragment>
     )

@@ -1,16 +1,22 @@
-import { EditorProvider, useCurrentEditor } from '@tiptap/react'
+import { EditorEvents, EditorProvider, useCurrentEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Icon from '@/components/Icon'
 
+import { deleteObject, getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage'
 import { useEditable } from '@/hooks/useEditable'
 import { useValue } from '@/hooks/useValue'
 import BEMHelper from '@/lib/bem'
 import Subscript from '@tiptap/extension-subscript'
 import Superscript from '@tiptap/extension-superscript'
+import Image from '@tiptap/extension-image'
+import { v4 as uuid } from 'uuid'
+
 import { useRef } from 'react'
 import styles from './Styles.module.scss'
+import { DocumentReference } from 'firebase/firestore'
+import useFirebase from '@/hooks/useFirebase'
 const bem = BEMHelper(styles)
 
 const extensions = [
@@ -26,17 +32,43 @@ const extensions = [
   }),
   Superscript,
   Subscript,
+
+  Image.extend({
+    addAttributes() {
+      return {
+        ...this.parent?.(),
+
+        // extend the image with a storage reference attribute
+        // this is used to store the firebase storage path of the image
+        storageRef: {
+          default: null,
+          parseHTML: (element) => element.getAttribute('data-firebase-storage'),
+          renderHTML: (attributes) => {
+            if (!attributes.storageRef) return {}
+            return {
+              'data-firebase-storage': attributes.storageRef,
+            }
+          },
+        },
+      }
+    },
+  }),
 ]
 
 interface Props {
   label: string
   value: string
   onChange: (value: string) => void
+  sourceRef: {
+    doc: DocumentReference
+    path: string[]
+  }
 }
 
-export default function Editor({ label, value, onChange }: Props) {
+export default function Editor({ label, value, onChange, sourceRef }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const v = useValue(value, onChange)
+  const { storage } = useFirebase()
   const isEditable = useEditable()
 
   const handleLabelClick = () => {
@@ -49,6 +81,25 @@ export default function Editor({ label, value, onChange }: Props) {
     }
   }
 
+  /**
+   * Clean up the image from firebase storage when the image node is deleted
+   */
+  const handleNodeDelete = async (props: EditorEvents['delete']) => {
+    if (props.type !== 'node') return
+    if (props.node.type.name !== 'image') return
+
+    if (!props.node.attrs.storageRef) return
+
+    const imageRef = storageRef(storage, props.node.attrs.storageRef)
+
+    try {
+      await deleteObject(imageRef)
+      console.log('Image deleted successfully')
+    } catch (error) {
+      console.error('Error deleting image:', error)
+    }
+  }
+
   if (isEditable) {
     return (
       <section {...bem('')} ref={wrapperRef}>
@@ -57,11 +108,12 @@ export default function Editor({ label, value, onChange }: Props) {
         </h3>
 
         <EditorProvider
-          slotBefore={<MenuBar />}
+          slotBefore={<MenuBar sourceRef={sourceRef} />}
           extensions={extensions}
           content={v.value}
           editorContainerProps={{ ...bem('input') }}
           onUpdate={(content) => v.onChange(content.editor.getHTML())}
+          onDelete={handleNodeDelete}
         />
       </section>
     )
@@ -78,8 +130,10 @@ export default function Editor({ label, value, onChange }: Props) {
   }
 }
 
-function MenuBar() {
+function MenuBar({ sourceRef }: { sourceRef: Props['sourceRef'] }) {
+  const { storage } = useFirebase()
   const { editor } = useCurrentEditor()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   if (!editor) {
     return null
@@ -141,6 +195,47 @@ function MenuBar() {
     }
   }
 
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    try {
+      const storageRefPath = storageRef(
+        storage,
+        `${sourceRef.doc.path}/${sourceRef.path.join('/')}/${uuid()}`,
+      )
+
+      // Upload the file to Firebase Storage
+      await uploadBytes(storageRefPath, file)
+
+      // Get the download URL for the uploaded file
+      const url = await getDownloadURL(storageRefPath)
+
+      // Insert the image into the editor
+      editor.commands.insertContent({
+        type: 'image',
+        attrs: {
+          storageRef: storageRefPath.fullPath,
+          src: url,
+        },
+      })
+      editor.commands.focus()
+    } catch (error) {
+      console.error('Error uploading file:', error)
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '' // Clear the file input after upload
+      }
+    }
+  }
+
+  const handleImageUpload = () => {
+    fileInputRef.current?.click()
+  }
+
   return (
     <div {...bem('menu')}>
       <button
@@ -197,6 +292,16 @@ function MenuBar() {
         <Icon name="ListOrdered" />
       </button>
 
+      <button type="button" onClick={handleImageUpload} {...bem('control')}>
+        <Icon name="ImagePlus" />
+      </button>
+      <input
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+      />
       <hr {...bem('separator')} />
 
       <Dropdown value={textStyle} options={textStyles} onChange={handleStyleChange} simple />

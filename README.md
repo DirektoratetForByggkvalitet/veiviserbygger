@@ -117,5 +117,5 @@ When embedding wizards from the builder on you on website you might need to adju
 The wizard builder will most likely reside on a different domain than your site, and consequently you will need to adjust the CSP if you have one. In order for the wizard builder to work, the following needs to be allowed:
 
 1. Add `https://your-app-domain.com` to `connect-src` and `script-src`.
-2. Add `'unsafe-inline'` to `style-src`
-3. Add `https://storage.googleapis.com/your-storage-bucket-name/` to `img-src`. The `your-storage-bucket-name/` part should be replaced with the name of your storage bucket, or optionally omitted if you're ok allowing images from any bucket on Google storage.
+2. Add `https://storage.googleapis.com` to `img-src`
+3. Add `'unsafe-inline'` to `style-src`
