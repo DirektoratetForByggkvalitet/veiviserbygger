@@ -15,7 +15,15 @@ import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import useWizard from '@/hooks/useWizard'
 import { Navigate, useParams } from 'react-router'
 import Page from '@/components/Page'
-import { PageContent, Branch, DeepPartial, WizardPage, WithOrder, Intro } from 'types'
+import {
+  PageContent,
+  Branch,
+  DeepPartial,
+  WizardPage,
+  WithOrder,
+  Intro,
+  OptionalExcept,
+} from 'types'
 import { getTypeIcon, getTypeText } from '@/lib/content'
 import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
 import { useVersion } from '@/hooks/useVersion'
@@ -26,6 +34,10 @@ import { EditableContext } from '@/context/EditableContext'
 import { useEditable } from '@/hooks/useEditable'
 import { deleteField } from 'firebase/firestore'
 import { icons } from 'lucide-react'
+import { validate } from '@/services/firebase/utils/validator'
+import ValidationProvider from '@/context/ValidationProvider'
+import useErrors from '@/hooks/errors'
+import { keys } from 'lodash'
 
 function contentAction<T extends PageContent['type']>({
   pageId,
@@ -144,12 +156,93 @@ export const addPageContentActions = (
       ]
     : []
 
+function PageForm({
+  page,
+  nodes,
+}: {
+  page: WithOrder<WizardPage> | Intro
+  nodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
+}) {
+  const { patchPage, addNodes } = useVersion()
+  const isEditable = useEditable()
+  const { errors, hasErrors, getErrors } = useErrors()
+
+  console.log(hasErrors ? 'Errors found in page' : 'No errors in page', page.id, errors)
+
+  const orderedNodes = useMemo(() => {
+    return getOrdered(page?.content) || []
+  }, [page])
+
+  return (
+    <Form>
+      <Input
+        label="Sidetittel"
+        value={page?.heading || ''}
+        placeholder="Uten tittel"
+        onChange={(v) => patchPage(page.id, { heading: v })}
+        errors={getErrors('heading')}
+        header
+      />
+
+      {page?.type !== 'Intro' && page.id && page?.show && (
+        <PageExpression
+          label="Vis siden hvis"
+          expression={page?.show}
+          pageId={page.id}
+          nodes={nodes}
+          onRemove={() => patchPage(page.id, { show: deleteField() as any })}
+        />
+      )}
+
+      {(orderedNodes?.length > 0 &&
+        orderedNodes.map(({ id, node: { id: nodeId } = {} }) => {
+          if (!nodeId) {
+            return <Message key={id} title="Feil med lasting av innhold" subtle />
+          }
+
+          return (
+            <Content
+              id={id}
+              key={id}
+              nodeId={nodeId}
+              allNodes={nodes}
+              pageId={page.id}
+              path={
+                page.type === 'Intro' ? ['intro', 'content', id] : ['pages', page.id, 'content', id]
+              }
+            />
+          )
+        })) || (
+        <>
+          <Help description={getPageTypeDescription(page.type)} />
+          <Message title="Siden er tom" subtle />
+        </>
+      )}
+
+      {isEditable && (
+        <Dropdown
+          options={
+            page?.type === 'Page'
+              ? addPageContentActions(page.id, addNodes)
+              : addResultContentActions(page.id, addNodes)
+          }
+          trigger={({ onClick }) => (
+            <Button type="button" primary icon="Plus" onClick={onClick}>
+              Legg til innhold
+            </Button>
+          )}
+        />
+      )}
+    </Form>
+  )
+}
+
 export default function Wizard() {
   const [selected, setSelected] = useState<string | null>(null)
   const [showConfirmDeletePage, setShowConfirmDeletePage] = useState(false)
   const { wizardId, versionId } = useParams<{ wizardId?: string; versionId?: string }>()
   const { loading, wizard, versions, version, nodes } = useWizard(wizardId, versionId)
-  const { patchPage, deletePage, addNodes } = useVersion()
+  const { patchPage, deletePage, getVersionRef, getNodeRef } = useVersion()
 
   // When the wizardId or versionId changes, reset the selected page
   // to null to ensure that the user is not stuck on a page that belongs
@@ -186,10 +279,6 @@ export default function Wizard() {
       id: selected,
     }
   }, [version, selected])
-
-  const orderedNodes = useMemo(() => {
-    return getOrdered(page?.content) || []
-  }, [page])
 
   const handleSelect = (id: string) => {
     setSelected((value) => (value === id ? null : id))
@@ -301,147 +390,104 @@ export default function Wizard() {
     return <Navigate to="/" />
   }
 
+  const validationResult =
+    version && !version.publishedFrom
+      ? validate(
+          { ...version, doc: getVersionRef() },
+          keys(nodes).map((id) => ({ ...nodes[id], doc: getNodeRef(id) })),
+        )
+      : []
+
   return (
-    <EditableContext.Provider value={!version?.publishedFrom}>
-      <Page title={wizardTitle} versions={versions} wizard={wizard}>
-        <Meta title={wizardTitle} />
+    <ValidationProvider value={validationResult}>
+      <EditableContext.Provider value={!version?.publishedFrom}>
+        <Page title={wizardTitle} versions={versions} wizard={wizard}>
+          <Meta title={wizardTitle} />
 
-        <Panel
-          open={!!page}
-          onClose={handleClose}
-          onPrevious={has('prev') ? handlePrevious : undefined}
-          onNext={has('next') ? handleNext : undefined}
-          backdrop={false}
-          optionsLabel="Sidevalg"
-          options={
-            page?.id !== 'intro' && isEditable
-              ? ([
-                  // Show the button for adding show page clause only if the page is a regular Page type,
-                  // is not the first page and does not already have a show condition.
-                  ...(page?.type === 'Page' && !page?.show && currentPageIndex > 0
-                    ? [
-                        {
-                          value: '0',
-                          icon: 'EyeOff' as keyof typeof icons,
-                          label: 'Vis siden hvis...',
-                          onClick: () => addPageConditional(page.id),
-                          disabled: false,
-                        },
-                      ]
-                    : []),
-                  {
-                    value: '2',
-                    icon: 'Trash' as keyof typeof icons,
-                    label: 'Fjern siden',
-                    styled: 'delete',
-                    onClick: () => setShowConfirmDeletePage(true),
-                  },
-                ] as DropdownOptions)
-              : undefined
-          }
-          title={panelTitle || 'Uten tittel'}
-        >
-          <Modal
-            title="Fjern siden"
-            expanded={showConfirmDeletePage}
-            onClose={() => setShowConfirmDeletePage(false)}
+          <Panel
+            open={!!page}
+            onClose={handleClose}
+            onPrevious={has('prev') ? handlePrevious : undefined}
+            onNext={has('next') ? handleNext : undefined}
+            backdrop={false}
+            optionsLabel="Sidevalg"
+            options={
+              page?.id !== 'intro' && isEditable
+                ? ([
+                    // Show the button for adding show page clause only if the page is a regular Page type,
+                    // is not the first page and does not already have a show condition.
+                    ...(page?.type === 'Page' && !page?.show && currentPageIndex > 0
+                      ? [
+                          {
+                            value: '0',
+                            icon: 'EyeOff' as keyof typeof icons,
+                            label: 'Vis siden hvis...',
+                            onClick: () => addPageConditional(page.id),
+                            disabled: false,
+                          },
+                        ]
+                      : []),
+                    {
+                      value: '2',
+                      icon: 'Trash' as keyof typeof icons,
+                      label: 'Fjern siden',
+                      styled: 'delete',
+                      onClick: () => setShowConfirmDeletePage(true),
+                    },
+                  ] as DropdownOptions)
+                : undefined
+            }
+            title={panelTitle || 'Uten tittel'}
           >
-            <Help
-              description={`Vil du slette ${page?.heading ? `siden "${page.heading}"` : 'denne siden'} med alt innhold? Handlingen kan ikke angres.`}
-            />
-            <ButtonBar>
-              <Button type="button" warning onClick={handleDelete(page?.id)}>
-                Slett siden
-              </Button>
-              <Button type="button" onClick={() => setShowConfirmDeletePage(false)}>
-                Avbryt
-              </Button>
-            </ButtonBar>
-          </Modal>
-
-          {page?.id ? (
-            <Form>
-              <Input
-                label="Sidetittel"
-                value={page?.heading || ''}
-                placeholder="Uten tittel"
-                onChange={(v) => patchPage(page.id, { heading: v })}
-                header
+            <Modal
+              title="Fjern siden"
+              expanded={showConfirmDeletePage}
+              onClose={() => setShowConfirmDeletePage(false)}
+            >
+              <Help
+                description={`Vil du slette ${page?.heading ? `siden "${page.heading}"` : 'denne siden'} med alt innhold? Handlingen kan ikke angres.`}
               />
+              <ButtonBar>
+                <Button type="button" warning onClick={handleDelete(page?.id)}>
+                  Slett siden
+                </Button>
+                <Button type="button" onClick={() => setShowConfirmDeletePage(false)}>
+                  Avbryt
+                </Button>
+              </ButtonBar>
+            </Modal>
 
-              {page?.type !== 'Intro' && page.id && page?.show && (
-                <PageExpression
-                  label="Vis siden hvis"
-                  expression={page?.show}
-                  pageId={page.id}
-                  nodes={nodes}
-                  onRemove={() => patchPage(page.id, { show: deleteField() as any })}
-                />
-              )}
-
-              {(orderedNodes?.length > 0 &&
-                orderedNodes.map(({ id, node: { id: nodeId } = {} }) => {
-                  if (!nodeId) {
-                    return <Message key={id} title="Feil med lasting av innhold" subtle />
-                  }
-
-                  return (
-                    <Content
-                      id={id}
-                      key={id}
-                      nodeId={nodeId}
-                      allNodes={nodes}
-                      pageId={page.id}
-                      path={
-                        page.type === 'Intro'
-                          ? ['intro', 'content', id]
-                          : ['pages', page.id, 'content', id]
-                      }
-                    />
-                  )
-                })) || (
-                <>
-                  <Help description={getPageTypeDescription(page.type)} />
-                  <Message title="Siden er tom" subtle />
-                </>
-              )}
-
-              {isEditable && (
-                <Dropdown
-                  options={
-                    page?.type === 'Page'
-                      ? addPageContentActions(page.id, addNodes)
-                      : addResultContentActions(page.id, addNodes)
-                  }
-                  trigger={({ onClick }) => (
-                    <Button type="button" primary icon="Plus" onClick={onClick}>
-                      Legg til innhold
-                    </Button>
-                  )}
-                />
-              )}
-            </Form>
+            {page?.id ? (
+              <ValidationProvider
+                slice={{
+                  path: page.type === 'Intro' ? ['intro'] : ['pages', page.id],
+                  doc: getVersionRef(),
+                }}
+              >
+                <PageForm page={page} nodes={nodes} />
+              </ValidationProvider>
+            ) : null}
+          </Panel>
+          {!loading && !version ? (
+            <Message title="Fant ikke veiviseren">
+              Det er noen tekniske problemer med å laste inn denne veiviseren. Er du sikker på at du
+              har riktig lenke? Prøv å laste siden på nytt, eller kontakt administrator hvis
+              problemet vedvarer.
+            </Message>
           ) : null}
-        </Panel>
-        {!loading && !version ? (
-          <Message title="Fant ikke veiviseren">
-            Det er noen tekniske problemer med å laste inn denne veiviseren. Er du sikker på at du
-            har riktig lenke? Prøv å laste siden på nytt, eller kontakt administrator hvis problemet
-            vedvarer.
-          </Message>
-        ) : null}
-        {wizardId && versionId ? (
-          <Minimap
-            onClick={handleSelect}
-            selected={selected}
-            data={{
-              ...version,
-              pages: version?.pages,
-            }}
-            allNodes={nodes}
-          />
-        ) : null}
-      </Page>
-    </EditableContext.Provider>
+          {wizardId && versionId ? (
+            <Minimap
+              onClick={handleSelect}
+              selected={selected}
+              data={{
+                ...version,
+                pages: version?.pages,
+              }}
+              allNodes={nodes}
+            />
+          ) : null}
+        </Page>
+      </EditableContext.Provider>
+    </ValidationProvider>
   )
 }

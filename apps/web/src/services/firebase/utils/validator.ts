@@ -1,6 +1,9 @@
 import { DocumentReference } from 'firebase/firestore'
 import { getDependencyTree } from '..'
 import { Reference } from './refs'
+import { Intro, OptionalExcept, PageContent, WizardPage, WizardVersion } from 'types'
+import { values } from 'lodash'
+import { getOrdered } from 'shared/utils'
 
 type Reason = 'unreferenced' | 'unreferenced-after-delete' | 'orphaned' | 'referenced'
 
@@ -17,6 +20,15 @@ type IsDeleteAllowedResult = {
     reason: Reason
   }[]
 }
+
+export type ValidationError = {
+  doc: DocumentReference
+  path: Reference['path']
+  warning?: boolean
+  message: string
+}
+
+type WithDocRef<T> = T & { doc: DocumentReference }
 
 /**
  * Recursive function that checks for nodes that are referenced by the node that has
@@ -114,4 +126,61 @@ export function isDeleteAllowed(
     reason: nodeToDelete?.incoming.length ? 'unreferenced-after-delete' : 'unreferenced',
     additionalDeletes: findAdditionalDeletes(treeNodes, node),
   }
+}
+
+function validatePage(
+  page: WizardPage | Intro | undefined,
+  doc: DocumentReference,
+): ValidationError[] {
+  const errors: ValidationError[] = []
+
+  if (!page) return errors
+
+  if (!page.heading) {
+    errors.push({
+      doc,
+      path: page.type === 'Intro' ? ['intro', 'heading'] : ['pages', page.id, 'heading'],
+      message: 'Heading is required',
+    })
+  }
+
+  console.log(page, errors)
+
+  return errors
+}
+
+function validateVersion(doc: WithDocRef<WizardVersion>): ValidationError[] {
+  const errors: ValidationError[] = [
+    ...validatePage(doc.intro, doc.doc),
+    ...getOrdered(doc.pages).flatMap((p) => validatePage(p, doc.doc)),
+  ]
+
+  return errors
+}
+
+function validateNode(
+  doc: WithDocRef<OptionalExcept<PageContent, 'type' | 'id'>>,
+): ValidationError[] {
+  const errors: ValidationError[] = []
+
+  if (doc.type !== 'Branch' && !doc.heading) {
+    errors.push({
+      doc: doc.doc,
+      path: ['heading'],
+      message: 'Heading is required',
+    })
+  }
+
+  return errors
+}
+
+export function validate(
+  version: WithDocRef<WizardVersion>,
+  nodes: Array<WithDocRef<OptionalExcept<PageContent, 'type' | 'id'>>>,
+): ValidationError[] {
+  const errors = [...validateVersion(version), ...values(nodes).flatMap((doc) => validateNode(doc))]
+
+  console.log('::: validate', errors)
+
+  return errors
 }

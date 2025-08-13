@@ -43,6 +43,8 @@ import ValidateDeps from '../ValidateDeps'
 import useFile from '@/hooks/useFile'
 import useFirebase from '@/hooks/useFirebase'
 import { useModal } from '@/hooks/useModal'
+import ValidationProvider from '@/context/ValidationProvider'
+import useErrors from '@/hooks/errors'
 
 const bem = BEMHelper(styles)
 
@@ -498,6 +500,7 @@ function NegativeResult({
 
 function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
   const { patchNode, addNodes, getNodeRef } = useVersion()
+  const { getErrors } = useErrors()
   const isEditable = useEditable()
 
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
@@ -510,7 +513,9 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
             value={node.heading || ''}
             onChange={(v) => patchNode(node.id, { heading: v })}
             header
+            errors={getErrors('heading')}
           />
+
           <Editor
             label="Innhold"
             value={node.text || ''}
@@ -541,6 +546,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
             label="Tittel"
             value={node.heading || ''}
             onChange={(v) => patchNode(node.id, { type: 'Radio', heading: v })}
+            errors={getErrors('heading')}
             header
           />
 
@@ -616,6 +622,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
             value={node.heading || ''}
             onChange={(v) => patchNode(node.id, { type: 'Checkbox', heading: v })}
             header
+            errors={getErrors('heading')}
           />
 
           <Editor
@@ -728,6 +735,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
           value={node.heading || ''}
           onChange={(v) => patchNode(node.id, { type: 'Error', heading: v })}
           header
+          errors={getErrors('heading')}
         />
 
         <Editor
@@ -747,6 +755,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
           label="Tittel"
           value={node.heading || ''}
           onChange={(v) => patchNode(node.id, { type: 'Information', heading: v })}
+          errors={getErrors('heading')}
         />
 
         <Editor
@@ -849,20 +858,22 @@ const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>
 
 export default function Content({ id, nodeId, allNodes, pageId, path }: Props) {
   const node = allNodes?.[nodeId]
-  const { getVersionRef } = useVersion()
+  const { getVersionRef, getNodeRef } = useVersion()
 
   return (
     <section {...bem('')} id={id} data-path={path.join('.')}>
       {node ? (
-        <Node
-          node={{ ...node, id: nodeId }}
-          pageId={pageId}
-          allNodes={allNodes}
-          sourceRef={{
-            doc: getVersionRef(),
-            path: [...path, 'node'],
-          }}
-        />
+        <ValidationProvider slice={{ doc: getNodeRef(nodeId) }}>
+          <Node
+            node={{ ...node, id: nodeId }}
+            pageId={pageId}
+            allNodes={allNodes}
+            sourceRef={{
+              doc: getVersionRef(),
+              path: [...path, 'node'],
+            }}
+          />
+        </ValidationProvider>
       ) : (
         <>
           <p {...bem('error')}>Fant ikke node med id: {nodeId}</p>

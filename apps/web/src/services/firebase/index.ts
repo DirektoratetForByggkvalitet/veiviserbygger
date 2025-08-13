@@ -799,7 +799,7 @@ export async function createDraftVersion(
       }
 
       console.log(
-        'TODO: Copy files in storage from version',
+        'copied files in storage from version',
         copyFromVersionRef.path,
         'to',
         newVersionRef.path,
@@ -816,7 +816,7 @@ export async function createDraftVersion(
   })
 }
 
-export async function getDependencyTree(funcScope: FuncScope) {
+export async function getAllDocs(funcScope: FuncScope) {
   const nodes = await getDocs(getNodesRef(funcScope))
   const version = await getDoc(getWizardVersionRef(funcScope))
 
@@ -825,6 +825,11 @@ export async function getDependencyTree(funcScope: FuncScope) {
     docs.push(doc)
   })
 
+  return docs
+}
+
+export async function getDependencyTree(funcScope: FuncScope) {
+  const docs = await getAllDocs(funcScope)
   return buildTree(docs)
 }
 
