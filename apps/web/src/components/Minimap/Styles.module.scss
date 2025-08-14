@@ -23,6 +23,10 @@
         height: vars.$header-height;
     }
 
+    &__error {
+        color: colors.$warning;
+    }
+
     &__title-type {
         color: colors.$text;
 

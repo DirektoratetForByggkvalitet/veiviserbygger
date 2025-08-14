@@ -17,6 +17,8 @@ import { getOrdered } from 'shared/utils'
 import { Intro, OptionalExcept, PageContent, Result, WizardPage, WizardVersion } from 'types'
 import NewPage from '../NewPage'
 import styles from './Styles.module.scss'
+import useErrors from '@/hooks/errors'
+import { ValidationError } from '@/services/firebase/utils/validator'
 const bem = BEMHelper(styles)
 
 interface Props {
@@ -129,6 +131,7 @@ function PageMap({
   onPageClick,
   onNodeClick,
   allNodes,
+  errors = [],
 }: {
   page: OptionalExcept<WizardPage | Intro, 'type'>
   index: number
@@ -136,6 +139,7 @@ function PageMap({
   onPageClick: MouseEventHandler
   onNodeClick: (nodeId: string) => MouseEventHandler
   allNodes: Props['allNodes']
+  errors?: ValidationError[]
 }) {
   const { reorderNodes } = useVersion()
 
@@ -178,7 +182,10 @@ function PageMap({
           </span>
         )}
         <span {...bem('title-text')}>{page?.heading || 'Uten tittel'}</span>
+
         {'show' in page && page.show && <Icon name="EyeOff" {...bem('title-icon')} />}
+
+        {errors.length ? <Icon name="Info" {...bem('error')} /> : null}
       </h2>
 
       {!value.length && !selected && isEditable && (
@@ -218,6 +225,7 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
   const contentRef = useRef<HTMLUListElement>(null)
   const [modal, setModal] = useState<'page' | null>(null)
   const isEditable = useEditable()
+  const { getErrors } = useErrors()
 
   useEffect(() => {
     if (selected && contentRef.current) {
@@ -282,6 +290,7 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
           onPageClick={handlePageClick('intro')}
           onNodeClick={handleNodeClick('intro')}
           selected={selected === 'intro'}
+          errors={getErrors('intro')}
         />
 
         {orderedPages.map((item, index) => {
@@ -294,6 +303,7 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
               onNodeClick={handleNodeClick(item.id)}
               selected={item.id === selected}
               allNodes={allNodes}
+              errors={getErrors('pages', item.id)}
             />
           )
         })}

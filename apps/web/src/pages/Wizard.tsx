@@ -468,6 +468,7 @@ export default function Wizard() {
               </ValidationProvider>
             ) : null}
           </Panel>
+
           {!loading && !version ? (
             <Message title="Fant ikke veiviseren">
               Det er noen tekniske problemer med å laste inn denne veiviseren. Er du sikker på at du
@@ -475,6 +476,7 @@ export default function Wizard() {
               problemet vedvarer.
             </Message>
           ) : null}
+
           {wizardId && versionId ? (
             <Minimap
               onClick={handleSelect}
