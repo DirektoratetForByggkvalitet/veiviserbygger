@@ -1,11 +1,5 @@
-import {
-  deleteObject,
-  getBlob,
-  listAll,
-  ref,
-  StorageReference,
-  uploadBytes,
-} from 'firebase/storage'
+import { getFile } from '@/services/api'
+import { deleteObject, listAll, ref, StorageReference, uploadBytes } from 'firebase/storage'
 
 export async function copyFiles(sourceRef: StorageReference, destinationRef: StorageReference) {
   const items = await listAll(sourceRef)
@@ -16,7 +10,9 @@ export async function copyFiles(sourceRef: StorageReference, destinationRef: Sto
     )
 
     for (const item of items.items) {
-      await uploadBytes(ref(destinationRef, item.name), await getBlob(item))
+      const data = await getFile(item.fullPath)
+      await uploadBytes(ref(destinationRef, item.name), data)
+      console.log(`Copied file: ${item.fullPath} to ${destinationRef.fullPath}/${item.name}`)
     }
   }
 

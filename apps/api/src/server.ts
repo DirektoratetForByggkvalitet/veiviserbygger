@@ -11,6 +11,7 @@ import { Server } from 'http'
 import * as bodyParser from 'body-parser'
 import { configRouter } from './routes/config'
 import { wizardRouter } from './routes/wizard'
+import { storageRouter } from './routes/storage'
 
 let server: Server | undefined
 
@@ -44,6 +45,7 @@ export default function setupServer(
 
   app.use('/config', configRouter(config.dependencies))
   app.use('/wizard', wizardRouter(config.dependencies))
+  app.use('/storage', storageRouter(config.dependencies))
 
   for (const handler of config?.afterRoutes || []) {
     app.use(handler)

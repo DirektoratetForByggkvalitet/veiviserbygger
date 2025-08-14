@@ -798,14 +798,14 @@ export async function createDraftVersion(
         }
       }
 
+      await copyFiles(ref(storage, copyFromVersionRef.path), ref(storage, newVersionRef.path))
+
       console.log(
         'copied files in storage from version',
         copyFromVersionRef.path,
         'to',
         newVersionRef.path,
       )
-
-      await copyFiles(ref(storage, copyFromVersionRef.path), ref(storage, newVersionRef.path))
     } else {
       transaction.set(newVersionRef, {})
     }

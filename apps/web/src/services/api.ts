@@ -11,4 +11,11 @@ export const getConfig = async () => {
   return data
 }
 
+export const getFile = async (path: string) => {
+  const { data } = await instance.get<Requests['/storage/:path']['GET']['response']>(
+    `/storage/${encodeURIComponent(path)}`,
+  )
+  return data
+}
+
 export default instance
