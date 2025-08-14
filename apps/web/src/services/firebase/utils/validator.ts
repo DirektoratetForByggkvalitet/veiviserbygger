@@ -140,11 +140,17 @@ function validatePage(
     errors.push({
       doc,
       path: page.type === 'Intro' ? ['intro', 'heading'] : ['pages', page.id, 'heading'],
-      message: 'Heading is required',
+      message: 'Siden må ha en tittel',
     })
   }
 
-  console.log(page, errors)
+  if (page.type !== 'Result' && !page.content) {
+    errors.push({
+      doc,
+      path: page.type === 'Intro' ? ['intro', 'content'] : ['pages', page.id, 'content'],
+      message: 'Siden må ha innhold',
+    })
+  }
 
   return errors
 }
@@ -154,6 +160,14 @@ function validateVersion(doc: WithDocRef<WizardVersion>): ValidationError[] {
     ...validatePage(doc.intro, doc.doc),
     ...getOrdered(doc.pages).flatMap((p) => validatePage(p, doc.doc)),
   ]
+
+  if (getOrdered(doc.pages).length < 1) {
+    errors.push({
+      doc: doc.doc,
+      path: [],
+      message: 'Veiviseren må ha minst én side',
+    })
+  }
 
   return errors
 }
@@ -167,8 +181,36 @@ function validateNode(
     errors.push({
       doc: doc.doc,
       path: ['heading'],
-      message: 'Heading is required',
+      message: 'Feltet er påkrevd',
     })
+  }
+
+  if (doc.type === 'Radio' || doc.type === 'Checkbox' || doc.type === 'Select') {
+    const hasEnoughOptions = getOrdered(doc.options).filter((o) => !!o.heading).length >= 2
+
+    if (!hasEnoughOptions) {
+      errors.push({
+        doc: doc.doc,
+        path: ['options'],
+        message: 'Minimum to alternativer med tittel er påkrevd',
+      })
+    }
+  }
+
+  if (doc.type === 'Branch') {
+    if (!doc.test?.field && !doc.test?.type) {
+      errors.push({
+        doc: doc.doc,
+        path: ['test'],
+        message: 'En test er påkrevd for å kunne bruke en forgreining',
+      })
+    } else if (!doc?.test?.operator && !doc?.test?.clauses) {
+      errors.push({
+        doc: doc.doc,
+        path: ['test'],
+        message: 'En betingelse er påkrevd for å kunne bruke en forgreining',
+      })
+    }
   }
 
   return errors
@@ -178,9 +220,20 @@ export function validate(
   version: WithDocRef<WizardVersion>,
   nodes: Array<WithDocRef<OptionalExcept<PageContent, 'type' | 'id'>>>,
 ): ValidationError[] {
-  const errors = [...validateVersion(version), ...values(nodes).flatMap((doc) => validateNode(doc))]
+  const nodeArr = values(nodes)
 
-  console.log('::: validate', errors)
+  const errors: ValidationError[] = [
+    ...validateVersion(version),
+    ...nodeArr.flatMap((doc) => validateNode(doc)),
+  ]
+
+  if (!nodeArr.find((n) => n.type === 'Result')) {
+    errors.push({
+      doc: version.doc,
+      path: [],
+      message: 'Veiviseren må ha minst én resultatside',
+    })
+  }
 
   return errors
 }

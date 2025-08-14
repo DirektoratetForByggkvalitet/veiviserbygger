@@ -1,6 +1,6 @@
 import { Error, Page, Result, WizardDefinition } from 'losen'
 import { getCompleteWizard } from '../services/firestore'
-import { getOrdered } from 'shared/utils'
+import { getOrdered, trimText } from 'shared/utils'
 import { Expression, Intro, OptionalExcept, PageContent, WizardIntro, WizardPage } from 'types'
 import { Expression as LosenExpression } from 'losen/utils/dsl'
 
@@ -17,18 +17,6 @@ type TransformerFunc<
   data: CompleteWizardData,
   deps: DependencyContainer,
 ) => Promise<Extract<Page['children'][number], { type: DestType }>[]>
-
-function trimText(text?: string) {
-  if (!text) {
-    return text
-  }
-
-  if (text.match(/^<p>.*<\/p>$/) && Array.from(text.matchAll(/<\/p>/g)).length === 1) {
-    return text.replace(/^<p>(.*)<\/p>$/, '$1')
-  }
-
-  return text
-}
 
 async function getImageUrl(image: string, deps: DependencyContainer) {
   const [url] = await deps.storage.bucket().file(image).getSignedUrl({

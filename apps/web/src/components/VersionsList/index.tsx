@@ -27,7 +27,7 @@ export default function VersionsList({ versions, wizardId, activeId, onLinkClick
     },
   ] as DropdownOptions
   const noDraftVersion = versions && versions[0].publishedFrom !== undefined
-  console.log(versions)
+
   return (
     <ul {...bem('')}>
       {versions?.map((v, i) => (

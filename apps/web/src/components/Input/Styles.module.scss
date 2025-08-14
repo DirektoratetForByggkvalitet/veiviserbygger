@@ -126,10 +126,6 @@
             padding: 0;
         }
     }
-
-    &--has-errors {
-        border-color: colors.$warning;
-    }
 }
 
 @keyframes dirtyFadeIn {

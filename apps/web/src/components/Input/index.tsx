@@ -4,7 +4,6 @@ import { useEditable } from '@/hooks/useEditable'
 import { useValue } from '@/hooks/useValue'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import { ValidationError } from '@/services/firebase/utils/validator'
 const bem = BEMHelper(styles)
 
 type Props<T extends HTMLInputTypeAttribute = 'text'> = {
@@ -31,11 +30,6 @@ type Props<T extends HTMLInputTypeAttribute = 'text'> = {
    * @see useValue
    */
   inputDebounceMs?: number
-
-  /**
-   * Errors for the input field, used to display validation errors.
-   */
-  errors?: ValidationError[]
 }
 
 export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
@@ -47,7 +41,6 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   hideIfEmpty,
   forwardedRef,
   inputDebounceMs,
-  errors,
   ...props
 }: Props<T>) {
   const internalRef = useRef<HTMLInputElement>(null)
@@ -74,7 +67,6 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
         'hide-if-empty': hideIfEmpty && !value,
         dirty: !inSync,
         'read-only': !isEditable,
-        'has-errors': errors?.length,
       })}
     >
       {!hideLabel && <span {...bem('label')}>{label}</span>}

@@ -36,8 +36,8 @@ import { deleteField } from 'firebase/firestore'
 import { icons } from 'lucide-react'
 import { validate } from '@/services/firebase/utils/validator'
 import ValidationProvider from '@/context/ValidationProvider'
-import useErrors from '@/hooks/errors'
 import { keys } from 'lodash'
+import ErrorWrapper from '@/components/ErrorWrapper'
 
 function contentAction<T extends PageContent['type']>({
   pageId,
@@ -165,9 +165,6 @@ function PageForm({
 }) {
   const { patchPage, addNodes } = useVersion()
   const isEditable = useEditable()
-  const { errors, hasErrors, getErrors } = useErrors()
-
-  console.log(hasErrors ? 'Errors found in page' : 'No errors in page', page.id, errors)
 
   const orderedNodes = useMemo(() => {
     return getOrdered(page?.content) || []
@@ -175,23 +172,26 @@ function PageForm({
 
   return (
     <Form>
-      <Input
-        label="Sidetittel"
-        value={page?.heading || ''}
-        placeholder="Uten tittel"
-        onChange={(v) => patchPage(page.id, { heading: v })}
-        errors={getErrors('heading')}
-        header
-      />
+      <ErrorWrapper slice={['heading']}>
+        <Input
+          label="Sidetittel"
+          value={page?.heading || ''}
+          placeholder="Uten tittel"
+          onChange={(v) => patchPage(page.id, { heading: v })}
+          header
+        />
+      </ErrorWrapper>
 
       {page?.type !== 'Intro' && page.id && page?.show && (
-        <PageExpression
-          label="Vis siden hvis"
-          expression={page?.show}
-          pageId={page.id}
-          nodes={nodes}
-          onRemove={() => patchPage(page.id, { show: deleteField() as any })}
-        />
+        <ErrorWrapper slice={['show']}>
+          <PageExpression
+            label="Vis siden hvis"
+            expression={page?.show}
+            pageId={page.id}
+            nodes={nodes}
+            onRemove={() => patchPage(page.id, { show: deleteField() as any })}
+          />
+        </ErrorWrapper>
       )}
 
       {(orderedNodes?.length > 0 &&

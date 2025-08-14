@@ -45,6 +45,7 @@ import useFirebase from '@/hooks/useFirebase'
 import { useModal } from '@/hooks/useModal'
 import ValidationProvider from '@/context/ValidationProvider'
 import useErrors from '@/hooks/errors'
+import ErrorWrapper from '../ErrorWrapper'
 
 const bem = BEMHelper(styles)
 
@@ -354,6 +355,7 @@ function Options({
   const options = getOrdered(node.options)
   const isEditable = useEditable()
   const { value, onSort } = useSortableList(options, (list) => reorderAnswers(node.id, list))
+  const { getErrors } = useErrors()
 
   const handleSortingDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -373,34 +375,41 @@ function Options({
   return (
     <DndContext onDragEnd={handleSortingDragEnd}>
       <SortableContext items={value}>
-        <ul {...bem('options')}>
-          {value.map(({ id }) => {
-            const option = options.find((o) => o.id === id)
+        <ErrorWrapper slice={['options']}>
+          <ul {...bem('options', { 'has-errors': getErrors('options').length })}>
+            {value.map(({ id }) => {
+              const option = options.find((o) => o.id === id)
 
-            if (!option) {
-              return null
-            }
+              if (!option) {
+                return null
+              }
 
-            return (
-              <Option
-                key={option.id}
-                pageId={pageId}
-                nodeType={node.type === 'Radio' ? 'Radio' : 'Checkbox'}
-                nodeId={node.id}
-                {...option}
-              />
-            )
-          })}
+              return (
+                <Option
+                  key={option.id}
+                  pageId={pageId}
+                  nodeType={node.type === 'Radio' ? 'Radio' : 'Checkbox'}
+                  nodeId={node.id}
+                  {...option}
+                />
+              )
+            })}
 
-          {!value || (value.length === 0 && <li {...bem('option', 'placeholder')}>Ingen ...</li>)}
-          {isEditable && (
-            <li key="add">
-              <Button type="button" size="small" icon="Plus" onClick={() => addAnswer(node.id, {})}>
-                Legg til svaralternativ
-              </Button>
-            </li>
-          )}
-        </ul>
+            {!value || (value.length === 0 && <li {...bem('option', 'placeholder')}>Ingen ...</li>)}
+            {isEditable && (
+              <li key="add">
+                <Button
+                  type="button"
+                  size="small"
+                  icon="Plus"
+                  onClick={() => addAnswer(node.id, {})}
+                >
+                  Legg til svaralternativ
+                </Button>
+              </li>
+            )}
+          </ul>
+        </ErrorWrapper>
       </SortableContext>
     </DndContext>
   )
@@ -425,23 +434,26 @@ function ExtraInformation({
   }
 
   return (
-    <>
+    <ValidationProvider slice={{ doc: getNodeRef(informationNodeId) }}>
       <h3 {...bem('sub-title')}>Vises følgende</h3>
+      <ErrorWrapper slice={['heading']}>
+        <Input
+          label="Overskrift på tilleggsinfo"
+          header
+          value={informationNode.heading || ''}
+          onChange={(v) => patchNode(informationNodeId, { heading: v })}
+        />
+      </ErrorWrapper>
 
-      <Input
-        label="Overskrift på tilleggsinfo"
-        header
-        value={informationNode.heading || ''}
-        onChange={(v) => patchNode(informationNodeId, { heading: v })}
-      />
-
-      <Editor
-        label="Tilleggsinfo"
-        value={informationNode.text || ''}
-        onChange={(v) => patchNode(informationNodeId, { text: v })}
-        sourceRef={{ doc: getNodeRef(informationNodeId), path: ['text'] }}
-      />
-    </>
+      <ErrorWrapper slice={['text']}>
+        <Editor
+          label="Tilleggsinfo"
+          value={informationNode.text || ''}
+          onChange={(v) => patchNode(informationNodeId, { text: v })}
+          sourceRef={{ doc: getNodeRef(informationNodeId), path: ['text'] }}
+        />
+      </ErrorWrapper>
+    </ValidationProvider>
   )
 }
 
@@ -469,30 +481,38 @@ function NegativeResult({
       <h3 {...bem('sub-title')}>Vises følgende</h3>
 
       {errorNodeId && errorNode && (
-        <>
-          <Input
-            label="Overskrift på feilmelding"
-            header
-            value={errorNode.heading || ''}
-            onChange={(v) => patchNode(errorNodeId, { heading: v })}
-          />
+        <ValidationProvider slice={{ doc: getNodeRef(errorNodeId) }}>
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Overskrift på feilmelding"
+              header
+              value={errorNode.heading || ''}
+              onChange={(v) => patchNode(errorNodeId, { heading: v })}
+            />
+          </ErrorWrapper>
 
-          <Editor
-            label="Feilforklaring"
-            value={errorNode.text || ''}
-            onChange={(v) => patchNode(errorNodeId, { text: v })}
-            sourceRef={inRef({ doc: getNodeRef(errorNodeId), path: ['text'] })}
-          />
-        </>
+          <ErrorWrapper slice={['text']}>
+            <Editor
+              label="Feilforklaring"
+              value={errorNode.text || ''}
+              onChange={(v) => patchNode(errorNodeId, { text: v })}
+              sourceRef={inRef({ doc: getNodeRef(errorNodeId), path: ['text'] })}
+            />
+          </ErrorWrapper>
+        </ValidationProvider>
       )}
 
       {resultNodeId && resultNode && (
-        <Input
-          label="Overskrift på resultatside"
-          header
-          value={resultNode.heading || ''}
-          onChange={(v) => patchNode(resultNodeId, { heading: v })}
-        />
+        <ValidationProvider slice={{ doc: getNodeRef(resultNodeId) }}>
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Overskrift på resultatside"
+              header
+              value={resultNode.heading || ''}
+              onChange={(v) => patchNode(resultNodeId, { heading: v })}
+            />
+          </ErrorWrapper>
+        </ValidationProvider>
       )}
     </>
   )
@@ -500,7 +520,6 @@ function NegativeResult({
 
 function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
   const { patchNode, addNodes, getNodeRef } = useVersion()
-  const { getErrors } = useErrors()
   const isEditable = useEditable()
 
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
@@ -508,20 +527,23 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
       <Fragment key={node.id}>
         <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
         <Main>
-          <Input
-            label="Tittel"
-            value={node.heading || ''}
-            onChange={(v) => patchNode(node.id, { heading: v })}
-            header
-            errors={getErrors('heading')}
-          />
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Tittel"
+              value={node.heading || ''}
+              onChange={(v) => patchNode(node.id, { heading: v })}
+              header
+            />
+          </ErrorWrapper>
 
-          <Editor
-            label="Innhold"
-            value={node.text || ''}
-            onChange={(v) => patchNode(node.id, { text: v })}
-            sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
-          />
+          <ErrorWrapper slice={['text']}>
+            <Editor
+              label="Innhold"
+              value={node.text || ''}
+              onChange={(v) => patchNode(node.id, { text: v })}
+              sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
+            />
+          </ErrorWrapper>
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
@@ -542,20 +564,24 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
         />
 
         <Main>
-          <Input
-            label="Tittel"
-            value={node.heading || ''}
-            onChange={(v) => patchNode(node.id, { type: 'Radio', heading: v })}
-            errors={getErrors('heading')}
-            header
-          />
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Tittel"
+              value={node.heading || ''}
+              onChange={(v) => patchNode(node.id, { type: 'Radio', heading: v })}
+              header
+            />
+          </ErrorWrapper>
 
-          <Editor
-            label="Beskrivelse"
-            value={node.text || ''}
-            onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })}
-            sourceRef={inRef(sourceRef, 'text')}
-          />
+          <ErrorWrapper slice={['text']}>
+            <Editor
+              label="Beskrivelse"
+              value={node.text || ''}
+              onChange={(v) => patchNode(node.id, { type: 'Radio', text: v })}
+              sourceRef={inRef(sourceRef, 'text')}
+            />
+          </ErrorWrapper>
+
           <File
             label="Bilde"
             value={node.image}
@@ -617,20 +643,23 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
         />
 
         <Main>
-          <Input
-            label="Tittel"
-            value={node.heading || ''}
-            onChange={(v) => patchNode(node.id, { type: 'Checkbox', heading: v })}
-            header
-            errors={getErrors('heading')}
-          />
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Tittel"
+              value={node.heading || ''}
+              onChange={(v) => patchNode(node.id, { type: 'Checkbox', heading: v })}
+              header
+            />
+          </ErrorWrapper>
 
-          <Editor
-            label="Beskrivelse"
-            value={node.text || ''}
-            onChange={(v) => patchNode(node.id, { type: 'Checkbox', text: v })}
-            sourceRef={inRef(sourceRef, 'text')}
-          />
+          <ErrorWrapper slice={['text']}>
+            <Editor
+              label="Beskrivelse"
+              value={node.text || ''}
+              onChange={(v) => patchNode(node.id, { type: 'Checkbox', text: v })}
+              sourceRef={inRef(sourceRef, 'text')}
+            />
+          </ErrorWrapper>
 
           <div {...bem('sub-header')}>
             <h3 {...bem('sub-title')}>Svaralternativer</h3>
@@ -679,7 +708,9 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
         <Header type={node.preset || node.type} node={node} sourceRef={sourceRef} />
 
         <Main>
-          <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
+          <ErrorWrapper>
+            <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
+          </ErrorWrapper>
           {node.preset === 'NegativeResult' && <NegativeResult node={node} nodes={allNodes} />}
           {node.preset === 'ExtraInformation' && <ExtraInformation node={node} nodes={allNodes} />}
 
@@ -730,20 +761,23 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
   if (node.type === 'Error') {
     return (
       <Fragment key={node.id}>
-        <Input
-          label="Tittel"
-          value={node.heading || ''}
-          onChange={(v) => patchNode(node.id, { type: 'Error', heading: v })}
-          header
-          errors={getErrors('heading')}
-        />
+        <ErrorWrapper slice={['heading']}>
+          <Input
+            label="Tittel"
+            value={node.heading || ''}
+            onChange={(v) => patchNode(node.id, { type: 'Error', heading: v })}
+            header
+          />
+        </ErrorWrapper>
 
-        <Editor
-          label="Beskrivelse"
-          value={node.text || ''}
-          onChange={(v) => patchNode(node.id, { type: 'Error', text: v })}
-          sourceRef={inRef(sourceRef, 'text')}
-        />
+        <ErrorWrapper slice={['text']}>
+          <Editor
+            label="Beskrivelse"
+            value={node.text || ''}
+            onChange={(v) => patchNode(node.id, { type: 'Error', text: v })}
+            sourceRef={inRef(sourceRef, 'text')}
+          />
+        </ErrorWrapper>
       </Fragment>
     )
   }
@@ -751,19 +785,22 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
   if (node.type === 'Information') {
     return (
       <Fragment key={node.id}>
-        <Input
-          label="Tittel"
-          value={node.heading || ''}
-          onChange={(v) => patchNode(node.id, { type: 'Information', heading: v })}
-          errors={getErrors('heading')}
-        />
+        <ErrorWrapper slice={['heading']}>
+          <Input
+            label="Tittel"
+            value={node.heading || ''}
+            onChange={(v) => patchNode(node.id, { type: 'Information', heading: v })}
+          />
+        </ErrorWrapper>
 
-        <Editor
-          label="Beskrivelse"
-          value={node.text || ''}
-          onChange={(v) => patchNode(node.id, { type: 'Information', text: v })}
-          sourceRef={inRef(sourceRef, 'text')}
-        />
+        <ErrorWrapper slice={['text']}>
+          <Editor
+            label="Beskrivelse"
+            value={node.text || ''}
+            onChange={(v) => patchNode(node.id, { type: 'Information', text: v })}
+            sourceRef={inRef(sourceRef, 'text')}
+          />
+        </ErrorWrapper>
       </Fragment>
     )
   }

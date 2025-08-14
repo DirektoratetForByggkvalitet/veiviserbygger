@@ -29,3 +29,15 @@ export function getWithIds<T>(docs?: { [id: string]: T }) {
 
   return Object.keys(docs).map((id) => ({ ...docs[id], id }))
 }
+
+export function trimText(text?: string) {
+  if (!text) {
+    return text
+  }
+
+  if (text.match(/^<p>.*<\/p>$/) && Array.from(text.matchAll(/<\/p>/g)).length === 1) {
+    return text.replace(/^<p>(.*)<\/p>$/, '$1')
+  }
+
+  return text
+}

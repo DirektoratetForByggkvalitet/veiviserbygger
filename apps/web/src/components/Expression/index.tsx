@@ -210,8 +210,6 @@ export default function Expression({
       return
     }
 
-    console.log(path)
-
     // new clause in complex expression
     if (clauseId || 'clauses' in expression) {
       return patch(patchDocRef, path, {

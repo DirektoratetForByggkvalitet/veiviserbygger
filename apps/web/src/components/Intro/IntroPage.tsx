@@ -26,10 +26,6 @@ function IntroPage({
     hasData && close()
   }, [hasData, close])
 
-  if (!hasData) {
-    console.log(wizard)
-  }
-
   return (
     <Primitives.Wizard>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>

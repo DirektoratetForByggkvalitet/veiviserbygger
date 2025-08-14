@@ -4,8 +4,6 @@ import { useContext } from 'react'
 export default function useErrors() {
   const validation = useContext(ValidationContext)
 
-  console.log('::: errors', validation)
-
   const errors =
     validation.result?.filter((error) => {
       if (!validation.slice) return true
@@ -27,8 +25,6 @@ export default function useErrors() {
 
   const getErrors = (...path: string[]) => {
     const requestedPath = [...(validation.slice?.path ?? []), ...path]
-
-    console.log('::: getErrors', requestedPath)
 
     return errors.filter((error) => {
       return error.path.slice(0, requestedPath.length).join('.') === requestedPath.join('.')
