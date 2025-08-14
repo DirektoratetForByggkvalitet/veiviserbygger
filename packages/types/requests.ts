@@ -7,4 +7,9 @@ export type Requests = {
       }
     }
   }
+  '/storage/:path': {
+    GET: {
+      response: Blob
+    }
+  }
 }

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./requests": "./requests.ts"
   },
   "author": "",
   "license": "ISC",
