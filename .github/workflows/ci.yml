@@ -83,12 +83,9 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          provenance: true              # attach SLSA-style provenance (optional but recommended)
-          sbom: true                    # generate and attach SBOM (optional but recommended)
 
       - uses: act10ns/slack@v2
         with:
