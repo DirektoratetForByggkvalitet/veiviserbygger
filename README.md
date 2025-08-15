@@ -14,6 +14,22 @@ $ npm i
 $ npm run dev
 ```
 
+## Releasing new versions
+Releasing new versions of the wizard builder is done like this:
+
+- **Major release**: `npm run release:major`
+- **Minor release**: `npm run release:minor`
+- **Patch release**: `npm run release:patch`
+
+It will
+1. check that your working copy is clean
+2. bump the versio number in the root package.json
+3. add a chore commit message for the version change
+4. add a git tag for the new version
+5. push the new tag + current branch to your remote
+
+...which will in turn be built and pushed to Dockerhub by the Github actions pipe.
+
 ## Environment variables
 Depending on what you're trying to do, you'll want to either provide env vars to connect to your local firebase emulator (this is the default that is set up in the `.env.development`) or connect to a real firebase instance hosted by Google.
 
