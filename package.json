@@ -1,6 +1,6 @@
 {
   "name": "veiviserbygger",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Wizard builder for Losen ===",
   "main": "index.js",
   "scripts": {
