@@ -1,6 +1,6 @@
 import { Error, Page, Result, WizardDefinition } from 'losen'
 import { getCompleteWizard } from '../services/firestore'
-import { getOrdered, trimText } from 'shared/utils'
+import { getOrdered, getStorageRefs, trimText } from 'shared/utils'
 import { Expression, Intro, OptionalExcept, PageContent, WizardIntro, WizardPage } from 'types'
 import { Expression as LosenExpression } from 'losen/utils/dsl'
 
@@ -25,6 +25,34 @@ async function getImageUrl(image: string, deps: DependencyContainer) {
   })
 
   return url
+}
+
+async function processHtml(html: string | undefined, deps: DependencyContainer) {
+  // trim whitespace and remove empty paragraphs
+  let cleanHtml = trimText(html)
+
+  if (!cleanHtml) {
+    return cleanHtml
+  }
+
+  // extract all storage references from the HTML content
+  const refs = getStorageRefs(cleanHtml)
+
+  if (!refs.length) {
+    return cleanHtml
+  }
+
+  // replace all image src attributes with the signed URL from Firebase storage
+  for (const ref of refs) {
+    const url = await getImageUrl(ref, deps)
+
+    cleanHtml = cleanHtml.replace(
+      new RegExp(`<img src="([^"]+)" ([^>]*)(data-firebase-storage="${ref}")([^>]*)>`),
+      `<img src="${url}"$2$4>`,
+    )
+  }
+
+  return cleanHtml
 }
 
 function expressionFilter(e: Expression) {
@@ -75,17 +103,17 @@ function transformExpression(expression: Expression, data: CompleteWizardData): 
   return {
     operator: expression.operator,
     field: expression.field.id,
-    value: expression.value,
+    value: expression.value || '',
   }
 }
 
-const transformText: TransformerFunc<'Text'> = async (node, data) => {
+const transformText: TransformerFunc<'Text'> = async (node, data, deps) => {
   return [
     {
       id: node.id,
       type: 'Text',
       heading: node.heading,
-      text: trimText(node.text),
+      text: await processHtml(node.text, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
     },
   ]
@@ -98,7 +126,7 @@ const transformRadio: TransformerFunc<'Radio'> = async (node, data, deps) => {
       type: 'Radio',
       property: node.id,
       heading: node.heading || 'Mangler navn',
-      text: trimText(node.text),
+      text: await processHtml(node.text, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
       image: node.image?.file
         ? {
@@ -132,7 +160,7 @@ const transformCheckbox: TransformerFunc<'Checkbox'> = async (node, data, deps) 
       type: 'Checkbox',
       property: node.id,
       heading: node.heading || 'Mangler navn',
-      text: trimText(node.text),
+      text: await processHtml(node.text, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
       image: node.image?.file
         ? {
@@ -173,6 +201,8 @@ const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = async (
       return []
     }
 
+    const errorNodeText = await processHtml(errorNode.text, deps)
+
     return [
       {
         id: node.id,
@@ -190,7 +220,7 @@ const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = async (
                     id: `${errorNode.id}.msg`,
                     type: 'Text',
                     heading: errorNode?.heading,
-                    text: trimText(errorNode?.text),
+                    text: await processHtml(errorNode?.text, deps),
                     warning: true,
                   },
                 ],
@@ -204,7 +234,7 @@ const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = async (
 
                 // if the error node has a text, show it as a warning on the result page
                 // to give context to the user about why the wizard was short circuited
-                children: trimText(errorNode?.text)?.length
+                children: errorNodeText?.length
                   ? [
                       {
                         id: `${resultNode?.id}.error`,
@@ -214,7 +244,7 @@ const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = async (
                             id: `${resultNode?.id}.error.msg`,
                             type: 'Text',
                             heading: errorNode?.heading,
-                            text: trimText(errorNode?.text),
+                            text: errorNodeText,
                             warning: true,
                           },
                         ],
@@ -247,55 +277,55 @@ const transformBranch: TransformerFunc<'Branch', 'Result' | 'Branch'> = async (
   ]
 }
 
-const transformInformation: TransformerFunc<'Information'> = async (node) => {
+const transformInformation: TransformerFunc<'Information'> = async (node, data, deps) => {
   return [
     {
       id: node.id,
       type: 'Information',
       heading: node.heading || 'Informasjon uten navn',
-      text: trimText(node.text),
+      text: await processHtml(node.text, deps),
     },
   ]
 }
 
-const transformInput: TransformerFunc<'Input'> = async (node, data) => {
+const transformInput: TransformerFunc<'Input'> = async (node, data, deps) => {
   return [
     {
       id: node.id,
       type: 'Input',
       heading: node.heading || 'Input uten navn',
       property: node.id,
-      text: trimText(node.text),
+      text: await processHtml(node.text, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
     },
   ]
 }
 
-const transformNumber: TransformerFunc<'Number'> = async (node, data) => {
+const transformNumber: TransformerFunc<'Number'> = async (node, data, deps) => {
   return [
     {
       id: node.id,
       type: 'Number',
       heading: node.heading || 'Tallfelt uten navn',
       property: node.id,
-      text: trimText(node.text),
+      text: await processHtml(node.text, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
     },
   ]
 }
 
-const transformError: TransformerFunc<'Error'> = async (node) => {
+const transformError: TransformerFunc<'Error'> = async (node, data, deps) => {
   return [
     {
       id: node.id,
       type: 'Error',
       heading: node.heading || 'Feil uten navn',
-      text: trimText(node.text),
+      text: await processHtml(node.text, deps),
       children: [
         {
           id: `${node.id}.msg`,
           type: 'Text',
-          text: trimText(node.text),
+          text: await processHtml(node.text, deps),
           warning: true,
         },
       ],

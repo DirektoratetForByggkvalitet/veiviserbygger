@@ -1,0 +1,32 @@
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
+
+.custom-image {
+    display: inline-grid;
+    max-width: 100%;
+    position: relative;
+
+    &:hover,
+    &--active {
+        outline: 1px solid colors.$muted;
+    }
+
+    &__alt-text {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        opacity: 0.8;
+        padding: vars.$spacing--xsmall;
+
+        &:focus {
+            opacity: 0.9;
+        }
+    }
+
+    &__remove {
+        position: absolute;
+        top: vars.$spacing--xsmall;
+        right: vars.$spacing--xsmall;
+    }
+}

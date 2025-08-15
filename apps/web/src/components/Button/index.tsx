@@ -26,6 +26,7 @@ interface Props {
   pressed?: boolean
   // full?: boolean
   size?: 'small' | 'large' | 'full'
+  className?: string
 }
 
 export default function Button({
@@ -46,6 +47,7 @@ export default function Button({
   size,
   icon,
   disabled,
+  className,
   ...props
 }: Props) {
   const Element = to ? Link : href ? 'a' : 'button'
@@ -59,16 +61,20 @@ export default function Button({
   return (
     <Element
       {...props}
-      {...bem('', {
-        primary,
-        subtle,
-        warning,
-        [size ?? '']: size,
-        'icon-only': iconOnly,
-        loading,
-        toggle,
-        'only-on-mobile': iconOnlyOnMobile,
-      })}
+      {...bem(
+        '',
+        {
+          primary,
+          subtle,
+          warning,
+          [size ?? '']: size,
+          'icon-only': iconOnly,
+          loading,
+          toggle,
+          'only-on-mobile': iconOnlyOnMobile,
+        },
+        className,
+      )}
       type={type}
       {...(typeSpecificProps as any)}
       aria-label={iconOnly || iconOnlyOnMobile ? (children as string) : undefined}

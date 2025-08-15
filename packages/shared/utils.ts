@@ -41,3 +41,10 @@ export function trimText(text?: string) {
 
   return text
 }
+
+/**
+ * Extracts Firebase storage references from HTML content and returns them as an array
+ */
+export function getStorageRefs(html: string = ''): string[] {
+  return Array.from(html.matchAll(/data-firebase-storage="([^"]+)"/g)).map((match) => match[1])
+}
