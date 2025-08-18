@@ -3,8 +3,6 @@
 @use '@/styles/1_settings/vars';
 
 .error-wrapper {
-    display: grid;
-    gap: vars.$spacing--xsmall / 2;
     width: 100%;
 
     &__icon {
@@ -13,9 +11,11 @@
 
     &__errors {
         @include mixins.font-size(small);
-        background-color: colors.$warning;
-        color: colors.$light;
+        background-color: colors.$info;
+        color: colors.$text;
         padding: vars.$spacing--xsmall;
+        border-top-left-radius: vars.$spacing--xsmall;
+        border-top-right-radius: vars.$spacing--xsmall;
         display: flex;
         gap: vars.$spacing--xsmall;
     }
@@ -27,8 +27,11 @@
 
     &__wrapped {
         &--has-errors {
-            border: 1px dashed colors.$warning;
+            border: 1px dashed colors.$info;
+            border-top-width: 0;
             padding: vars.$spacing--xsmall;
+            border-bottom-left-radius: vars.$spacing--xsmall;
+            border-bottom-right-radius: vars.$spacing--xsmall;
         }
     }
 }

@@ -45,11 +45,11 @@ function CustomImageComponent({ node, selected, updateAttributes, editor }: Reac
         {selected && (
           <>
             <label {...bem('alt-text')}>
-              Alt:
+              Alternativ tekst:
               <input
                 type="text"
                 name="alt"
-                placeholder="Skriv alternativ tekst"
+                placeholder="Mangler alternativ tekst for bildet"
                 value={alt || ''}
                 contentEditable
                 suppressContentEditableWarning

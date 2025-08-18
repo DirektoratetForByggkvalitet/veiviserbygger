@@ -185,7 +185,9 @@ function PageMap({
 
         {'show' in page && page.show && <Icon name="EyeOff" {...bem('title-icon')} />}
 
-        {errors.length ? <Icon name="Info" {...bem('error')} /> : null}
+        {errors.length ? (
+          <Icon name="Info" {...bem('error')} aria-label="Siden inneholder feil" />
+        ) : null}
       </h2>
 
       {!value.length && !selected && isEditable && (

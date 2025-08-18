@@ -57,7 +57,7 @@ export default function PublishModal() {
         <>
           <Message title="Valideringsfeil">
             Det er {validationResult.length} feil i veiviseren som må løses før den kan publiseres.
-            Feilen er merket med rødt i veiviseren.
+            Feilen er merket med gult i veiviseren.
           </Message>
 
           <ButtonBar>

@@ -12,13 +12,22 @@
     }
 
     &__alt-text {
+        display: flex;
         position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
         opacity: 0.8;
         padding: vars.$spacing--xsmall;
-
+        background: colors.$background;
+        border-radius: vars.$border-radius;
+        color: colors.$muted;
+        input {
+            color: colors.$text;
+            margin-left: vars.$spacing--xsmall;
+            flex-grow: 1;
+            background-color: transparent;
+        }
         &:focus {
             opacity: 0.9;
         }

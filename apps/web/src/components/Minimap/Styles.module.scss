@@ -24,7 +24,10 @@
     }
 
     &__error {
-        color: colors.$warning;
+        background-color: colors.$info;
+        padding: 1px;
+        border-radius: 100%;
+        color: colors.$text;
     }
 
     &__title-type {
