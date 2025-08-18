@@ -87,6 +87,17 @@ describe('rewrite lib', () => {
       })
     })
 
+    it('firestore references in a string preceded by data-firebase-storage', () => {
+      const sourceRef = 'wizards/abc123apekatt/versions/123'
+      const destinationRef = 'wizards/abc123apekatt/versions/456'
+
+      const html = `<p><img src="https://example.com/image.jpg" data-firebase-storage="${sourceRef}/node/789/image" /> og <img src="https://example.com/image.jpg" data-firebase-storage="${sourceRef}/node/789/image" /></p>`
+
+      expect(rewriteRefs(getFirestore(), html, sourceRef, destinationRef)).toEqual(
+        `<p><img src="https://example.com/image.jpg" data-firebase-storage="${destinationRef}/node/789/image" /> og <img src="https://example.com/image.jpg" data-firebase-storage="${destinationRef}/node/789/image" /></p>`,
+      )
+    })
+
     it('a nested firestore reference', () => {
       const versionsRef = collection(getFirestore(), 'wizards/abc123apekatt/versions')
       const copyVersionRef = doc(versionsRef, '123')

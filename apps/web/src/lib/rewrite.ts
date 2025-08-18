@@ -66,6 +66,14 @@ export function rewriteRefs(
     return node.replace(replaceId, replaceWithId)
   }
 
+  if (isString(node) && node.includes(`data-firebase-storage="`)) {
+    // if the node is a string and contains the replaceId, replace it with the replaceWithId
+    return node.replaceAll(
+      new RegExp(`(data-firebase-storage=")${replaceId}([^"]*")`, 'g'),
+      `$1${replaceWithId}$2`,
+    )
+  }
+
   // walk object properties
   if (typeof node === 'object') {
     return mapValues(node, (p) => rewriteRefs(db, p, replaceId, replaceWithId))
