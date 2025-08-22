@@ -143,7 +143,9 @@ const addNodeContentOptions = (
       nodeId,
       type: 'Checkbox',
       defaultContent: {
-        [uuid()]: { heading: '', order: 0 },
+        options: {
+          [uuid()]: { heading: '', order: 0 },
+        },
       },
     }),
     contentAction({ addNodes, nodeId, type: 'Input', disabled: false }),

@@ -115,7 +115,9 @@ export const addPageContentActions = (
           pageId,
           type: 'Checkbox',
           defaultContent: {
-            [uuid()]: { heading: '', order: 0 },
+            options: {
+              [uuid()]: { heading: '', order: 0 },
+            },
           },
         }),
         contentAction({ addNodes, pageId, type: 'Input', disabled: false }),
