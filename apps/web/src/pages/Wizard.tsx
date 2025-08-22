@@ -32,7 +32,7 @@ import { siteName } from '@/constants'
 import { v4 as uuid } from 'uuid'
 import { EditableContext } from '@/context/EditableContext'
 import { useEditable } from '@/hooks/useEditable'
-import { deleteField } from 'firebase/firestore'
+import { deleteField, updateDoc } from 'firebase/firestore'
 import { icons } from 'lucide-react'
 import { validate } from '@/services/firebase/utils/validator'
 import ValidationProvider from '@/context/ValidationProvider'
@@ -163,7 +163,7 @@ function PageForm({
   page: WithOrder<WizardPage> | Intro
   nodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
 }) {
-  const { patchPage, addNodes } = useVersion()
+  const { patchPage, addNodes, getVersionRef } = useVersion()
   const isEditable = useEditable()
 
   const orderedNodes = useMemo(() => {
@@ -189,7 +189,7 @@ function PageForm({
             expression={page?.show}
             pageId={page.id}
             nodes={nodes}
-            onRemove={() => patchPage(page.id, { show: deleteField() as any })}
+            onRemove={() => updateDoc(getVersionRef(), `pages.${page.id}.show`, deleteField())}
           />
         </ErrorWrapper>
       )}

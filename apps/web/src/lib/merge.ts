@@ -1,4 +1,4 @@
-import { DocumentReference } from 'firebase/firestore'
+import { DocumentReference, FieldValue } from 'firebase/firestore'
 import { concat, isArray, isObject, keys, set, uniq } from 'lodash'
 
 function isUnmergeable(value: any) {
@@ -6,6 +6,7 @@ function isUnmergeable(value: any) {
   if (value instanceof RegExp) return true
   if (value instanceof Function) return true
   if (value instanceof DocumentReference) return true
+  if (value instanceof FieldValue) return true
   return false
 }
 

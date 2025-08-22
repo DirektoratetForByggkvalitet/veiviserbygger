@@ -300,6 +300,7 @@ export default function Expression({
                 first={index === 0}
                 onlyClause={clauses.length <= 1}
                 type={expression.type}
+                property={property}
               />
             </li>
           ))}

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { merge, unset } from '../merge'
-import { doc, getFirestore } from 'firebase/firestore'
+import { deleteField, doc, getFirestore, serverTimestamp } from 'firebase/firestore'
 
 beforeEach(() => {
   initializeApp({ projectId: 'ci' })
@@ -76,6 +76,11 @@ describe('merge', () => {
     const symbol1 = Symbol('test')
     const symbol2 = Symbol('jippo')
     expect(merge({ a: symbol1 }, { a: symbol2 })).toEqual({ a: symbol2 })
+  })
+
+  it('should leave deleteField() as is', () => {
+    expect(merge({ a: { b: 1, c: 2 } }, { a: deleteField() })).toEqual({ a: deleteField() })
+    expect(merge({ a: { b: 1, c: 2 } }, { a: serverTimestamp() })).toEqual({ a: serverTimestamp() })
   })
 
   it('should handle nested symbols correctly', () => {

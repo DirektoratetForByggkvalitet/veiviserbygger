@@ -15,7 +15,7 @@ export default function PageExpression({
   label = 'Vis siden hvis',
   onRemove,
   ...props
-}: Props & ExpressionProps) {
+}: Props & Omit<ExpressionProps, 'property'>) {
   const contentActions: DropdownOptions = [
     {
       value: '0',
@@ -25,6 +25,7 @@ export default function PageExpression({
       styled: 'delete',
     },
   ]
+
   return (
     <section {...bem('')}>
       <header {...bem('header')}>
