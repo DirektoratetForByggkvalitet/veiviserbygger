@@ -60,14 +60,17 @@ export default function LoginPage() {
               label="Passord"
               inputDebounceMs={0}
             />
+            {error === 'auth/user-not-found' ? (
+              <Message title="Brukeren finnes ikke i systemet"></Message>
+            ) : null}
+            {error === 'auth/wrong-password' ? (
+              <Message title="Feil brukernavn/passord"></Message>
+            ) : null}
             <ButtonBar>
               <Button type="submit" primary disabled={!form.email || !form.password}>
                 Logg inn
               </Button>
             </ButtonBar>
-            {error === 'auth/user-not-found' ? (
-              <Message title="Brukeren finnes ikke i systemet"></Message>
-            ) : null}
           </Form>
         </>
       ) : (
