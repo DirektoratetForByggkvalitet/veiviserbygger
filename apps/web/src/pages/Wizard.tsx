@@ -206,7 +206,7 @@ function PageForm({
               key={id}
               nodeId={nodeId}
               allNodes={nodes}
-              pageId={page.id}
+              page={page}
               path={
                 page.type === 'Intro' ? ['intro', 'content', id] : ['pages', page.id, 'content', id]
               }
@@ -414,9 +414,9 @@ export default function Wizard() {
             options={
               page?.id !== 'intro' && isEditable
                 ? ([
-                    // Show the button for adding show page clause only if the page is a regular Page type,
-                    // is not the first page and does not already have a show condition.
-                    ...(page?.type === 'Page' && !page?.show && currentPageIndex > 0
+                    // Show the button for adding show page clause only for pages that is not the
+                    // first page and does not already have a show condition.
+                    ...(page && page?.type !== 'Intro' && !page?.show && currentPageIndex > 0
                       ? [
                           {
                             value: '0',

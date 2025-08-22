@@ -177,7 +177,7 @@ function validateNode(
 ): ValidationError[] {
   const errors: ValidationError[] = []
 
-  if (doc.type !== 'Branch' && !doc.heading) {
+  if (doc.type !== 'Branch' && doc.type !== 'Text' && !doc.heading) {
     errors.push({
       doc: doc.doc,
       path: ['heading'],

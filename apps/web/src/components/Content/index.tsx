@@ -17,6 +17,7 @@ import {
   DeepPartial,
   Error as ErrorNode,
   Information,
+  Intro,
   OptionalExcept,
   PageContent,
   PageContentWithOptions,
@@ -57,7 +58,7 @@ type Props = {
   id: PageContent['id']
   nodeId: DocumentReference['id']
   allNodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
-  pageId: WizardPage['id']
+  page: WizardPage | Intro
   path: string[]
 }
 
@@ -69,7 +70,7 @@ type SourceRef = {
 type NodeProps = {
   allNodes: Props['allNodes']
   node: OptionalExcept<PageContent, 'id' | 'type'>
-  pageId: WizardPage['id']
+  page: WizardPage | Intro
   sourceRef: SourceRef
 }
 
@@ -518,7 +519,7 @@ function NegativeResult({
   )
 }
 
-function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
+function Node({ node, page, allNodes, sourceRef }: NodeProps) {
   const { patchNode, addNodes, getNodeRef } = useVersion()
   const isEditable = useEditable()
 
@@ -527,14 +528,20 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
       <Fragment key={node.id}>
         <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
         <Main>
-          <ErrorWrapper slice={['heading']}>
-            <Input
-              label="Tittel"
-              value={node.heading || ''}
-              onChange={(v) => patchNode(node.id, { heading: v })}
-              header
-            />
-          </ErrorWrapper>
+          {/**
+           * Text on result pages does not have a heading, so we show it only if the node
+           * is not a Text node or if the page is not a Result page 🙃
+           */}
+          {node.type !== 'Text' || page.type !== 'Result' ? (
+            <ErrorWrapper slice={['heading']}>
+              <Input
+                label="Tittel"
+                value={node.heading || ''}
+                onChange={(v) => patchNode(node.id, { heading: v })}
+                header
+              />
+            </ErrorWrapper>
+          ) : null}
 
           <ErrorWrapper slice={['text']}>
             <Editor
@@ -621,7 +628,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
               </span>
             )}
           </div>
-          <Options node={node} pageId={pageId} />
+          <Options node={node} pageId={page.id} />
         </Main>
 
         <Aside>
@@ -692,7 +699,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
               </span>
             )}
           </div>
-          <Options node={node} pageId={pageId} />
+          <Options node={node} pageId={page.id} />
         </Main>
 
         <Aside>
@@ -727,7 +734,7 @@ function Node({ node, pageId, allNodes, sourceRef }: NodeProps) {
                   <>
                     <Node
                       node={{ ...childNode, id: nodeRef.node.id }}
-                      pageId={pageId}
+                      page={page}
                       allNodes={allNodes}
                       key={nodeRef.id}
                       sourceRef={{
@@ -893,7 +900,7 @@ const Main = ({ children, full }: { children: ReactNode; full?: boolean }) => (
 
 const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
 
-export default function Content({ id, nodeId, allNodes, pageId, path }: Props) {
+export default function Content({ id, nodeId, allNodes, page, path }: Props) {
   const node = allNodes?.[nodeId]
   const { getVersionRef, getNodeRef } = useVersion()
 
@@ -903,7 +910,7 @@ export default function Content({ id, nodeId, allNodes, pageId, path }: Props) {
         <ValidationProvider slice={{ doc: getNodeRef(nodeId) }}>
           <Node
             node={{ ...node, id: nodeId }}
-            pageId={pageId}
+            page={page}
             allNodes={allNodes}
             sourceRef={{
               doc: getVersionRef(),
