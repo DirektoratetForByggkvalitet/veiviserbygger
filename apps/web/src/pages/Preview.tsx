@@ -4,6 +4,8 @@ import { getStore } from '@/store/preview'
 import { Wizard } from 'losen'
 import { Provider } from 'react-redux'
 import { useParams } from 'react-router'
+import PreviewBody from '@/components/PreviewBody'
+import PageSimple from '@/components/PageSimple'
 
 export default function PreviewPage() {
   const { versionId } = useParams()
@@ -16,16 +18,14 @@ export default function PreviewPage() {
 
   if (error?.status === 404) {
     return (
-      <div>
-        <h1>Fant ikke veiviseren</h1>
-
+      <PageSimple title="Fant ikke veiviseren">
         {versionId ? (
           <p>
-            URLen du har åpnet refererer til en spesifikk versjon av veiviseren. Denne versjonen{' '}
+            Lenken du har åpnet refererer til en spesifikk versjon av veiviseren. Denne versjonen{' '}
             <em>kan</em> være slettet etter at du fikk lenken.
           </p>
         ) : null}
-      </div>
+      </PageSimple>
     )
   }
 
@@ -35,10 +35,12 @@ export default function PreviewPage() {
 
   return (
     <Provider store={getStore(data)}>
-      <Intro
-        wizard={data}
-        render={({ toggleIntro }) => <Wizard wizard={data} showIntro={toggleIntro(true)} />}
-      />
+      <PreviewBody title={data?.meta?.title || 'Forhåndsvisning'}>
+        <Intro
+          wizard={data}
+          render={({ toggleIntro }) => <Wizard wizard={data} showIntro={toggleIntro(true)} />}
+        />
+      </PreviewBody>
     </Provider>
   )
 }
