@@ -1,0 +1,41 @@
+.intro {
+    $this: &;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+
+    &__sub-title {
+        display: block;
+        color: rgb(0, 48, 69);
+        opacity: 0.75;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 18px;
+        letter-spacing: 0px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    div:has(+ h2) {
+        margin-bottom: 24px;
+    }
+
+    li > p {
+        margin-bottom: 0;
+    }
+
+    figure {
+        padding: 0;
+        position: relative;
+        margin: 33px 0;
+        @media screen and (max-width: 700px) {
+            margin: 0 auto 30px;
+        }
+        figcaption {
+            margin-top: 4px;
+            font-style: italic;
+            font-size: 14px;
+        }
+    }
+}

@@ -3,7 +3,9 @@ import { Primitives, WizardDefinition } from 'losen'
 import { useEffect, useMemo } from 'react'
 import { connect } from 'react-redux'
 import { WizardIntro } from 'types'
-
+import BEMHelper from '@/lib/bem'
+import styles from './Styles.module.scss'
+const bem = BEMHelper(styles)
 function IntroPage({
   wizard,
   data,
@@ -28,27 +30,36 @@ function IntroPage({
 
   return (
     <Primitives.Wizard>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <Primitives.Heading.H1>{wizard.intro?.heading}</Primitives.Heading.H1>
-        {wizard.intro?.lead ? (
-          <Primitives.Paragraphs.Lead>{wizard.intro?.lead}</Primitives.Paragraphs.Lead>
-        ) : null}
-        {wizard?.intro?.content.map((content, index) => {
-          return (
-            <>
-              <Primitives.Heading.H2 key={`intro-content-${index}`}>
-                {content.heading}
-              </Primitives.Heading.H2>
-              <Primitives.Block.TextBlock
-                dangerouslySetInnerHTML={{ __html: content.text }}
-                key={`intro-text-${index}`}
-              />
-            </>
-          )
-        })}
-        <Primitives.Button.MainButton type="button" onClick={close}>
-          Sett i gang
-        </Primitives.Button.MainButton>
+      <div {...bem('')}>
+        <Primitives.Grid.Main>
+          <Primitives.Heading.H1>
+            <span {...bem('sub-title')}>Veiviser </span>
+            {wizard.intro?.heading}
+          </Primitives.Heading.H1>
+          {wizard.intro?.lead ? (
+            <Primitives.Paragraphs.Lead>{wizard.intro?.lead}</Primitives.Paragraphs.Lead>
+          ) : null}
+          {wizard?.intro?.content.map((content, index) => {
+            return (
+              <>
+                {content.heading && (
+                  <Primitives.Heading.H2 key={`intro-content-${index}`}>
+                    {content.heading}
+                  </Primitives.Heading.H2>
+                )}
+                <Primitives.Block.TextBlock
+                  dangerouslySetInnerHTML={{ __html: content.text }}
+                  key={`intro-text-${index}`}
+                />
+              </>
+            )
+          })}
+          <div style={{ marginTop: '24px' }}>
+            <Primitives.Button.MainButton type="button" onClick={close}>
+              Sett i gang
+            </Primitives.Button.MainButton>
+          </div>
+        </Primitives.Grid.Main>
       </div>
     </Primitives.Wizard>
   )
