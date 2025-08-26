@@ -127,17 +127,17 @@ const addNodeContentOptions = (
         },
       },
     }),
-    contentAction({
-      addNodes,
-      nodeId,
-      type: 'Select',
-      disabled: true,
-      defaultContent: {
-        options: {
-          [uuid()]: { heading: '', order: 0 },
-        },
-      },
-    }),
+    // contentAction({
+    //   addNodes,
+    //   nodeId,
+    //   type: 'Select',
+    //   disabled: true,
+    //   defaultContent: {
+    //     options: {
+    //       [uuid()]: { heading: '', order: 0 },
+    //     },
+    //   },
+    // }),
     contentAction({
       addNodes,
       nodeId,

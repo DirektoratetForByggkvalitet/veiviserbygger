@@ -99,17 +99,17 @@ export const addPageContentActions = (
             },
           },
         }),
-        contentAction({
-          addNodes,
-          pageId,
-          type: 'Select',
-          disabled: true,
-          defaultContent: {
-            options: {
-              [uuid()]: { heading: '', order: 0 },
-            },
-          },
-        }),
+        // contentAction({
+        //   addNodes,
+        //   pageId,
+        //   type: 'Select',
+        //   disabled: true,
+        //   defaultContent: {
+        //     options: {
+        //       [uuid()]: { heading: '', order: 0 },
+        //     },
+        //   },
+        // }),
         contentAction({
           addNodes,
           pageId,
@@ -154,7 +154,7 @@ export const addPageContentActions = (
           preset: 'NewQuestions',
           defaultContent: { preset: 'NewQuestions', test: {} },
         }),
-        contentAction({ addNodes, pageId, type: 'Branch', disabled: true }),
+        // contentAction({ addNodes, pageId, type: 'Branch', disabled: true }),
       ]
     : []
 
