@@ -103,7 +103,7 @@ function transformExpression(expression: Expression, data: CompleteWizardData): 
   return {
     operator: expression.operator,
     field: expression.field.id,
-    value: expression.value || '',
+    value: field.type === 'Number' ? Number(expression.value || '') : expression.value || '',
   }
 }
 
