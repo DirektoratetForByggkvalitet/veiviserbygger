@@ -35,6 +35,9 @@ async function processHtml(html: string | undefined, deps: DependencyContainer) 
     return cleanHtml
   }
 
+  // unwrap paragraphs inside list items
+  cleanHtml = cleanHtml.replace(/<li[^>]*>\s*<p>(.*?)<\/p>\s*<\/li>/g, '<li>$1</li>')
+
   // extract all storage references from the HTML content
   const refs = getStorageRefs(cleanHtml)
 
