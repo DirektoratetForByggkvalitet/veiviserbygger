@@ -93,7 +93,15 @@ function transformExpression(expression: Expression, data: CompleteWizardData): 
     }
   }
 
-  const field = data.nodes[expression.field.id]
+  const field = data.nodes[expression?.field?.id]
+
+  if (!field) {
+    return {
+      field: 'field-not-selected',
+      operator: 'eq',
+      value: '1337',
+    }
+  }
 
   if (field?.type === 'Checkbox') {
     return {
@@ -103,17 +111,17 @@ function transformExpression(expression: Expression, data: CompleteWizardData): 
     }
   }
 
-  if (expression.operator === 'between') {
+  if (expression?.operator === 'between') {
     return {
       operator: expression.operator,
       field: expression.field.id,
-      value: [Number(expression.value?.from || 0), Number(expression.value?.to || 0)],
+      value: [Number(expression?.value?.from || 0), Number(expression?.value?.to || 0)],
     }
   }
 
   return {
     operator: expression.operator,
-    field: expression.field.id,
+    field: expression?.field?.id,
     value: field?.type === 'Number' ? Number(expression.value || '') : expression.value || '',
   }
 }
