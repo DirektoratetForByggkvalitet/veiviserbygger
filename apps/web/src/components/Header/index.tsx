@@ -112,6 +112,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                   size="small"
                   iconOnlyOnMobile="SendHorizontal"
                   to={`/wizard/${wizardId}/${versionId}/preview`}
+                  target="_blank"
                 >
                   {/* The user is on the draft version */}
                   Forhåndsvisning
@@ -124,7 +125,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                     primary
                     onClick={() => setModal({ key: 'embed' })}
                   >
-                    Embed
+                    Bygg inn
                   </Button>
                 ) : null}
 

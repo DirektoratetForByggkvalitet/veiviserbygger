@@ -283,7 +283,7 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
       </button>
 
       <button type="button" onClick={handleImageUpload} {...bem('control')}>
-        <Icon name="ImagePlus" />
+        Bilde
       </button>
       <input
         type="file"
