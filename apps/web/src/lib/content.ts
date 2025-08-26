@@ -11,16 +11,16 @@ const typeMap: Record<
     description: 'Tekst, lister og bilder brukt for tilleggsinfo.',
   },
   Radio: {
-    title: 'Radioknapper',
+    title: 'Ettvalg',
     icon: 'CircleDot',
     description:
-      'Dette er et flervalgspørsmål vi stiller brukeren hvor de svarer ved å velge ett alternativ. Avhengig av hva de svarer kan vi respondere med resultater eller informasjon.',
+      'Et spørsmål hvor brukeren svarer ved å velge ett av alternativene. Avhengig av hva de svarer kan vi respondere med resultater eller informasjon.',
   },
   Checkbox: {
-    title: 'Avkrysningsbokser',
+    title: 'Flervalg',
     icon: 'SquareCheck',
     description:
-      'Dette er et flervalgspørsmål vi stiller brukeren hvor de kan velge en eller flere alternativer. Avhengig av hva de svarer kan vi respondere med resultater eller informasjon.',
+      'Et spørsmål hvor brukeren svarer ved å velge ett eller flere alternativer. Avhengig av hva de svarer kan vi respondere med resultater eller informasjon.',
   },
   Select: {
     title: 'Nedtrekksmeny',
