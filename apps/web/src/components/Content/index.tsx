@@ -611,7 +611,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
                   pressed={node.grid}
                   onClick={() => patchNode(node.id, { type: 'Radio', grid: !node.grid })}
                 >
-                  Vis svaralternativer som grid
+                  Vis svaralternativer som rutenett
                 </Button>
                 <Button
                   iconOnly
@@ -682,7 +682,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
                   pressed={node.grid}
                   onClick={() => patchNode(node.id, { type: 'Checkbox', grid: !node.grid })}
                 >
-                  Vis svaralternativer som grid
+                  Vis svaralternativer som rutenett
                 </Button>
                 <Button
                   iconOnly
