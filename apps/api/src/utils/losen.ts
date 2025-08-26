@@ -100,10 +100,18 @@ function transformExpression(expression: Expression, data: CompleteWizardData): 
     }
   }
 
+  if (expression.operator === 'between') {
+    return {
+      operator: expression.operator,
+      field: expression.field.id,
+      value: [Number(expression.value?.from || 0), Number(expression.value?.to || 0)],
+    }
+  }
+
   return {
     operator: expression.operator,
     field: expression.field.id,
-    value: field.type === 'Number' ? Number(expression.value || '') : expression.value || '',
+    value: field?.type === 'Number' ? Number(expression.value || '') : expression.value || '',
   }
 }
 
