@@ -16,7 +16,7 @@
     "lint:fix": "prettier . --write"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^2.6.1",
+    "@reduxjs/toolkit": "^2.8.2",
     "@tiptap/extension-image": "^3.1.0",
     "@tiptap/extension-list-item": "^3.1.0",
     "@tiptap/extension-subscript": "^3.1.0",
@@ -89,5 +89,9 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.24.0"
+  },
+  "volta": {
+    "node": "20.19.4",
+    "npm": "10.9.3"
   }
 }

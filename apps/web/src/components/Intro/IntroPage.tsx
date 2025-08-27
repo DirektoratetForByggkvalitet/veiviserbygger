@@ -48,6 +48,7 @@ function IntroPage({
                   </Primitives.Heading.H2>
                 )}
                 <Primitives.Block.TextBlock
+                  style={{ flexDirection: 'column' }}
                   dangerouslySetInnerHTML={{ __html: content.text }}
                   key={`intro-text-${index}`}
                 />
