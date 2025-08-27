@@ -292,7 +292,7 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
           onPageClick={handlePageClick('intro')}
           onNodeClick={handleNodeClick('intro')}
           selected={selected === 'intro'}
-          errors={getErrors('intro')}
+          errors={getErrors(['intro'])}
         />
 
         {orderedPages.map((item, index) => {
@@ -305,7 +305,7 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
               onNodeClick={handleNodeClick(item.id)}
               selected={item.id === selected}
               allNodes={allNodes}
-              errors={getErrors('pages', item.id)}
+              errors={getErrors(['pages', item.id])}
             />
           )
         })}

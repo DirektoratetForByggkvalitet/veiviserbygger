@@ -14,14 +14,18 @@ import validateStore from '@/store/validate'
 import { keys } from 'lodash'
 import { validate } from '@/services/firebase/utils/validator'
 import Message from '@/components/Message'
+import useErrors from '@/hooks/errors'
 
 export default function PublishModal() {
   const match = useMatch('/wizard/:wizardId/:versionId')
   const { version, nodes } = useWizard(match?.params.wizardId, match?.params.versionId)
   const { patchVersion, publishVersion, getVersionRef, getNodeRef } = useVersion()
   const [, setValidate] = useAtom(validateStore)
+  const { getErrors } = useErrors()
   const { modal, setModal } = useModal()
   const titleInput = useRef<HTMLInputElement>(null)
+
+  const topLevelErrors = getErrors([], true)
 
   useEffect(() => {
     if (modal?.key !== 'publish') return
@@ -56,8 +60,20 @@ export default function PublishModal() {
       {validationResult.length ? (
         <>
           <Message title="Valideringsfeil">
-            Det er {validationResult.length} feil i veiviseren som må løses før den kan publiseres.
-            Feilen er merket med gult i veiviseren.
+            <p>
+              Det er feil i veiviseren som må løses før den kan publiseres. Innholdsfeil er merket
+              med gult i veiviseren.
+            </p>
+            {topLevelErrors?.length ? (
+              <>
+                <p>I tillegg til innholdsfeilene er det noen strukturelle feil i veiviseren din:</p>
+                <ul>
+                  {topLevelErrors.map((e) => (
+                    <li>{e.message}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
           </Message>
 
           <ButtonBar>

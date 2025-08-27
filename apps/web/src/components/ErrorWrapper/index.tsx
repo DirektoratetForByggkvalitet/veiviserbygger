@@ -13,7 +13,7 @@ type Props = {
 
 export default function ErrorWrapper({ children, slice = [] }: Props) {
   const { getErrors } = useErrors()
-  const errors = getErrors(...slice)
+  const errors = getErrors(slice)
 
   const hasErrors = errors.length > 0
 

@@ -23,10 +23,20 @@ export default function useErrors() {
       return true
     }) ?? []
 
-  const getErrors = (...path: string[]) => {
+  /**
+   *
+   * @param path path in the doc to get errors for
+   * @param exact whether or not to match the path exactly, or include sub-paths. By default, sub-paths are included
+   * @returns
+   */
+  function getErrors(path: string[], exact = false) {
     const requestedPath = [...(validation.slice?.path ?? []), ...path]
 
     return errors.filter((error) => {
+      if (exact) {
+        return error.path.join('.') === requestedPath.join('.')
+      }
+
       return error.path.slice(0, requestedPath.length).join('.') === requestedPath.join('.')
     })
   }

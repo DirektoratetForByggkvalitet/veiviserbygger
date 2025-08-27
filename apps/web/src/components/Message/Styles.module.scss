@@ -39,6 +39,23 @@
             font-weight: normal;
         }
     }
+
+    p,
+    ul {
+        margin-bottom: vars.$spacing--small;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    ul {
+        padding-left: vars.$spacing;
+
+        li {
+            list-style-position: outside;
+            list-style: disc;
+        }
+    }
 }
 
 @keyframes enter {

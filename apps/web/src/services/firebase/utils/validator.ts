@@ -1,6 +1,6 @@
 import { DocumentReference } from 'firebase/firestore'
 import { getDependencyTree } from '..'
-import { Reference } from './refs'
+import { buildTree, getContentDeps, Reference } from './refs'
 import { Intro, OptionalExcept, PageContent, WizardPage, WizardVersion } from 'types'
 import { values } from 'lodash'
 import { getOrdered } from 'shared/utils'
@@ -222,12 +222,39 @@ export function validate(
 ): ValidationError[] {
   const nodeArr = values(nodes)
 
+  const tree = buildTree([
+    {
+      ref: version.doc,
+      data: () => version,
+    },
+    ...nodes.map((n) => ({
+      ref: n.doc,
+      data: () => n,
+    })),
+  ])
+
   const errors: ValidationError[] = [
     ...validateVersion(version),
     ...nodeArr.flatMap((doc) => validateNode(doc)),
   ]
 
-  if (!nodeArr.find((n) => n.type === 'Result')) {
+  const pages = getOrdered(version.pages)
+
+  const pageIds = ['intro', ...pages.map((p) => p.id)]
+  for (const pageId of pageIds) {
+    const deps = getContentDeps(version.doc, pageId, tree)
+    const contentError = deps.find((d) => errors.find((e) => e.doc.path === d.path))
+
+    if (contentError) {
+      errors.push({
+        doc: version.doc,
+        path: pageId === 'intro' ? ['intro'] : ['pages', pageId],
+        message: `Siden har innhold med feil`,
+      })
+    }
+  }
+
+  if (!nodeArr.find((n) => n.type === 'Result') && !pages.some((p) => p.type === 'Result')) {
     errors.push({
       doc: version.doc,
       path: [],
