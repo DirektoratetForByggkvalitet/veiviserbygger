@@ -1,5 +1,12 @@
 import { doc, DocumentReference, getFirestore } from 'firebase/firestore'
-import { findRefs, determineType, isUninteresting, buildTree } from '../refs'
+import {
+  findRefs,
+  determineType,
+  isUninteresting,
+  buildTree,
+  TreeNode,
+  getContentDeps,
+} from '../refs'
 import { initializeApp } from 'firebase/app'
 
 beforeEach(() => {
@@ -238,6 +245,117 @@ describe('refs util', () => {
         ],
         outgoing: [],
       })
+    })
+  })
+
+  describe('getContentDeps', () => {
+    it('should return an empty array for a document with no outgoing references', () => {
+      const firestore = getFirestore()
+
+      const tree: TreeNode[] = [
+        { doc: doc(firestore, 'collection', 'a'), incoming: [], outgoing: [] },
+      ]
+
+      expect(getContentDeps(doc(firestore, 'collection', 'a'), 'intro', tree)).toEqual([])
+    })
+
+    it('should return all direct dependencies', () => {
+      const firestore = getFirestore()
+
+      const a = doc(firestore, 'collection', 'a')
+      const b = doc(firestore, 'collection', 'b')
+      const c = doc(firestore, 'collection', 'c')
+
+      const tree: TreeNode[] = [
+        {
+          doc: a,
+          incoming: [],
+          outgoing: [
+            { ref: b, path: ['intro', 'content', '123'], type: 'content-node' },
+            { ref: c, path: ['intro', 'content', '234'], type: 'content-node' },
+          ],
+        },
+        { doc: b, incoming: [], outgoing: [] },
+        { doc: c, incoming: [], outgoing: [] },
+      ]
+
+      expect(getContentDeps(doc(firestore, 'collection', 'a'), 'intro', tree)).toEqual([b, c])
+    })
+
+    it('should return transitive dependencies', () => {
+      const firestore = getFirestore()
+
+      const a = doc(firestore, 'collection', 'a')
+      const b = doc(firestore, 'collection', 'b')
+      const c = doc(firestore, 'collection', 'c')
+      const d = doc(firestore, 'collection', 'd')
+      const e = doc(firestore, 'collection', 'e')
+
+      const tree: TreeNode[] = [
+        {
+          doc: a,
+          incoming: [],
+          outgoing: [{ ref: b, path: ['pages', '1234', 'content', '123'], type: 'content-node' }],
+        },
+        {
+          doc: b,
+          incoming: [],
+          outgoing: [{ ref: c, path: ['pages', '1234', 'content', '456'], type: 'content-node' }],
+        },
+        { doc: c, incoming: [], outgoing: [] },
+        { doc: d, incoming: [], outgoing: [{ ref: e, path: [], type: 'content-node' }] },
+        { doc: e, incoming: [], outgoing: [] },
+      ]
+
+      expect(getContentDeps(doc(firestore, 'collection', 'a'), '1234', tree)).toEqual([b, c])
+    })
+
+    it('should return deeeeep transitive dependencies', () => {
+      const firestore = getFirestore()
+
+      const a = doc(firestore, 'collection', 'a')
+      const b = doc(firestore, 'collection', 'b')
+      const c = doc(firestore, 'collection', 'c')
+      const d = doc(firestore, 'collection', 'd')
+      const e = doc(firestore, 'collection', 'e')
+      const f = doc(firestore, 'collection', 'f')
+
+      const tree: TreeNode[] = [
+        {
+          doc: a,
+          incoming: [],
+          outgoing: [{ ref: b, path: ['pages', '1234', 'content', 'a'], type: 'content-node' }],
+        },
+        {
+          doc: b,
+          incoming: [],
+          outgoing: [{ ref: c, path: ['pages', '1234', 'content', 'b'], type: 'content-node' }],
+        },
+        {
+          doc: c,
+          incoming: [],
+          outgoing: [{ ref: d, path: ['pages', '1234', 'content', 'c'], type: 'content-node' }],
+        },
+        {
+          doc: d,
+          incoming: [],
+          outgoing: [{ ref: e, path: ['pages', '1234', 'content', 'd'], type: 'content-node' }],
+        },
+        {
+          doc: e,
+          incoming: [],
+          outgoing: [{ ref: f, path: ['pages', '1234', 'content', 'e'], type: 'content-node' }],
+        },
+        { doc: f, incoming: [], outgoing: [] },
+      ]
+
+      expect(getContentDeps(doc(firestore, 'collection', 'a'), '1234', tree)).toEqual([
+        b,
+        c,
+        d,
+        e,
+        f,
+      ])
     })
   })
 })

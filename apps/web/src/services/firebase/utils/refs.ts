@@ -1,5 +1,5 @@
 import { DocumentReference } from 'firebase/firestore'
-import { isArray, isObject } from 'lodash'
+import { isArray, isEqual, isObject } from 'lodash'
 
 export type Reference = {
   /**
@@ -135,4 +135,55 @@ export function buildTree(docs: DocumentSnapshotLike[]): TreeNode[] {
         type: r.type,
       })),
   }))
+}
+
+/**
+ * Gets a list of DocumentReference to tree nodes that are referenced directly or indirectly
+ * as content nodes in the documentReference document. It traverses the tree by following
+ * outgoing references with the content-node type recursively.
+ *
+ * @param documentReference - The starting document reference from which to find content dependencies.
+ * @param treeNodes - The list of all tree nodes to traverse.
+ * @param startNodePath - Page id of the page in the
+ */
+export function getContentDeps(
+  versionDocRef: DocumentReference,
+  pageId: 'intro' | string,
+  treeNodes: TreeNode[],
+) {
+  const startNode = treeNodes.find((n) => n.doc.path === versionDocRef.path)
+  if (!startNode) return []
+
+  const visitedNodes: string[] = []
+  const collectedRefs: DocumentReference[] = []
+
+  function visitNode(node: TreeNode) {
+    if (visitedNodes.includes(node.doc.path)) return
+    visitedNodes.push(node.doc.path)
+
+    const outgoingRefs =
+      node === startNode
+        ? node.outgoing.filter(
+            (r) =>
+              (pageId === 'intro' && r.path[0] === 'intro') ||
+              isEqual(r.path.slice(0, 2), ['pages', pageId]),
+          )
+        : node.outgoing
+
+    outgoingRefs.forEach((outgoing) => {
+      if (!collectedRefs.find((r) => r.path === outgoing.ref.path)) {
+        collectedRefs.push(outgoing.ref)
+      }
+
+      const nextNode = treeNodes.find((n) => n.doc.path === outgoing.ref.path)
+
+      if (nextNode) {
+        visitNode(nextNode)
+      }
+    })
+  }
+
+  visitNode(startNode)
+
+  return collectedRefs
 }
