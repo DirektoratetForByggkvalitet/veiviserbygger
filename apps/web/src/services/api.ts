@@ -14,7 +14,9 @@ export const getConfig = async () => {
 export const getFile = async (path: string) => {
   const { data } = await instance.get<Requests['/storage/:path']['GET']['response']>(
     `/storage/${encodeURIComponent(path)}`,
+    { responseType: 'blob' },
   )
+
   return data
 }
 
