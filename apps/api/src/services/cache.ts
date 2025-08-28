@@ -9,6 +9,10 @@ export async function getCache() {
 
   const redis = createClient({
     url: process.env.REDIS_URL,
+    socket: {
+      tls: true, // Enable TLS/SSL connection
+      rejectUnauthorized: false, // Allow self-signed certificates
+    },
   })
 
   redis.on('error', (err) => {
