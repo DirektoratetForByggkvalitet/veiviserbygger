@@ -13,6 +13,7 @@
     "test:watch": "npm run test -- --watch --coverage=false"
   },
   "dependencies": {
+    "@redis/client": "^5.8.2",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

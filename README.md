@@ -74,6 +74,9 @@ Pull the docker image `dibk/losen-builder`, bind the desired host port to contai
 docker run -p3333:80 -e PUBLIC_FIREBASE_API_KEY=... -e PUBLIC_FIREBASE_APP_ID=abc123 kbrabrand/losen-veiviserbygger
 ```
 
+### Caching
+When running in production you don't want to be hitting firestore every time someone visits one of the wizards. To avoid this we cache the schema for a wizard for 60s in redis. You need to set up a redis instance available to the wizard builder api. After setting it up, add the following environment variable to the api container: `REDIS_URL=redis://....`.
+
 ### Firebase security rules
 You need to set the security rules for your firestore database and the storage service.
 

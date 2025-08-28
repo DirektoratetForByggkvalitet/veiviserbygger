@@ -44,14 +44,17 @@ import setupServer from './server'
 import { getFirestore } from 'firebase-admin/firestore'
 import { AppOptions } from 'firebase-admin/app'
 import { getStorage } from 'firebase-admin/storage'
+import { getCache } from './services/cache'
+import { IS_JEST } from './constants'
 
 const app = express()
 
 ;(async () => {
   const db = getFirestore()
   const storage = getStorage()
+  const redis = await getCache()
 
-  const server = await setupServer(app, { dependencies: { db, storage } })
+  const server = await setupServer(app, { dependencies: { db, storage, redis } })
 
   server.start()
 
@@ -59,19 +62,10 @@ const app = express()
     server.stop()
 
     try {
-      // await redis?.disconnect()
-      // !IS_JEST && console.log('Disconnected from redis')
+      await redis?.destroy()
+      !IS_JEST && console.log('Disconnected from redis')
     } catch (err) {
       // ignore
     }
-
-    // if (!IS_JEST) {
-    //   try {
-    //     await postgres.end()
-    //     console.log('Closed down pg connection pool')
-    //   } catch (err) {
-    //     // ignore
-    //   }
-    // }
   })
 })()
