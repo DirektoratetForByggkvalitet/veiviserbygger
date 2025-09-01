@@ -70,15 +70,19 @@
         height: vars.$header-height;
         gap: vars.$spacing--xsmall;
         padding: vars.$spacing--xsmall;
-        background-color: colors.$info;
-        border: 1px solid colors.$outline;
+        background-color: colors.get(neutral, xlight);
+        border: vars.$border-style;
+        border-top-width: 0;
     }
 
     &__message-title {
         display: flex;
         align-items: center;
         gap: vars.$spacing--xsmall;
-        @include mixins.font-size(small);
+        @include mixins.font-size(xsmall);
+        @include mixins.min-width(sm) {
+            @include mixins.font-size(small);
+        }
     }
 
     &--open {

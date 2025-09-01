@@ -171,7 +171,6 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
             <Button
               size="small"
               iconOnlyOnMobile="Pencil"
-              primary
               to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}
             >
               Gå til siste utkast
@@ -182,7 +181,6 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
             <Button
               size="small"
               iconOnlyOnMobile="Pencil"
-              primary
               onClick={() => setModal({ key: 'draft' })}
             >
               Lag nytt utkast
