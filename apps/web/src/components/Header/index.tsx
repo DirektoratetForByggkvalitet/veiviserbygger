@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 
 import Button from '@/components/Button'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
-import Icon, { IconMenu } from '@/components/Icon'
+import { IconMenu } from '@/components/Icon'
 import User from '@/components/User'
 import { siteName } from '@/constants'
 import { EditableContext } from '@/context/EditableContext'
@@ -164,7 +164,8 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
       {wizardIsPublished && (
         <div {...bem('message')}>
           <span {...bem('message-title')}>
-            <Icon name="Info" /> Denne versjonen er publisert og kan ikke endres direkte.
+            <span {...bem('tag')}>Publisert</span> Denne versjonen er publisert og kan ikke endres
+            direkte.
           </span>
           {/* A draft exist, but the user is on a different version */}
           {wizard?.data.draftVersion?.id !== activeVersion.id && wizard?.data.draftVersion ? (
@@ -172,6 +173,8 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
               size="small"
               iconOnlyOnMobile="Pencil"
               to={`/wizard/${wizardId}/${wizard.data.draftVersion.id}`}
+              icon="Calendar"
+              subtle
             >
               Gå til siste utkast
             </Button>
@@ -182,6 +185,8 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
               size="small"
               iconOnlyOnMobile="Pencil"
               onClick={() => setModal({ key: 'draft' })}
+              icon="Pencil"
+              subtle
             >
               Lag nytt utkast
             </Button>

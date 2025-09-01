@@ -63,6 +63,17 @@
         margin: 0 4px;
     }
 
+    &__tag {
+        @include mixins.font(base, normal);
+        font-size: 10px;
+        display: inline-block;
+        background-color: colors.$published;
+        color: colors.$light;
+        border: vars.$border-style;
+        border-radius: 4px;
+        padding: 3px 5px;
+    }
+
     &__message {
         display: flex;
         align-items: center;
@@ -70,9 +81,8 @@
         height: vars.$header-height;
         gap: vars.$spacing--xsmall;
         padding: vars.$spacing--xsmall;
-        background-color: colors.get(neutral, xlight);
+        background-color: colors.$published-background;
         border: vars.$border-style;
-        border-top-width: 0;
     }
 
     &__message-title {
