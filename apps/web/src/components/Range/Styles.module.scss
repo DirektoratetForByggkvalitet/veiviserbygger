@@ -4,14 +4,19 @@
 
 .input {
     $this: &;
-    @include mixins.font-size(base);
+    @include mixins.font-size(small);
     display: grid;
     width: 100%;
-    border: vars.$border-style;
-    background-color: colors.$light;
     position: relative;
+    border: none;
+    border-radius: vars.$border-radius;
+    background-color: colors.get(neutral, xlight);
+    padding: 4px 4px;
+    height: 35px;
+    width: auto;
 
     &:hover {
+        background-color: colors.get(neutral, light);
         border-color: shade(colors.get(neutral), 6%);
 
         #{$this}__label {
@@ -38,8 +43,10 @@
 
     &__input {
         border-radius: 0;
-        padding: 3px vars.$form-padding-x vars.$form-padding-y;
+        padding: 4px 4px;
         background-color: transparent;
+        min-width: 0;
+        max-width: 50px;
 
         @include mixins.input-placeholder {
             color: colors.get(neutral, base);
