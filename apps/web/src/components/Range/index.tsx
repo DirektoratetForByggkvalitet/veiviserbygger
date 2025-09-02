@@ -1,5 +1,6 @@
 import { ChangeEvent, useRef } from 'react'
 
+import { useEditable } from '@/hooks/useEditable'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 import { useValue } from '@/hooks/useValue'
@@ -23,6 +24,7 @@ type Props = {
 export default function Range({ label, header, hideLabel, ...props }: Props) {
   const fromRef = useRef<HTMLInputElement>(null)
   const toRef = useRef<HTMLInputElement>(null)
+  const isEditable = useEditable()
 
   const {
     value: fromValue,
@@ -55,6 +57,7 @@ export default function Range({ label, header, hideLabel, ...props }: Props) {
         {...bem('', {
           header,
           dirty: !fromInSync,
+          'read-only': !isEditable,
         })}
       >
         {!hideLabel && <span {...bem('label')}>{label}</span>}
@@ -64,6 +67,8 @@ export default function Range({ label, header, hideLabel, ...props }: Props) {
           {...bem('input')}
           type="number"
           onChange={handleChange('from')}
+          disabled={!isEditable}
+          readOnly={!isEditable}
           value={fromValue}
           ref={fromRef}
           aria-label={(hideLabel && label) || undefined}
@@ -74,6 +79,7 @@ export default function Range({ label, header, hideLabel, ...props }: Props) {
         {...bem('', {
           header,
           dirty: !toInSync,
+          'read-only': !isEditable,
         })}
       >
         {!hideLabel && <span {...bem('label')}>{label}</span>}
@@ -83,6 +89,8 @@ export default function Range({ label, header, hideLabel, ...props }: Props) {
           {...bem('input')}
           type="number"
           onChange={handleChange('to')}
+          disabled={!isEditable}
+          readOnly={!isEditable}
           value={toValue}
           ref={toRef}
           aria-label={(hideLabel && label) || undefined}
