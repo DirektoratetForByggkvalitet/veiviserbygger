@@ -75,12 +75,6 @@ export default function PublishModal() {
               </>
             ) : null}
           </Message>
-
-          <ButtonBar>
-            <Button type="button" onClick={onClose}>
-              Lukk
-            </Button>
-          </ButtonBar>
         </>
       ) : null}
 
