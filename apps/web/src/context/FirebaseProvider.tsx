@@ -51,7 +51,11 @@ function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginWithOidc }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{ user, loading, loginWithOidc: oidc?.provider ? loginWithOidc : null }}
+    >
+      {children}
+    </AuthContext.Provider>
   )
 }
 

@@ -42,14 +42,16 @@ export default function LoginPage() {
               </ButtonBar>
               <Divider text="eller" />
             </>
-          ) : null}
+          ) : (
+            <br />
+          )}
           <Form onSubmit={handleSubmit}>
             <Input
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange('email')}
-              label="Epost"
+              label="E-post"
               inputDebounceMs={0}
             />
             <Input
