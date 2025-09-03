@@ -10,7 +10,7 @@
     "dev": "turbo dev",
     "test": "turbo test",
     "test:watch": "turbo test -- --watch",
-    "build:docker": "docker build -f Dockerfile .",
+    "build:docker": "docker build -f Dockerfile . -t losen-veiviserbygger",
     "prepare": "husky",
     "release:patch": "npm version patch -m \"chore(release): %s\" && git push --follow-tags",
     "release:minor": "npm version minor -m \"chore(release): %s\" && git push --follow-tags",

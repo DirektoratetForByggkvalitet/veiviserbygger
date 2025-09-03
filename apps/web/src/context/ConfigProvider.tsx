@@ -9,12 +9,12 @@ type Config = Awaited<ReturnType<typeof getConfig>> | null
 type EnvVar = { key: string; optional?: boolean }
 
 const emulatorEnvVars: EnvVar[] = [
-  { key: 'FIREBASE_EMULATOR_AUTH_HOST' },
-  { key: 'FIREBASE_EMULATOR_FIRESTORE_HOST' },
+  { key: 'FIREBASE_EMULATOR_AUTH_HOST', optional: true },
+  { key: 'FIREBASE_EMULATOR_FIRESTORE_HOST', optional: true },
   { key: 'FIREBASE_EMULATOR_FIRESTORE_PORT', optional: true },
 ]
 
-const prodEnvVars: EnvVar[] = [
+const envVars: EnvVar[] = [
   { key: 'FIREBASE_API_KEY' },
   { key: 'FIREBASE_APP_ID' },
   { key: 'FIREBASE_AUTH_DOMAIN' },
@@ -23,6 +23,10 @@ const prodEnvVars: EnvVar[] = [
   { key: 'FIREBASE_MESSAGING_SENDER_ID' },
   { key: 'FIREBASE_AUTH_OIDC_PROVIDER_ID', optional: true },
   { key: 'FIREBASE_AUTH_OIDC_PROVIDER_NAME', optional: true },
+  { key: 'REDIS_URL', optional: true },
+  { key: 'PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_ID', optional: true },
+  { key: 'PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_NAME', optional: true },
+  { key: 'PUBLIC_FIREBASE_AUTH_DOMAIN', optional: true },
 ]
 
 function configOk(envVars: { key: string; optional?: boolean }[], config: Config) {
@@ -72,31 +76,40 @@ export default function ConfigProvider({ children }: { children: ReactNode }) {
     return <Loader />
   }
 
-  if (!configOk(emulatorEnvVars, config) && !configOk(prodEnvVars, config)) {
+  if (!configOk(emulatorEnvVars, config) || !configOk(envVars, config)) {
     return (
       <PageSimple title="Missing environmental variables">
         <p>
           Depending you're in development or production you either need to set env vars for running
           towards an emulator or towards a production Firebase account.
         </p>
+        <br />
         <p>
           You need to set these env vars in the environment of you API. In local dev that would be{' '}
           <code>apps/api/.env.development</code> while in production it would be by setting
           environment variables.
         </p>
+        <br />
 
-        <h2>Emulator</h2>
+        <h2>Enviroment variables</h2>
+
         <ul>
-          {emulatorEnvVars.map(({ key, optional }) => (
+          {envVars.map(({ key, optional }) => (
             <li key={key}>
               <ConfigStatus configKey={key} optional={!!optional} config={config} />
             </li>
           ))}
         </ul>
 
-        <h2>Production</h2>
+        <br />
+
+        <h2>Emulator specific env vars</h2>
+        <p>
+          These are not required, but if you want to connect to an emulator you need to set them.
+        </p>
+        <br />
         <ul>
-          {prodEnvVars.map(({ key, optional }) => (
+          {emulatorEnvVars.map(({ key, optional }) => (
             <li key={key}>
               <ConfigStatus configKey={key} optional={!!optional} config={config} />
             </li>

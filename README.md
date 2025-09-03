@@ -1,20 +1,22 @@
 Wizard builder for Losen
 ===
 
-A [https://github.com/Direktoratetforbyggkvalitet/losen](losen) compliant wizard builder. It uses [Firebase Firestore](https://firebase.google.com/docs/firestore) as its backend, allowing users to interact with the database, and a custom backend to serve the schemas and wizard assets.
+A **[https://github.com/Direktoratetforbyggkvalitet/losen](losen) compliant wizard builder** for creating interactive, schema-driven wizards. It uses [Firebase Firestore](https://firebase.google.com/docs/firestore) as its backend for storing wizard definitions and state, with a custom Node.js API for serving schemas and assets. The frontend is bundled into the same container and served via NGINX.
 
-## 👷‍♀️ Developing
-> If you're starting the project for the first time there are a few thing you'll need to set up:
->
-> 1. A working node runtime. [`Volta ⚡️`](https://volta.sh/) is recommended for a hassle free dev life if you're juggling more than a single project
-> 2. [Java JDK](https://jdk.java.net/) version 11 or higher installed. This is needed for the [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite).
+## 📖 Introduction
+The wizard builder lets organizations define and host guided workflows ("wizards") based on the losen standard.
 
-```sh
-$ npm i
-$ npm run dev
-```
+- **Who it’s for**: Organizations that need to deploy self-service wizards for citizens, employees, or customers.
+- **What it does**: Provides a builder interface, schema management, and runtime environment for losen-compliant wizards.
+- **Why it matters**: Ensures compliance with the losen framework while offering flexibility through Firebase and Redis integration.
 
-## Releasing new versions
+## 👷‍♀️ Getting Started (Development)
+### Prerequisites
+- Node.js runtime (use [`Volta ⚡️`](https://volta.sh/) for easy version management)
+- [Java JDK](https://jdk.java.net/) 11+ (needed for [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite)).
+- Docker (optional, but needed if you want to build locally)
+
+## 🚀 Releasing new versions
 Releasing new versions of the wizard builder is done like this:
 
 - **Major release**: `npm run release:major`
@@ -23,22 +25,18 @@ Releasing new versions of the wizard builder is done like this:
 
 It will
 1. check that your working copy is clean
-2. bump the versio number in the root package.json
+2. bump the version number in the root package.json
 3. add a chore commit message for the version change
 4. add a git tag for the new version
 5. push the new tag + current branch to your remote
 
 ...which will in turn be built and pushed to Dockerhub by the Github actions pipe.
 
-## Environment variables
+## 🔧 Environment variables
 Depending on what you're trying to do, you'll want to either provide env vars to connect to your local firebase emulator (this is the default that is set up in the `.env.development`) or connect to a real firebase instance hosted by Google.
 
-### With an emulator (in dev)
-- `PUBLIC_FIREBASE_EMULATOR_AUTH_HOST` - Hostname, protocol and port to auth emulator. For example: `http://localhost:9099`
-- `PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST` - Host name for firestore emulator. Just host, not port or protocol. Example: `localhost`
-- `PUBLIC_FIREBASE_EMULATOR_FIRESTORE_PORT` - Port number for firestore emulator. Example: `8080`
+For local dev, add your env vars to `/apps/api/.env.local`.
 
-### Firebase hosted by Google
 - `GOOGLE_APPLICATION_CREDENTIALS` Base64 encoded service account JSON for accessing firebase from the backend
 - `PUBLIC_FIREBASE_API_KEY` - Firebase API key
 - `PUBLIC_FIREBASE_APP_ID` – Firebase app ID
@@ -46,8 +44,19 @@ Depending on what you're trying to do, you'll want to either provide env vars to
 - `PUBLIC_FIREBASE_PROJECT_ID` - Firebase project id
 - `PUBLIC_FIREBASE_STORAGE_BUCKET` - Firebase storage bucket
 - `PUBLIC_FIREBASE_MESSAGING_SENDER_ID` - Firebase messaging sender ID
+- `REDIS_URL` - Connection string for Redis cache. Optional, but in most cases necessary in production. See [caching](#caching).
+- `PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_ID` - Optional Firebase OIDC provider ID used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login).
+- `PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_NAME` - Optional Firebase OIDC provider name used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login).
+- `PUBLIC_FIREBASE_AUTH_DOMAIN` - Optional Firebase OIDC auth domain used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login).
 
-## Building and running with docker
+### Emulator setup in dev
+If you want to point the wizard builder to a firebase emulator running locally, you have to set the following. In development this is the default and these values are set in the `.env.development` in the `/api` folder.
+
+- `PUBLIC_FIREBASE_EMULATOR_AUTH_HOST` - Hostname, protocol and port to auth emulator. For example: `http://localhost:9099`
+- `PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST` - Host name for firestore emulator. Just host, not port or protocol. Example: `localhost`
+- `PUBLIC_FIREBASE_EMULATOR_FIRESTORE_PORT` - Port number for firestore emulator. Example: `8080`
+
+## 🐳 Building and running with docker
 The applications can be built and bundled with docker by doing `npm run build:docker` or `docker build .` if you prefer that. In short it will
 
 1. build the frontend and api
@@ -59,28 +68,36 @@ After building the image you will, when starting the app, need to map port `80` 
 You would typically start the container by doing something along the lines of:
 
 ```sh
-docker run -p 8181:80 -e PUBLIC_FIREBASE_API_KEY=... -e PUBLIC_FIREBASE_APP_ID=abc123 imageName
+docker run -p 8181:80
+  -e PUBLIC_FIREBASE_API_KEY=...
+  -e PUBLIC_FIREBASE_APP_ID=abc123
+  losen-veiviserbygger
 ```
 
-## Building for production
+## Takin' it to production
+
+### 📦 Building for production
 Docker images for the wizard builder is [automatically built](https://github.com/behalf-no/veiviserbygger/actions/workflows/ci.yml) on every push to the main branch and pushed to [Dockerhub](https://hub.docker.com/r/kbrabrand/losen-veiviserbygger).
 
 > Later, when we push them to someplace public you can pull the image from dockerhub like every other image.
 
-## Running in production
-Pull the docker image `dibk/losen-builder`, bind the desired host port to container port `80` and pass env vars as specified under [environment variables](#firebase-hosted-by-google). An example
+### 🏃‍♂️ Using the public image
+Pull the docker image `kbrabrand/losen-veiviserbygger`, bind the desired host port to container port `80` and pass env vars as specified under [environment variables](#firebase-hosted-by-google). An example
 
 ```sh
-docker run -p3333:80 -e PUBLIC_FIREBASE_API_KEY=... -e PUBLIC_FIREBASE_APP_ID=abc123 kbrabrand/losen-veiviserbygger
+docker run -p3333:80
+  -e PUBLIC_FIREBASE_API_KEY=...
+  -e PUBLIC_FIREBASE_APP_ID=abc123
+  kbrabrand/losen-veiviserbygger
 ```
 
-### Caching
-When running in production you don't want to be hitting firestore every time someone visits one of the wizards. To avoid this we cache the schema for a wizard for 60s in redis. You need to set up a redis instance available to the wizard builder api. After setting it up, add the following environment variable to the api container: `REDIS_URL=redis://....`.
+### ⚙️ Firebase
+In production you need to connect the wizard builder to a Firebase database. You create one through the firebase console and that's also where you get the `PUBLIC_FIREBASE_API_KEY` etc. that you need to provide to your app as env vars.
 
-### Firebase security rules
+#### Security rules
 You need to set the security rules for your firestore database and the storage service.
 
-#### Firestore
+##### Firestore
 Since this is a single tenant service at the moment, meaning that each organization will deploy their own firestore database and server, we allow anyone who've authenticated to see and edit everything under `/wizards/` in the database.
 
 ```
@@ -95,7 +112,7 @@ service cloud.firestore {
 }
 ```
 
-#### Storage
+##### Storage
 Only authenticated users should be allowed to add/edit/remove files in the storage service, but anyone should be able to see the files, since these are uploaded to be shown in the publicly available wizards.
 
 ```
@@ -111,7 +128,10 @@ service firebase.storage {
 }
 ```
 
-### Setting up OIDC login
+### ⚡️ Performance (caching)
+When running in production you don't want to be hitting firestore every time someone visits one of the wizards. To avoid this we cache the schema for a wizard for 60s using Redis. You should set up a Redis instance available to the wizard builder api. After setting it up, add the following environment variable to the api container: `REDIS_URL=redis://....`.
+
+### 🔑 Single sign on (OIDC)
 While managing users through the authentication page in the Firebase console is possible, it is often not the most practical solution for larger orgs. If you have an identity provider in you organization that supports OIDC you can manage users with access to the wizard builder from your own identity provider.
 
 Steps:
@@ -119,7 +139,7 @@ Steps:
     1. Create an OIDC client
     2. Add `https://your-app-domain.com/__/auth/handler` to the list of allowed redirect URLs for the client
 2. In the Firebase console
-    1. Add a new OIDC provider by goint to the Firebase console > Autentication > Sign-in method and clicking «Add new provider»
+    1. Add a new OIDC provider by going to the Firebase console > Autentication > Sign-in method and clicking «Add new provider»
     2. Click OpenID Connect and click to enable OpenID Connect at the top
     3. Enter a name; the client id, issuer url and the secret for your OIDC client
     4. Make a note of the Provider ID (below the name field) – you'll need this later
@@ -130,8 +150,8 @@ Steps:
 
 After restarting your container/application the option of logging in using the OIDC provider should appear and the users you allow should be able to log in.
 
-### Embeds and Content Security Policy
-When embedding wizards from the builder on you on website you might need to adjust your Content Security Policy (CSP). The CSP is there to protect the visitors on your site against various attack vectors and a large part of that is instructing the browser to prevent fetching and execution of scripts and resources from other domains.
+### 🦺 Embeds and Content Security Policy
+When embedding wizards from the builder on your own website you might need to adjust your Content Security Policy (CSP). The CSP is there to protect the visitors on your site against various attack vectors and a large part of that is instructing the browser to prevent fetching and execution of scripts and resources from other domains.
 
 The wizard builder will most likely reside on a different domain than your site, and consequently you will need to adjust the CSP if you have one. In order for the wizard builder to work, the following needs to be allowed:
 
