@@ -1,4 +1,4 @@
-Wizard builder for Losen
+👷‍♀️ Wizard builder for Losen
 ===
 
 A **[https://github.com/Direktoratetforbyggkvalitet/losen](losen) compliant wizard builder** for creating interactive, schema-driven wizards. It uses [Firebase Firestore](https://firebase.google.com/docs/firestore) as its backend for storing wizard definitions and state, with a custom Node.js API for serving schemas and assets. The frontend is bundled into the same container and served via NGINX.
@@ -9,6 +9,8 @@ The wizard builder lets organizations define and host guided workflows ("wizards
 - **Who it’s for**: Organizations that need to deploy self-service wizards for citizens, employees, or customers.
 - **What it does**: Provides a builder interface, schema management, and runtime environment for losen-compliant wizards.
 - **Why it matters**: Ensures compliance with the losen framework while offering flexibility through Firebase and Redis integration.
+
+![Losen wizard builder illustration](./docs/Losen%20Wizard%20Builder.png)
 
 ## 👷‍♀️ Getting Started (Development)
 ### Prerequisites
