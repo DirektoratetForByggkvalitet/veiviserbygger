@@ -19,6 +19,18 @@ type TransformerFunc<
 ) => Promise<Extract<Page['children'][number], { type: DestType }>[]>
 
 async function getImageUrl(image: string, deps: DependencyContainer) {
+  const isEmulator = !!process.env.STORAGE_EMULATOR_HOST
+
+  /**
+   * Calling getSignedUrl is not possible against an emulator. If do it, it will
+   * trigger ACL checks that are not supported by the emulator and result in an
+   * error because no credentials are provided. In an emulator setup, the files are
+   * public anyway, so we can just return the public URL.
+   */
+  if (isEmulator) {
+    return deps.storage.bucket().file(image).publicUrl()
+  }
+
   const [url] = await deps.storage.bucket().file(image).getSignedUrl({
     action: 'read',
     expires: '2099-01-01',
