@@ -90,7 +90,7 @@ Docker images for the wizard builder is [automatically built](https://github.com
 > Later, when we push them to someplace public you can pull the image from dockerhub like every other image.
 
 ### 🏃‍♂️ Using the public image
-Pull the docker image `kbrabrand/losen-veiviserbygger`, bind the desired host port to container port `80` and pass env vars as specified under [environment variables](#firebase-hosted-by-google). An example
+Pull the docker image `dibk/losen-veiviserbygger`, bind the desired host port to container port `80` and pass env vars as specified under [environment variables](#firebase-hosted-by-google). An example
 
 ```sh
 docker run -p3333:80

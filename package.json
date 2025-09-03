@@ -18,14 +18,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/behalf-no/veiviserbygger.git"
+    "url": "git+https://github.com/DirektoratetForByggkvalitet/veiviserbygger.git"
   },
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/behalf-no/veiviserbygger/issues"
+    "url": "https://github.com/DirektoratetForByggkvalitet/veiviserbygger/issues"
   },
-  "homepage": "https://github.com/behalf-no/veiviserbygger#readme",
+  "homepage": "https://github.com/DirektoratetForByggkvalitet/veiviserbygger#readme",
   "volta": {
     "node": "20.19.4",
     "npm": "10.9.3"
