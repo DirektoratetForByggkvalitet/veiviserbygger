@@ -1,4 +1,5 @@
 {
+  "projectId": "veiviserbygger",
   "emulators": {
     "auth": {
       "port": 9099
