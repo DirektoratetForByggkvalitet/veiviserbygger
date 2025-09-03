@@ -1,7 +1,7 @@
 🏗️ Wizard builder for Losen
 ===
 
-A **[https://github.com/Direktoratetforbyggkvalitet/losen](losen) compliant wizard builder** for creating interactive, schema-driven wizards. It uses [Firebase Firestore](https://firebase.google.com/docs/firestore) as its backend for storing wizard definitions and state, with a custom Node.js API for serving schemas and assets. The frontend is bundled into the same container and served via NGINX.
+A **[losen](https://github.com/DirektoratetForByggkvalitet/losen) compliant wizard builder** for creating interactive, schema-driven wizards. It uses [Firebase Firestore](https://firebase.google.com/docs/firestore) as its backend for storing wizard definitions and state, with a custom Node.js API for serving schemas and assets. The frontend is bundled into the same container and served via NGINX.
 
 ## 📖 Introduction
 The wizard builder lets organizations define and host guided workflows ("wizards") based on the losen standard.
@@ -17,6 +17,12 @@ The wizard builder lets organizations define and host guided workflows ("wizards
 - Node.js runtime (use [`Volta ⚡️`](https://volta.sh/) for easy version management)
 - [Java JDK](https://jdk.java.net/) 11+ (needed for [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite)).
 - Docker (optional, but needed if you want to build locally)
+
+### Setup
+```sh
+npm install
+npm run dev
+```
 
 ## 🚀 Releasing new versions
 Releasing new versions of the wizard builder is done like this:
