@@ -20,6 +20,12 @@ concurrency:
   group: docker-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+  attestations: write
+  
 jobs:
   test:
     name: Run tests
