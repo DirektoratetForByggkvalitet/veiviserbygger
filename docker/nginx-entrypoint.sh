@@ -11,7 +11,7 @@ run in a tiny OCI container
 EOF
 # Replace environment variables in the nginx config template
 # Replace ${WEB_PORT} in the template with the actual PORT value using sed
-sed -e "s/\${WEB_PORT}/$PORT/g" \
+sed -e "s/\${WEB_PORT}/$WEB_PORT/g" \
     -e "s/\${PUBLIC_FIREBASE_APP_ID}/$PUBLIC_FIREBASE_APP_ID/g" \
     -e "s/\${LOCAL_PORT}/$LOCAL_PORT/g" \
     /etc/nginx/nginx.conf.template  > /etc/nginx/nginx.conf
