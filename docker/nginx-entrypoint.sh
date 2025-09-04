@@ -10,7 +10,12 @@ run in a tiny OCI container
 
 EOF
 # Replace environment variables in the nginx config template
-envsubst < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+# Replace ${WEB_PORT} in the template with the actual PORT value using sed
+sed -e "s/\${WEB_PORT}/$PORT/g" \
+    -e "s/\${PUBLIC_FIREBASE_APP_ID}/$PUBLIC_FIREBASE_APP_ID/g" \
+    -e "s/\${LOCAL_PORT}/$LOCAL_PORT/g" \
+    /etc/nginx/nginx.conf.template  > /etc/nginx/nginx.conf
+
 # Showing the final nginx.conf
 echo "## debug: nginx config ##"
 cat /etc/nginx/nginx.conf
@@ -19,7 +24,8 @@ echo ""
 echo "Starting the application..."
 
 # Start the API server (in the background) using the PORT value
-PORT=3000 npm run start --workspace=api &
-echo "Starting nginx..."
+PORT=${LOCAL_PORT} npm run start --workspace=api &
+
 # Start Nginx
-exec nginx -g 'daemon off;'
+echo "Starting nginx..."
+exec nginx
