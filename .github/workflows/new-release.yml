@@ -39,7 +39,10 @@ jobs:
 
       - name: Create release
         timeout-minutes: 10
-        run: npm run release:${{ inputs.level }}
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "github-actions@users.noreply.github.com"
+          npm run release:${{ inputs.level }}
 
       # - uses: act10ns/slack@v2
       #   with:
