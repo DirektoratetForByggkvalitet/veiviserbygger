@@ -1,0 +1,48 @@
+name: Make a new release
+
+on:
+  workflow_dispatch:
+    inputs:
+      level:
+        description: 'Release level'
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    name: Make new release
+    runs-on: 
+      - ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build npm
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+
+      - name: Install modules
+        run: npm ci --ignore-scripts
+
+      - name: Create release
+        timeout-minutes: 10
+        run: npm run release:${{ inputs.level }}
+
+      # - uses: act10ns/slack@v2
+      #   with:
+      #     status: ${{ job.status }}
+      #   if: failure()
+
