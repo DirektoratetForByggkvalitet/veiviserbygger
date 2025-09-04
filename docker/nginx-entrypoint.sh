@@ -1,22 +1,25 @@
 #!/bin/sh
 
-# Ensure PORT is set (Heroku provides it, but a default is good for local testing)
-PORT=${PORT:-80}
+echo << EOF
++-------------------------------+
+|  V E I V I S E R B Y G G E R  |
++-------------------------------+
 
-# # Debugging: Print the PORT value to verify it’s set
-echo "Using PORT: $PORT"
+A Losen-compliant wizard builder,
+run in a tiny OCI container
 
-# # Replace ${PORT} in the template with the actual PORT value using sed
+EOF
+# Replace environment variables in the nginx config template
 envsubst < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
-# sed -e "s/##PORT##/$PORT/g" \
-#     -e "s/##PROJECT_ID##/$PUBLIC_FIREBASE_PROJECT_ID/g" \
-#     /etc/nginx/nginx.conf.template  > /etc/nginx/nginx.conf
-
-# # Display the final configuration
+# Showing the final nginx.conf
+echo "## debug: nginx config ##"
 cat /etc/nginx/nginx.conf
+echo "## end config ##"
+echo ""
+echo "Starting the application..."
 
 # Start the API server (in the background) using the PORT value
 PORT=3000 npm run start --workspace=api &
-
+echo "Starting nginx..."
 # Start Nginx
 exec nginx -g 'daemon off;'

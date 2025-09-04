@@ -1,0 +1,49 @@
+# Sample docker compose file
+# This compose file was originally made for use with Portainer.io
+# You can also use an .env file to populate the variables below:
+# - VERSION_TAG - used to decide which image version to use. Default: 'latest'
+# - FIREBASE_API_KEY - Sets the PUBLIC_FIREBASE_API_KEY
+# - FIREBASE_APP_ID - Set the PUBLIC_FIREBASE_API_ID
+# - AUTH_DOMAIN - Sets the PUBLIC_FIREBASE_AUTH_DOMAIN
+# - OIDC_PROVIDER_ID - Sets the PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_ID
+# - OIDC_PROVIDER_NAME - Sets the PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_NAME
+# - ENDPOINT_NAME - Used to tell Traefik which FQDN the server is using, eg. 'veiviserbygger.domain.com'
+# - serviceName - Internal name for Traefik. Default: 'veiviserbygger'
+networks:
+  private_network:
+    # external: true # Used if the network is already created
+
+services:
+  # Redis instance to cache the schema
+  cache:
+    image: docker.io/redis:alpine
+    environment:
+      TZ: Europe/Oslo
+    networks:
+      private_network:
+    
+  server:
+    image: ghcr.io/direktoratetforbyggkvalitet/veiviserbygger:${VERSION_TAG:-latest}
+    environment:
+      TZ: Europe/Oslo
+      PUBLIC_FIREBASE_API_KEY: ${FIREBASE_API_KEY}
+      PUBLIC_FIREBASE_API_ID: ${FIREBASE_APP_ID}
+      REDIS_URL: redis://cache
+      PUBLIC_FIREBASE_AUTH_DOMAIN: ${AUTH_DOMAIN}
+      PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_ID: ${OIDC_PROVIDER_ID}
+      PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_NAME: ${OIDC_PROVIDER_NAME}
+    expose:
+      - 80
+    networks:
+      private_network:
+    labels:
+      # Sample for using Traefik as reverse proxy. If not, comment out or remove the labels
+      traefik.enable: true
+      traefik.http.routers.${serviceName:-veiviserbygger}-r.entrypoints: https
+      traefik.http.routers.${serviceName}-r.rule: Host(`${ENDPOINT_NAME}`)
+      # traefik.http.routers.${serviceName}-r.middlewares: secure@file
+      traefik.http.routers.${serviceName}-r.tls.certresolver: letsencrypt
+      # traefik.http.routers.${serviceName}-r.tls.options: tlsv13only@file
+      traefik.http.routers.${serviceName}-r.service: ${serviceName}-s
+      traefik.http.services.${serviceName}-s.loadbalancer.server.port: 80
+    

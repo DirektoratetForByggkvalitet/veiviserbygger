@@ -35,5 +35,6 @@ RUN npm run build --filter=web --filter=api
 RUN mkdir -p /usr/share/nginx/html
 RUN cp -r apps/web/dist/* /usr/share/nginx/html
 RUN ls -la /usr/share/nginx/html
+ENV WEB_PORT=80
 
 ENTRYPOINT ["sh", "-c", "/usr/local/bin/nginx-entrypoint.sh"]
