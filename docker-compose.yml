@@ -33,17 +33,15 @@ services:
       PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_ID: ${OIDC_PROVIDER_ID}
       PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_NAME: ${OIDC_PROVIDER_NAME}
     expose:
-      - 80
+      - 80 # Nginx
+      - 3000 # The application port
     networks:
       private_network:
     labels:
       # Sample for using Traefik as reverse proxy. If not, comment out or remove the labels
       traefik.enable: true
-      traefik.http.routers.${serviceName:-veiviserbygger}-r.entrypoints: https
       traefik.http.routers.${serviceName}-r.rule: Host(`${ENDPOINT_NAME}`)
-      # traefik.http.routers.${serviceName}-r.middlewares: secure@file
-      traefik.http.routers.${serviceName}-r.tls.certresolver: letsencrypt
-      # traefik.http.routers.${serviceName}-r.tls.options: tlsv13only@file
+      traefik.http.routers.${serviceName}-r.tls: true
       traefik.http.routers.${serviceName}-r.service: ${serviceName}-s
       traefik.http.services.${serviceName}-s.loadbalancer.server.port: 80
     

@@ -9,7 +9,7 @@ http {
     default_type  application/octet-stream;
 
     server {
-        listen ${WEB_PORT:-80};  # Set by envsubst
+        listen ${WEB_PORT};  # Set by envsubst
 
         # Serve static files
         location / {
