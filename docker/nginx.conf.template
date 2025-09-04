@@ -9,7 +9,7 @@ http {
     default_type  application/octet-stream;
 
     server {
-        listen ##PORT##;  # This will be replaced by sed
+        listen ${PORT};  # This will be replaced by sed
 
         # Serve static files
         location / {
@@ -31,7 +31,7 @@ http {
         }
 
         location /__/auth {
-            proxy_pass https://##PROJECT_ID##.firebaseapp.com;
+            proxy_pass https://${PUBLIC_FIREBASE_API_ID}.firebaseapp.com;
         }
 
         # Proxy /api requests to Node.js server

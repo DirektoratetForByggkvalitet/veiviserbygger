@@ -5,7 +5,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install NGINX in the final stage
-RUN apk add nginx
+RUN apk add --no-cache nginx envsubst 
 
 # Copy the Nginx template file
 COPY docker/nginx.conf.template /etc/nginx/nginx.conf.template
