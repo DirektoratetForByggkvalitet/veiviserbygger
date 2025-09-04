@@ -85,18 +85,18 @@ docker run -p 8181:80
 ## Takin' it to production
 
 ### 📦 Building for production
-Docker images for the wizard builder is [automatically built](https://github.com/DirektoratetForByggkvalitet/veiviserbygger/actions/workflows/ci.yml) on every push to the main branch and pushed to [Dockerhub](https://hub.docker.com/r/dibk/losen-veiviserbygger).
+Docker images for the wizard builder is [automatically built](https://github.com/DirektoratetForByggkvalitet/veiviserbygger/actions/workflows/docker-build.yml) on every push to the main branch and pushed to [ghcr.io](https://github.com/DirektoratetForByggkvalitet/veiviserbygger/pkgs/container/veiviserbygger).
 
 > Later, when we push them to someplace public you can pull the image from dockerhub like every other image.
 
 ### 🏃‍♂️ Using the public image
-Pull the docker image `dibk/losen-veiviserbygger`, bind the desired host port to container port `80` and pass env vars as specified under [environment variables](#firebase-hosted-by-google). An example
+Pull the docker image `ghcr.io/direktoratetforbyggkvalitet/veiviserbygger`, bind the desired host port to container port `80` and pass env vars as specified under [environment variables](#firebase-hosted-by-google). An example
 
 ```sh
 docker run -p3333:80
   -e PUBLIC_FIREBASE_API_KEY=...
   -e PUBLIC_FIREBASE_APP_ID=abc123
-  dibk/losen-veiviserbygger
+  ghcr.io/direktoratetforbyggkvalitet/veiviserbygger
 ```
 
 ### ⚙️ Firebase
