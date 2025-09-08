@@ -23,7 +23,7 @@ echo ""
 echo "Starting the application..."
 
 # Start the API server (in the background) using the PORT value
-touch api/.env
+touch .env
 PORT=${LOCAL_PORT} npm run start --workspace=api &
 
 # Start Nginx
