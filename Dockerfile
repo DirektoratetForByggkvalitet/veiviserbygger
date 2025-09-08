@@ -18,7 +18,7 @@ RUN chmod +x /usr/local/bin/nginx-entrypoint.sh
 COPY package*.json ./
 
 # Copy the package.json for the different apps
-RUN mkdir -p apps/web apps/api
+RUN mkdir -p apps/web apps/api && touch apps/api/.env
 COPY apps/web/package.json apps/web/
 COPY apps/api/package.json apps/api/
 

@@ -16,14 +16,13 @@ sed -e "s/\${WEB_PORT}/$WEB_PORT/g" \
     /etc/nginx/nginx.conf.template  > /etc/nginx/nginx.conf
 
 # Showing the final nginx.conf
-echo "## debug: nginx config ##"
-cat /etc/nginx/nginx.conf
-echo "## end config ##"
-echo ""
+# echo "## debug: nginx config ##"
+# cat /etc/nginx/nginx.conf
+# echo "## end config ##"
+# echo ""
 echo "Starting the application..."
 
 # Start the API server (in the background) using the PORT value
-touch .env
 PORT=${LOCAL_PORT} npm run start --workspace=api &
 
 # Start Nginx
