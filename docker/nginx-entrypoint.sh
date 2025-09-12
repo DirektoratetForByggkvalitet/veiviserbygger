@@ -26,5 +26,5 @@ echo "Starting the application..."
 PORT=${LOCAL_PORT} npm run start --workspace=api &
 
 # Start Nginx
-echo "Starting nginx..."
+echo "Starting nginx server on port ${WEB_PORT}"
 exec nginx
