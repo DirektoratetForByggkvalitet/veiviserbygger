@@ -41,28 +41,36 @@ It will
 ...which will in turn be built and pushed to Dockerhub by the Github actions pipe.
 
 ## 🔧 Environment variables
-Depending on what you're trying to do, you'll want to either provide env vars to connect to your local firebase emulator (this is the default that is set up in the `.env.development`) or connect to a real firebase instance hosted by Google.
+Depending on what you're trying to do, you'll want to either provide env vars to connect to your local firebase emulator (this is the default that is set up in the `.env.development`) or connect to a real firebase instance hosted by Google. For local dev, add your env vars to `/apps/api/.env.local`.
 
-For local dev, add your env vars to `/apps/api/.env.local`.
+The firebase env vars partially refer to the Firebase **project** and the web app you create _in_ your Firebase project to represent the wizard builder application. See the video below for reference.
 
-- `GOOGLE_APPLICATION_CREDENTIALS` Base64 encoded service account JSON for accessing firebase from the backend
-- `PUBLIC_FIREBASE_API_KEY` - Firebase API key
-- `PUBLIC_FIREBASE_APP_ID` – Firebase app ID
-- `PUBLIC_FIREBASE_AUTH_DOMAIN` - Firebase auth domain
-- `PUBLIC_FIREBASE_PROJECT_ID` - Firebase project id
-- `PUBLIC_FIREBASE_STORAGE_BUCKET` - Firebase storage bucket
-- `PUBLIC_FIREBASE_MESSAGING_SENDER_ID` - Firebase messaging sender ID
-- `REDIS_URL` - Connection string for Redis cache. Optional, but in most cases necessary in production. See [caching](#caching).
-- `PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_ID` - Optional Firebase OIDC provider ID used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login).
-- `PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_NAME` - Optional Firebase OIDC provider name used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login).
-- `PUBLIC_FIREBASE_AUTH_DOMAIN` - Optional Firebase OIDC auth domain used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login).
+![alt text](./docs/image.png)
+
+| Environemnt variable | Description | Production | Development |
+| -------------------- | ----------- | ---------- | ----------- |
+| `REDIS_URL` | Connection string for Redis cache. See [caching](#caching). On the format `rediss://...` | Recommended | Optional |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Base64 encoded service account JSON for the privileged access to firebase that the backend needs. | Required | - |
+| `PUBLIC_FIREBASE_PROJECT_ID` | Firebase project id. You find this under «Project settings» in the Firebase console. | Required | Required |
+| `PUBLIC_FIREBASE_APP_ID` | Firebase app id for the **web** project you've created in the firebase project. | Required | Required |
+| `PUBLIC_FIREBASE_API_KEY` | Firebase API key for the web app in your firebase project. | Required | Required |
+| `PUBLIC_FIREBASE_STORAGE_BUCKET` | Storage bucket for firebase storage. You find it under the web application settings, but usually it's `APP_ID.appspot.com` | Required | Required |
+| `PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID. You find it under the web application settings. It's an 11 digit number. | Required | Required |
+| `PUBLIC_FIREBASE_AUTH_DOMAIN` | The domain where your application is hosted. Without the protocol prefix (https://). | Required | Required |
+| `PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_ID` | Optional Firebase OIDC provider ID used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login). | Optional | Optional |
+| `PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_NAME` | Optional Firebase OIDC provider name used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login). | Optional | Optional |
+| `PUBLIC_FIREBASE_AUTH_DOMAIN` | Optional Firebase OIDC auth domain used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login). | Optional | Optional |
 
 ### Emulator setup in dev
-If you want to point the wizard builder to a firebase emulator running locally, you have to set the following. In development this is the default and these values are set in the `.env.development` in the `/api` folder.
+If you want to point the wizard builder to a firebase emulator running locally, you have to set the following. When running in development using the `npm run dev` command the values from `.env.development` in the `/api` folder are loaded automatically. You can override by setting values in `apps/api/.env.local`.
 
-- `PUBLIC_FIREBASE_EMULATOR_AUTH_HOST` - Hostname, protocol and port to auth emulator. For example: `http://localhost:9099`
-- `PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST` - Host name for firestore emulator. Just host, not port or protocol. Example: `localhost`
-- `PUBLIC_FIREBASE_EMULATOR_FIRESTORE_PORT` - Port number for firestore emulator. Example: `8080`
+| Environemnt variable | Description | Default |
+| -------------------- | ----------- | ------- |
+| PUBLIC_FIREBASE_EMULATOR_AUTH_HOST | Hostname, protocol and port to auth emulator | `http://localhost:9099` |
+| PUBLIC_FIREBASE_EMULATOR_FIRESTORE_HOST | Hostname for the firestore database emulator | `localhost` |
+| PUBLIC_FIREBASE_EMULATOR_FIRESTORE_PORT | Port number for the firstore database emulator | `8080` |
+| PUBLIC_FIREBASE_EMULATOR_STORAGE_HOST | Hostname for the firebase storage emulator | `localhost`|
+| PUBLIC_FIREBASE_EMULATOR_STORAGE_PORT | Port number for the firebase storage emulator | `9199`|
 
 ## 🐳 Building and running with docker
 The applications can be built and bundled with docker by doing `npm run build:docker` or `docker build .` if you prefer that. In short it will
@@ -100,7 +108,7 @@ docker run -p3333:80
 ```
 
 ### ⚙️ Firebase
-In production you need to connect the wizard builder to a Firebase database. You create one through the firebase console and that's also where you get the `PUBLIC_FIREBASE_API_KEY` etc. that you need to provide to your app as env vars.
+In production you need to connect the wizard builder to a Firebase project. After creating the project you need to add a firestore database to the project and add a web app to the project by clicking «+ Add app» on the Project overview for your project. A web app in this context represents a web based application that interacts with the firebase project.
 
 #### Security rules
 You need to set the security rules for your firestore database and the storage service.
