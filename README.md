@@ -54,7 +54,7 @@ The firebase env vars partially refer to the Firebase **project** and the web ap
 | `PUBLIC_FIREBASE_PROJECT_ID` | Firebase project id. You find this under «Project settings» in the Firebase console. | Required | Required |
 | `PUBLIC_FIREBASE_APP_ID` | Firebase app id for the **web** project you've created in the firebase project. | Required | Required |
 | `PUBLIC_FIREBASE_API_KEY` | Firebase API key for the web app in your firebase project. | Required | Required |
-| `PUBLIC_FIREBASE_STORAGE_BUCKET` | Storage bucket for firebase storage. You find it under the web application settings, but usually it's `APP_ID.appspot.com` | Required | Required |
+| `PUBLIC_FIREBASE_STORAGE_BUCKET` | Storage bucket for firebase storage. You find it under the web application settings, but usually it's on the format `APP_ID.appspot.com` or `APP_ID.firebasestorage.app` | Required | Required |
 | `PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID. You find it under the web application settings. It's an 11 digit number. | Required | Required |
 | `PUBLIC_FIREBASE_AUTH_DOMAIN` | The domain where your application is hosted. Without the protocol prefix (https://). | Required | Required |
 | `PUBLIC_FIREBASE_AUTH_OIDC_PROVIDER_ID` | Optional Firebase OIDC provider ID used when setting up SSO. See [Setting up OIDC login](#setting-up-oidc-login). | Optional | Optional |
