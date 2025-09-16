@@ -33,7 +33,7 @@ http {
         }
 
         location /__/auth {
-            proxy_pass https://${PUBLIC_FIREBASE_APP_ID}.firebaseapp.com; # Set by sed
+            proxy_pass https://${PUBLIC_FIREBASE_PROJECT_ID}.firebaseapp.com; # Set by sed
         }
 
         # Proxy /api requests to Node.js server
