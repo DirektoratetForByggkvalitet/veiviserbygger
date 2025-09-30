@@ -144,6 +144,8 @@ service firebase.storage {
 }
 ```
 
+Modern browsers will probably show CORS error messages saying that images from storage are served without a 'Access-Control-Allow-Origin' header. This can be adressed by [adding the CORS header using the Google Console](https://medium.com/@we.viavek/setting-cors-in-firebase-19a2cce2fe28). If you don't want to install gsutil on your compouter, you can use the command line in the Google Console instead.
+
 ### ⚡️ Performance (caching)
 When running in production you don't want to be hitting firestore every time someone visits one of the wizards. To avoid this we cache the schema for a wizard for 60s using Redis. You should set up a Redis instance available to the wizard builder api. After setting it up, add the following environment variable to the api container: `REDIS_URL=redis://....`.
 
