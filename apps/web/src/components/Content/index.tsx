@@ -545,7 +545,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
           {node.type !== 'Text' || page.type !== 'Result' ? (
             <ErrorWrapper slice={['heading']}>
               <Input
-                label="Tittel"
+                label="Ledetekst"
                 value={node.heading || ''}
                 onChange={(v) => patchNode(node.id, { heading: v })}
                 header
@@ -555,7 +555,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
 
           <ErrorWrapper slice={['text']}>
             <Editor
-              label="Innhold"
+              label="Beskrivelse"
               value={node.text || ''}
               onChange={(v) => patchNode(node.id, { text: v })}
               sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
