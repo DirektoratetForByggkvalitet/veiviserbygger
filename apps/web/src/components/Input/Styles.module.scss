@@ -43,6 +43,7 @@
         border-radius: 0;
         padding: 3px vars.$form-padding-x vars.$form-padding-y;
         background-color: transparent;
+        min-width: 160px;
         @include mixins.input-placeholder {
             color: colors.get(neutral, base);
         }
