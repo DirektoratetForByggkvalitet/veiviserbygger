@@ -164,6 +164,12 @@ const addNodeContentOptions = (
       type: 'Sum',
       disabled: false,
     }),
+    contentAction({
+      addNodes,
+      nodeId,
+      type: 'Table',
+      disabled: false,
+    }),
   ]
 }
 
@@ -820,6 +826,43 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               />
             </ErrorWrapper>
           </div>
+        </Main>
+        <Aside>
+          <Help description={getTypeDescription(node.type)} />
+        </Aside>
+        {/* TODO: summary, details, show */}
+      </Fragment>
+    )
+  }
+
+  if (node.type === 'Table') {
+    /*const exampleTable = [
+      [
+        {
+          id: 'possibleRoles.function',
+          type: 'Heading',
+          text: 'Hei',
+        },
+        {
+          id: 'possibleRoles.class',
+          type: 'Heading',
+          text: 'På deg',
+        },
+      ],
+    ]*/
+    return (
+      <Fragment key={node.id}>
+        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
+        <Main>
+          <div>TODO: node.cells</div>
+          <ErrorWrapper slice={['text']}>
+            <Editor
+              label="Beskrivelse"
+              value={node.text || ''}
+              onChange={(v) => patchNode(node.id, { text: v })}
+              sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
+            />
+          </ErrorWrapper>
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />

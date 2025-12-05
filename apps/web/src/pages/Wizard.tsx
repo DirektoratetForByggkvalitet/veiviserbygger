@@ -134,6 +134,11 @@ export const addPageContentActions = (
           pageId,
           type: 'Sum',
         }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Table',
+        }),
         {
           group: 'Hendelser',
         },

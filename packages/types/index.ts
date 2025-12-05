@@ -181,6 +181,25 @@ export type Sum = PageNode<
   }
 >
 
+export type TableCell = {
+  type: 'Cell' | 'Heading'
+  text: string // HTML okey
+  colSpan?: number
+  rowSpan?: number
+  test?: SimpleExpression
+}
+
+export type TableRow = TableCell[]
+
+export type TableCells = TableRow[]
+
+export type Table = PageNode<
+  Content & {
+    type: 'Table'
+    cells?: TableCells
+  }
+>
+
 export type Information = PageNode<{
   id: string
   type: 'Information'
@@ -247,6 +266,7 @@ export type PageContent<Creation = false> =
   | Input
   | NumberInput
   | Sum
+  | Table
   | Branch<Creation>
   | Error
   | Information

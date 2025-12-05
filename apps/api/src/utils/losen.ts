@@ -368,6 +368,19 @@ const transformSum: TransformerFunc<'Sum'> = async (node, data, deps) => {
   ]
 }
 
+const transformTable: TransformerFunc<'Table'> = async (node, data, deps) => {
+  return [
+    {
+      id: node.id,
+      type: 'Table',
+      text: await processHtml(node.text, deps),
+      property: node.id,
+      show: node.show ? transformExpression(node.show, data) : undefined,
+      cells: node.cells, // TODO: Here we probably need to do some heavy processing
+    },
+  ]
+}
+
 const transformError: TransformerFunc<'Error'> = async (node, data, deps) => {
   return [
     {
@@ -428,6 +441,10 @@ async function transformNode(
 
   if (node.type === 'Sum') {
     return transformSum(node, data, deps)
+  }
+
+  if (node.type === 'Table') {
+    return transformTable(node, data, deps)
   }
 
   if (node.type === 'Error') {

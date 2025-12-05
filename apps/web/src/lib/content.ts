@@ -44,6 +44,12 @@ const typeMap: Record<
     icon: 'Sigma',
     description: 'Et felt som kan summerer verdiene fra andre tallfelt i veiviseren.',
   },
+  Table: {
+    title: 'Tabell',
+    icon: 'Table',
+    description:
+      'En tabell med rader og kolonner. Hver celle kan markeres grønn om visse betingelser er oppfylt.',
+  },
   Branch: { title: 'Egendefinert gren', icon: 'Split', description: '' },
   Error: { title: 'Feil', icon: 'TriangleAlert', description: '' },
   Information: { title: 'Informasjon', icon: 'Info', description: '' },

@@ -65,7 +65,8 @@ const ContentItem = ({
     node.type === 'Select' ||
     node.type === 'Input' ||
     node.type === 'Number' ||
-    node.type === 'Sum'
+    node.type === 'Sum' ||
+    node.type === 'Table'
   ) {
     return (
       <li
