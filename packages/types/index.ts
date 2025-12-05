@@ -161,15 +161,14 @@ export type Input = PageNode<
 >
 
 export type NumberInput = PageNode<
-  Content &
-    WithValidator & {
-      type: 'Number'
-      minimum?: number
-      maximum?: number
-      unit?: string
-      step?: number // Defaults to 1
-      optional?: boolean // By default all fields are required.
-    }
+  Content & {
+    type: 'Number'
+    minimum?: number
+    maximum?: number
+    unit?: string
+    step?: number // Defaults to 1
+    optional?: boolean // By default all fields are required.
+  }
 >
 
 export type Information = PageNode<{
