@@ -93,8 +93,9 @@ const ContentItem = ({
   }
 
   if (node.type === 'Branch') {
-    const resultNodeId = values(node.content).find((n) => allNodes?.[n.node.id].type === 'Result')
-      ?.node.id
+    const resultNodeId = values(node.content).find(
+      (n) => allNodes?.[n.node.id].type === 'Error' || allNodes?.[n.node.id].type === 'Information',
+    )?.node.id
     const resultNode = resultNodeId ? (allNodes?.[resultNodeId] as Result) : undefined
 
     const content = getOrdered(node?.content)
