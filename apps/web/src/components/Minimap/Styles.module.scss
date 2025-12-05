@@ -131,6 +131,7 @@
 
     &__item {
         display: flex;
+        flex-wrap: wrap;
         gap: 8px;
         align-items: flex-start;
         padding: 8px 8px 10px;
@@ -207,6 +208,13 @@
             border-radius: vars.$border-radius;
             // border: vars.$border-style--dashed;
             transition: background-color 200ms vars.$ease-in-out-quint--custom;
+        }
+    }
+
+    &__sub-content {
+        width: 100%;
+        & > *:last-child {
+            margin-bottom: 0;
         }
     }
 

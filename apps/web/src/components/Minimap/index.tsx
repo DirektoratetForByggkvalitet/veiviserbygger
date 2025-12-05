@@ -97,6 +97,8 @@ const ContentItem = ({
       ?.node.id
     const resultNode = resultNodeId ? (allNodes?.[resultNodeId] as Result) : undefined
 
+    const content = getOrdered(node?.content)
+
     return (
       <li
         {...bem('item', {
@@ -118,6 +120,21 @@ const ContentItem = ({
         <h3 {...bem('sub-title', { placeholder: true /*TODO */ })}>
           {resultNode?.heading || `${getTypeText(node.preset || node.type)}`}
         </h3>
+        {node.preset == 'NewQuestions' && (
+          <ul {...bem('sub-content')}>
+            {content &&
+              content.map((ref) => {
+                return (
+                  <ContentItem
+                    id={ref.id}
+                    node={allNodes[ref?.node?.id]}
+                    key={ref.id}
+                    allNodes={allNodes}
+                  />
+                )
+              })}
+          </ul>
+        )}
       </li>
     )
   }
