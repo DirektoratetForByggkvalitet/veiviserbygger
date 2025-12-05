@@ -178,7 +178,6 @@ export type Sum = PageNode<
     operations?: Array<'+' | '-' | '*' | '/' | '-/' | '%'>
     unit?: string
     minimum?: number
-    optional?: boolean // By default all fields are required.
   }
 >
 

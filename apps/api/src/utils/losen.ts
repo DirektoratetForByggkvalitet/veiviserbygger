@@ -350,18 +350,20 @@ const transformNumber: TransformerFunc<'Number'> = async (node, data, deps) => {
 }
 
 const transformSum: TransformerFunc<'Sum'> = async (node, data, deps) => {
+  const values = getOrdered(node.values).map((value) => data.nodes[value.node.id]?.id)
+
   return [
     {
       id: node.id,
-      type: 'Number',
-      heading: node.heading || 'Tallfelt uten navn',
-      property: node.id,
-      values: node.values,
-      operations: node.operations,
-      minimum: node.minimum,
-      unit: node.unit,
+      type: 'Sum',
+      heading: node.heading || 'Summeringsfelt uten navn',
       text: await processHtml(node.text, deps),
+      property: node.id,
       show: node.show ? transformExpression(node.show, data) : undefined,
+      values: values.filter((value): value is string => typeof value === 'string'),
+      operations: node.operations ?? [],
+      unit: node.unit,
+      minimum: node.minimum,
     },
   ]
 }
