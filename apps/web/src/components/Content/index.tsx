@@ -158,6 +158,12 @@ const addNodeContentOptions = (
         step: 1,
       },
     }),
+    contentAction({
+      addNodes,
+      nodeId,
+      type: 'Sum',
+      disabled: false,
+    }),
   ]
 }
 
@@ -757,6 +763,68 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
         <Aside>
           <Help description={getTypeDescription(node.type)} />
         </Aside>
+      </Fragment>
+    )
+  }
+
+  if (node.type === 'Sum') {
+    return (
+      <Fragment key={node.id}>
+        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
+        <Main>
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Ledetekst"
+              value={node.heading || ''}
+              onChange={(v) => patchNode(node.id, { heading: v })}
+              header
+            />
+          </ErrorWrapper>
+
+          <ErrorWrapper slice={['text']}>
+            <Editor
+              label="Beskrivelse"
+              value={node.text || ''}
+              onChange={(v) => patchNode(node.id, { text: v })}
+              sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
+            />
+          </ErrorWrapper>
+          <div>TODO: node.values</div>
+          <div>TODO: node.operations </div>
+          {/*
+          operationsMenu: {
+              '+': 'Addisjon (a+b)',
+              '-': 'Substraksjon (a-b)',
+              '*': 'Multiplikasjon (a*b)',
+              '/': 'Divisjon (a/b)',
+              '-/': 'Omvendt divisjon (b/a)'
+              '%': 'Multiplikasjon med to desimaler (a*b=0.00)':
+           }
+          */}
+          <div {...bem('grid')}>
+            <ErrorWrapper slice={['unit']}>
+              <Input
+                label="Enhet"
+                placeholder="m², år, kg, osv."
+                value={node.unit || ''}
+                onChange={(v) => patchNode(node.id, { type: 'Number', unit: v })}
+              />
+            </ErrorWrapper>
+            <ErrorWrapper slice={['minimum']}>
+              <Input
+                label="Minimumsverdi"
+                placeholder="0"
+                type="number"
+                value={node.minimum}
+                onChange={(v) => patchNode(node.id, { type: 'Number', minimum: v })}
+              />
+            </ErrorWrapper>
+          </div>
+        </Main>
+        <Aside>
+          <Help description={getTypeDescription(node.type)} />
+        </Aside>
+        {/* TODO: summary, details, show */}
       </Fragment>
     )
   }

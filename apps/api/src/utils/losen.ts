@@ -349,6 +349,23 @@ const transformNumber: TransformerFunc<'Number'> = async (node, data, deps) => {
   ]
 }
 
+const transformSum: TransformerFunc<'Sum'> = async (node, data, deps) => {
+  return [
+    {
+      id: node.id,
+      type: 'Number',
+      heading: node.heading || 'Tallfelt uten navn',
+      property: node.id,
+      values: node.values,
+      operations: node.operations,
+      minimum: node.minimum,
+      unit: node.unit,
+      text: await processHtml(node.text, deps),
+      show: node.show ? transformExpression(node.show, data) : undefined,
+    },
+  ]
+}
+
 const transformError: TransformerFunc<'Error'> = async (node, data, deps) => {
   return [
     {
@@ -405,6 +422,10 @@ async function transformNode(
 
   if (node.type === 'Number') {
     return transformNumber(node, data, deps)
+  }
+
+  if (node.type === 'Sum') {
+    return transformSum(node, data, deps)
   }
 
   if (node.type === 'Error') {

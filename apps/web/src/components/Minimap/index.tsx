@@ -64,7 +64,8 @@ const ContentItem = ({
     node.type === 'Checkbox' ||
     node.type === 'Select' ||
     node.type === 'Input' ||
-    node.type === 'Number'
+    node.type === 'Number' ||
+    node.type === 'Sum'
   ) {
     return (
       <li

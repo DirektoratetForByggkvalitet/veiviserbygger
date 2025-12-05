@@ -94,6 +94,10 @@ const inputTypeMap: {
     operators: ['gt', 'lt', 'gte', 'lte', 'eq', 'neq', 'between', 'required'],
     type: 'number',
   },
+  Sum: {
+    operators: ['gt', 'lt', 'gte', 'lte', 'eq', 'neq', 'between', 'required'],
+    type: 'number',
+  },
 }
 
 function getInputOperators(type?: PageContent['type']) {

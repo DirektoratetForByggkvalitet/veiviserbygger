@@ -129,6 +129,11 @@ export const addPageContentActions = (
             step: 1,
           },
         }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Sum',
+        }),
         {
           group: 'Hendelser',
         },

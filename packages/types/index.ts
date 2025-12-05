@@ -171,6 +171,17 @@ export type NumberInput = PageNode<
   }
 >
 
+export type Sum = PageNode<
+  Content & {
+    type: 'Sum'
+    values: OrderedMap<{ node: DocumentReference }>
+    operations?: Array<'+' | '-' | '*' | '/' | '-/' | '%'>
+    unit?: string
+    minimum?: number
+    optional?: boolean // By default all fields are required.
+  }
+>
+
 export type Information = PageNode<{
   id: string
   type: 'Information'
@@ -236,6 +247,7 @@ export type PageContent<Creation = false> =
   | Select
   | Input
   | NumberInput
+  | Sum
   | Branch<Creation>
   | Error
   | Information
