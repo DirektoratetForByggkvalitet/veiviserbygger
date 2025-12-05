@@ -166,6 +166,7 @@ export type NumberInput = PageNode<
       type: 'Number'
       minimum?: number
       maximum?: number
+      unit?: string
       step?: number // Defaults to 1
       optional?: boolean // By default all fields are required.
     }

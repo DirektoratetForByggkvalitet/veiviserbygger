@@ -36,7 +36,8 @@ const typeMap: Record<
   Number: {
     title: 'Tallfelt',
     icon: 'Hash',
-    description: 'Et tallfelt der brukeren skriver inn numeriske verdier',
+    description:
+      'Et tallfelt der brukeren skriver inn numeriske verdier. Man kan begrense hva brukeren kan skrive i feltet ved hjelp av minimums-, maksimums- og stegverdier. Steg på 1 betyr at tallet må være heltall, 0.1 betyr at en desimal er tilgjengelig, osv. La felt stå tomt for ingen begrensning.',
   },
   Branch: { title: 'Egendefinert gren', icon: 'Split', description: '' },
   Error: { title: 'Feil', icon: 'TriangleAlert', description: '' },

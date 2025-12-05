@@ -149,7 +149,15 @@ const addNodeContentOptions = (
       },
     }),
     contentAction({ addNodes, nodeId, type: 'Input', disabled: false }),
-    contentAction({ addNodes, nodeId, type: 'Number', disabled: false }),
+    contentAction({
+      addNodes,
+      nodeId,
+      type: 'Number',
+      disabled: false,
+      defaultContent: {
+        step: 1,
+      },
+    }),
   ]
 }
 
@@ -553,6 +561,48 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
             />
           </ErrorWrapper>
+          {node.type === 'Number' ? (
+            <>
+              <div {...bem('grid')}>
+                <ErrorWrapper slice={['unit']}>
+                  <Input
+                    label="Enhet"
+                    placeholder="m², år, kg, osv."
+                    value={node.unit || ''}
+                    onChange={(v) => patchNode(node.id, { type: 'Number', unit: v })}
+                  />
+                </ErrorWrapper>
+                <ErrorWrapper slice={['step']}>
+                  <Input
+                    label="Stegverdi"
+                    placeholder="1, 0.1, 0.01, osv."
+                    type="number"
+                    value={node.step}
+                    onChange={(v) => patchNode(node.id, { type: 'Number', step: v })}
+                  />
+                </ErrorWrapper>
+              </div>
+              <div {...bem('grid')}>
+                <ErrorWrapper slice={['minimum']}>
+                  <Input
+                    label="Minimumsverdi"
+                    placeholder="0"
+                    type="number"
+                    value={node.minimum}
+                    onChange={(v) => patchNode(node.id, { type: 'Number', minimum: v })}
+                  />
+                </ErrorWrapper>
+                <ErrorWrapper slice={['maximum']}>
+                  <Input
+                    label="Maksimumsverdi"
+                    type="number"
+                    value={node.maximum}
+                    onChange={(v) => patchNode(node.id, { type: 'Number', maximum: v })}
+                  />
+                </ErrorWrapper>
+              </div>
+            </>
+          ) : null}
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
