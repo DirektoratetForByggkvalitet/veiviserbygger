@@ -1,7 +1,17 @@
-import { Error, Page, Result, WizardDefinition } from 'losen'
+import { Error, Page, Result, Table as LosenTable, WizardDefinition } from 'losen'
 import { getCompleteWizard } from '../services/firestore'
 import { getOrdered, getStorageRefs, trimText } from 'shared/utils'
-import { Expression, Intro, OptionalExcept, PageContent, WizardIntro, WizardPage } from 'types'
+import {
+  Expression,
+  Intro,
+  OptionalExcept,
+  PageContent,
+  TableCell as StoredTableCell,
+  TableCells,
+  TableCellsValue,
+  WizardIntro,
+  WizardPage,
+} from 'types'
 import { Expression as LosenExpression } from 'losen/utils/dsl'
 
 type CompleteWizardData = Awaited<ReturnType<typeof getCompleteWizard>>
@@ -369,17 +379,79 @@ const transformSum: TransformerFunc<'Sum'> = async (node, data, deps) => {
 }
 
 const transformTable: TransformerFunc<'Table'> = async (node, data, deps) => {
+  const normalizedCells = normalizeTableCells(node.cells)
+  const transformedRows = await Promise.all(
+    normalizedCells.map((row, rowIndex) =>
+      Promise.all(
+        row.map((cell, columnIndex) =>
+          transformTableCell(cell, {
+            nodeId: node.id,
+            rowIndex,
+            columnIndex,
+            data,
+            deps,
+          }),
+        ),
+      ),
+    ),
+  )
+
   return [
     {
       id: node.id,
       type: 'Table',
+      heading: node.heading || 'Tabell uten navn',
       text: await processHtml(node.text, deps),
       property: node.id,
       show: node.show ? transformExpression(node.show, data) : undefined,
-      cells: node.cells, // TODO: Here we probably need to do some heavy processing
+      cells: transformedRows,
     },
   ]
 }
+
+function normalizeTableCells(cells?: TableCellsValue): TableCells {
+  if (!cells) {
+    return []
+  }
+
+  if (Array.isArray(cells)) {
+    return cells
+  }
+
+  return Object.keys(cells)
+    .sort((a, b) => Number(a) - Number(b))
+    .map((key) => cells[key] ?? [])
+}
+
+async function transformTableCell(
+  cell: StoredTableCell,
+  {
+    nodeId,
+    rowIndex,
+    columnIndex,
+    data,
+    deps,
+  }: {
+    nodeId: string
+    rowIndex: number
+    columnIndex: number
+    data: CompleteWizardData
+    deps: DependencyContainer
+  },
+) {
+  const losenCell: LosenTableCell = {
+    id: `${nodeId}.r${rowIndex}c${columnIndex}`,
+    type: cell.type,
+    text: (await processHtml(cell.text, deps)) ?? '',
+    colSpan: cell.colSpan,
+    rowSpan: cell.rowSpan,
+    test: cell.test ? transformExpression(cell.test, data) : undefined,
+  }
+
+  return losenCell
+}
+
+type LosenTableCell = LosenTable['cells'][number][number]
 
 const transformError: TransformerFunc<'Error'> = async (node, data, deps) => {
   return [

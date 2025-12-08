@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Editor from '@/components/Editor'
+import TableEditor from '@/components/TableEditor'
 import File from '@/components/File'
 import Help from '@/components/Help'
 import Icon from '@/components/Icon'
@@ -399,7 +400,7 @@ function Options({
     <DndContext onDragEnd={handleSortingDragEnd}>
       <SortableContext items={value}>
         <ErrorWrapper slice={['options']}>
-          <ul {...bem('options', { 'has-errors': getErrors('options').length })}>
+          <ul {...bem('options', { 'has-errors': getErrors(['options']).length })}>
             {value.map(({ id }) => {
               const option = options.find((o) => o.id === id)
 
@@ -854,7 +855,9 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
       <Fragment key={node.id}>
         <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
         <Main>
-          <div>TODO: node.cells</div>
+          <ErrorWrapper slice={['cells']}>
+            <TableEditor nodeId={node.id} pageId={page.id} cells={node.cells} nodes={allNodes} />
+          </ErrorWrapper>
           <ErrorWrapper slice={['text']}>
             <Editor
               label="Beskrivelse"

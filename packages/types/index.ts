@@ -193,10 +193,14 @@ export type TableRow = TableCell[]
 
 export type TableCells = TableRow[]
 
+export type TableCellsRecord = Record<string, TableRow>
+
+export type TableCellsValue = TableCells | TableCellsRecord
+
 export type Table = PageNode<
   Content & {
     type: 'Table'
-    cells?: TableCells
+    cells?: TableCellsValue
   }
 >
 
