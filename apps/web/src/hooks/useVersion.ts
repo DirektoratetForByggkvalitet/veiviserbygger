@@ -22,6 +22,7 @@ import {
   validateDelete,
   updateAnswerImage,
   moveNode,
+  overwriteNodeField,
 } from '@/services/firebase'
 import { curry } from 'lodash'
 
@@ -57,6 +58,7 @@ export function useVersion() {
     deleteAnswer: curry(deleteAnswer)({ db: firestore, storage, wizardId, versionId }),
     reorderAnswers: curry(reorderAnswers)({ db: firestore, storage, wizardId, versionId }),
     patchVersion: curry(patchVersion)({ db: firestore, storage, wizardId, versionId }),
+    overwriteNodeField: curry(overwriteNodeField)({ db: firestore, storage, wizardId, versionId }),
     createDraftVersion: (copyFromVersionId?: string) =>
       createDraftVersion({ db: firestore, storage, wizardId }, copyFromVersionId),
     publishVersion: () => curry(publishVersion)({ db: firestore, storage, wizardId, versionId }),

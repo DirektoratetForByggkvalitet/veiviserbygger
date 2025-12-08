@@ -208,6 +208,24 @@ export async function patch(
   })
 }
 
+export async function overwriteNodeField(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  path: string | string[],
+  value: unknown,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+    const current = await transaction.get(ref)
+
+    if (!current.exists()) {
+      throw new Error(`Node with id ${nodeId} not found`)
+    }
+
+    await transaction.update(ref, set({}, path, value))
+  })
+}
+
 export async function createPage(
   { db, wizardId, versionId }: FuncScope,
   page: Partial<Omit<WizardPage, 'id'>>,
