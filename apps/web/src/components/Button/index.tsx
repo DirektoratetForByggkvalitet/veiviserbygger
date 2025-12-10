@@ -58,6 +58,8 @@ export default function Button({
     ...(onClick ? { onClick } : {}),
   }
 
+  const iconSize = icon && size === 'small' ? 16 : undefined
+
   return (
     <Element
       {...props}
@@ -84,12 +86,12 @@ export default function Button({
     >
       {iconOnlyOnMobile && (
         <span {...bem('icon', 'only-on-mobile')}>
-          <Icon name={iconOnlyOnMobile} />
+          <Icon name={iconOnlyOnMobile} size={iconSize} />
         </span>
       )}
       {icon && (
         <span {...bem('icon')}>
-          <Icon name={icon} />
+          <Icon name={icon} size={iconSize} />
         </span>
       )}
       {!iconOnly && children && <span {...bem('text')}>{children}</span>}

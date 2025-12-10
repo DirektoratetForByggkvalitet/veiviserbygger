@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import Icon from '@/components/Icon'
-import Modal from '@/components/Modal'
-import Expression from '@/components/Expression'
 import Button from '@/components/Button'
-import BEMHelper from '@/lib/bem'
+import Expression from '@/components/Expression'
+import Modal from '@/components/Modal'
 import { useEditable } from '@/hooks/useEditable'
 import { useVersion } from '@/hooks/useVersion'
+import BEMHelper from '@/lib/bem'
 import type {
   Expression as ExpressionType,
   OptionalExcept,
@@ -18,6 +17,7 @@ import type {
   TableCellsValue,
 } from 'types'
 
+import Dropdown from '@/components/Dropdown'
 import styles from './Styles.module.scss'
 
 type StoredTableCells = TableCellsValue | undefined
@@ -247,10 +247,6 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
     handleExpressionChange(undefined)
   }, [expressionTarget, handleExpressionChange])
 
-  const selectedLabel = selected
-    ? `Rad ${selected.row + 1}, kolonne ${selected.column + 1}`
-    : 'Ingen celle valgt'
-
   const canMergeRight = useMemo(() => {
     if (!selected || !selectedCell) {
       return false
@@ -273,61 +269,8 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
     )
   }, [grid, isEditable, selected, selectedCell])
 
-  const canToggleType = Boolean(isEditable && selectedCell)
-
   return (
     <section {...bem('')}>
-      {isEditable && (
-        <div {...bem('toolbar')}>
-          <div {...bem('toolbar-group')}>
-            <button type="button" {...bem('toolbar-button')} onClick={() => handleAddRow('before')}>
-              <Icon name="PanelTop" size="16" />
-              Rad før
-            </button>
-            <button type="button" {...bem('toolbar-button')} onClick={() => handleAddRow('after')}>
-              <Icon name="PanelBottom" size="16" />
-              Rad etter
-            </button>
-            <button
-              type="button"
-              {...bem('toolbar-button')}
-              disabled={grid.length <= 1}
-              onClick={handleDeleteRow}
-            >
-              <Icon name="Trash2" size="16" />
-              Slett rad
-            </button>
-          </div>
-          <div {...bem('toolbar-group')}>
-            <button
-              type="button"
-              {...bem('toolbar-button')}
-              onClick={() => handleAddColumn('left')}
-            >
-              <Icon name="PanelLeft" size="16" />
-              Kolonne før
-            </button>
-            <button
-              type="button"
-              {...bem('toolbar-button')}
-              onClick={() => handleAddColumn('right')}
-            >
-              <Icon name="PanelRight" size="16" />
-              Kolonne etter
-            </button>
-            <button
-              type="button"
-              {...bem('toolbar-button')}
-              disabled={columnCount <= 1}
-              onClick={handleDeleteColumn}
-            >
-              <Icon name="Trash2" size="16" />
-              Slett kolonne
-            </button>
-          </div>
-        </div>
-      )}
-
       <div {...bem('table-wrapper')}>
         <table {...bem('table')}>
           <tbody>
@@ -352,20 +295,86 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                     >
                       {isEditable && (
                         <div {...bem('cell-actions')}>
-                          <button
-                            type="button"
-                            {...bem('cell-action-button', { active: Boolean(slot.cell.test) })}
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              setSelected({ row: rowIndex, column: columnIndex })
-                              setExpressionTarget({ row: rowIndex, column: columnIndex })
-                            }}
-                          >
-                            <Icon
-                              name={(slot.cell.test ? 'CheckCircle2' : 'FlaskRound') as any}
-                              size="14"
-                            />
-                          </button>
+                          <Dropdown
+                            options={[
+                              { group: 'Celle' },
+                              {
+                                label: currentExpression
+                                  ? 'Endre vilkår for celle'
+                                  : 'Vilkår for celle',
+                                value: 'rules',
+                                icon: 'FlaskRound',
+                                onClick: () => {
+                                  setSelected({ row: rowIndex, column: columnIndex })
+                                  setExpressionTarget({ row: rowIndex, column: columnIndex })
+                                },
+                              },
+                              {
+                                label:
+                                  selectedCell?.type === 'Heading'
+                                    ? 'Gjør til vanlig innhold'
+                                    : 'Gjør til overskrift',
+                                value: 'toggle-type',
+                                icon: selectedCell?.type === 'Heading' ? 'Type' : 'Heading',
+                                onClick: handleToggleHeader,
+                              },
+                              {
+                                label: 'Slå sammen (høyre)',
+                                value: 'merge-right',
+                                onClick: handleMergeRight,
+                                disabled: !canMergeRight,
+                                icon: 'PanelRightClose',
+                              },
+                              {
+                                label: 'Slå sammen (under)',
+                                value: 'merge-down',
+                                onClick: handleMergeDown,
+                                disabled: !canMergeDown,
+                                icon: 'PanelBottomClose',
+                              },
+                              { group: 'Rad', icon: 'Rows3' },
+                              {
+                                label: 'Rad over',
+                                value: 'row-before',
+                                icon: 'PanelTop',
+                                onClick: () => handleAddRow('before'),
+                              },
+                              {
+                                label: 'Rad under',
+                                value: 'row-after',
+                                icon: 'PanelBottom',
+                                onClick: () => handleAddRow('after'),
+                              },
+                              {
+                                label: 'Slett rad',
+                                value: 'row-delete',
+                                icon: 'Trash2',
+                                onClick: handleDeleteRow,
+                              },
+                              { group: 'Kolonne', icon: 'Columns3' },
+                              {
+                                label: 'Kolonne til venstre',
+                                value: 'column-left',
+                                icon: 'PanelLeft',
+                                onClick: () => handleAddColumn('left'),
+                              },
+                              {
+                                label: 'Kolonne til høyre',
+                                value: 'column-right',
+                                icon: 'PanelRight',
+                                onClick: () => handleAddColumn('right'),
+                              },
+                              {
+                                label: 'Slett kolonne',
+                                value: 'column-delete',
+                                icon: 'Trash2',
+                                onClick: handleDeleteColumn,
+                              },
+                            ]}
+                            icon="EllipsisVertical"
+                            direction="right"
+                            iconOnly
+                          />
                         </div>
                       )}
 
@@ -384,40 +393,6 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
           </tbody>
         </table>
       </div>
-
-      {isEditable && (
-        <div {...bem('cell-toolbar')}>
-          <div {...bem('cell-toolbar-info')}>
-            <strong>{selectedLabel}</strong>
-          </div>
-          <div {...bem('cell-toolbar-actions')}>
-            <button
-              type="button"
-              {...bem('toolbar-button')}
-              disabled={!canToggleType}
-              onClick={handleToggleHeader}
-            >
-              {selectedCell?.type === 'Heading' ? 'Gjør til celle' : 'Gjør til overskrift'}
-            </button>
-            <button
-              type="button"
-              {...bem('toolbar-button')}
-              disabled={!canMergeRight}
-              onClick={handleMergeRight}
-            >
-              Slå sammen (høyre)
-            </button>
-            <button
-              type="button"
-              {...bem('toolbar-button')}
-              disabled={!canMergeDown}
-              onClick={handleMergeDown}
-            >
-              Slå sammen (under)
-            </button>
-          </div>
-        </div>
-      )}
 
       <Modal
         title="Rediger vilkår for celle"

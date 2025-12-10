@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, ReactElement, MouseEventHandler } from 'react'
+import { MouseEventHandler, ReactElement, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { icons } from 'lucide-react'
@@ -7,8 +7,8 @@ import Icon from '@/components/Icon'
 import Transition from '@/components/Transition'
 
 import useClickOutside from '@/hooks/useClickOutside'
-import useKeyPress from '@/hooks/useKeyPress'
 import { useEditable } from '@/hooks/useEditable'
+import useKeyPress from '@/hooks/useKeyPress'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -25,7 +25,7 @@ export type DropdownOptions = Array<
       selected?: boolean
       disabled?: boolean
     }
-  | { group: string }
+  | { group: string; icon?: keyof typeof icons }
 >
 
 type Props = {
@@ -175,6 +175,12 @@ export default function Dropdown({
                   return (
                     <span key={option.group} {...bem('option-group')}>
                       {option.group}
+
+                      {option?.icon && (
+                        <span {...bem('group-icon')}>
+                          <Icon name={option.icon} />
+                        </span>
+                      )}
                     </span>
                   )
                 }
