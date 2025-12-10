@@ -134,9 +134,33 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
     return grid[expressionTarget.row]?.[expressionTarget.column]?.cell.test
   }, [expressionTarget, grid])
 
-  const handleCellSelection = useCallback((coords: CellCoords) => {
-    setSelected(coords)
-  }, [])
+  const handleCellSelection = useCallback(
+    (coords: CellCoords, event: React.MouseEvent<HTMLElement>) => {
+      setSelected(coords)
+
+      if (event.target instanceof HTMLTableCellElement) {
+        const editable = event.target.querySelector(
+          '[contenteditable="true"]',
+        ) as HTMLElement | null
+
+        if (editable) {
+          editable.focus()
+
+          // Move caret to the end
+          const range = document.createRange()
+          range.selectNodeContents(editable)
+          range.collapse(false)
+
+          const selection = window.getSelection()
+          if (selection) {
+            selection.removeAllRanges()
+            selection.addRange(range)
+          }
+        }
+      }
+    },
+    [],
+  )
 
   const handleCellContentChange = useCallback(
     (coords: CellCoords, value: string) => {
@@ -159,18 +183,20 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
   )
 
   const handleAddRow = useCallback(
-    (placement: 'before' | 'after') => {
+    (placement: 'before' | 'after', ignoreCellSelection?: boolean) => {
       if (!isEditable) {
         return
       }
+      const selectedCell = !ignoreCellSelection ? selected : undefined
+
       applyGridChange((prev) => {
-        const slot = selected ? prev[selected.row]?.[selected.column] : undefined
+        const slot = selectedCell ? prev[selectedCell.row]?.[selectedCell.column] : undefined
         const span = slot?.cell.rowSpan ?? 1
-        if (!selected) {
+        if (!selectedCell) {
           const index = placement === 'before' ? 0 : prev.length
           return insertRow(prev, index)
         }
-        const index = placement === 'before' ? selected.row : selected.row + span
+        const index = placement === 'before' ? selectedCell.row : selectedCell.row + span
         return insertRow(prev, index)
       })
     },
@@ -188,19 +214,22 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
   }, [applyGridChange, grid.length, isEditable, selected])
 
   const handleAddColumn = useCallback(
-    (placement: 'left' | 'right') => {
+    (placement: 'left' | 'right', ignoreCellSelection?: boolean) => {
       if (!isEditable) {
         return
       }
+
+      const selectedCell = !ignoreCellSelection ? selected : undefined
+
       applyGridChange((prev) => {
         const totalColumns = getColumnCount(prev)
-        if (!selected) {
+        if (!selectedCell) {
           const index = placement === 'left' ? 0 : totalColumns
           return insertColumn(prev, index)
         }
-        const slot = prev[selected.row]?.[selected.column]
+        const slot = prev[selectedCell.row]?.[selectedCell.column]
         const span = slot?.cell.colSpan ?? 1
-        const index = placement === 'left' ? selected.column : selected.column + span
+        const index = placement === 'left' ? selectedCell.column : selectedCell.column + span
         return insertColumn(prev, index)
       })
     },
@@ -291,11 +320,17 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                         selected: isSelected,
                         heading: slot.cell.type === 'Heading',
                       })}
-                      onClick={() => handleCellSelection({ row: rowIndex, column: columnIndex })}
+                      onClick={(event) =>
+                        handleCellSelection({ row: rowIndex, column: columnIndex }, event)
+                      }
                     >
                       {isEditable && (
                         <div {...bem('cell-actions')}>
                           <Dropdown
+                            icon="EllipsisVertical"
+                            direction={columnIndex === 0 ? 'left' : 'right'}
+                            iconOnly
+                            compact
                             options={[
                               { group: 'Celle' },
                               {
@@ -371,9 +406,6 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                                 onClick: handleDeleteColumn,
                               },
                             ]}
-                            icon="EllipsisVertical"
-                            direction="right"
-                            iconOnly
                           />
                         </div>
                       )}
@@ -392,6 +424,17 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
             ))}
           </tbody>
         </table>
+
+        <button
+          type="button"
+          {...bem('add', 'column')}
+          onClick={() => handleAddColumn('right', true)}
+        >
+          +
+        </button>
+        <button type="button" {...bem('add', 'row')} onClick={() => handleAddRow('after', true)}>
+          +
+        </button>
       </div>
 
       <Modal
@@ -443,7 +486,9 @@ function CellContent({
       return
     }
     if (ref.current && ref.current.innerHTML !== value) {
-      ref.current.innerHTML = value
+      ref.current.innerHTML = value || EMPTY_PARAGRAPH
+    } else if (ref.current && !value) {
+      ref.current.innerHTML = EMPTY_PARAGRAPH
     }
   }, [editable, value])
 

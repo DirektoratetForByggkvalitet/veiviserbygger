@@ -225,6 +225,13 @@
         }
     }
 
+    &--compact {
+        #{$this}__option {
+            @include mixins.font-size(xsmall);
+            padding: 11px 12px;
+        }
+    }
+
     &--simple {
         #{$this}__trigger {
             @include mixins.font-size(small);
@@ -313,6 +320,7 @@
 
         #{$this}__icon {
             position: static;
+            margin-right: 0;
         }
 
         #{$this}__wrapper {
@@ -322,6 +330,16 @@
         #{$this}__wrapper--above {
             top: auto;
             bottom: calc(35px + vars.$spacing--xsmall);
+        }
+    }
+
+    &--compact#{$this}--iconOnly {
+        #{$this}__trigger {
+            height: 24px;
+            width: 24px;
+            padding: 0;
+            border-radius: 24px;
+            background-color: colors.$light;
         }
     }
 

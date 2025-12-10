@@ -38,11 +38,13 @@ type Props = {
   sentence?: boolean
   simple?: boolean
   subtle?: boolean
+  compact?: boolean
   hideLabel?: boolean
   iconOnly?: boolean
   trigger?: (props: { onClick: MouseEventHandler }) => ReactElement
   options: DropdownOptions
   onChange?: (value: string) => void
+  className?: string
 }
 
 export default function Dropdown({
@@ -59,7 +61,9 @@ export default function Dropdown({
   trigger,
   sentence,
   simple,
+  compact,
   subtle,
+  className,
 }: Props) {
   const location = useLocation()
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -143,13 +147,13 @@ export default function Dropdown({
   }
 
   return (
-    <div {...bem('', { simple, subtle, sentence, iconOnly })} ref={wrapperRef}>
+    <div {...bem('', { simple, subtle, sentence, iconOnly, compact })} ref={wrapperRef}>
       {trigger ? (
         trigger({ onClick: triggerClick })
       ) : (
         <button
           type="button"
-          {...bem('trigger', { expanded, label: !!label })}
+          {...bem('trigger', { expanded, label: !!label }, className)}
           onClick={triggerClick}
           aria-label={iconOnly ? label : undefined}
           title={iconOnly ? label : undefined}
@@ -202,7 +206,7 @@ export default function Dropdown({
                   >
                     {option?.icon && (
                       <span {...bem('option-icon')}>
-                        <Icon name={option.icon} />
+                        <Icon name={option.icon} size={compact ? 16 : undefined} />
                       </span>
                     )}
                     {option.label}
