@@ -853,10 +853,14 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
     ]*/
     return (
       <Fragment key={node.id}>
-        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
         <Main full>
-          <ErrorWrapper slice={['cells']}>
-            <TableEditor nodeId={node.id} pageId={page.id} cells={node.cells} nodes={allNodes} />
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Tittel"
+              value={node.heading || ''}
+              onChange={(v) => patchNode(node.id, { heading: v })}
+              header
+            />
           </ErrorWrapper>
           <ErrorWrapper slice={['text']}>
             <Editor
@@ -865,6 +869,9 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               onChange={(v) => patchNode(node.id, { text: v })}
               sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
             />
+          </ErrorWrapper>
+          <ErrorWrapper slice={['cells']}>
+            <TableEditor nodeId={node.id} pageId={page.id} cells={node.cells} nodes={allNodes} />
           </ErrorWrapper>
         </Main>
       </Fragment>
