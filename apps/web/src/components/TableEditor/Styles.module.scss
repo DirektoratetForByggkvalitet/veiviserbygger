@@ -31,7 +31,6 @@
         vertical-align: top;
         padding: 0;
         min-height: 2em;
-        background-color: colors.$light;
     }
 
     &__cell {
@@ -39,8 +38,15 @@
         min-height: 2em;
         background-color: colors.$light;
 
+        &:hover,
+        &:focus-within {
+            #{$this}__cell-actions {
+                opacity: 1;
+            }
+        }
+
         &--heading {
-            background: #f6f8fb;
+            background: colors.get(neutral, xlight);
         }
 
         &--selected {
@@ -48,9 +54,14 @@
             outline-offset: -1px;
             z-index: vars.$level-2;
         }
+
+        &--rules {
+            background-color: rgba(colors.$info, 0.3);
+        }
     }
 
     &__cell-actions {
+        opacity: 0;
         position: absolute;
         top: 8px;
         right: 8px;
@@ -79,6 +90,10 @@
                 margin-bottom: 0;
             }
         }
+    }
+
+    &__dropdown:first-of-type {
+        border: vars.$border-style;
     }
 
     &__add {

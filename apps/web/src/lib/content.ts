@@ -1,5 +1,5 @@
-import { PageContent, Branch } from 'types'
 import { icons } from 'lucide-react'
+import { Branch, PageContent } from 'types'
 
 const typeMap: Record<
   PageContent['type'] | Branch['preset'],

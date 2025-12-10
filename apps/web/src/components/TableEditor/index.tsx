@@ -319,6 +319,7 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                       {...bem('cell', {
                         selected: isSelected,
                         heading: slot.cell.type === 'Heading',
+                        rules: !!slot.cell.test,
                       })}
                       onClick={(event) =>
                         handleCellSelection({ row: rowIndex, column: columnIndex }, event)
@@ -331,10 +332,11 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                             direction={columnIndex === 0 ? 'left' : 'right'}
                             iconOnly
                             compact
+                            {...bem('dropdown')}
                             options={[
                               { group: 'Celle' },
                               {
-                                label: currentExpression
+                                label: slot.cell.test
                                   ? 'Endre vilkår for celle'
                                   : 'Vilkår for celle',
                                 value: 'rules',

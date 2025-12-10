@@ -2,12 +2,12 @@ import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Editor from '@/components/Editor'
-import TableEditor from '@/components/TableEditor'
 import File from '@/components/File'
 import Help from '@/components/Help'
 import Icon from '@/components/Icon'
 import Input from '@/components/Input'
 import Modal from '@/components/Modal'
+import TableEditor from '@/components/TableEditor'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -36,18 +36,18 @@ import { DocumentReference } from 'firebase/firestore'
 
 import { ref as storageRef } from 'firebase/storage'
 
-import { values } from 'lodash'
-import { ReactNode } from 'react'
-import { getOrdered } from 'shared/utils'
-import Expression from '../Expression'
-import styles from './Styles.module.scss'
-import ValidateDeps from '../ValidateDeps'
+import ValidationProvider from '@/context/ValidationProvider'
+import useErrors from '@/hooks/errors'
 import useFile from '@/hooks/useFile'
 import useFirebase from '@/hooks/useFirebase'
 import { useModal } from '@/hooks/useModal'
-import ValidationProvider from '@/context/ValidationProvider'
-import useErrors from '@/hooks/errors'
+import { values } from 'lodash'
+import { ReactNode } from 'react'
+import { getOrdered } from 'shared/utils'
 import ErrorWrapper from '../ErrorWrapper'
+import Expression from '../Expression'
+import ValidateDeps from '../ValidateDeps'
+import styles from './Styles.module.scss'
 
 const bem = BEMHelper(styles)
 
@@ -854,7 +854,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
     return (
       <Fragment key={node.id}>
         <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
-        <Main>
+        <Main full>
           <ErrorWrapper slice={['cells']}>
             <TableEditor nodeId={node.id} pageId={page.id} cells={node.cells} nodes={allNodes} />
           </ErrorWrapper>
@@ -867,10 +867,6 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             />
           </ErrorWrapper>
         </Main>
-        <Aside>
-          <Help description={getTypeDescription(node.type)} />
-        </Aside>
-        {/* TODO: summary, details, show */}
       </Fragment>
     )
   }
