@@ -4,6 +4,7 @@ import DeleteDraftModal from './DeleteDraft'
 import DraftModal from './Draft'
 import DuplicateModal from './Duplicate'
 import EmbedModal from './Embed'
+import MakeTemplateModal from './MakeTemplate'
 import MoveNodeModal from './MoveNode'
 import PublishModal from './Publish'
 import RenameModal from './Rename'
@@ -19,6 +20,7 @@ export default function Modals() {
   return (
     <>
       <RenameModal />
+      <MakeTemplateModal />
       <DeleteModal />
       <DuplicateModal />
       <DeleteDraftModal />

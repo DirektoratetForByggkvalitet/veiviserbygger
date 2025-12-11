@@ -54,9 +54,14 @@
         border: vars.$border-style;
         border-radius: 4px;
         padding: 3px 5px;
+
         &--public {
             background-color: colors.$published;
             color: colors.$light;
+        }
+
+        &--template {
+            background-color: colors.$info;
         }
     }
 

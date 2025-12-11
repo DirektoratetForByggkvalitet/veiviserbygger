@@ -292,6 +292,7 @@ export type Wizard = {
   title?: string
   publishedVersion?: DocumentReference
   draftVersion?: DocumentReference
+  isTemplate?: boolean
 }
 
 export type WizardVersion = {

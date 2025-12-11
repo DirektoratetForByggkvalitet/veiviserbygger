@@ -64,19 +64,25 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
   const wizardOptions = [
     { group: 'Veiviser' },
     {
-      value: '1',
+      value: 'rename',
       icon: 'Pencil',
       label: 'Endre navn',
       onClick: () => setModal({ key: 'rename' }),
     },
     {
-      value: '2',
+      value: 'duplicate',
       icon: 'Copy',
       label: 'Dupliser veiviseren',
       onClick: () => setModal({ key: 'duplicate' }),
     },
     {
-      value: '3',
+      value: 'template',
+      icon: 'Tag',
+      label: 'Merk som mal',
+      onClick: () => setModal({ key: 'make-template' }),
+    },
+    {
+      value: 'trash',
       icon: 'Trash',
       label: 'Slett veiviseren',
       styled: 'delete',
@@ -129,7 +135,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                 ) : null}
 
                 {/* The user is on the draft version */}
-                {wizard?.data.draftVersion?.id === activeVersion.id ? (
+                {wizard?.data.draftVersion?.id === activeVersion.id && !wizard?.data.isTemplate ? (
                   <Button
                     size="small"
                     iconOnlyOnMobile="CloudUpload"

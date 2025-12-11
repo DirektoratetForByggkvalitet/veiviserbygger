@@ -1,8 +1,8 @@
+import Icon from '@/components/Icon'
+import { useEditable } from '@/hooks/useEditable'
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
-import { useEditable } from '@/hooks/useEditable'
-import Icon from '@/components/Icon'
 
 interface Props {
   className?: string
@@ -15,6 +15,7 @@ interface Props {
   disabled?: boolean
   large?: boolean
   ariaLabel?: string
+  forceAllowEdit?: boolean
   onChange: (checked: boolean) => void
 }
 
@@ -26,16 +27,20 @@ export default function Checkbox({
   toggle,
   disabled,
   large,
+  forceAllowEdit,
   ...props
 }: Props) {
   const handleChange = () => onChange(!checked)
-  const isEditable = useEditable()
+  const isEditable = forceAllowEdit || useEditable()
 
-  if (!isEditable && !checked) {
-    return null
-  }
   return (
-    <label {...bem('', { toggle, large, disabled, 'read-only': !isEditable }, className)}>
+    <label
+      {...bem(
+        '',
+        { toggle, large, disabled: disabled || !isEditable, 'read-only': !isEditable },
+        className,
+      )}
+    >
       <input
         {...props}
         {...bem('input')}
