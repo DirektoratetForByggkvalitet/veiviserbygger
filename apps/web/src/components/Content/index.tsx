@@ -796,6 +796,8 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
             />
           </ErrorWrapper>
+
+          <pre>{JSON.stringify(node, null, 2)}</pre>
           <div>TODO: node.values</div>
           <div>TODO: node.operations </div>
           {/*
@@ -814,7 +816,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
                 label="Enhet"
                 placeholder="m², år, kg, osv."
                 value={node.unit || ''}
-                onChange={(v) => patchNode(node.id, { type: 'Number', unit: v })}
+                onChange={(v) => patchNode(node.id, { type: 'Sum', unit: v })}
               />
             </ErrorWrapper>
             <ErrorWrapper slice={['minimum']}>
@@ -823,7 +825,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
                 placeholder="0"
                 type="number"
                 value={node.minimum}
-                onChange={(v) => patchNode(node.id, { type: 'Number', minimum: v })}
+                onChange={(v) => patchNode(node.id, { type: 'Sum', minimum: v })}
               />
             </ErrorWrapper>
           </div>
