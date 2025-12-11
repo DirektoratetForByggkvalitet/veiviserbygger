@@ -11,9 +11,9 @@ import useAuth from '@/hooks/auth'
 import { useEditable } from '@/hooks/useEditable'
 import { useModal } from '@/hooks/useModal'
 import BEMHelper from '@/lib/bem'
+import { getVersionTitle } from '@/lib/versions'
 import { Timestamp } from 'firebase/firestore'
 import { useParams } from 'react-router'
-import { getVersionTitle } from '@/lib/versions'
 import { Wizard, WrappedWithId } from 'types'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
@@ -68,14 +68,13 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
       icon: 'Pencil',
       label: 'Endre navn',
       onClick: () => setModal({ key: 'rename' }),
-    } /*
+    },
     {
       value: '2',
       icon: 'Copy',
       label: 'Dupliser veiviseren',
-      onClick: () => console.log('Åpne en modal med bekreftelse."'),
-      disabled: true,
-    },*/,
+      onClick: () => setModal({ key: 'duplicate' }),
+    },
     {
       value: '3',
       icon: 'Trash',

@@ -10,7 +10,6 @@ import Modal from '@/components/Modal'
 import TableEditor from '@/components/TableEditor'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { Fragment, useMemo, useRef, useState } from 'react'
 import {
   Answer,
@@ -102,7 +101,7 @@ function contentAction<T extends PageContent['type']>({
     label: getTypeText(preset || type),
     icon: getTypeIcon(preset || type),
     onClick: () => addNodes({ parentNodeId: nodeId }, [{ type, ...defaultContent }]),
-    disabled: disabled,
+    disabled,
   }
 }
 
@@ -198,7 +197,7 @@ function Option({
   const isEditable = useEditable()
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: transform ? `translateY(${transform.y}px)` : undefined,
     transition,
   }
 
@@ -855,6 +854,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
     ]*/
     return (
       <Fragment key={node.id}>
+        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
         <Main full>
           <ErrorWrapper slice={['heading']}>
             <Input

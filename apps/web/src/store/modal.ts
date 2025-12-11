@@ -8,6 +8,7 @@ export type ModalState =
   | { key: 'draft' }
   | { key: 'publish' }
   | { key: 'versions' }
+  | { key: 'duplicate' }
   | { key: 'embed' }
   | { key: 'move-node'; data: { nodeId: string } }
 

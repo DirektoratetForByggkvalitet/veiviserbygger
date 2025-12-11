@@ -1,24 +1,23 @@
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDraggable } from 'react-use-draggable-scroll'
 
 import Icon from '@/components/Icon'
 
+import useErrors from '@/hooks/errors'
 import { useEditable } from '@/hooks/useEditable'
 import { useSortableList } from '@/hooks/useSortableList'
 import { useVersion } from '@/hooks/useVersion'
 import BEMHelper from '@/lib/bem'
 import { getTypeIcon, getTypeText } from '@/lib/content'
 import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
+import { ValidationError } from '@/services/firebase/utils/validator'
 import { values } from 'lodash'
 import { getOrdered } from 'shared/utils'
 import { Intro, OptionalExcept, PageContent, Result, WizardPage, WizardVersion } from 'types'
 import NewPage from '../NewPage'
 import styles from './Styles.module.scss'
-import useErrors from '@/hooks/errors'
-import { ValidationError } from '@/services/firebase/utils/validator'
 const bem = BEMHelper(styles)
 
 interface Props {
@@ -54,7 +53,8 @@ const ContentItem = ({
   const isEditable = useEditable()
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    // transformz: CSS.Transform.toString(transform),
+    transform: transform ? `translateY(${transform.y}px)` : undefined,
     transition,
   }
 

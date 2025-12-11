@@ -104,6 +104,7 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
       if (persistTimer.current) {
         clearTimeout(persistTimer.current)
       }
+
       persistTimer.current = setTimeout(() => {
         const serialized = serializeTableCells(gridToTableCells(nextGrid))
         overwriteNodeField(nodeId, 'cells', serialized)

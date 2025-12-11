@@ -18,8 +18,12 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 
-import { getConfig } from '../api'
-import { dataPoint } from './utils/db'
+import { merge } from '@/lib/merge'
+import { rewriteRefs } from '@/lib/rewrite'
+import { connectStorageEmulator, FirebaseStorage, getStorage, ref } from 'firebase/storage'
+import { get, maxBy, pick, set, values } from 'lodash'
+import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
+import { getOrdered } from 'shared/utils'
 import {
   Answer,
   Branch,
@@ -37,15 +41,11 @@ import {
   WizardVersion,
 } from 'types'
 import { v4 as uuid } from 'uuid'
-import { get, maxBy, pick, set, values } from 'lodash'
-import { merge } from '@/lib/merge'
-import { nodesRef, wizardsRef, wizardVersionsRef } from 'shared/firestore'
-import { rewriteRefs } from '@/lib/rewrite'
+import { getConfig } from '../api'
+import { dataPoint } from './utils/db'
 import { buildTree } from './utils/refs'
-import { isDeleteAllowed } from './utils/validator'
-import { connectStorageEmulator, FirebaseStorage, getStorage, ref } from 'firebase/storage'
 import { copyFiles, deleteFiles } from './utils/storage'
-import { getOrdered } from 'shared/utils'
+import { isDeleteAllowed } from './utils/validator'
 
 type OIDC = {
   name: string
@@ -743,6 +743,103 @@ export async function deleteWizard({ db, storage, wizardId }: FuncScope) {
   await deleteDoc(getWizardRef(db, wizardId))
 
   console.log('Deleted wizard', wizardId)
+}
+
+export async function duplicateWizard({
+  db,
+  storage,
+  wizardId,
+  data,
+}: Omit<FuncScope, 'versionId'> & { data?: Wizard }) {
+  // Get the original wizard data
+  const originalSnap = await getDoc(getWizardRef(db, wizardId))
+
+  if (!originalSnap.exists()) {
+    throw new Error(`Wizard with id ${wizardId} not found`)
+  }
+
+  const originalData = originalSnap.data() as Wizard
+
+  // Prefer the latest draft version, fall back to the published version
+  const sourceVersionId =
+    (originalData as any)?.draftVersion?.id || (originalData as any)?.publishedVersion?.id
+
+  // Base the new wizard on the original, but:
+  // - drop version references
+  // - override with any provided data (typically a new title)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { draftVersion, publishedVersion, ...rest } = originalData as any
+
+  const newWizardData = {
+    ...rest,
+    ...(data || {}),
+  } as Wizard
+
+  // Create the new wizard and its initial (empty) version
+  const newWizard = await createWizard(db, newWizardData)
+
+  // If there is no version to copy, we're done
+  if (!sourceVersionId) {
+    return newWizard
+  }
+
+  const sourceVersionRef = getWizardVersionRef({ db, wizardId, versionId: sourceVersionId })
+  const targetVersionRef = getWizardVersionRef({
+    db,
+    wizardId: newWizard.id,
+    versionId: newWizard.versionId,
+  })
+
+  const nodes = await getDocs(getNodesRef({ db, wizardId, versionId: sourceVersionId }))
+
+  await runTransaction(db, async (transaction) => {
+    const sourceVersion = await transaction.get(sourceVersionRef)
+
+    if (!sourceVersion.exists()) {
+      throw new Error(`Version with id ${sourceVersionId} not found for wizard ${wizardId}`)
+    }
+
+    // Copy version data (intro + pages + content), rewriting any internal refs
+    await transaction.set(
+      targetVersionRef,
+      pick(rewriteRefs(db, sourceVersion.data(), sourceVersionRef.path, targetVersionRef.path), [
+        'content',
+        'intro',
+        'pages',
+      ]),
+    )
+
+    // Copy all nodes for that version
+    if (nodes.docs.length) {
+      for (const node of nodes.docs) {
+        const newNodeRef = getNodeRef(
+          { db, wizardId: newWizard.id, versionId: targetVersionRef.id },
+          node.id,
+        )
+
+        await transaction.set(
+          newNodeRef,
+          rewriteRefs(db, node.data(), sourceVersionRef.path, targetVersionRef.path),
+        )
+      }
+    }
+  })
+
+  // Copy any files in storage belonging to the version.
+  // If this fails, we log the error but still return the new wizard.
+  try {
+    await copyFiles(ref(storage, sourceVersionRef.path), ref(storage, targetVersionRef.path))
+  } catch (error) {
+    console.error('Failed to copy files when duplicating wizard', {
+      wizardId,
+      sourceVersionId,
+      newWizardId: newWizard.id,
+      newVersionId: newWizard.versionId,
+      error,
+    })
+  }
+
+  return newWizard
 }
 
 export async function patchVersion(

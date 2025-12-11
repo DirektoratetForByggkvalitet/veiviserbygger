@@ -20,6 +20,7 @@ type Props<T extends HTMLInputTypeAttribute = 'text'> = {
   sentence?: boolean
   hideIfEmpty?: boolean
   forwardedRef?: RefObject<HTMLInputElement>
+  forceAllowEdit?: boolean
   onChange: (v: T extends 'number' ? number | undefined : string | undefined) => void
 
   /**
@@ -41,10 +42,11 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   hideIfEmpty,
   forwardedRef,
   inputDebounceMs,
+  forceAllowEdit,
   ...props
 }: Props<T>) {
   const internalRef = useRef<HTMLInputElement>(null)
-  const isEditable = useEditable()
+  const isEditable = forceAllowEdit ? true : useEditable()
 
   const ref = forwardedRef || internalRef
   const { value, inSync, onChange } = useValue(
