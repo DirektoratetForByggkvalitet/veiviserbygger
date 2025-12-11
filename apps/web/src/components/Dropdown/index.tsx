@@ -45,6 +45,7 @@ type Props = {
   options: DropdownOptions
   onChange?: (value: string) => void
   className?: string
+  tabIndex?: number
 }
 
 export default function Dropdown({
@@ -64,6 +65,7 @@ export default function Dropdown({
   compact,
   subtle,
   className,
+  ...props
 }: Props) {
   const location = useLocation()
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -158,6 +160,7 @@ export default function Dropdown({
           aria-label={iconOnly ? label : undefined}
           title={iconOnly ? label : undefined}
           ref={triggerRef}
+          {...props}
         >
           {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
           {!iconOnly && (
