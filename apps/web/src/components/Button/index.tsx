@@ -27,6 +27,7 @@ interface Props {
   // full?: boolean
   size?: 'small' | 'large' | 'full'
   className?: string
+  tooltip?: string
 }
 
 export default function Button({
@@ -48,6 +49,7 @@ export default function Button({
   icon,
   disabled,
   className,
+  tooltip,
   ...props
 }: Props) {
   const Element = to ? Link : href ? 'a' : 'button'
@@ -74,6 +76,7 @@ export default function Button({
           loading,
           toggle,
           'only-on-mobile': iconOnlyOnMobile,
+          tooltip: !!tooltip,
         },
         className,
       )}
@@ -95,6 +98,8 @@ export default function Button({
         </span>
       )}
       {!iconOnly && children && <span {...bem('text')}>{children}</span>}
+
+      {tooltip && <span {...bem('tooltip')}>{tooltip}</span>}
     </Element>
   )
 }

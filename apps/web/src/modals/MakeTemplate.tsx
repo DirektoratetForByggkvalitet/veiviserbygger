@@ -20,7 +20,7 @@ export default function MakeTemplateModal() {
 
   return (
     <Modal title="Merk som mal" expanded onClose={onClose}>
-      <Help description="Endringen lagres løpende mens du skriver." />
+      <Help description="Ved å merke som mal kan du gjenbruke denne veiviseren som en mal for fremtidige prosjekter. Maler kan ikke publiseres." />
       <Checkbox
         label="Merk veiviseren som en mal"
         checked={wizard?.data.isTemplate || false}

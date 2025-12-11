@@ -135,11 +135,13 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                 ) : null}
 
                 {/* The user is on the draft version */}
-                {wizard?.data.draftVersion?.id === activeVersion.id && !wizard?.data.isTemplate ? (
+                {wizard?.data.draftVersion?.id === activeVersion.id ? (
                   <Button
                     size="small"
                     iconOnlyOnMobile="CloudUpload"
                     primary
+                    disabled={wizard?.data.isTemplate}
+                    tooltip={wizard?.data.isTemplate ? 'Maler kan ikke publiseres' : undefined}
                     onClick={() => setModal({ key: 'publish' })}
                   >
                     Publiser
