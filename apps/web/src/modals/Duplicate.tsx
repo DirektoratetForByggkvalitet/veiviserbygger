@@ -24,7 +24,7 @@ export default function DuplicateModal() {
 
   const title = wizard?.data.title + ' (kopi)' || ''
 
-  const handleDelete = async () => {
+  const handleDuplicate = async () => {
     setLoading(true)
     const { id, versionId } = await duplicateWizard(name || title)
 
@@ -44,7 +44,7 @@ export default function DuplicateModal() {
         <Input label="Navn" value={name || title} onChange={setName} forceAllowEdit />
 
         <ButtonBar>
-          <Button type="button" onClick={handleDelete} primary loading={loading}>
+          <Button type="button" onClick={handleDuplicate} primary loading={loading}>
             Dupliser
           </Button>
           <Button type="button" onClick={onClose}>

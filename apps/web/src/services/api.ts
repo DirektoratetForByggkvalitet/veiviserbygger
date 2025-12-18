@@ -14,7 +14,7 @@ export const getConfig = async () => {
 export const getFile = async (path: string) => {
   const { data } = await instance.get<Requests['/storage/:path']['GET']['response']>(
     `/storage/${encodeURIComponent(path)}`,
-    { responseType: 'blob' },
+    { responseType: 'blob' }, // Consider increasing the { timeout: 1000 } here if wizard duplication failes
   )
 
   return data
