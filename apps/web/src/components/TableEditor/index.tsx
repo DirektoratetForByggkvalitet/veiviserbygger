@@ -448,16 +448,6 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
       >
         {expressionTarget && (
           <div {...bem('modal')}>
-            <div {...bem('modal-header')}>
-              <strong>
-                Celle ({expressionTarget.row + 1} , {expressionTarget.column + 1})
-              </strong>
-              {currentExpression && (
-                <Button size="small" subtle onClick={handleClearExpression}>
-                  Fjern vilkår
-                </Button>
-              )}
-            </div>
             <Expression
               expression={currentExpression}
               nodes={nodes}
@@ -466,6 +456,17 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
               allowComplex={false}
               onChange={handleExpressionChange}
             />
+
+            <p>
+              Hvis vilkåret oppfylles vil cellen bli merket grønn. Hvis vilkåret ikke oppfylles vil
+              cellen bli merket rød med <s>gjennomstrekning</s>. Hvis man har ingen vilkår i en
+              celle vil den alltid merkes grønn.{' '}
+            </p>
+            {currentExpression && (
+              <Button size="small" icon="Trash" subtle onClick={handleClearExpression}>
+                Fjern alle vilkår
+              </Button>
+            )}
           </div>
         )}
       </Modal>
