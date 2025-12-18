@@ -23,6 +23,10 @@ import {
   updateAnswerImage,
   moveNode,
   overwriteNodeField,
+  addSumField,
+  patchSumField,
+  deleteSumField,
+  reorderSumFields,
 } from '@/services/firebase'
 import { curry } from 'lodash'
 
@@ -57,6 +61,10 @@ export function useVersion() {
     updateAnswerImage: curry(updateAnswerImage)({ db: firestore, storage, wizardId, versionId }),
     deleteAnswer: curry(deleteAnswer)({ db: firestore, storage, wizardId, versionId }),
     reorderAnswers: curry(reorderAnswers)({ db: firestore, storage, wizardId, versionId }),
+    addSumField: curry(addSumField)({ db: firestore, storage, wizardId, versionId }),
+    patchSumField: curry(patchSumField)({ db: firestore, storage, wizardId, versionId }),
+    deleteSumField: curry(deleteSumField)({ db: firestore, storage, wizardId, versionId }),
+    reorderSumFields: curry(reorderSumFields)({ db: firestore, storage, wizardId, versionId }),
     patchVersion: curry(patchVersion)({ db: firestore, storage, wizardId, versionId }),
     overwriteNodeField: curry(overwriteNodeField)({ db: firestore, storage, wizardId, versionId }),
     createDraftVersion: (copyFromVersionId?: string) =>

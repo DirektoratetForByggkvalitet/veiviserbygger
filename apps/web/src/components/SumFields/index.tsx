@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import Button from '@/components/Button'
@@ -12,8 +12,7 @@ import useErrors from '@/hooks/errors'
 import BEMHelper from '@/lib/bem'
 import { getTypeText } from '@/lib/content'
 import { getOrdered, getWithIds } from 'shared/utils'
-import { OrderedMap, OptionalExcept, PageContent, Sum, SumField } from 'types'
-import { v4 as uuid } from 'uuid'
+import { OptionalExcept, PageContent, Sum, SumField } from 'types'
 import styles from './Styles.module.scss'
 
 const bem = BEMHelper(styles)
@@ -127,32 +126,16 @@ function SumFieldRow({
 }
 
 export default function SumFields({ node, nodes }: SumFieldsProps) {
-  const { overwriteNodeField, patchNode, getNodeRef } = useVersion()
+  const { addSumField, patchSumField, deleteSumField, reorderSumFields, getNodeRef } = useVersion()
   const isEditable = useEditable()
   const { getErrors } = useErrors()
 
   const orderedFields = getOrdered(node.fields)
-
-  const persistFields = useCallback(
-    (list: SumFieldItem[]) => {
-      const payload = list.reduce<OrderedMap<SumField>>((acc, field, index) => {
-        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-        const { id, ...values } = field
-        acc[id] = {
-          ...(values as SumField),
-          order: index,
-        }
-        return acc
-      }, {})
-
-      overwriteNodeField(node.id, 'fields', payload).catch((error) => {
-        console.error('Kunne ikke oppdatere feltene i summen', error)
-      })
-    },
-    [node.id, overwriteNodeField],
+  const { value, onSort } = useSortableList(orderedFields, (list) =>
+    reorderSumFields(node.id, list).catch((error) => {
+      console.error('Kunne ikke endre rekkefølgen på feltene', error)
+    }),
   )
-
-  const { value, onSort } = useSortableList<SumFieldItem>(orderedFields, persistFields)
 
   const nodeOptions = useMemo<DropdownOptions>(() => {
     return getWithIds(nodes)
@@ -194,50 +177,29 @@ export default function SumFields({ node, nodes }: SumFieldsProps) {
   }
 
   const handleAddField = () => {
-    const newFieldId = uuid()
-    const nextFields: SumFieldItem[] = [
-      ...value,
-      {
-        id: newFieldId,
-        operation: '+',
-        value: undefined,
-      },
-    ]
-
-    persistFields(nextFields)
+    addSumField(node.id, { operation: '+' }).catch((error) =>
+      console.error('Kunne ikke legge til nytt felt', error),
+    )
   }
 
   const handleRemoveField = (fieldId: string) => {
-    persistFields(value.filter((field) => field.id !== fieldId))
+    deleteSumField(node.id, fieldId).catch((error) =>
+      console.error('Kunne ikke fjerne feltet', error),
+    )
   }
 
   const handleOperationChange = (fieldId: string, operation: SumOperation) => {
-    const currentFields = node.fields ?? ({} as OrderedMap<SumField>)
-
-    patchNode(node.id, {
-      fields: {
-        ...currentFields,
-        [fieldId]: {
-          ...(currentFields[fieldId] ?? {}),
-          operation,
-        },
-      },
-    }).catch((error) => console.error('Kunne ikke oppdatere operasjon', error))
+    patchSumField(node.id, fieldId, { operation }).catch((error) =>
+      console.error('Kunne ikke oppdatere operasjon', error),
+    )
   }
 
   const handleNodeChange = (field: SumFieldItem, nodeId: string) => {
-    const currentFields = node.fields ?? ({} as OrderedMap<SumField>)
     const docRef = getNodeRef(nodeId)
 
-    patchNode(node.id, {
-      fields: {
-        ...currentFields,
-        [field.id]: {
-          ...(currentFields[field.id] ?? {}),
-          value: docRef,
-        },
-      },
-    }).catch((error) => console.error('Kunne ikke oppdatere feltverdi', error))
+    patchSumField(node.id, field.id, { value: docRef }).catch((error) =>
+      console.error('Kunne ikke oppdatere feltverdi', error),
+    )
   }
 
   return (

@@ -36,6 +36,7 @@ import {
   PageContent,
   PageContentWithOptions,
   Patch,
+  SumField,
   Wizard,
   WizardPage,
   WizardVersion,
@@ -697,6 +698,89 @@ export async function reorderAnswers(
         return {
           ...res,
           [`options.${option.id}.order`]: i,
+        }
+      }, {}),
+    )
+  })
+}
+
+export async function addSumField(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  field: Partial<Omit<SumField, 'id'>>,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+    const current = await transaction.get(ref)
+    const currentNode = current.data() as { fields?: OrderedMap<SumField> }
+
+    const maxOrder = maxBy(values(currentNode?.fields), 'order')?.order ?? -1
+
+    await transaction.update(ref, `fields.${uuid()}`, {
+      order: maxOrder + 1,
+      ...(field ?? {}),
+    })
+  })
+}
+
+export function patchSumField(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  fieldId: string,
+  patch: Partial<SumField>,
+) {
+  return runTransaction(db, async (transaction) => {
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+    const current = await transaction.get(ref)
+    const node = current?.data() as { fields?: OrderedMap<SumField> }
+
+    if (!node?.fields?.[fieldId]) {
+      throw new Error(`Field with id ${fieldId} not found in node ${nodeId}`)
+    }
+
+    await transaction.update(ref, {
+      [`fields.${fieldId}`]: merge(node.fields[fieldId], patch),
+    })
+  })
+}
+
+export function deleteSumField(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  fieldId: string,
+) {
+  return runTransaction(db, async (transaction) => {
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+    const current = await transaction.get(ref)
+    const node = current?.data() as { fields?: OrderedMap<SumField> }
+
+    if (!node?.fields?.[fieldId]) {
+      return
+    }
+
+    await transaction.update(ref, `fields.${fieldId}`, deleteField())
+  })
+}
+
+export async function reorderSumFields(
+  { db, wizardId, versionId }: FuncScope,
+  nodeId: string,
+  fields: OrderedArr<SumField>,
+) {
+  await runTransaction(db, async (transaction) => {
+    const ref = getNodeRef({ db, wizardId, versionId }, nodeId)
+    const current = (await transaction.get(ref)).data() as { fields?: OrderedMap<SumField> }
+
+    await transaction.update(
+      ref,
+      fields.reduce((res, field, index) => {
+        if (!current?.fields?.[field.id]) {
+          return res
+        }
+
+        return {
+          ...res,
+          [`fields.${field.id}.order`]: index,
         }
       }, {}),
     )
