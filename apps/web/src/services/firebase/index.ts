@@ -178,7 +178,9 @@ export async function createWizard(db: Firestore, data: Wizard) {
 
     await transaction
       .set(getWizardRef(db, newDocId), { ...data, draftVersion: newVersionRef })
-      .set(newVersionRef, { intro: { id: 'intro', type: 'Intro', heading: '', content: {} } })
+      .set(newVersionRef, {
+        intro: { id: 'intro', type: 'Intro', heading: data?.title || '', content: {} },
+      })
 
     return { id: newDocId, versionId: newVersionId }
   })
