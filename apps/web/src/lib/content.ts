@@ -42,7 +42,8 @@ const typeMap: Record<
   Sum: {
     title: 'Summering',
     icon: 'Sigma',
-    description: 'Et felt som kan summerer verdiene fra andre tallfelt i veiviseren.',
+    description:
+      'Et felt som kan summerer verdiene fra andre tallfelt i veiviseren. Den første operatoren er enten + eller -. For å summere to tallfelt legger man inn +A +B. For å multiplisere to felt velger man +A *B. Man kan lage lengre formler ved å kombinere flere felt og operatorer, som for eksempel +A +B -C *D /E.',
   },
   Table: {
     title: 'Tabell',

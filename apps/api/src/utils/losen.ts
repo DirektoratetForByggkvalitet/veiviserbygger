@@ -360,8 +360,8 @@ const transformNumber: TransformerFunc<'Number'> = async (node, data, deps) => {
 }
 
 const transformSum: TransformerFunc<'Sum'> = async (node, data, deps) => {
-  const values = getOrdered(node.values).map((value) => data.nodes[value.node.id]?.id)
-
+  const values = getOrdered(node.fields).map((value) => value.id)
+  const operations = getOrdered(node.fields).map((value) => value.operation || '+')
   return [
     {
       id: node.id,
@@ -371,7 +371,7 @@ const transformSum: TransformerFunc<'Sum'> = async (node, data, deps) => {
       property: node.id,
       show: node.show ? transformExpression(node.show, data) : undefined,
       values: values.filter((value): value is string => typeof value === 'string'),
-      operations: node.operations ?? [],
+      operations: operations,
       unit: node.unit,
       minimum: node.minimum,
     },

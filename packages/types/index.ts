@@ -171,11 +171,16 @@ export type NumberInput = PageNode<
   }
 >
 
+export type SumField = {
+  id: string
+  operation?: '+' | '-' | '*' | '/' | '-/' | '%'
+  value?: DocumentReference
+}
+
 export type Sum = PageNode<
   Content & {
     type: 'Sum'
-    values: OrderedMap<{ node: DocumentReference }>
-    operations?: Array<'+' | '-' | '*' | '/' | '-/' | '%'>
+    fields?: OrderedMap<SumField>
     unit?: string
     minimum?: number
   }

@@ -8,6 +8,7 @@ import Icon from '@/components/Icon'
 import Input from '@/components/Input'
 import Modal from '@/components/Modal'
 import TableEditor from '@/components/TableEditor'
+import SumFields from '@/components/SumFields'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
 import { Fragment, useMemo, useRef, useState } from 'react'
@@ -162,6 +163,11 @@ const addNodeContentOptions = (
       addNodes,
       nodeId,
       type: 'Sum',
+      defaultContent: {
+        fields: {
+          [uuid()]: { operation: '+', order: 0 },
+        },
+      },
       disabled: false,
     }),
     contentAction({
@@ -796,19 +802,8 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             />
           </ErrorWrapper>
 
-          <pre>{JSON.stringify(node, null, 2)}</pre>
-          <div>TODO: node.values</div>
-          <div>TODO: node.operations </div>
-          {/*
-          operationsMenu: {
-              '+': 'Addisjon (a+b)',
-              '-': 'Substraksjon (a-b)',
-              '*': 'Multiplikasjon (a*b)',
-              '/': 'Divisjon (a/b)',
-              '-/': 'Omvendt divisjon (b/a)'
-              '%': 'Multiplikasjon med to desimaler (a*b=0.00)':
-           }
-          */}
+          <SumFields node={node} nodes={allNodes} />
+
           <div {...bem('grid')}>
             <ErrorWrapper slice={['unit']}>
               <Input

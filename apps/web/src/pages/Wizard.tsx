@@ -133,6 +133,11 @@ export const addPageContentActions = (
           addNodes,
           pageId,
           type: 'Sum',
+          defaultContent: {
+            fields: {
+              [uuid()]: { operation: '+', order: 0 },
+            },
+          },
         }),
         contentAction({
           addNodes,
