@@ -33,13 +33,13 @@ export default function Dashboard() {
       )}
 
       <section {...bem('section')}>
-        <h2 {...bem('section-title')}>Maler</h2>
-        <WizardList wizards={templates} large />
+        <h2 {...bem('section-title')}>Utkast</h2>
+        <WizardList wizards={draftWizards} large />
       </section>
 
       <section {...bem('section')}>
-        <h2 {...bem('section-title')}>Utkast</h2>
-        <WizardList wizards={draftWizards} large />
+        <h2 {...bem('section-title')}>Maler</h2>
+        <WizardList wizards={templates} large />
       </section>
 
       <section {...bem('section')}>
