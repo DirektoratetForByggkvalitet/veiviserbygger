@@ -134,14 +134,22 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                   </Button>
                 ) : null}
 
+                {wizard?.data.isTemplate ? (
+                  <Button
+                    size="small"
+                    iconOnlyOnMobile="Copy"
+                    primary
+                    onClick={() => setModal({ key: 'duplicate' })}
+                  >
+                    Dupliser mal
+                  </Button>
+                ) : null}
                 {/* The user is on the draft version */}
-                {wizard?.data.draftVersion?.id === activeVersion.id ? (
+                {wizard?.data.draftVersion?.id === activeVersion.id && !wizard?.data.isTemplate ? (
                   <Button
                     size="small"
                     iconOnlyOnMobile="CloudUpload"
                     primary
-                    disabled={wizard?.data.isTemplate}
-                    tooltip={wizard?.data.isTemplate ? 'Maler kan ikke publiseres' : undefined}
                     onClick={() => setModal({ key: 'publish' })}
                   >
                     Publiser
