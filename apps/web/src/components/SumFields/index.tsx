@@ -132,9 +132,7 @@ export default function SumFields({ node, nodes }: SumFieldsProps) {
 
   const orderedFields = getOrdered(node.fields)
   const { value, onSort } = useSortableList(orderedFields, (list) =>
-    reorderSumFields(node.id, list).catch((error) => {
-      console.error('Kunne ikke endre rekkefølgen på feltene', error)
-    }),
+    reorderSumFields(node.id, list),
   )
 
   const nodeOptions = useMemo<DropdownOptions>(() => {
@@ -211,17 +209,26 @@ export default function SumFields({ node, nodes }: SumFieldsProps) {
         <SortableContext items={value}>
           <ErrorWrapper slice={['fields']}>
             <ul {...bem('options', { 'has-errors': getErrors(['fields']).length })}>
-              {value.map((field) => (
-                <SumFieldRow
-                  key={field.id}
-                  field={field}
-                  nodeOptions={nodeOptions}
-                  isEditable={isEditable}
-                  onOperationChange={handleOperationChange}
-                  onNodeChange={handleNodeChange}
-                  onRemove={handleRemoveField}
-                />
-              ))}
+              {value.map(({ id }) => {
+                // Fetch the full field data outside the sort context to avoid that content isn't rerendered on value changes
+                const field = orderedFields.find((o) => o.id === id)
+
+                if (!field) {
+                  return null
+                }
+
+                return (
+                  <SumFieldRow
+                    key={field.id}
+                    field={field}
+                    nodeOptions={nodeOptions}
+                    isEditable={isEditable}
+                    onOperationChange={handleOperationChange}
+                    onNodeChange={handleNodeChange}
+                    onRemove={handleRemoveField}
+                  />
+                )
+              })}
 
               {value.length === 0 && (
                 <li {...bem('option', 'placeholder')}>Ingen felt lagt til ennå</li>
