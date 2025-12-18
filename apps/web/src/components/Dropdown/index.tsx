@@ -32,6 +32,7 @@ type Props = {
   label?: string
   placeholder?: string
   icon?: keyof typeof icons
+  showOptionIconAsValue?: boolean
   value?: string | number | boolean
   position?: 'above' | 'below'
   direction?: 'left' | 'right'
@@ -53,6 +54,7 @@ export default function Dropdown({
   value,
   placeholder,
   icon,
+  showOptionIconAsValue,
   options,
   direction = 'left',
   position = 'below',
@@ -142,7 +144,13 @@ export default function Dropdown({
       <div {...bem('', { simple, subtle, sentence, 'read-only': true })} ref={wrapperRef}>
         <div {...bem('trigger', { label: !!label })}>
           {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
-          <span {...bem('value')}>{valueString || ' '}</span>
+          <span {...bem('value')}>
+            {showOptionIconAsValue && selectedOption?.icon ? (
+              <Icon name={selectedOption.icon} />
+            ) : (
+              valueString || ' '
+            )}
+          </span>
         </div>
       </div>
     )
@@ -165,7 +173,11 @@ export default function Dropdown({
           {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
           {!iconOnly && (
             <span {...bem('value', { placeholder: !selectedOption && !value && placeholder })}>
-              {valueString || ' '}
+              {showOptionIconAsValue && selectedOption?.icon ? (
+                <Icon name={selectedOption.icon} />
+              ) : (
+                valueString || ' '
+              )}
             </span>
           )}
 
