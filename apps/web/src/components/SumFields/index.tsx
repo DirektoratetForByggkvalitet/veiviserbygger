@@ -40,6 +40,7 @@ type SumFieldRowProps = {
   field: SumFieldItem
   nodeOptions: DropdownOptions
   isEditable: boolean
+  isFirst?: boolean
   onOperationChange: (fieldId: string, operation: SumOperation) => void
   onNodeChange: (field: SumFieldItem, nodeId: string) => void
   onRemove: (fieldId: string) => void
@@ -49,6 +50,7 @@ function SumFieldRow({
   field,
   nodeOptions,
   isEditable,
+  isFirst,
   onOperationChange,
   onNodeChange,
   onRemove,
@@ -74,6 +76,13 @@ function SumFieldRow({
     },
   ]
 
+  const options = isFirst
+    ? OPERATION_OPTIONS.map((option) => ({
+        ...option,
+        disabled: 'value' in option && option.value !== '+' && option.value !== '-',
+      }))
+    : OPERATION_OPTIONS
+
   return (
     <li
       {...bem('option', { 'read-only': !isEditable })}
@@ -90,7 +99,7 @@ function SumFieldRow({
       )}
 
       <Dropdown
-        options={OPERATION_OPTIONS}
+        options={options}
         value={operation}
         label="Operasjon"
         placeholder="Velg operasjon"
@@ -209,7 +218,7 @@ export default function SumFields({ node, nodes }: SumFieldsProps) {
         <SortableContext items={value}>
           <ErrorWrapper slice={['fields']}>
             <ul {...bem('options', { 'has-errors': getErrors(['fields']).length })}>
-              {value.map(({ id }) => {
+              {value.map(({ id }, index) => {
                 // Fetch the full field data outside the sort context to avoid that content isn't rerendered on value changes
                 const field = orderedFields.find((o) => o.id === id)
 
@@ -223,6 +232,7 @@ export default function SumFields({ node, nodes }: SumFieldsProps) {
                     field={field}
                     nodeOptions={nodeOptions}
                     isEditable={isEditable}
+                    isFirst={index === 0}
                     onOperationChange={handleOperationChange}
                     onNodeChange={handleNodeChange}
                     onRemove={handleRemoveField}
