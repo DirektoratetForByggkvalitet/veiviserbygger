@@ -326,6 +326,13 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                         handleCellSelection({ row: rowIndex, column: columnIndex }, event)
                       }
                     >
+                      <CellContent
+                        value={slot.cell.text}
+                        editable={isEditable}
+                        onChange={(value) =>
+                          handleCellContentChange({ row: rowIndex, column: columnIndex }, value)
+                        }
+                      />
                       {isEditable && (
                         <div {...bem('cell-actions')}>
                           <Dropdown
@@ -350,8 +357,8 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                               {
                                 label:
                                   selectedCell?.type === 'Heading'
-                                    ? 'Gjør til vanlig innhold'
-                                    : 'Gjør til overskrift',
+                                    ? 'Marker som innholdscelle'
+                                    : 'Marker som overskriftscelle',
                                 value: 'toggle-type',
                                 icon: selectedCell?.type === 'Heading' ? 'Type' : 'Heading',
                                 onClick: handleToggleHeader,
@@ -372,13 +379,13 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                               },
                               { group: 'Rad', icon: 'Rows3' },
                               {
-                                label: 'Rad over',
+                                label: 'Ny rad over',
                                 value: 'row-before',
                                 icon: 'PanelTop',
                                 onClick: () => handleAddRow('before'),
                               },
                               {
-                                label: 'Rad under',
+                                label: 'Ny rad under',
                                 value: 'row-after',
                                 icon: 'PanelBottom',
                                 onClick: () => handleAddRow('after'),
@@ -391,13 +398,13 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                               },
                               { group: 'Kolonne', icon: 'Columns3' },
                               {
-                                label: 'Kolonne til venstre',
+                                label: 'Ny kolonne til venstre',
                                 value: 'column-left',
                                 icon: 'PanelLeft',
                                 onClick: () => handleAddColumn('left'),
                               },
                               {
-                                label: 'Kolonne til høyre',
+                                label: 'Ny kolonne til høyre',
                                 value: 'column-right',
                                 icon: 'PanelRight',
                                 onClick: () => handleAddColumn('right'),
@@ -412,14 +419,6 @@ export default function TableEditor({ nodeId, pageId, cells, nodes }: Props) {
                           />
                         </div>
                       )}
-
-                      <CellContent
-                        value={slot.cell.text}
-                        editable={isEditable}
-                        onChange={(value) =>
-                          handleCellContentChange({ row: rowIndex, column: columnIndex }, value)
-                        }
-                      />
                     </Tag>
                   )
                 })}
