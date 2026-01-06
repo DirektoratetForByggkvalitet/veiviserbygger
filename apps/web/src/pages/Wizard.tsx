@@ -121,7 +121,29 @@ export const addPageContentActions = (
           },
         }),
         contentAction({ addNodes, pageId, type: 'Input', disabled: false }),
-        contentAction({ addNodes, pageId, type: 'Number', disabled: false }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Number',
+          defaultContent: {
+            step: 1,
+          },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Sum',
+          defaultContent: {
+            fields: {
+              [uuid()]: { operation: '+', order: 0 },
+            },
+          },
+        }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Table',
+        }),
         {
           group: 'Hendelser',
         },

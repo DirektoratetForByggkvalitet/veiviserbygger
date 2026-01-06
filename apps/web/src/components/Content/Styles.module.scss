@@ -152,12 +152,12 @@
     }
 
     &__option-handle {
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         padding: vars.$spacing--xsmall;
         border-radius: vars.$border-radius;
         background-color: transparent;
-        flex-grow: 1;
         cursor: grab;
         &:hover,
         &:focus-visible {
@@ -168,6 +168,8 @@
     &__option-actions {
         display: flex;
         align-items: center;
+        justify-content: flex-end;
+        flex-grow: 1;
     }
 
     &__option-icon {
@@ -175,7 +177,7 @@
     }
 
     &__option-image {
-        height: 120px;
+        height: 100px;
         aspect-ratio: 1 / 1;
         flex-grow: 0;
         flex-shrink: 0;

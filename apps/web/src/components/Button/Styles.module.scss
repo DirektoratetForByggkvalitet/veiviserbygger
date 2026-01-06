@@ -5,6 +5,7 @@
 .button {
     $this: &;
     @include mixins.font-size(base);
+    --tooltip-size: 40px;
     display: inline-flex;
     padding: 14px 20px;
     border-radius: vars.$border-radius;
@@ -19,6 +20,11 @@
     &:hover,
     &:focus:focus-visible {
         background-color: colors.get(neutral, base);
+
+        #{$this}__tooltip {
+            opacity: 1;
+            transform: none;
+        }
     }
 
     &__icon {
@@ -34,6 +40,36 @@
                 padding: 0;
                 flex-shrink: 0;
             }
+        }
+    }
+
+    &__tooltip {
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        top: calc(100% + 5px);
+        padding: 4px 14px;
+        min-height: var(--tooltip-size);
+        left: calc(50% - max-content / 2);
+        width: max-content;
+        border-radius: vars.$border-radius;
+        color: colors.$text;
+        background-color: colors.$info;
+        filter: drop-shadow(0 3px 14px rgba(0, 0, 0, 0.1));
+
+        &:before {
+            $size: 10px;
+            content: '';
+            position: absolute;
+            width: $size;
+            height: $size;
+            top: -($size / 2);
+            left: calc(50% - #{$size / 2});
+            background-color: inherit;
+            transform: rotate(45deg);
         }
     }
 
@@ -143,6 +179,10 @@
     &--toggle[aria-pressed='true']#{$this}--icon-only {
         background-color: colors.get(neutral, light);
         color: colors.$text;
+    }
+
+    &--tooltip {
+        position: relative;
     }
 }
 

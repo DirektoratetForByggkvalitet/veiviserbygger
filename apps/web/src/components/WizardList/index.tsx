@@ -13,26 +13,25 @@ interface Props {
 export default function WizardList({ wizards, large, onLinkClick }: Props) {
   return (
     <ul {...bem('', { large })}>
-      {wizards?.map((wizard) => (
-        <li key={wizard.id}>
-          <NavLink
-            to={`/wizard/${wizard.id}/${wizard.data.publishedVersion?.id || wizard.data.draftVersion?.id}`}
-            className={({ isActive, isPending }) =>
-              bem('item', {
-                active: isActive || isPending,
-              }).className
-            }
-            onClick={onLinkClick}
-          >
-            <span {...bem('label')}>{wizard.data.title || 'Uten tittel'}</span>
-            {!wizard.data.publishedVersion?.id ? (
-              <span {...bem('tag')}>Utkast</span>
-            ) : (
-              <span {...bem('tag', 'public')}>Publisert</span>
-            )}
-          </NavLink>
-        </li>
-      ))}
+      {wizards?.map((wizard) => {
+        const tag = getTag(wizard)
+        return (
+          <li key={wizard.id}>
+            <NavLink
+              to={`/wizard/${wizard.id}/${wizard.data.publishedVersion?.id || wizard.data.draftVersion?.id}`}
+              className={({ isActive, isPending }) =>
+                bem('item', {
+                  active: isActive || isPending,
+                }).className
+              }
+              onClick={onLinkClick}
+            >
+              <span {...bem('label')}>{wizard.data.title || 'Uten tittel'}</span>
+              <span {...bem('tag', tag.type)}>{tag.label}</span>
+            </NavLink>
+          </li>
+        )
+      })}
       {(!wizards || wizards.length === 0) && (
         <li key="none">
           <span {...bem('item', 'placeholder')}>Ingen veivisere</span>
@@ -40,4 +39,18 @@ export default function WizardList({ wizards, large, onLinkClick }: Props) {
       )}
     </ul>
   )
+}
+
+function getTag(wizard: WrappedWithId<Wizard>): {
+  label: string
+  type: 'template' | 'draft' | 'public'
+} {
+  if (wizard.data.publishedVersion?.id) {
+    return { label: 'Publisert', type: 'public' }
+  }
+  if (wizard.data.isTemplate) {
+    return { label: 'Mal', type: 'template' }
+  }
+
+  return { label: 'Utkast', type: 'draft' }
 }

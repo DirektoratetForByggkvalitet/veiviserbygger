@@ -15,7 +15,7 @@ import { useVersion } from '@/hooks/useVersion'
 import { unset } from '@/lib/merge'
 import { v4 as uuid } from 'uuid'
 import Range from '../Range'
-import { get } from 'lodash'
+import { cloneDeep, get } from 'lodash'
 
 const bem = BEMHelper(styles)
 
@@ -36,6 +36,8 @@ export type ExpressionProps = {
   property?: string
   nodeId?: string
   pageId?: string
+  allowComplex?: boolean
+  onChange?: (expression?: ExpressionType) => void
 }
 
 type FieldType = {
@@ -91,6 +93,10 @@ const inputTypeMap: {
     type: 'text',
   },
   Number: {
+    operators: ['gt', 'lt', 'gte', 'lte', 'eq', 'neq', 'between', 'required'],
+    type: 'number',
+  },
+  Sum: {
     operators: ['gt', 'lt', 'gte', 'lte', 'eq', 'neq', 'between', 'required'],
     type: 'number',
   },
@@ -199,14 +205,31 @@ export default function Expression({
   property = 'test',
   clauseId,
   onlyClause,
+  allowComplex = true,
+  onChange,
 }: ExpressionProps) {
   const { patch, getVersionRef, getNodeRef, removeExpressionClause } = useVersion()
+  const isControlled = typeof onChange === 'function'
 
   const patchDocRef = nodeId ? getNodeRef(nodeId) : getVersionRef()
   const path = pageId ? `pages.${pageId}.${property}` : property
 
+  const runLocalChange = (updater: (current?: ExpressionType) => ExpressionType | undefined) => {
+    if (!isControlled) {
+      return false
+    }
+
+    const next = updater(expression)
+    onChange?.(next)
+    return true
+  }
+
   const handleAddClause = () => {
     if (!expression) {
+      return
+    }
+
+    if (runLocalChange((current) => current)) {
       return
     }
 
@@ -232,11 +255,84 @@ export default function Expression({
   }
 
   const handleDeleteClause = (id: string) => {
+    if (runLocalChange((current) => current)) {
+      return
+    }
+
     removeExpressionClause(patchDocRef, path, id)
   }
 
   const handleExpressionChange = (key: string) => (value: any) => {
     const val = key === 'field' ? getNodeRef(value) : value
+
+    if (
+      runLocalChange((current) => {
+        if (clauseId) {
+          if (!current || !('clauses' in current) || !current.clauses?.[clauseId]) {
+            return current
+          }
+
+          const next = cloneDeep(current)
+          const clause = next.clauses?.[clauseId]
+
+          if (!clause) {
+            return current
+          }
+
+          if (key === 'field') {
+            clause.field = val
+            ;(clause as Record<string, any>).operator = undefined
+            ;(clause as Record<string, any>).value = undefined
+          } else if (key === 'operator') {
+            clause.operator = val
+          } else if (key === 'value') {
+            clause.value = val
+          }
+
+          return next
+        }
+
+        if (!current || 'clauses' in current) {
+          const simple: SimpleExpression = {} as SimpleExpression
+
+          if (key === 'field') {
+            simple.field = val
+            return simple
+          }
+
+          return {
+            ...simple,
+            [key]: val,
+          } as SimpleExpression
+        }
+
+        const next = cloneDeep(current) as SimpleExpression
+
+        if (key === 'field') {
+          next.field = val
+          ;(next as Record<string, any>).operator = undefined
+          ;(next as Record<string, any>).value = undefined
+          return next
+        }
+
+        if (key === 'operator') {
+          next.operator = val
+
+          if (val === 'between') {
+            next.value = { from: undefined, to: undefined }
+          }
+
+          return next
+        }
+
+        if (key === 'value') {
+          next.value = val
+        }
+        return next
+      })
+    ) {
+      return
+    }
 
     if (clauseId) {
       return patch(patchDocRef, path, {
@@ -353,28 +449,30 @@ export default function Expression({
           />
         </div>
 
-        <Dropdown
-          icon="Ellipsis"
-          direction="right"
-          options={[
-            {
-              value: '0',
-              icon: 'Plus',
-              label: 'Legg til flere vilkår',
-              onClick: handleAddClause,
-            },
-            ...(clauseId && !onlyClause
-              ? [
-                  {
-                    value: '0',
-                    label: 'Slett',
-                    onClick: () => handleDeleteClause(clauseId),
-                  },
-                ]
-              : []),
-          ]}
-          iconOnly
-        />
+        {allowComplex && !isControlled && (
+          <Dropdown
+            icon="Ellipsis"
+            direction="right"
+            options={[
+              {
+                value: '0',
+                icon: 'Plus',
+                label: 'Legg til flere vilkår',
+                onClick: handleAddClause,
+              },
+              ...(clauseId && !onlyClause
+                ? [
+                    {
+                      value: '0',
+                      label: 'Slett',
+                      onClick: () => handleDeleteClause(clauseId),
+                    },
+                  ]
+                : []),
+            ]}
+            iconOnly
+          />
+        )}
       </div>
     </div>
   )

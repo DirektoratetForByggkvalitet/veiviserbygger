@@ -15,8 +15,8 @@ import { RefObject, useEffect, useState } from 'react'
  * @returns
  */
 export function useValue<T extends string | number>(
-  value: T,
-  onChange: (v: T) => void,
+  value: T | undefined,
+  onChange: (v: T | undefined) => void,
   ref?: RefObject<HTMLInputElement>,
   debounceMs = 150,
 ) {

@@ -15,8 +15,12 @@ export default function Dashboard() {
   const toggleModal = (value: boolean) => () => {
     setModal(value)
   }
-  const draftWizards = wizards?.filter((wizard) => !wizard.data.publishedVersion?.id) ?? []
+  const templates =
+    wizards?.filter((wizard) => wizard.data.isTemplate && !wizard.data.publishedVersion?.id) ?? []
+  const draftWizards =
+    wizards?.filter((wizard) => !wizard.data.publishedVersion?.id && !wizard.data.isTemplate) ?? []
   const publisedWizards = wizards?.filter((wizard) => wizard.data.publishedVersion?.id) ?? []
+
   return (
     <div {...bem('')}>
       <NewWizard open={modal} toggleModal={toggleModal} />
@@ -31,6 +35,11 @@ export default function Dashboard() {
       <section {...bem('section')}>
         <h2 {...bem('section-title')}>Utkast</h2>
         <WizardList wizards={draftWizards} large />
+      </section>
+
+      <section {...bem('section')}>
+        <h2 {...bem('section-title')}>Maler</h2>
+        <WizardList wizards={templates} large />
       </section>
 
       <section {...bem('section')}>

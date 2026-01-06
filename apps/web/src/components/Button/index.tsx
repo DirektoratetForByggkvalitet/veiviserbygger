@@ -27,6 +27,7 @@ interface Props {
   // full?: boolean
   size?: 'small' | 'large' | 'full'
   className?: string
+  tooltip?: string
 }
 
 export default function Button({
@@ -48,6 +49,7 @@ export default function Button({
   icon,
   disabled,
   className,
+  tooltip,
   ...props
 }: Props) {
   const Element = to ? Link : href ? 'a' : 'button'
@@ -57,6 +59,8 @@ export default function Button({
     ...(href ? { href } : {}),
     ...(onClick ? { onClick } : {}),
   }
+
+  const iconSize = icon && size === 'small' ? 16 : undefined
 
   return (
     <Element
@@ -72,6 +76,7 @@ export default function Button({
           loading,
           toggle,
           'only-on-mobile': iconOnlyOnMobile,
+          tooltip: !!tooltip,
         },
         className,
       )}
@@ -84,15 +89,17 @@ export default function Button({
     >
       {iconOnlyOnMobile && (
         <span {...bem('icon', 'only-on-mobile')}>
-          <Icon name={iconOnlyOnMobile} />
+          <Icon name={iconOnlyOnMobile} size={iconSize} />
         </span>
       )}
       {icon && (
         <span {...bem('icon')}>
-          <Icon name={icon} />
+          <Icon name={icon} size={iconSize} />
         </span>
       )}
       {!iconOnly && children && <span {...bem('text')}>{children}</span>}
+
+      {tooltip && <span {...bem('tooltip')}>{tooltip}</span>}
     </Element>
   )
 }

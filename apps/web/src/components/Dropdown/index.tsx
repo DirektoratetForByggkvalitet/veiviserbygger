@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, ReactElement, MouseEventHandler } from 'react'
+import { MouseEventHandler, ReactElement, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { icons } from 'lucide-react'
@@ -7,8 +7,8 @@ import Icon from '@/components/Icon'
 import Transition from '@/components/Transition'
 
 import useClickOutside from '@/hooks/useClickOutside'
-import useKeyPress from '@/hooks/useKeyPress'
 import { useEditable } from '@/hooks/useEditable'
+import useKeyPress from '@/hooks/useKeyPress'
 
 import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
@@ -25,24 +25,28 @@ export type DropdownOptions = Array<
       selected?: boolean
       disabled?: boolean
     }
-  | { group: string }
+  | { group: string; icon?: keyof typeof icons }
 >
 
 type Props = {
   label?: string
   placeholder?: string
   icon?: keyof typeof icons
+  showOptionIconAsValue?: boolean
   value?: string | number | boolean
   position?: 'above' | 'below'
   direction?: 'left' | 'right'
   sentence?: boolean
   simple?: boolean
   subtle?: boolean
+  compact?: boolean
   hideLabel?: boolean
   iconOnly?: boolean
   trigger?: (props: { onClick: MouseEventHandler }) => ReactElement
   options: DropdownOptions
   onChange?: (value: string) => void
+  className?: string
+  tabIndex?: number
 }
 
 export default function Dropdown({
@@ -50,6 +54,7 @@ export default function Dropdown({
   value,
   placeholder,
   icon,
+  showOptionIconAsValue,
   options,
   direction = 'left',
   position = 'below',
@@ -59,7 +64,10 @@ export default function Dropdown({
   trigger,
   sentence,
   simple,
+  compact,
   subtle,
+  className,
+  ...props
 }: Props) {
   const location = useLocation()
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -136,29 +144,40 @@ export default function Dropdown({
       <div {...bem('', { simple, subtle, sentence, 'read-only': true })} ref={wrapperRef}>
         <div {...bem('trigger', { label: !!label })}>
           {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
-          <span {...bem('value')}>{valueString || ' '}</span>
+          <span {...bem('value')}>
+            {showOptionIconAsValue && selectedOption?.icon ? (
+              <Icon name={selectedOption.icon} />
+            ) : (
+              valueString || ' '
+            )}
+          </span>
         </div>
       </div>
     )
   }
 
   return (
-    <div {...bem('', { simple, subtle, sentence, iconOnly })} ref={wrapperRef}>
+    <div {...bem('', { simple, subtle, sentence, iconOnly, compact })} ref={wrapperRef}>
       {trigger ? (
         trigger({ onClick: triggerClick })
       ) : (
         <button
           type="button"
-          {...bem('trigger', { expanded, label: !!label })}
+          {...bem('trigger', { expanded, label: !!label }, className)}
           onClick={triggerClick}
           aria-label={iconOnly ? label : undefined}
           title={iconOnly ? label : undefined}
           ref={triggerRef}
+          {...props}
         >
           {label && !iconOnly && !hideLabel && <span {...bem('label')}>{label}</span>}
           {!iconOnly && (
             <span {...bem('value', { placeholder: !selectedOption && !value && placeholder })}>
-              {valueString || ' '}
+              {showOptionIconAsValue && selectedOption?.icon ? (
+                <Icon name={selectedOption.icon} />
+              ) : (
+                valueString || ' '
+              )}
             </span>
           )}
 
@@ -175,6 +194,12 @@ export default function Dropdown({
                   return (
                     <span key={option.group} {...bem('option-group')}>
                       {option.group}
+
+                      {option?.icon && (
+                        <span {...bem('group-icon')}>
+                          <Icon name={option.icon} />
+                        </span>
+                      )}
                     </span>
                   )
                 }
@@ -196,7 +221,7 @@ export default function Dropdown({
                   >
                     {option?.icon && (
                       <span {...bem('option-icon')}>
-                        <Icon name={option.icon} />
+                        <Icon name={option.icon} size={compact ? 16 : undefined} />
                       </span>
                     )}
                     {option.label}

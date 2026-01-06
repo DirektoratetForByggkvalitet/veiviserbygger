@@ -161,14 +161,52 @@ export type Input = PageNode<
 >
 
 export type NumberInput = PageNode<
-  Content &
-    WithValidator & {
-      type: 'Number'
-      minimum?: number
-      maximum?: number
-      step?: number // Defaults to 1
-      optional?: boolean // By default all fields are required.
-    }
+  Content & {
+    type: 'Number'
+    minimum?: number
+    maximum?: number
+    unit?: string
+    step?: number // Defaults to 1
+    optional?: boolean // By default all fields are required.
+  }
+>
+
+export type SumField = {
+  id: string
+  operation?: '+' | '-' | '*' | '/' | '-/' | '%'
+  value?: DocumentReference
+}
+
+export type Sum = PageNode<
+  Content & {
+    type: 'Sum'
+    fields?: OrderedMap<SumField>
+    unit?: string
+    minimum?: number
+  }
+>
+
+export type TableCell = {
+  type: 'Cell' | 'Heading'
+  text: string // HTML okey
+  colSpan?: number
+  rowSpan?: number
+  test?: SimpleExpression
+}
+
+export type TableRow = TableCell[]
+
+export type TableCells = TableRow[]
+
+export type TableCellsRecord = Record<string, TableRow>
+
+export type TableCellsValue = TableCells | TableCellsRecord
+
+export type Table = PageNode<
+  Content & {
+    type: 'Table'
+    cells?: TableCellsValue
+  }
 >
 
 export type Information = PageNode<{
@@ -236,6 +274,8 @@ export type PageContent<Creation = false> =
   | Select
   | Input
   | NumberInput
+  | Sum
+  | Table
   | Branch<Creation>
   | Error
   | Information
@@ -257,6 +297,7 @@ export type Wizard = {
   title?: string
   publishedVersion?: DocumentReference
   draftVersion?: DocumentReference
+  isTemplate?: boolean
 }
 
 export type WizardVersion = {

@@ -1,24 +1,23 @@
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDraggable } from 'react-use-draggable-scroll'
 
 import Icon from '@/components/Icon'
 
+import useErrors from '@/hooks/errors'
 import { useEditable } from '@/hooks/useEditable'
 import { useSortableList } from '@/hooks/useSortableList'
 import { useVersion } from '@/hooks/useVersion'
 import BEMHelper from '@/lib/bem'
 import { getTypeIcon, getTypeText } from '@/lib/content'
 import { getPageTypeDescription, getPageTypeTitle } from '@/lib/page'
+import { ValidationError } from '@/services/firebase/utils/validator'
 import { values } from 'lodash'
 import { getOrdered } from 'shared/utils'
 import { Intro, OptionalExcept, PageContent, Result, WizardPage, WizardVersion } from 'types'
 import NewPage from '../NewPage'
 import styles from './Styles.module.scss'
-import useErrors from '@/hooks/errors'
-import { ValidationError } from '@/services/firebase/utils/validator'
 const bem = BEMHelper(styles)
 
 interface Props {
@@ -54,7 +53,8 @@ const ContentItem = ({
   const isEditable = useEditable()
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    // transformz: CSS.Transform.toString(transform),
+    transform: transform ? `translateY(${transform.y}px)` : undefined,
     transition,
   }
 
@@ -64,7 +64,9 @@ const ContentItem = ({
     node.type === 'Checkbox' ||
     node.type === 'Select' ||
     node.type === 'Input' ||
-    node.type === 'Number'
+    node.type === 'Number' ||
+    node.type === 'Sum' ||
+    node.type === 'Table'
   ) {
     return (
       <li
@@ -92,9 +94,12 @@ const ContentItem = ({
   }
 
   if (node.type === 'Branch') {
-    const resultNodeId = values(node.content).find((n) => allNodes?.[n.node.id].type === 'Result')
-      ?.node.id
+    const resultNodeId = values(node.content).find(
+      (n) => allNodes?.[n.node.id].type === 'Error' || allNodes?.[n.node.id].type === 'Information',
+    )?.node.id
     const resultNode = resultNodeId ? (allNodes?.[resultNodeId] as Result) : undefined
+
+    const content = getOrdered(node?.content)
 
     return (
       <li
@@ -117,6 +122,21 @@ const ContentItem = ({
         <h3 {...bem('sub-title', { placeholder: true /*TODO */ })}>
           {resultNode?.heading || `${getTypeText(node.preset || node.type)}`}
         </h3>
+        {node.preset == 'NewQuestions' && (
+          <ul {...bem('sub-content')}>
+            {content &&
+              content.map((ref) => {
+                return (
+                  <ContentItem
+                    id={ref.id}
+                    node={allNodes[ref?.node?.id]}
+                    key={ref.id}
+                    allNodes={allNodes}
+                  />
+                )
+              })}
+          </ul>
+        )}
       </li>
     )
   }

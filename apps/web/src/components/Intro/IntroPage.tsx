@@ -48,7 +48,7 @@ function IntroPage({
                   </Primitives.Heading.H2>
                 )}
                 <Primitives.Block.TextBlock
-                  style={{ flexDirection: 'column' }}
+                  style={{ flexDirection: 'column', gap: '0' }}
                   dangerouslySetInnerHTML={{ __html: content.text }}
                   key={`intro-text-${index}`}
                 />
@@ -57,7 +57,7 @@ function IntroPage({
           })}
           <div style={{ marginTop: '24px' }}>
             <Primitives.Button.MainButton type="button" onClick={close}>
-              Sett i gang
+              Start veiviseren
             </Primitives.Button.MainButton>
           </div>
         </Primitives.Grid.Main>

@@ -1,0 +1,83 @@
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
+
+.sum-fields {
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing--small;
+
+    &__sub-header {
+        display: flex;
+        align-items: center;
+        gap: vars.$spacing--xsmall;
+    }
+
+    &__sub-title {
+        @include mixins.font-size(small);
+        color: colors.$muted;
+        font-weight: normal;
+        flex-grow: 1;
+    }
+
+    &__options {
+        display: flex;
+        flex-direction: column;
+        gap: vars.$spacing--xsmall;
+    }
+
+    &__option {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: vars.$spacing--xsmall;
+        border: vars.$border-style;
+        background-color: colors.$light;
+        padding: vars.$spacing--xsmall;
+        border-radius: vars.$border-radius;
+
+        &:focus-within {
+            border-color: colors.get(primary);
+            box-shadow: 0 0 0 1px colors.get(primary);
+            z-index: vars.$level-1;
+        }
+
+        &--placeholder {
+            @include mixins.font-size(small);
+            color: colors.$muted;
+            padding: vars.$spacing--xsmall vars.$spacing--small;
+        }
+
+        &--read-only,
+        &--read-only:focus-within {
+            border: vars.$border-style;
+            box-shadow: none;
+        }
+    }
+
+    &__option-handle {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        padding: vars.$spacing--xsmall;
+        border-radius: vars.$border-radius;
+        background-color: transparent;
+        cursor: grab;
+
+        &:hover,
+        &:focus-visible {
+            background-color: colors.get(neutral, xlight);
+        }
+    }
+
+    &__option-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-grow: 1;
+    }
+
+    &__option-icon {
+        color: colors.get(neutral, base);
+    }
+}

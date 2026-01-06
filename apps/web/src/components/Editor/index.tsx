@@ -4,6 +4,11 @@ import StarterKit from '@tiptap/starter-kit'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Icon from '@/components/Icon'
 
+import { useEditable } from '@/hooks/useEditable'
+import { useValue } from '@/hooks/useValue'
+import BEMHelper from '@/lib/bem'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
 import {
   deleteObject,
   getDownloadURL,
@@ -12,19 +17,14 @@ import {
   StorageReference,
   uploadBytes,
 } from 'firebase/storage'
-import { useEditable } from '@/hooks/useEditable'
-import { useValue } from '@/hooks/useValue'
-import BEMHelper from '@/lib/bem'
-import Subscript from '@tiptap/extension-subscript'
-import Superscript from '@tiptap/extension-superscript'
 import { v4 as uuid } from 'uuid'
 
-import { useRef } from 'react'
-import styles from './Styles.module.scss'
-import { DocumentReference } from 'firebase/firestore'
 import useFirebase from '@/hooks/useFirebase'
-import { CustomImage } from './extensions/Image'
+import { DocumentReference } from 'firebase/firestore'
+import { useRef } from 'react'
 import { getStorageRefs } from 'shared/utils'
+import { CustomImage } from './extensions/Image'
+import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
 const extensions = [
@@ -47,7 +47,7 @@ const extensions = [
 interface Props {
   label: string
   value: string
-  onChange: (value: string) => void
+  onChange: (value: string | undefined) => void
   sourceRef: {
     doc: DocumentReference
     path: string[]
@@ -232,6 +232,7 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         type="button"
         onClick={toggle('bold')}
         disabled={!editor.can().chain().focus().toggleBold().run()}
+        tabIndex={-1}
         {...bem('control', { active: editor.isActive('bold') })}
       >
         <Icon name="Bold" />
@@ -241,6 +242,7 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         type="button"
         onClick={toggle('italic')}
         disabled={!editor.can().chain().focus().toggleItalic().run()}
+        tabIndex={-1}
         {...bem('control', { active: editor.isActive('italic') })}
       >
         <Icon name="Italic" />
@@ -251,6 +253,7 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         onClick={toggle('superscript')}
         disabled={!editor.can().chain().focus().toggleSuperscript().run()}
         {...bem('control', { active: editor.isActive('superscript') })}
+        tabIndex={-1}
       >
         <Icon name="Superscript" />
       </button>
@@ -259,6 +262,7 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         type="button"
         onClick={toggle('subscript')}
         disabled={!editor.can().chain().focus().toggleSubscript().run()}
+        tabIndex={-1}
         {...bem('control', { active: editor.isActive('subscript') })}
       >
         <Icon name="Subscript" />
@@ -270,6 +274,7 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         type="button"
         onClick={toggle('bulletList')}
         {...bem('control', { active: editor.isActive('bulletList') })}
+        tabIndex={-1}
       >
         <Icon name="List" />
       </button>
@@ -278,11 +283,12 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         type="button"
         onClick={toggle('orderedList')}
         {...bem('control', { active: editor.isActive('orderedList') })}
+        tabIndex={-1}
       >
         <Icon name="ListOrdered" />
       </button>
 
-      <button type="button" onClick={handleImageUpload} {...bem('control')}>
+      <button type="button" onClick={handleImageUpload} {...bem('control')} tabIndex={-1}>
         Bilde
       </button>
       <input
@@ -294,7 +300,13 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
       />
       <hr {...bem('separator')} />
 
-      <Dropdown value={textStyle} options={textStyles} onChange={handleStyleChange} simple />
+      <Dropdown
+        value={textStyle}
+        options={textStyles}
+        onChange={handleStyleChange}
+        simple
+        tabIndex={-1}
+      />
     </div>
   )
 }

@@ -10,7 +10,7 @@ type Props<T extends HTMLInputTypeAttribute = 'text'> = {
   label: string
   header?: boolean
   type?: T
-  value: T extends 'number' ? number : string
+  value: T extends 'number' ? number | undefined : string | undefined
   placeholder?: string
   id?: string
   name?: string
@@ -20,7 +20,8 @@ type Props<T extends HTMLInputTypeAttribute = 'text'> = {
   sentence?: boolean
   hideIfEmpty?: boolean
   forwardedRef?: RefObject<HTMLInputElement>
-  onChange: (v: T extends 'number' ? number : string) => void
+  forceAllowEdit?: boolean
+  onChange: (v: T extends 'number' ? number | undefined : string | undefined) => void
 
   /**
    * The number of milliseconds to debounce the input before calling the onChange
@@ -41,22 +42,31 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   hideIfEmpty,
   forwardedRef,
   inputDebounceMs,
+  forceAllowEdit,
   ...props
 }: Props<T>) {
   const internalRef = useRef<HTMLInputElement>(null)
-  const isEditable = useEditable()
+  const isEditable = forceAllowEdit ? true : useEditable()
 
   const ref = forwardedRef || internalRef
-  const { value, inSync, onChange } = useValue(props.value, props.onChange, ref, inputDebounceMs)
+  const { value, inSync, onChange } = useValue(
+    props.value as string | number | undefined,
+    props.onChange as (v: string | number | undefined) => void,
+    ref,
+    inputDebounceMs,
+  )
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value as Props<T>['value']
-    onChange(value)
+    onChange(type === 'number' ? (value === '' ? undefined : Number(value)) : value)
   }
 
   if (!isEditable && !value) {
     return null
   }
+
+  // Convert undefined to empty string for controlled input
+  const displayValue = value ?? ''
 
   return (
     <label
@@ -78,7 +88,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
         onChange={isEditable ? handleChange : undefined}
         disabled={!isEditable}
         readOnly={!isEditable}
-        value={value}
+        value={displayValue}
         ref={ref}
         aria-label={(hideLabel && label) || undefined}
       />

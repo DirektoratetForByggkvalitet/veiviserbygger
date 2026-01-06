@@ -147,11 +147,13 @@
         &--branch {
             background-color: transparent;
             border: vars.$border-style--dashed;
+            flex-wrap: wrap;
             margin-top: 14px;
             margin-bottom: 14px;
 
             #{$this}__sub-title {
                 height: auto;
+                max-width: calc(100% - 24px);
             }
         }
 
@@ -207,6 +209,13 @@
             border-radius: vars.$border-radius;
             // border: vars.$border-style--dashed;
             transition: background-color 200ms vars.$ease-in-out-quint--custom;
+        }
+    }
+
+    &__sub-content {
+        width: 100%;
+        & > *:last-child {
+            margin-bottom: 0;
         }
     }
 

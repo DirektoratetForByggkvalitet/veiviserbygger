@@ -7,9 +7,10 @@ import Help from '@/components/Help'
 import Icon from '@/components/Icon'
 import Input from '@/components/Input'
 import Modal from '@/components/Modal'
+import TableEditor from '@/components/TableEditor'
+import SumFields from '@/components/SumFields'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { Fragment, useMemo, useRef, useState } from 'react'
 import {
   Answer,
@@ -35,18 +36,18 @@ import { DocumentReference } from 'firebase/firestore'
 
 import { ref as storageRef } from 'firebase/storage'
 
-import { values } from 'lodash'
-import { ReactNode } from 'react'
-import { getOrdered } from 'shared/utils'
-import Expression from '../Expression'
-import styles from './Styles.module.scss'
-import ValidateDeps from '../ValidateDeps'
+import ValidationProvider from '@/context/ValidationProvider'
+import useErrors from '@/hooks/errors'
 import useFile from '@/hooks/useFile'
 import useFirebase from '@/hooks/useFirebase'
 import { useModal } from '@/hooks/useModal'
-import ValidationProvider from '@/context/ValidationProvider'
-import useErrors from '@/hooks/errors'
+import { values } from 'lodash'
+import { ReactNode } from 'react'
+import { getOrdered } from 'shared/utils'
 import ErrorWrapper from '../ErrorWrapper'
+import Expression from '../Expression'
+import ValidateDeps from '../ValidateDeps'
+import styles from './Styles.module.scss'
 
 const bem = BEMHelper(styles)
 
@@ -101,7 +102,7 @@ function contentAction<T extends PageContent['type']>({
     label: getTypeText(preset || type),
     icon: getTypeIcon(preset || type),
     onClick: () => addNodes({ parentNodeId: nodeId }, [{ type, ...defaultContent }]),
-    disabled: disabled,
+    disabled,
   }
 }
 
@@ -149,7 +150,32 @@ const addNodeContentOptions = (
       },
     }),
     contentAction({ addNodes, nodeId, type: 'Input', disabled: false }),
-    contentAction({ addNodes, nodeId, type: 'Number', disabled: false }),
+    contentAction({
+      addNodes,
+      nodeId,
+      type: 'Number',
+      disabled: false,
+      defaultContent: {
+        step: 1,
+      },
+    }),
+    contentAction({
+      addNodes,
+      nodeId,
+      type: 'Sum',
+      defaultContent: {
+        fields: {
+          [uuid()]: { operation: '+', order: 0 },
+        },
+      },
+      disabled: false,
+    }),
+    contentAction({
+      addNodes,
+      nodeId,
+      type: 'Table',
+      disabled: false,
+    }),
   ]
 }
 
@@ -177,7 +203,7 @@ function Option({
   const isEditable = useEditable()
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: transform ? `translateY(${transform.y}px)` : undefined,
     transition,
   }
 
@@ -379,7 +405,7 @@ function Options({
     <DndContext onDragEnd={handleSortingDragEnd}>
       <SortableContext items={value}>
         <ErrorWrapper slice={['options']}>
-          <ul {...bem('options', { 'has-errors': getErrors('options').length })}>
+          <ul {...bem('options', { 'has-errors': getErrors(['options']).length })}>
             {value.map(({ id }) => {
               const option = options.find((o) => o.id === id)
 
@@ -537,7 +563,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
           {node.type !== 'Text' || page.type !== 'Result' ? (
             <ErrorWrapper slice={['heading']}>
               <Input
-                label="Tittel"
+                label="Ledetekst"
                 value={node.heading || ''}
                 onChange={(v) => patchNode(node.id, { heading: v })}
                 header
@@ -547,12 +573,54 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
 
           <ErrorWrapper slice={['text']}>
             <Editor
-              label="Innhold"
+              label="Beskrivelse"
               value={node.text || ''}
               onChange={(v) => patchNode(node.id, { text: v })}
               sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
             />
           </ErrorWrapper>
+          {node.type === 'Number' ? (
+            <>
+              <div {...bem('grid')}>
+                <ErrorWrapper slice={['unit']}>
+                  <Input
+                    label="Enhet"
+                    placeholder="m², år, kg, osv."
+                    value={node.unit || ''}
+                    onChange={(v) => patchNode(node.id, { type: 'Number', unit: v })}
+                  />
+                </ErrorWrapper>
+                <ErrorWrapper slice={['step']}>
+                  <Input
+                    label="Stegverdi"
+                    placeholder="1, 0.1, 0.01, osv."
+                    type="number"
+                    value={node.step}
+                    onChange={(v) => patchNode(node.id, { type: 'Number', step: v })}
+                  />
+                </ErrorWrapper>
+              </div>
+              <div {...bem('grid')}>
+                <ErrorWrapper slice={['minimum']}>
+                  <Input
+                    label="Minimumsverdi"
+                    placeholder="0"
+                    type="number"
+                    value={node.minimum}
+                    onChange={(v) => patchNode(node.id, { type: 'Number', minimum: v })}
+                  />
+                </ErrorWrapper>
+                <ErrorWrapper slice={['maximum']}>
+                  <Input
+                    label="Maksimumsverdi"
+                    type="number"
+                    value={node.maximum}
+                    onChange={(v) => patchNode(node.id, { type: 'Number', maximum: v })}
+                  />
+                </ErrorWrapper>
+              </div>
+            </>
+          ) : null}
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
@@ -707,6 +775,102 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
         <Aside>
           <Help description={getTypeDescription(node.type)} />
         </Aside>
+      </Fragment>
+    )
+  }
+
+  if (node.type === 'Sum') {
+    return (
+      <Fragment key={node.id}>
+        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
+        <Main>
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Ledetekst"
+              value={node.heading || ''}
+              onChange={(v) => patchNode(node.id, { heading: v })}
+              header
+            />
+          </ErrorWrapper>
+
+          <ErrorWrapper slice={['text']}>
+            <Editor
+              label="Beskrivelse"
+              value={node.text || ''}
+              onChange={(v) => patchNode(node.id, { text: v })}
+              sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
+            />
+          </ErrorWrapper>
+
+          <SumFields node={node} nodes={allNodes} />
+
+          <div {...bem('grid')}>
+            <ErrorWrapper slice={['unit']}>
+              <Input
+                label="Enhet"
+                placeholder="m², år, kg, osv."
+                value={node.unit || ''}
+                onChange={(v) => patchNode(node.id, { type: 'Sum', unit: v })}
+              />
+            </ErrorWrapper>
+            <ErrorWrapper slice={['minimum']}>
+              <Input
+                label="Minimumsverdi"
+                placeholder="0"
+                type="number"
+                value={node.minimum}
+                onChange={(v) => patchNode(node.id, { type: 'Sum', minimum: v })}
+              />
+            </ErrorWrapper>
+          </div>
+        </Main>
+        <Aside>
+          <Help description={getTypeDescription(node.type)} />
+        </Aside>
+        {/* TODO: summary, details, show */}
+      </Fragment>
+    )
+  }
+
+  if (node.type === 'Table') {
+    /*const exampleTable = [
+      [
+        {
+          id: 'possibleRoles.function',
+          type: 'Heading',
+          text: 'Hei',
+        },
+        {
+          id: 'possibleRoles.class',
+          type: 'Heading',
+          text: 'På deg',
+        },
+      ],
+    ]*/
+    return (
+      <Fragment key={node.id}>
+        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
+        <Main full>
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Tittel"
+              value={node.heading || ''}
+              onChange={(v) => patchNode(node.id, { heading: v })}
+              header
+            />
+          </ErrorWrapper>
+          <ErrorWrapper slice={['text']}>
+            <Editor
+              label="Beskrivelse"
+              value={node.text || ''}
+              onChange={(v) => patchNode(node.id, { text: v })}
+              sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
+            />
+          </ErrorWrapper>
+          <ErrorWrapper slice={['cells']}>
+            <TableEditor nodeId={node.id} pageId={page.id} cells={node.cells} nodes={allNodes} />
+          </ErrorWrapper>
+        </Main>
       </Fragment>
     )
   }

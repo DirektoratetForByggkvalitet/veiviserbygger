@@ -1,9 +1,9 @@
+import Button from '@/components/Button'
+import Icon from '@/components/Icon'
+import BEMHelper from '@/lib/bem'
 import Image from '@tiptap/extension-image'
 import { NodeViewWrapper, ReactNodeViewProps, ReactNodeViewRenderer } from '@tiptap/react'
-import BEMHelper from '@/lib/bem'
 import styles from './Styles.module.scss'
-import Icon from '@/components/Icon'
-import Button from '@/components/Button'
 
 const bem = BEMHelper(styles)
 
@@ -38,7 +38,7 @@ function CustomImageComponent({ node, selected, updateAttributes, editor }: Reac
   const { alt, src } = node.attrs
 
   return (
-    <NodeViewWrapper>
+    <NodeViewWrapper data-drag-handle>
       <figure {...bem('', { active: selected })}>
         <img src={src} alt={node.attrs.alt || ''} />
 

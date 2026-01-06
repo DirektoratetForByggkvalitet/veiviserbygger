@@ -55,7 +55,7 @@ export default function NewWizard({ open, toggleModal }: Props) {
           <Input
             label="Veivisernavn"
             value={newWizard?.title || ''}
-            onChange={(title) => setNewWizard((v) => ({ ...v, title }))}
+            onChange={(title) => setNewWizard((v) => ({ ...v, title: title ?? '' }))}
             forwardedRef={titleInput}
             autoFocus
           />

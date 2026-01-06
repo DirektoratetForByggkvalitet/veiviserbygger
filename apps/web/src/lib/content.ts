@@ -1,5 +1,5 @@
-import { PageContent, Branch } from 'types'
 import { icons } from 'lucide-react'
+import { Branch, PageContent } from 'types'
 
 const typeMap: Record<
   PageContent['type'] | Branch['preset'],
@@ -36,7 +36,20 @@ const typeMap: Record<
   Number: {
     title: 'Tallfelt',
     icon: 'Hash',
-    description: 'Et tallfelt der brukeren skriver inn numeriske verdier',
+    description:
+      'Et tallfelt der brukeren skriver inn numeriske verdier. Man kan begrense hva brukeren kan skrive i feltet ved hjelp av minimums-, maksimums- og stegverdier. Steg på 1 betyr at tallet må være heltall, 0.1 betyr at en desimal er tilgjengelig, osv. La felt stå tomt for ingen begrensning.',
+  },
+  Sum: {
+    title: 'Summering',
+    icon: 'Sigma',
+    description:
+      'Et felt som kan summerer verdiene fra andre tallfelt i veiviseren. Den første operatoren er enten + eller -. For å summere to tallfelt legger man inn +A +B. For å multiplisere to felt velger man +A *B. Man kan lage lengre formler ved å kombinere flere felt og operatorer, som for eksempel +A +B -C *D /E.',
+  },
+  Table: {
+    title: 'Tabell',
+    icon: 'Table',
+    description:
+      'En tabell med rader og kolonner. Hver celle kan markeres grønn om visse betingelser er oppfylt.',
   },
   Branch: { title: 'Egendefinert gren', icon: 'Split', description: '' },
   Error: { title: 'Feil', icon: 'TriangleAlert', description: '' },

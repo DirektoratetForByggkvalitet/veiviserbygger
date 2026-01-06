@@ -1,6 +1,8 @@
+import { sortVersions } from '@/lib/versions'
 import {
   deleteVersion,
   deleteWizard,
+  duplicateWizard,
   getNodesRef,
   getWizardsRef,
   getWizardVersionRef,
@@ -8,11 +10,10 @@ import {
   patchWizard,
 } from '@/services/firebase'
 import { doc, onSnapshot, Timestamp } from 'firebase/firestore'
-import { useEffect, useState } from 'react'
-import useFirebase from './useFirebase'
-import { OptionalExcept, PageContent, Wizard, WizardVersion, WrappedWithId } from 'types'
-import { sortVersions } from '@/lib/versions'
 import { curry, values } from 'lodash'
+import { useEffect, useState } from 'react'
+import { OptionalExcept, PageContent, Wizard, WizardVersion, WrappedWithId } from 'types'
+import useFirebase from './useFirebase'
 
 export default function useWizard(id?: string, version?: string) {
   const { firestore, storage } = useFirebase()
@@ -136,6 +137,13 @@ export default function useWizard(id?: string, version?: string) {
         storage,
         wizardId: id || '',
         versionId: version || '',
+      }),
+    duplicateWizard: (title: string) =>
+      duplicateWizard({
+        db: firestore,
+        storage,
+        wizardId: id || '',
+        data: { title },
       }),
     deleteVersion: (versionId: string) =>
       deleteVersion({
