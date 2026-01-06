@@ -2,23 +2,23 @@
   "folders": [
     {
       "path": ".",
-      "name": "Monorepo"
+      "name": "Monorepo",
     },
     {
       "path": "apps/api",
-      "name": "API"
+      "name": "API",
     },
     {
       "path": "apps/web",
-      "name": "Web"
+      "name": "Web",
     },
     {
       "path": "packages/eslint-config-custom",
-      "name": "ESLint Config"
+      "name": "ESLint Config",
     },
     {
       "path": "packages/types",
-      "name": "TS types"
-    }
-  ]
+      "name": "TS types",
+    },
+  ],
 }

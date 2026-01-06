@@ -21,7 +21,7 @@ services:
       TZ: Europe/Oslo
     networks:
       private_network:
-    
+
   server:
     image: ghcr.io/direktoratetforbyggkvalitet/veiviserbygger:${VERSION_TAG:-latest}
     environment:
@@ -44,4 +44,3 @@ services:
       traefik.http.routers.${serviceName}-r.tls: true
       traefik.http.routers.${serviceName}-r.service: ${serviceName}-s
       traefik.http.services.${serviceName}-s.loadbalancer.server.port: 80
-    

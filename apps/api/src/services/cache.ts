@@ -7,11 +7,11 @@ export async function getCache() {
     return
   }
 
-   // Set env REDIS_TLS to true to enable TLS
-  const useTls = process.env.REDIS_TLS === 'true';
+  // Set env REDIS_TLS to true to enable TLS
+  const useTls = process.env.REDIS_USE_TLS?.toLowerCase() === 'true'
   const redis = createClient({
     url: process.env.REDIS_URL,
-    socket: useTls 
+    socket: useTls
       ? {
           tls: true, // Enable TLS
           rejectUnauthorized: false, // Allow self-signed certificates
@@ -20,7 +20,6 @@ export async function getCache() {
     password: process.env.REDIS_PASSWORD || undefined, // Support for REDIS_PASSWORD
   })
 
-  
   redis.on('error', (err) => {
     !IS_JEST && console.error('Redis Client Error', err)
   })

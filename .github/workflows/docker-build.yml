@@ -9,7 +9,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*'
+      - "v*"
     paths-ignore:
       - "**.md"
       - "**/new-release.yml"
@@ -30,7 +30,7 @@ permissions:
 jobs:
   test:
     name: Run tests
-    runs-on: 
+    runs-on:
       - self-hosted
     steps:
       - name: Checkout
@@ -61,7 +61,7 @@ jobs:
 
   build:
     name: Build docker image
-    runs-on: 
+    runs-on:
       - self-hosted
       - macOS
     needs: test
@@ -69,7 +69,7 @@ jobs:
       - name: Unlock macOS runner's keychain
         run: |
           security -v unlock-keychain -p ${{secrets.MACOS_KC_PASS}} ~/Library/Keychains/login.keychain-db
-          
+
       - name: Checkout
         uses: actions/checkout@v4
 

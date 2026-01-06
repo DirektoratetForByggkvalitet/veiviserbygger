@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       level:
-        description: 'Release level'
+        description: "Release level"
         required: true
         default: patch
         type: choice
@@ -20,7 +20,7 @@ concurrency:
 jobs:
   release:
     name: Make new release
-    runs-on: 
+    runs-on:
       - ubuntu-latest
     steps:
       - name: Checkout
@@ -48,4 +48,3 @@ jobs:
       #   with:
       #     status: ${{ job.status }}
       #   if: failure()
-
