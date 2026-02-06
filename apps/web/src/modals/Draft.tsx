@@ -4,6 +4,7 @@ import Dropdown from '@/components/Dropdown'
 import Form from '@/components/Form'
 import Modal from '@/components/Modal'
 import Help from '@/components/Help'
+import Message from '@/components/Message'
 import { useModal } from '@/hooks/useModal'
 import { useVersion } from '@/hooks/useVersion'
 import useWizard from '@/hooks/useWizard'
@@ -19,12 +20,17 @@ export default function DraftModal() {
   const { createDraftVersion } = useVersion()
   const [baseOn, setBaseOn] = useState<string>()
   const navigate = useNavigate()
+  const hasUnpublishedDraft = versions?.some((version) => !version.publishedFrom) ?? false
 
   if (modal?.key !== 'draft' || loading) {
     return null
   }
 
   const handlePublish = async () => {
+    if (!baseOn || hasUnpublishedDraft) {
+      return
+    }
+
     const draftVersionId = await createDraftVersion(baseOn === 'from-scratch' ? undefined : baseOn)
     onClose()
     navigate(`/wizard/${match?.params.wizardId}/${draftVersionId}`)
@@ -58,9 +64,18 @@ export default function DraftModal() {
               },
             ]}
           />
-
+          {hasUnpublishedDraft && (
+            <Message title="Du har allerede et utkast">
+              <p>Publiser eller slett det eksisterende utkastet før du lager et nytt.</p>
+            </Message>
+          )}
           <ButtonBar margins>
-            <Button type="button" primary onClick={handlePublish} disabled={!baseOn}>
+            <Button
+              type="button"
+              primary
+              onClick={handlePublish}
+              disabled={!baseOn || hasUnpublishedDraft}
+            >
               Lag utkast
             </Button>
 
