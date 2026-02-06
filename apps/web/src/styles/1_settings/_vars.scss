@@ -5,7 +5,8 @@ $container-base: getStrippedPxSizeInRem(1220px);
 $container-width: (
     base: 1120px,
     // makeContainerSize(12),
-    tight: 560px, // makeContainerSize(5),,
+    tight: 560px,
+    // makeContainerSize(5),,
 );
 
 // Spacing

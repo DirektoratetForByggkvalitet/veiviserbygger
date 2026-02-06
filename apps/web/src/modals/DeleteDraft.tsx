@@ -26,9 +26,9 @@ export default function DeleteDraftModal() {
   const activeVersion = versions?.find((version) => version.id === match?.params.versionId)
   const deletionAllowed = Boolean(
     wizard?.data.publishedVersion &&
-    match?.params.versionId &&
-    activeVersion &&
-    !activeVersion.publishedFrom,
+      match?.params.versionId &&
+      activeVersion &&
+      !activeVersion.publishedFrom,
   )
 
   const onClose = () => setModal()
