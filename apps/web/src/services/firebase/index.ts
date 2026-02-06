@@ -970,9 +970,13 @@ export async function createDraftVersion(
   return runTransaction(db, async (transaction) => {
     const wizardRef = getWizardRef(db, wizardId)
     const wizardSnapshot = await transaction.get(wizardRef)
+    const draftVersionRef = wizardSnapshot.data()?.draftVersion as DocumentReference | undefined
 
-    if (wizardSnapshot.exists() && wizardSnapshot.data()?.draftVersion) {
-      throw new Error('Unpublished draft already exists for this wizard')
+    if (wizardSnapshot.exists() && draftVersionRef) {
+      const draftVersionSnapshot = await transaction.get(draftVersionRef)
+      if (draftVersionSnapshot.exists()) {
+        throw new Error('Unpublished draft already exists for this wizard')
+      }
     }
     const copyFromVersionRef = copyFromVersionId
       ? getWizardVersionRef({ db, wizardId, versionId: copyFromVersionId })
