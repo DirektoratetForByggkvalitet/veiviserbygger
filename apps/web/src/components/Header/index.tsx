@@ -145,7 +145,7 @@ export default function Header({ title = siteName, versions, hideMenu, wizard }:
                   </Button>
                 ) : null}
                 {/* The user is on the draft version */}
-                {wizard?.data.draftVersion?.id === activeVersion.id && !wizard?.data.isTemplate ? (
+                {!activeVersion.publishedFrom && !wizard?.data.isTemplate ? (
                   <Button
                     size="small"
                     iconOnlyOnMobile="CloudUpload"
