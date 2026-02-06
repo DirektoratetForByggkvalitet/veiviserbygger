@@ -19,6 +19,7 @@ export default function DraftModal() {
   const { modal, setModal } = useModal()
   const { createDraftVersion } = useVersion()
   const [baseOn, setBaseOn] = useState<string>()
+  const [apiError, setApiError] = useState<string>()
   const navigate = useNavigate()
   const hasUnpublishedDraft = versions?.some((version) => !version.publishedFrom) ?? false
 
@@ -31,14 +32,24 @@ export default function DraftModal() {
       return
     }
 
-    const draftVersionId = await createDraftVersion(baseOn === 'from-scratch' ? undefined : baseOn)
-    onClose()
-    navigate(`/wizard/${match?.params.wizardId}/${draftVersionId}`)
+    setApiError(undefined)
+
+    try {
+      const draftVersionId = await createDraftVersion(
+        baseOn === 'from-scratch' ? undefined : baseOn,
+      )
+      onClose()
+      navigate(`/wizard/${match?.params.wizardId}/${draftVersionId}`)
+    } catch (error) {
+      console.error('Failed to create draft version', error)
+      setApiError(error instanceof Error ? error.message : 'Ukjent feil oppstod.')
+    }
   }
 
   const onClose = () => {
     setModal()
     setBaseOn(undefined)
+    setApiError(undefined)
   }
 
   const publishedVersions = versions?.filter((v) => v.publishedFrom) || []
@@ -67,6 +78,11 @@ export default function DraftModal() {
           {hasUnpublishedDraft && (
             <Message title="Du har allerede et utkast">
               <p>Publiser eller slett det eksisterende utkastet før du lager et nytt.</p>
+            </Message>
+          )}
+          {apiError && (
+            <Message title="Kunne ikke lage utkast">
+              <p>{apiError}</p>
             </Message>
           )}
           <ButtonBar margins>
