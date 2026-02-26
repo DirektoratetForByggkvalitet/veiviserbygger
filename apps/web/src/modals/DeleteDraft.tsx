@@ -1,31 +1,45 @@
+import { useState } from 'react'
 import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
 import Form from '@/components/Form'
 import Help from '@/components/Help'
 import Modal from '@/components/Modal'
+import Message from '@/components/Message'
 import { useModal } from '@/hooks/useModal'
 import useWizard from '@/hooks/useWizard'
 import { useMatch, useNavigate } from 'react-router'
 
 export default function DeleteDraftModal() {
   const match = useMatch('/wizard/:wizardId/:versionId')
-  const { wizard, deleteVersion } = useWizard(match?.params.wizardId, match?.params.versionId)
+  const { wizard, versions, deleteVersion } = useWizard(
+    match?.params.wizardId,
+    match?.params.versionId,
+  )
   const { modal, setModal } = useModal()
+  const [deletionInProgress, setDeletionInProgress] = useState(false)
   const navigate = useNavigate()
 
   if (modal?.key !== 'delete-draft') {
     return null
   }
 
-  const deletionAllowed =
-    wizard?.data.publishedVersion && match?.params.versionId === wizard?.data.draftVersion?.id
+  const activeVersion = versions?.find((version) => version.id === match?.params.versionId)
+  const deletionAllowed = Boolean(
+    wizard?.data.publishedVersion &&
+      match?.params.versionId &&
+      activeVersion &&
+      !activeVersion.publishedFrom,
+  )
 
   const onClose = () => setModal()
   const handleDelete = async () => {
     if (!match?.params.versionId || !deletionAllowed) {
       return
     }
+    // Prevent error message flickering on modal animate out
+    setDeletionInProgress(true)
 
+    // Delete the draft version
     await deleteVersion(match?.params.versionId)
 
     // Navigate to the published version of the wizard
@@ -46,7 +60,11 @@ export default function DeleteDraftModal() {
           </>
         }
       />
-
+      {!deletionAllowed && !deletionInProgress ? (
+        <Message title="Versjonen kan ikke slettes">
+          Prøv å lukk nettleseren og åpne veiviseren på ny.
+        </Message>
+      ) : null}
       <Form onSubmit={onClose}>
         <ButtonBar>
           <Button type="button" disabled={!deletionAllowed} onClick={handleDelete} warning>

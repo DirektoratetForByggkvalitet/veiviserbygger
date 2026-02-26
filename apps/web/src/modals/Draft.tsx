@@ -4,6 +4,7 @@ import Dropdown from '@/components/Dropdown'
 import Form from '@/components/Form'
 import Modal from '@/components/Modal'
 import Help from '@/components/Help'
+import Message from '@/components/Message'
 import { useModal } from '@/hooks/useModal'
 import { useVersion } from '@/hooks/useVersion'
 import useWizard from '@/hooks/useWizard'
@@ -18,21 +19,37 @@ export default function DraftModal() {
   const { modal, setModal } = useModal()
   const { createDraftVersion } = useVersion()
   const [baseOn, setBaseOn] = useState<string>()
+  const [apiError, setApiError] = useState<string>()
   const navigate = useNavigate()
+  const hasUnpublishedDraft = versions?.some((version) => !version.publishedFrom) ?? false
 
   if (modal?.key !== 'draft' || loading) {
     return null
   }
 
   const handlePublish = async () => {
-    const draftVersionId = await createDraftVersion(baseOn === 'from-scratch' ? undefined : baseOn)
-    onClose()
-    navigate(`/wizard/${match?.params.wizardId}/${draftVersionId}`)
+    if (!baseOn || hasUnpublishedDraft) {
+      return
+    }
+
+    setApiError(undefined)
+
+    try {
+      const draftVersionId = await createDraftVersion(
+        baseOn === 'from-scratch' ? undefined : baseOn,
+      )
+      onClose()
+      navigate(`/wizard/${match?.params.wizardId}/${draftVersionId}`)
+    } catch (error) {
+      console.error('Failed to create draft version', error)
+      setApiError(error instanceof Error ? error.message : 'Ukjent feil oppstod.')
+    }
   }
 
   const onClose = () => {
     setModal()
     setBaseOn(undefined)
+    setApiError(undefined)
   }
 
   const publishedVersions = versions?.filter((v) => v.publishedFrom) || []
@@ -58,9 +75,23 @@ export default function DraftModal() {
               },
             ]}
           />
-
+          {hasUnpublishedDraft && (
+            <Message title="Du har allerede et utkast">
+              <p>Publiser eller slett det eksisterende utkastet før du lager et nytt.</p>
+            </Message>
+          )}
+          {apiError && (
+            <Message title="Kunne ikke lage utkast">
+              <p>{apiError}</p>
+            </Message>
+          )}
           <ButtonBar margins>
-            <Button type="button" primary onClick={handlePublish} disabled={!baseOn}>
+            <Button
+              type="button"
+              primary
+              onClick={handlePublish}
+              disabled={!baseOn || hasUnpublishedDraft}
+            >
               Lag utkast
             </Button>
 
