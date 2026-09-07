@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import ButtonBar from '@/components/ButtonBar'
+import Checkbox from '@/components/Checkbox'
 import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Editor from '@/components/Editor'
 import File from '@/components/File'
@@ -621,6 +622,15 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               </div>
             </>
           ) : null}
+          {node.type === 'Number' || node.type === 'Input' ? (
+            <ErrorWrapper slice={['optional']}>
+              <Checkbox
+                label="Valgfritt felt"
+                checked={node.optional || false}
+                onChange={(v) => patchNode(node.id, { optional: v })}
+              />
+            </ErrorWrapper>
+          ) : null}
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
@@ -737,7 +747,13 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               sourceRef={inRef(sourceRef, 'text')}
             />
           </ErrorWrapper>
-
+          <ErrorWrapper slice={['optional']}>
+            <Checkbox
+              label="Valgfritt felt"
+              checked={node.optional || false}
+              onChange={(v) => patchNode(node.id, { optional: v })}
+            />
+          </ErrorWrapper>
           <div {...bem('sub-header')}>
             <h3 {...bem('sub-title')}>Svaralternativer</h3>
             {isEditable ? (

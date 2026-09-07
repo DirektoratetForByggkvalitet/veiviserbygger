@@ -210,6 +210,7 @@ const transformCheckbox: TransformerFunc<'Checkbox'> = async (node, data, deps) 
           }
         : undefined,
       grid: node.grid,
+      optional: node.optional,
       options: await Promise.all(
         getOrdered(node.options).map(async (o) => ({
           id: o.id,
@@ -338,6 +339,7 @@ const transformInput: TransformerFunc<'Input'> = async (node, data, deps) => {
       property: node.id,
       text: await processHtml(node.text, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
+      optional: node.optional,
     },
   ]
 }
@@ -355,6 +357,7 @@ const transformNumber: TransformerFunc<'Number'> = async (node, data, deps) => {
       unit: node.unit,
       text: await processHtml(node.text, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
+      optional: node.optional,
     },
   ]
 }
