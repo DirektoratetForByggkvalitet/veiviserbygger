@@ -73,6 +73,16 @@ export const addResultContentActions = (
           group: 'Innhold',
         },
         contentAction({ addNodes, pageId, type: 'Text' }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Sum',
+          defaultContent: {
+            fields: {
+              [uuid()]: { operation: '+', order: 0 },
+            },
+          },
+        }),
       ]
     : []
 
