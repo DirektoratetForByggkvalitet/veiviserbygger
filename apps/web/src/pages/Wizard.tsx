@@ -83,6 +83,11 @@ export const addResultContentActions = (
             },
           },
         }),
+        contentAction({
+          addNodes,
+          pageId,
+          type: 'Table',
+        }),
       ]
     : []
 
