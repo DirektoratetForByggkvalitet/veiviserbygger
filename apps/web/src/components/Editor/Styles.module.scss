@@ -191,6 +191,10 @@
         h3 {
             @include mixins.font-size(heading);
         }
+        a,
+        a:visited {
+            color: colors.get(primary);
+        }
     }
 
     &--read-only {
