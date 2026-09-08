@@ -22,7 +22,7 @@ import { v4 as uuid } from 'uuid'
 
 import useFirebase from '@/hooks/useFirebase'
 import { DocumentReference } from 'firebase/firestore'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getStorageRefs } from 'shared/utils'
 import { CustomImage } from './extensions/Image'
 import LinkModal from './LinkModal'
@@ -44,6 +44,7 @@ const extensions = [
   Subscript,
   Link.configure({
     openOnClick: false,
+    enableClickSelection: true,
     autolink: true,
     defaultProtocol: 'https',
     HTMLAttributes: { rel: 'noopener noreferrer', target: null },
@@ -135,6 +136,25 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
   const { editor } = useCurrentEditor()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (!editor) {
+      return
+    }
+
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null
+      const link = target?.closest('a')
+
+      if (link && editor.view.dom.contains(link)) {
+        event.preventDefault()
+        setIsLinkModalOpen(true)
+      }
+    }
+
+    editor.view.dom.addEventListener('click', handleClick)
+    return () => editor.view.dom.removeEventListener('click', handleClick)
+  }, [editor])
 
   if (!editor) {
     return null
