@@ -7,6 +7,7 @@ import Icon from '@/components/Icon'
 import { useEditable } from '@/hooks/useEditable'
 import { useValue } from '@/hooks/useValue'
 import BEMHelper from '@/lib/bem'
+import Link from '@tiptap/extension-link'
 import Subscript from '@tiptap/extension-subscript'
 import Superscript from '@tiptap/extension-superscript'
 import {
@@ -21,9 +22,10 @@ import { v4 as uuid } from 'uuid'
 
 import useFirebase from '@/hooks/useFirebase'
 import { DocumentReference } from 'firebase/firestore'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getStorageRefs } from 'shared/utils'
 import { CustomImage } from './extensions/Image'
+import LinkModal from './LinkModal'
 import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
@@ -40,6 +42,13 @@ const extensions = [
   }),
   Superscript,
   Subscript,
+  Link.configure({
+    openOnClick: false,
+    enableClickSelection: true,
+    autolink: true,
+    defaultProtocol: 'https',
+    HTMLAttributes: { rel: 'noopener noreferrer', target: null },
+  }),
 
   CustomImage,
 ]
@@ -126,6 +135,26 @@ export default function Editor({ label, value, onChange, sourceRef }: Props) {
 function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
   const { editor } = useCurrentEditor()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (!editor) {
+      return
+    }
+
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null
+      const link = target?.closest('a')
+
+      if (link && editor.view.dom.contains(link)) {
+        event.preventDefault()
+        setIsLinkModalOpen(true)
+      }
+    }
+
+    editor.view.dom.addEventListener('click', handleClick)
+    return () => editor.view.dom.removeEventListener('click', handleClick)
+  }, [editor])
 
   if (!editor) {
     return null
@@ -272,6 +301,16 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
 
       <button
         type="button"
+        onClick={() => setIsLinkModalOpen(true)}
+        tabIndex={-1}
+        title="Legg til lenke"
+        {...bem('control', { active: editor.isActive('link') })}
+      >
+        <Icon name="Link" />
+      </button>
+
+      <button
+        type="button"
         onClick={toggle('bulletList')}
         {...bem('control', { active: editor.isActive('bulletList') })}
         tabIndex={-1}
@@ -307,6 +346,8 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         simple
         tabIndex={-1}
       />
+
+      <LinkModal editor={editor} open={isLinkModalOpen} onClose={() => setIsLinkModalOpen(false)} />
     </div>
   )
 }
