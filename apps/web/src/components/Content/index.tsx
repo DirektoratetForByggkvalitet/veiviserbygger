@@ -7,6 +7,7 @@ import File from '@/components/File'
 import Help from '@/components/Help'
 import Icon from '@/components/Icon'
 import Input from '@/components/Input'
+import Form from '@/components/Form'
 import Modal from '@/components/Modal'
 import TableEditor from '@/components/TableEditor'
 import SumFields from '@/components/SumFields'
@@ -33,6 +34,7 @@ import { useSortableList } from '@/hooks/useSortableList'
 import { useVersion } from '@/hooks/useVersion'
 import BEMHelper from '@/lib/bem'
 import { getTypeDescription, getTypeIcon, getTypeText } from '@/lib/content'
+import { unset } from '@/lib/merge'
 import { DocumentReference } from 'firebase/firestore'
 
 import { ref as storageRef } from 'firebase/storage'
@@ -454,23 +456,78 @@ function AccordionFields({
   getNodeRef: ReturnType<typeof useVersion>['getNodeRef']
   patchNode: ReturnType<typeof useVersion>['patchNode']
 }) {
+  const [expanded, setExpanded] = useState(false)
+  const [showMissingSummaryError, setShowMissingSummaryError] = useState(false)
+
+  const missingSummary = !!node.details && !node.summary
+
+  const closeModal = () => {
+    if (missingSummary) {
+      setShowMissingSummaryError(true)
+      return
+    }
+
+    setShowMissingSummaryError(false)
+    setExpanded(false)
+  }
+
+  const deleteAccordion = (nodeId: string) => {
+    patchNode(nodeId, { summary: unset, details: unset })
+    setShowMissingSummaryError(false)
+    setExpanded(false)
+  }
+
   return (
     <>
-      <ErrorWrapper slice={['summary']}>
-        <Input
-          label="Tittel på utvidbar seksjon"
-          value={node.summary || ''}
-          onChange={(v) => patchNode(node.id, { summary: v })}
-        />
-      </ErrorWrapper>
-      <ErrorWrapper slice={['details']}>
-        <Editor
-          label="Innhold i utvidbar seksjon"
-          value={node.details || ''}
-          onChange={(v) => patchNode(node.id, { details: v })}
-          sourceRef={{ doc: getNodeRef(node.id), path: ['details'] }}
-        />
-      </ErrorWrapper>
+      <Button
+        type="button"
+        size="small"
+        icon={node.summary ? 'ChevronDown' : 'Plus'}
+        onClick={() => setExpanded(true)}
+      >
+        {node.summary || 'Faktaboks'}
+      </Button>
+      <Modal title="Faktaboks" expanded={expanded} onClose={closeModal}>
+        <Help description="Et valgfritt felt for når du vil legge til mer beskrivelse til et spørsmål. Brukeren må trykke på en knapp etter beskrivelsen for å få vist faktaboksen." />
+        <Form.Presentational>
+          <ErrorWrapper
+            slice={['summary']}
+            messages={
+              showMissingSummaryError && missingSummary
+                ? [
+                    'Faktaboksen trenger en tittel for å kunne vises. Legg til en tittel eller fjern faktaboksen.',
+                  ]
+                : undefined
+            }
+          >
+            <Input
+              header
+              label="Vis faktaboks knapp"
+              placeholder="Mer forklart"
+              value={node.summary || ''}
+              onChange={(v) => patchNode(node.id, { summary: v })}
+            />
+          </ErrorWrapper>
+          <ErrorWrapper slice={['details']}>
+            <Editor
+              label="Faktaboks"
+              value={node.details || ''}
+              onChange={(v) => patchNode(node.id, { details: v })}
+              sourceRef={{ doc: getNodeRef(node.id), path: ['details'] }}
+            />
+          </ErrorWrapper>
+        </Form.Presentational>
+        <ButtonBar>
+          <Button type="button" onClick={closeModal}>
+            Lukk
+          </Button>
+          {(node.summary || node.details) && (
+            <Button type="button" icon="Trash" subtle onClick={() => deleteAccordion(node.id)}>
+              Fjern faktaboks
+            </Button>
+          )}
+        </ButtonBar>
+      </Modal>
     </>
   )
 }
@@ -610,6 +667,20 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
             />
           </ErrorWrapper>
+          <ButtonBar hideMarginTop align="right">
+            {node.type === 'Number' || node.type === 'Input' ? (
+              <ErrorWrapper slice={['optional']}>
+                <Checkbox
+                  label="Valgfritt felt"
+                  checked={node.optional || false}
+                  onChange={(v) => patchNode(node.id, { optional: v })}
+                />
+              </ErrorWrapper>
+            ) : null}
+            {node.type !== 'Text' && (
+              <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
+            )}
+          </ButtonBar>
           {node.type === 'Number' ? (
             <>
               <div {...bem('grid')}>
@@ -652,18 +723,6 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               </div>
             </>
           ) : null}
-          {node.type === 'Number' || node.type === 'Input' ? (
-            <ErrorWrapper slice={['optional']}>
-              <Checkbox
-                label="Valgfritt felt"
-                checked={node.optional || false}
-                onChange={(v) => patchNode(node.id, { optional: v })}
-              />
-            </ErrorWrapper>
-          ) : null}
-          {node.type !== 'Text' && (
-            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
-          )}
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
@@ -710,6 +769,9 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               path: ['image'],
             }}
           />
+          <ButtonBar hideMarginTop align="right">
+            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
+          </ButtonBar>
           <div {...bem('sub-header')}>
             <h3 {...bem('sub-title')}>Svaralternativer</h3>
             {isEditable ? (
@@ -742,7 +804,6 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             )}
           </div>
           <Options node={node} pageId={page.id} />
-          <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
         </Main>
 
         <Aside>
@@ -781,13 +842,16 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               sourceRef={inRef(sourceRef, 'text')}
             />
           </ErrorWrapper>
-          <ErrorWrapper slice={['optional']}>
-            <Checkbox
-              label="Valgfritt felt"
-              checked={node.optional || false}
-              onChange={(v) => patchNode(node.id, { optional: v })}
-            />
-          </ErrorWrapper>
+          <ButtonBar hideMarginTop align="right">
+            <ErrorWrapper slice={['optional']}>
+              <Checkbox
+                label="Valgfritt felt"
+                checked={node.optional || false}
+                onChange={(v) => patchNode(node.id, { optional: v })}
+              />
+            </ErrorWrapper>
+            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
+          </ButtonBar>
           <div {...bem('sub-header')}>
             <h3 {...bem('sub-title')}>Svaralternativer</h3>
             {isEditable ? (
@@ -820,7 +884,6 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             )}
           </div>
           <Options node={node} pageId={page.id} />
-          <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
         </Main>
 
         <Aside>
@@ -853,6 +916,10 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             />
           </ErrorWrapper>
 
+          <ButtonBar hideMarginTop align="right">
+            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
+          </ButtonBar>
+
           <SumFields node={node} nodes={allNodes} />
 
           <div {...bem('grid')}>
@@ -874,7 +941,6 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               />
             </ErrorWrapper>
           </div>
-          <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
