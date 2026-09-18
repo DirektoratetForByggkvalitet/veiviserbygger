@@ -24,3 +24,7 @@ interface FormSplitProps {
 Form.Split = function FormSplit({ children }: FormSplitProps) {
   return <div {...bem('split')}>{children}</div>
 }
+
+Form.Presentational = function FormPresentational({ children }: FormSplitProps) {
+  return <div {...bem('content')}>{children}</div>
+}
