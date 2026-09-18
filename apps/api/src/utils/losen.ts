@@ -168,6 +168,8 @@ const transformRadio: TransformerFunc<'Radio'> = async (node, data, deps) => {
       property: node.id,
       heading: node.heading || 'Mangler navn',
       text: await processHtml(node.text, deps),
+      summary: node.summary,
+      details: await processHtml(node.details, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
       image: node.image?.file
         ? {
@@ -202,6 +204,8 @@ const transformCheckbox: TransformerFunc<'Checkbox'> = async (node, data, deps) 
       property: node.id,
       heading: node.heading || 'Mangler navn',
       text: await processHtml(node.text, deps),
+      summary: node.summary,
+      details: await processHtml(node.details, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
       image: node.image?.file
         ? {
@@ -338,6 +342,8 @@ const transformInput: TransformerFunc<'Input'> = async (node, data, deps) => {
       heading: node.heading || 'Input uten navn',
       property: node.id,
       text: await processHtml(node.text, deps),
+      summary: node.summary,
+      details: await processHtml(node.details, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
       optional: node.optional,
     },
@@ -356,6 +362,8 @@ const transformNumber: TransformerFunc<'Number'> = async (node, data, deps) => {
       step: node.step,
       unit: node.unit,
       text: await processHtml(node.text, deps),
+      summary: node.summary,
+      details: await processHtml(node.details, deps),
       show: node.show ? transformExpression(node.show, data) : undefined,
       optional: node.optional,
     },
@@ -372,6 +380,8 @@ const transformSum: TransformerFunc<'Sum'> = async (node, data, deps) => {
       type: 'Sum',
       heading: node.heading || 'Summeringsfelt uten navn',
       text: await processHtml(node.text, deps),
+      summary: node.summary,
+      details: await processHtml(node.details, deps),
       property: node.id,
       show: node.show ? transformExpression(node.show, data) : undefined,
       values: values.filter((value): value is string => typeof value === 'string'),

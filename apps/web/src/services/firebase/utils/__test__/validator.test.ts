@@ -1,6 +1,6 @@
 import { doc, getFirestore } from 'firebase/firestore'
 import { TreeNode } from '../refs'
-import { findAdditionalDeletes, isDeleteAllowed } from '../validator'
+import { findAdditionalDeletes, isDeleteAllowed, validateNode } from '../validator'
 import { initializeApp } from 'firebase/app'
 
 beforeEach(() => {
@@ -489,6 +489,55 @@ describe('validator util', () => {
           }),
         ]),
       })
+    })
+  })
+
+  describe('validateNode', () => {
+    it('should require summary when details is set', () => {
+      const firestore = getFirestore()
+      const a = doc(firestore, 'wizards', 'acc', 'nodes', 'node-a')
+
+      expect(
+        validateNode({ doc: a, id: 'node-a', type: 'Radio', details: '<p>Detaljer</p>' }),
+      ).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            doc: a,
+            path: ['summary'],
+          }),
+        ]),
+      )
+    })
+
+    it('should not error when both summary and details are set', () => {
+      const firestore = getFirestore()
+      const a = doc(firestore, 'wizards', 'acc', 'nodes', 'node-a')
+
+      const errors = validateNode({
+        doc: a,
+        id: 'node-a',
+        type: 'Radio',
+        heading: 'Heading',
+        summary: 'Sammendrag',
+        details: '<p>Detaljer</p>',
+      })
+
+      expect(errors.some((e) => e.path[0] === 'summary')).toBe(false)
+    })
+
+    it('should not error when only summary is set', () => {
+      const firestore = getFirestore()
+      const a = doc(firestore, 'wizards', 'acc', 'nodes', 'node-a')
+
+      const errors = validateNode({
+        doc: a,
+        id: 'node-a',
+        type: 'Radio',
+        heading: 'Heading',
+        summary: 'Sammendrag',
+      })
+
+      expect(errors.some((e) => e.path[0] === 'summary')).toBe(false)
     })
   })
 })

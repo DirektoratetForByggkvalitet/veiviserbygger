@@ -445,6 +445,36 @@ function Options({
   )
 }
 
+function AccordionFields({
+  node,
+  getNodeRef,
+  patchNode,
+}: {
+  node: { id: string; summary?: string; details?: string }
+  getNodeRef: ReturnType<typeof useVersion>['getNodeRef']
+  patchNode: ReturnType<typeof useVersion>['patchNode']
+}) {
+  return (
+    <>
+      <ErrorWrapper slice={['summary']}>
+        <Input
+          label="Tittel på utvidbar seksjon"
+          value={node.summary || ''}
+          onChange={(v) => patchNode(node.id, { summary: v })}
+        />
+      </ErrorWrapper>
+      <ErrorWrapper slice={['details']}>
+        <Editor
+          label="Innhold i utvidbar seksjon"
+          value={node.details || ''}
+          onChange={(v) => patchNode(node.id, { details: v })}
+          sourceRef={{ doc: getNodeRef(node.id), path: ['details'] }}
+        />
+      </ErrorWrapper>
+    </>
+  )
+}
+
 function ExtraInformation({
   node,
   nodes,
@@ -631,11 +661,14 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               />
             </ErrorWrapper>
           ) : null}
+          {node.type !== 'Text' && (
+            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
+          )}
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
         </Aside>
-        {/* TODO: summary, details, show */}
+        {/* TODO: show */}
       </Fragment>
     )
   }
@@ -709,10 +742,11 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             )}
           </div>
           <Options node={node} pageId={page.id} />
+          <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
         </Main>
 
         <Aside>
-          {/* TODO: summary, details, show */}
+          {/* TODO: show */}
           <Help description={getTypeDescription(node.type)} />
         </Aside>
       </Fragment>
@@ -786,6 +820,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             )}
           </div>
           <Options node={node} pageId={page.id} />
+          <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
         </Main>
 
         <Aside>
@@ -839,11 +874,12 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               />
             </ErrorWrapper>
           </div>
+          <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
         </Aside>
-        {/* TODO: summary, details, show */}
+        {/* TODO: show */}
       </Fragment>
     )
   }

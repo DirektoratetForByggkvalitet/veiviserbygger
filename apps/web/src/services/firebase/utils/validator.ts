@@ -172,7 +172,7 @@ function validateVersion(doc: WithDocRef<WizardVersion>): ValidationError[] {
   return errors
 }
 
-function validateNode(
+export function validateNode(
   doc: WithDocRef<OptionalExcept<PageContent, 'type' | 'id'>>,
 ): ValidationError[] {
   const errors: ValidationError[] = []
@@ -195,6 +195,14 @@ function validateNode(
         message: 'Minimum to alternativer med tittel er påkrevd',
       })
     }
+  }
+
+  if ('details' in doc && doc.details && !doc.summary) {
+    errors.push({
+      doc: doc.doc,
+      path: ['summary'],
+      message: 'Tittel på utvidbar seksjon er påkrevd når innhold er fylt ut',
+    })
   }
 
   if (doc.type === 'Branch') {
