@@ -3,7 +3,7 @@ import { Branch, PageContent } from 'types'
 
 const typeMap: Record<
   PageContent['type'] | Branch['preset'],
-  { title: string; icon: keyof typeof icons; description: string }
+  { title: string; icon: keyof typeof icons; description: string; fieldproperties?: string }
 > = {
   Text: {
     title: 'Tekst',
@@ -36,8 +36,9 @@ const typeMap: Record<
   Number: {
     title: 'Tallfelt',
     icon: 'Hash',
-    description:
-      'Et tallfelt der brukeren skriver inn numeriske verdier. Man kan begrense hva brukeren kan skrive i feltet ved hjelp av minimums-, maksimums- og stegverdier. Steg på 1 betyr at tallet må være heltall, 0.1 betyr at en desimal er tilgjengelig, osv. La felt stå tomt for ingen begrensning.',
+    description: 'Et tallfelt der brukeren skriver inn numeriske verdier.',
+    fieldproperties:
+      'Man kan begrense hva brukeren kan skrive i feltet ved hjelp av minimums-, maksimums- og stegverdier. Steg på 1 betyr at tallet må være heltall, 0.1 betyr at en desimal er tilgjengelig, osv. La felt stå tomt for ingen begrensning.',
   },
   Sum: {
     title: 'Summering',
@@ -88,4 +89,8 @@ export function getTypeIcon(type: PageContent['type'] | Branch['preset']) {
 
 export function getTypeDescription(type: PageContent['type'] | Branch['preset']) {
   return typeMap[type].description || ''
+}
+
+export function getTypeFieldProperties(type: PageContent['type'] | Branch['preset']) {
+  return typeMap[type].fieldproperties || ''
 }

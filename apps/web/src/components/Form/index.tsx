@@ -25,6 +25,12 @@ Form.Split = function FormSplit({ children }: FormSplitProps) {
   return <div {...bem('split')}>{children}</div>
 }
 
-Form.Presentational = function FormPresentational({ children }: FormSplitProps) {
-  return <div {...bem('content')}>{children}</div>
+Form.Presentational = function FormPresentational({
+  children,
+  marginBottom,
+}: {
+  children: ReactNode
+  marginBottom?: boolean
+}) {
+  return <div {...bem('content', { marginBottom })}>{children}</div>
 }

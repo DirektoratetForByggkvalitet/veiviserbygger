@@ -28,6 +28,10 @@
     &--right {
         justify-content: flex-end;
     }
+
+    &--down {
+        flex-direction: column;
+    }
 }
 
 @keyframes enter {

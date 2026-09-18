@@ -33,7 +33,7 @@ import { useEditable } from '@/hooks/useEditable'
 import { useSortableList } from '@/hooks/useSortableList'
 import { useVersion } from '@/hooks/useVersion'
 import BEMHelper from '@/lib/bem'
-import { getTypeDescription, getTypeIcon, getTypeText } from '@/lib/content'
+import { getTypeDescription, getTypeIcon, getTypeText, getTypeFieldProperties } from '@/lib/content'
 import { unset } from '@/lib/merge'
 import { DocumentReference } from 'firebase/firestore'
 
@@ -481,15 +481,15 @@ function AccordionFields({
     <>
       <Button
         type="button"
+        subtle
         size="small"
-        icon={node.summary ? 'ChevronDown' : 'Plus'}
+        icon="MessageSquareText"
         onClick={() => setExpanded(true)}
       >
-        {node.summary || 'Faktaboks'}
+        Faktaboks
       </Button>
       <Modal title="Faktaboks" expanded={expanded} onClose={closeModal}>
-        <Help description="Et valgfritt felt for når du vil legge til mer beskrivelse til et spørsmål. Brukeren må trykke på en knapp etter beskrivelsen for å få vist faktaboksen." />
-        <Form.Presentational>
+        <Form.Presentational marginBottom>
           <ErrorWrapper
             slice={['summary']}
             messages={
@@ -517,6 +517,7 @@ function AccordionFields({
             />
           </ErrorWrapper>
         </Form.Presentational>
+        <Help description="Faktaboks brukes når du vil legge til mer beskrivelse til et spørsmål. Brukeren må trykke på en knapp etter beskrivelsen for å få vist en faktaboksen med mer informasjon." />
         <ButtonBar>
           <Button type="button" onClick={closeModal}>
             Lukk
@@ -526,6 +527,35 @@ function AccordionFields({
               Fjern faktaboks
             </Button>
           )}
+        </ButtonBar>
+      </Modal>
+    </>
+  )
+}
+
+function FieldProperties({
+  children,
+  label,
+  description,
+}: {
+  children: ReactNode
+  label: string
+  description?: string
+}) {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <>
+      <Button type="button" subtle size="small" icon="Settings" onClick={() => setExpanded(true)}>
+        {label}
+      </Button>
+      <Modal title={label} expanded={expanded} onClose={() => setExpanded(false)}>
+        <Form.Presentational marginBottom={!!description}>{children}</Form.Presentational>
+        {description && <Help description={description} />}
+        <ButtonBar>
+          <Button type="button" onClick={() => setExpanded(false)}>
+            Lukk
+          </Button>
         </ButtonBar>
       </Modal>
     </>
@@ -667,67 +697,74 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
             />
           </ErrorWrapper>
-          <ButtonBar hideMarginTop align="right">
-            {node.type === 'Number' || node.type === 'Input' ? (
-              <ErrorWrapper slice={['optional']}>
-                <Checkbox
-                  label="Valgfritt felt"
-                  checked={node.optional || false}
-                  onChange={(v) => patchNode(node.id, { optional: v })}
-                />
-              </ErrorWrapper>
-            ) : null}
+          {node.type === 'Number' && (
+            <ErrorWrapper slice={['unit']}>
+              <Input
+                label="Enhet"
+                placeholder="m², år, kg, osv."
+                value={node.unit || ''}
+                onChange={(v) => patchNode(node.id, { type: 'Number', unit: v })}
+              />
+            </ErrorWrapper>
+          )}
+        </Main>
+        <Aside>
+          <Help description={getTypeDescription(node.type)} />
+          <ButtonBar hideMarginTop align="down">
+            {(node.type === 'Number' || node.type === 'Input') && (
+              <FieldProperties
+                label="Feltegenskaper"
+                description={getTypeFieldProperties(node.type)}
+              >
+                <ErrorWrapper slice={['optional']}>
+                  <Checkbox
+                    label="Valgfritt felt"
+                    large
+                    checked={node.optional || false}
+                    onChange={(v) => patchNode(node.id, { optional: v })}
+                  />
+                </ErrorWrapper>
+                {node.type === 'Number' && (
+                  <>
+                    <Form.Split>
+                      <ErrorWrapper slice={['minimum']}>
+                        <Input
+                          label="Minimumsverdi"
+                          placeholder="0"
+                          type="number"
+                          value={node.minimum}
+                          onChange={(v) => patchNode(node.id, { type: 'Number', minimum: v })}
+                        />
+                      </ErrorWrapper>
+                      <ErrorWrapper slice={['maximum']}>
+                        <Input
+                          label="Maksimumsverdi"
+                          type="number"
+                          value={node.maximum}
+                          onChange={(v) => patchNode(node.id, { type: 'Number', maximum: v })}
+                        />
+                      </ErrorWrapper>
+                    </Form.Split>
+                    <Form.Split>
+                      <ErrorWrapper slice={['step']}>
+                        <Input
+                          label="Stegverdi"
+                          placeholder="1, 0.1, 0.01, osv."
+                          type="number"
+                          value={node.step}
+                          onChange={(v) => patchNode(node.id, { type: 'Number', step: v })}
+                        />
+                      </ErrorWrapper>
+                    </Form.Split>
+                  </>
+                )}
+              </FieldProperties>
+            )}
             {node.type !== 'Text' && (
               <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
             )}
           </ButtonBar>
-          {node.type === 'Number' ? (
-            <>
-              <div {...bem('grid')}>
-                <ErrorWrapper slice={['unit']}>
-                  <Input
-                    label="Enhet"
-                    placeholder="m², år, kg, osv."
-                    value={node.unit || ''}
-                    onChange={(v) => patchNode(node.id, { type: 'Number', unit: v })}
-                  />
-                </ErrorWrapper>
-                <ErrorWrapper slice={['step']}>
-                  <Input
-                    label="Stegverdi"
-                    placeholder="1, 0.1, 0.01, osv."
-                    type="number"
-                    value={node.step}
-                    onChange={(v) => patchNode(node.id, { type: 'Number', step: v })}
-                  />
-                </ErrorWrapper>
-              </div>
-              <div {...bem('grid')}>
-                <ErrorWrapper slice={['minimum']}>
-                  <Input
-                    label="Minimumsverdi"
-                    placeholder="0"
-                    type="number"
-                    value={node.minimum}
-                    onChange={(v) => patchNode(node.id, { type: 'Number', minimum: v })}
-                  />
-                </ErrorWrapper>
-                <ErrorWrapper slice={['maximum']}>
-                  <Input
-                    label="Maksimumsverdi"
-                    type="number"
-                    value={node.maximum}
-                    onChange={(v) => patchNode(node.id, { type: 'Number', maximum: v })}
-                  />
-                </ErrorWrapper>
-              </div>
-            </>
-          ) : null}
-        </Main>
-        <Aside>
-          <Help description={getTypeDescription(node.type)} />
         </Aside>
-        {/* TODO: show */}
       </Fragment>
     )
   }
@@ -769,9 +806,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               path: ['image'],
             }}
           />
-          <ButtonBar hideMarginTop align="right">
-            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
-          </ButtonBar>
+
           <div {...bem('sub-header')}>
             <h3 {...bem('sub-title')}>Svaralternativer</h3>
             {isEditable ? (
@@ -807,8 +842,11 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
         </Main>
 
         <Aside>
-          {/* TODO: show */}
           <Help description={getTypeDescription(node.type)} />
+
+          <ButtonBar hideMarginTop align="down">
+            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
+          </ButtonBar>
         </Aside>
       </Fragment>
     )
@@ -842,16 +880,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               sourceRef={inRef(sourceRef, 'text')}
             />
           </ErrorWrapper>
-          <ButtonBar hideMarginTop align="right">
-            <ErrorWrapper slice={['optional']}>
-              <Checkbox
-                label="Valgfritt felt"
-                checked={node.optional || false}
-                onChange={(v) => patchNode(node.id, { optional: v })}
-              />
-            </ErrorWrapper>
-            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
-          </ButtonBar>
+
           <div {...bem('sub-header')}>
             <h3 {...bem('sub-title')}>Svaralternativer</h3>
             {isEditable ? (
@@ -888,6 +917,18 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
 
         <Aside>
           <Help description={getTypeDescription(node.type)} />
+          <ButtonBar hideMarginTop align="down">
+            <FieldProperties label="Feltegenskaper">
+              <ErrorWrapper slice={['optional']}>
+                <Checkbox
+                  label="Valgfritt felt"
+                  checked={node.optional || false}
+                  onChange={(v) => patchNode(node.id, { optional: v })}
+                />
+              </ErrorWrapper>
+            </FieldProperties>
+            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
+          </ButtonBar>
         </Aside>
       </Fragment>
     )
@@ -916,34 +957,35 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             />
           </ErrorWrapper>
 
-          <ButtonBar hideMarginTop align="right">
-            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
-          </ButtonBar>
+          <ErrorWrapper slice={['unit']}>
+            <Input
+              label="Enhet"
+              placeholder="m², år, kg, osv."
+              value={node.unit || ''}
+              onChange={(v) => patchNode(node.id, { type: 'Sum', unit: v })}
+            />
+          </ErrorWrapper>
 
           <SumFields node={node} nodes={allNodes} />
-
-          <div {...bem('grid')}>
-            <ErrorWrapper slice={['unit']}>
-              <Input
-                label="Enhet"
-                placeholder="m², år, kg, osv."
-                value={node.unit || ''}
-                onChange={(v) => patchNode(node.id, { type: 'Sum', unit: v })}
-              />
-            </ErrorWrapper>
-            <ErrorWrapper slice={['minimum']}>
-              <Input
-                label="Minimumsverdi"
-                placeholder="0"
-                type="number"
-                value={node.minimum}
-                onChange={(v) => patchNode(node.id, { type: 'Sum', minimum: v })}
-              />
-            </ErrorWrapper>
-          </div>
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
+          <ButtonBar hideMarginTop align="down">
+            <FieldProperties label="Feltegenskaper">
+              <Form.Split>
+                <ErrorWrapper slice={['minimum']}>
+                  <Input
+                    label="Minimumsverdi"
+                    placeholder="0"
+                    type="number"
+                    value={node.minimum}
+                    onChange={(v) => patchNode(node.id, { type: 'Sum', minimum: v })}
+                  />
+                </ErrorWrapper>
+              </Form.Split>
+            </FieldProperties>
+            <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
+          </ButtonBar>
         </Aside>
         {/* TODO: show */}
       </Fragment>
@@ -998,13 +1040,15 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
       <Fragment key={node.id}>
         <Header type={node.preset || node.type} node={node} sourceRef={sourceRef} />
 
-        <Main>
+        <Main branch={node.preset == 'NewQuestions'} full={node.preset == 'NewQuestions'}>
           <ErrorWrapper>
             <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
           </ErrorWrapper>
+          {node.preset == 'NewQuestions' && (
+            <Help description={getTypeDescription(node.preset || node.type)} />
+          )}
           {node.preset === 'NegativeResult' && <NegativeResult node={node} nodes={allNodes} />}
           {node.preset === 'ExtraInformation' && <ExtraInformation node={node} nodes={allNodes} />}
-
           {/**
            * This is the "recursive" part of the branch, where the branch can contain a list
            * of nodes that are displayed when the branch predicate yields a truthy value.
@@ -1041,10 +1085,11 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             </>
           )}
         </Main>
-
-        <Aside>
-          <Help description={getTypeDescription(node.preset || node.type)} />
-        </Aside>
+        {node.preset !== 'NewQuestions' && (
+          <Aside>
+            <Help description={getTypeDescription(node.preset || node.type)} />
+          </Aside>
+        )}
       </Fragment>
     )
   }
