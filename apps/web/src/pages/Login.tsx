@@ -35,7 +35,7 @@ export default function LoginPage() {
         <>
           {oidc ? (
             <>
-              <ButtonBar margins>
+              <ButtonBar marginBottom>
                 <Button primary icon="LogIn" size="large" onClick={oidc.login}>
                   Logg inn med {oidc.name}
                 </Button>

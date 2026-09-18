@@ -8,9 +8,17 @@ const bem = BEMHelper(styles)
 interface Props {
   children: ReactNode
   list?: boolean
-  margins?: boolean
+  align?: 'left' | 'right'
+  marginBottom?: boolean
+  hideMarginTop?: boolean
 }
 
-export default function ButtonBar({ children, list, margins }: Props) {
-  return <div {...bem('', { list, margins })}>{children}</div>
+export default function ButtonBar({
+  children,
+  list,
+  marginBottom,
+  hideMarginTop,
+  align = 'left',
+}: Props) {
+  return <div {...bem('', { list, marginBottom, hideMarginTop, [align]: true })}>{children}</div>
 }

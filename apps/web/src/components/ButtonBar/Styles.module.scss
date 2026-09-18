@@ -3,8 +3,9 @@
 .button-bar {
     $this: &;
     display: flex;
-    margin-top: vars.$spacing--small;
     gap: vars.$spacing--xsmall;
+    margin-top: vars.$spacing--small;
+
     &--list {
         flex-direction: column;
         & > * {
@@ -12,8 +13,20 @@
         }
     }
 
-    &--margins {
+    &--hideMarginTop {
+        margin-top: 0;
+    }
+
+    &--marginBottom {
         margin-bottom: vars.$spacing--xsmall;
+    }
+
+    &--left {
+        justify-content: flex-start;
+    }
+
+    &--right {
+        justify-content: flex-end;
     }
 }
 

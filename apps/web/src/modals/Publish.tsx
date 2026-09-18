@@ -87,7 +87,7 @@ export default function PublishModal() {
             forwardedRef={titleInput}
           />
 
-          <ButtonBar margins>
+          <ButtonBar marginBottom>
             <Button type="button" icon="CloudUpload" primary onClick={handlePublish}>
               Publisér
             </Button>
