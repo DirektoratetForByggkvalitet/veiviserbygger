@@ -47,13 +47,13 @@ describe('merge', () => {
   })
 
   it('should allow setting unset', () => {
-    expect(merge({ a: 1, b: 0 }, { b: 2, a: unset })).toEqual({ b: 2 })
+    expect(merge({ a: 1, b: 0 }, { b: 2, a: unset })).toEqual({ b: 2, a: deleteField() })
   })
 
   it('should allow unsetting a nested property', () => {
     expect(
       merge({ type: 'Branch', test: { operator: 'gt' } }, { test: { operator: unset } }),
-    ).toEqual({ type: 'Branch', test: {} })
+    ).toEqual({ type: 'Branch', test: { operator: deleteField() } })
   })
 
   it('should handle dates correctly', () => {

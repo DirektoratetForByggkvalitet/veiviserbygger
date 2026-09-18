@@ -1,4 +1,4 @@
-import { DocumentReference, FieldValue } from 'firebase/firestore'
+import { DocumentReference, FieldValue, deleteField } from 'firebase/firestore'
 import { concat, isArray, isObject, keys, set, uniq } from 'lodash'
 
 function isUnmergeable(value: any) {
@@ -22,7 +22,7 @@ export function merge<T extends Record<string, any>, P extends Record<string, an
       keys(current).forEach((key) => {
         // explicitly unset a value using the unset symbol
         if (current[key]?.toString() === 'Symbol(unset)') {
-          delete result[key]
+          set(result, key, deleteField())
           return
         }
 
