@@ -8,6 +8,7 @@
 
     &--list {
         flex-direction: column;
+        gap: 0;
         & > * {
             flex-basis: 100%;
         }
@@ -27,10 +28,6 @@
 
     &--right {
         justify-content: flex-end;
-    }
-
-    &--down {
-        flex-direction: column;
     }
 }
 

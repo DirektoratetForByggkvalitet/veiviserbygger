@@ -8,7 +8,7 @@ const bem = BEMHelper(styles)
 interface Props {
   children: ReactNode
   list?: boolean
-  align?: 'left' | 'right' | 'down'
+  align?: 'left' | 'right'
   marginBottom?: boolean
   hideMarginTop?: boolean
 }
