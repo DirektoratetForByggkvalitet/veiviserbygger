@@ -210,7 +210,7 @@ function PageForm({
   }, [page])
 
   return (
-    <Form>
+    <Form gap="large">
       <ErrorWrapper slice={['heading']}>
         <Input
           label="Sidetittel"

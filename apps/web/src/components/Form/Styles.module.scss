@@ -22,4 +22,13 @@
             width: 100%;
         }
     }
+
+    &--large {
+        > #{$this}__content {
+            gap: vars.$spacing--small;
+            > #{$this}__split {
+                gap: vars.$spacing--small;
+            }
+        }
+    }
 }

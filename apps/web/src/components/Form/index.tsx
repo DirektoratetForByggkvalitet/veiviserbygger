@@ -6,12 +6,13 @@ const bem = BEMHelper(styles)
 
 interface Props {
   children: ReactNode
+  gap: 'large' | 'small'
   onSubmit?: (event: any) => void
 }
 
-export default function Form({ children, ...props }: Props) {
+export default function Form({ children, gap, ...props }: Props) {
   return (
-    <form {...props} {...bem('')}>
+    <form {...props} {...bem('', { large: gap == 'large' })}>
       <div {...bem('content')}>{children}</div>
     </form>
   )
