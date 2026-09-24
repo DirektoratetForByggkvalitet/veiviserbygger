@@ -11,8 +11,8 @@
     grid-template-areas:
         'header header header'
         'main main main'
-        'full full full'
-        'aside aside aside';
+        'aside aside aside'
+        'branch branch branch';
     width: 100%;
     max-width: map.get(vars.$container-width, base);
     background-color: colors.$light;
@@ -25,7 +25,7 @@
         grid-template-areas:
             'header header header'
             'main main aside'
-            'full full full';
+            'branch branch branch';
     }
 
     &__header {
@@ -52,7 +52,8 @@
 
     &__main,
     &__aside,
-    &__inline-main {
+    &__inline-main,
+    &__branch {
         display: flex;
         flex-direction: column;
         gap: vars.$spacing--small;
@@ -62,10 +63,6 @@
     &__main {
         grid-area: main;
         border: vars.$border-style;
-
-        &--full {
-            grid-area: full;
-        }
 
         // TODO: Figure out why this is needed
         #{$this}__aside {
@@ -83,6 +80,12 @@
             border-top: vars.$border-style;
             border-left: none;
         }
+    }
+
+    &__branch {
+        grid-area: branch;
+        border: vars.$border-style;
+        border-top: none;
     }
 
     &__inline-main {

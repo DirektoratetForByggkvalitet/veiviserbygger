@@ -118,20 +118,16 @@ NodeSection.Header = function Header({ type, title, node, sourceRef }: HeaderPro
   )
 }
 
-NodeSection.Main = function Main({
-  children,
-  full,
-  branch,
-}: {
-  children: ReactNode
-  full?: boolean
-  branch?: boolean
-}) {
-  return <div {...bem('main', { full, branch })}>{children}</div>
+NodeSection.Main = function Main({ children }: { children: ReactNode }) {
+  return <div {...bem('main')}>{children}</div>
 }
 
 NodeSection.Sidebar = function Sidebar({ children }: { children: ReactNode }) {
   return <div {...bem('aside')}>{children}</div>
+}
+
+NodeSection.Branch = function Branch({ children }: { children: ReactNode }) {
+  return <div {...bem('branch')}>{children}</div>
 }
 
 NodeSection.Error = function Error({ children }: { children: ReactNode }) {
