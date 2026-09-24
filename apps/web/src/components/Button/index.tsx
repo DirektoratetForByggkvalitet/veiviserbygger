@@ -12,6 +12,7 @@ interface Props {
   type?: 'button' | 'submit'
   primary?: boolean
   subtle?: boolean
+  list?: boolean
   warning?: boolean
   disabled?: boolean
   loading?: boolean
@@ -34,6 +35,7 @@ export default function Button({
   children,
   type = 'button',
   primary,
+  list,
   loading,
   subtle,
   warning,
@@ -70,6 +72,7 @@ export default function Button({
         {
           primary,
           subtle,
+          list,
           warning,
           [size ?? '']: size,
           'icon-only': iconOnly,

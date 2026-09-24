@@ -125,6 +125,22 @@
         }
     }
 
+    &--list {
+        background-color: transparent;
+        width: 100%;
+        border-top: vars.$border-style;
+        justify-content: flex-start;
+        border-radius: 0;
+        &:last-of-type {
+            border-bottom: vars.$border-style;
+        }
+
+        &:hover,
+        &:focus:focus-visible {
+            background-color: colors.get(neutral-transparent, xlight);
+        }
+    }
+
     &--loading {
         background-color: colors.get(neutral, xlight);
         animation: loading 600ms vars.$ease-out-quart infinite;
