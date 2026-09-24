@@ -481,7 +481,7 @@ function AccordionFields({
     <>
       <Button
         type="button"
-        subtle
+        list
         size="small"
         icon="MessageSquareText"
         onClick={() => setExpanded(true)}
@@ -546,7 +546,7 @@ function FieldProperties({
 
   return (
     <>
-      <Button type="button" subtle size="small" icon="Settings" onClick={() => setExpanded(true)}>
+      <Button type="button" list size="small" icon="Settings" onClick={() => setExpanded(true)}>
         {label}
       </Button>
       <Modal title={label} expanded={expanded} onClose={() => setExpanded(false)}>
@@ -698,19 +698,21 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             />
           </ErrorWrapper>
           {node.type === 'Number' && (
-            <ErrorWrapper slice={['unit']}>
-              <Input
-                label="Enhet"
-                placeholder="m², år, kg, osv."
-                value={node.unit || ''}
-                onChange={(v) => patchNode(node.id, { type: 'Number', unit: v })}
-              />
-            </ErrorWrapper>
+            <Form.Split>
+              <ErrorWrapper slice={['unit']}>
+                <Input
+                  label="Enhet"
+                  placeholder="m², år, kg, osv."
+                  value={node.unit || ''}
+                  onChange={(v) => patchNode(node.id, { type: 'Number', unit: v })}
+                />
+              </ErrorWrapper>
+            </Form.Split>
           )}
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
-          <ButtonBar hideMarginTop align="down">
+          <ButtonBar hideMarginTop list>
             {(node.type === 'Number' || node.type === 'Input') && (
               <FieldProperties
                 label="Feltegenskaper"
@@ -718,7 +720,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               >
                 <ErrorWrapper slice={['optional']}>
                   <Checkbox
-                    label="Valgfritt felt"
+                    label="Feltet er valgfritt"
                     large
                     checked={node.optional || false}
                     onChange={(v) => patchNode(node.id, { optional: v })}
@@ -844,7 +846,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
         <Aside>
           <Help description={getTypeDescription(node.type)} />
 
-          <ButtonBar hideMarginTop align="down">
+          <ButtonBar hideMarginTop list>
             <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
           </ButtonBar>
         </Aside>
@@ -917,7 +919,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
 
         <Aside>
           <Help description={getTypeDescription(node.type)} />
-          <ButtonBar hideMarginTop align="down">
+          <ButtonBar hideMarginTop list>
             <FieldProperties label="Feltegenskaper">
               <ErrorWrapper slice={['optional']}>
                 <Checkbox
@@ -956,21 +958,21 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               sourceRef={{ doc: getNodeRef(node.id), path: ['text'] }}
             />
           </ErrorWrapper>
-
-          <ErrorWrapper slice={['unit']}>
-            <Input
-              label="Enhet"
-              placeholder="m², år, kg, osv."
-              value={node.unit || ''}
-              onChange={(v) => patchNode(node.id, { type: 'Sum', unit: v })}
-            />
-          </ErrorWrapper>
-
+          <Form.Split>
+            <ErrorWrapper slice={['unit']}>
+              <Input
+                label="Enhet"
+                placeholder="m², år, kg, osv."
+                value={node.unit || ''}
+                onChange={(v) => patchNode(node.id, { type: 'Sum', unit: v })}
+              />
+            </ErrorWrapper>
+          </Form.Split>
           <SumFields node={node} nodes={allNodes} />
         </Main>
         <Aside>
           <Help description={getTypeDescription(node.type)} />
-          <ButtonBar hideMarginTop align="down">
+          <ButtonBar hideMarginTop list>
             <FieldProperties label="Feltegenskaper">
               <Form.Split>
                 <ErrorWrapper slice={['minimum']}>
@@ -1054,7 +1056,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
            * of nodes that are displayed when the branch predicate yields a truthy value.
            */}
           {node.preset === 'NewQuestions' && (
-            <>
+            <div>
               {getOrdered(node?.content)?.map((nodeRef) => {
                 const childNode = allNodes[nodeRef?.node?.id]
 
@@ -1082,7 +1084,7 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
                   </Button>
                 )}
               />
-            </>
+            </div>
           )}
         </Main>
         {node.preset !== 'NewQuestions' && (
@@ -1192,8 +1194,14 @@ const Header = ({
   return (
     <header {...bem('header', { negative: type === 'NegativeResult' })}>
       <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
-      <h2 {...bem('title')}>{getTypeText(type)}</h2>
-      <Dropdown icon="Ellipsis" direction="right" options={contentActions} label="Valg" iconOnly />
+      <h2 {...bem('title')}>{title || 'Uten tittel'}</h2>
+      <Dropdown
+        icon="Ellipsis"
+        direction="right"
+        options={contentActions}
+        label="Flytt eller fjern"
+        iconOnly
+      />
 
       <Modal
         title="Fjern innhold"
@@ -1223,9 +1231,15 @@ const Header = ({
   )
 }
 
-const Main = ({ children, full }: { children: ReactNode; full?: boolean }) => (
-  <div {...bem('main', { full })}>{children}</div>
-)
+const Main = ({
+  children,
+  full,
+  branch,
+}: {
+  children: ReactNode
+  full?: boolean
+  branch?: boolean
+}) => <div {...bem('main', { full, branch })}>{children}</div>
 
 const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
 

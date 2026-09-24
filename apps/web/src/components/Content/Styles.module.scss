@@ -29,8 +29,10 @@
         display: flex;
         align-items: center;
         gap: vars.$spacing--xsmall;
-        padding: vars.$spacing--xsmall 0;
-        padding-top: calc(vars.$spacing--small - 6px);
+        padding: 6px vars.$spacing--xsmall;
+        background-color: colors.$light;
+        border: vars.$border-style;
+        border-bottom: none;
         &--negative {
             #{$this}__header-icon {
                 color: colors.$warning;
@@ -63,6 +65,10 @@
             grid-area: full;
         }
 
+        &--branch {
+            background-color: colors.get(neutral, light);
+        }
+
         // TODO: Figure out why this is needed
         #{$this}__aside {
             border: vars.$border-style;
@@ -90,6 +96,7 @@
         @include mixins.font-size(small);
         font-weight: normal;
         flex-grow: 2;
+        color: colors.$muted;
     }
 
     &__sub-header {
