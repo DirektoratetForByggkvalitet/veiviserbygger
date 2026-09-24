@@ -21,6 +21,8 @@ const typeMap: Record<
     icon: 'SquareCheck',
     description:
       'Et spørsmål hvor brukeren svarer ved å velge ett eller flere alternativer. Avhengig av hva de svarer kan vi respondere med resultater eller informasjon.',
+    fieldproperties:
+      'Normalt må brukere fylle ut alle felter for å kunne få et resultat fra veiviseren. Velg at feltet er valgfritt for at brukeren skal få lov til å fortsette uten å velge noen av valgene i feltet',
   },
   Select: {
     title: 'Nedtrekksmeny',
@@ -32,13 +34,15 @@ const typeMap: Record<
     title: 'Tekstfelt',
     icon: 'PenLine',
     description: 'Et felt der brukeren skriver inn tekstverdier',
+    fieldproperties:
+      'Normalt må brukere fylle ut alle felter for å kunne få et resultat fra veiviseren. Velg at feltet er valgfritt for at brukeren skal få lov til å fortsette uten å legge noe til.',
   },
   Number: {
     title: 'Tallfelt',
     icon: 'Hash',
     description: 'Et tallfelt der brukeren skriver inn numeriske verdier.',
     fieldproperties:
-      'Man kan begrense hva brukeren kan skrive i feltet ved hjelp av minimums-, maksimums- og stegverdier. Steg på 1 betyr at tallet må være heltall, 0.1 betyr at en desimal er tilgjengelig, osv. La felt stå tomt for ingen begrensning.',
+      'Man kan begrense hva brukeren kan skrive i feltet ved hjelp av minimums-, maksimums- og stegverdier. Steg på 1 betyr at tallet må være heltall, 0.1 betyr at en desimal er tilgjengelig, osv. La felt stå tomt for ingen begrensning. Normalt må brukere fylle ut alle felter for å kunne få et resultat fra veiviseren. Velg at feltet er valgfritt for at brukeren skal få lov til å fortsette uten å legge noe til.',
   },
   Sum: {
     title: 'Summering',
