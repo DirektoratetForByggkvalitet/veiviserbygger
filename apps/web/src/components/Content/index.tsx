@@ -9,11 +9,12 @@ import Icon from '@/components/Icon'
 import Input from '@/components/Input'
 import Form from '@/components/Form'
 import Modal from '@/components/Modal'
+import NodeSection from '@/components/NodeSection'
 import TableEditor from '@/components/TableEditor'
 import SumFields from '@/components/SumFields'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
-import { Fragment, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
   Answer,
   Branch,
@@ -43,13 +44,11 @@ import ValidationProvider from '@/context/ValidationProvider'
 import useErrors from '@/hooks/errors'
 import useFile from '@/hooks/useFile'
 import useFirebase from '@/hooks/useFirebase'
-import { useModal } from '@/hooks/useModal'
 import { values } from 'lodash'
 import { ReactNode } from 'react'
 import { getOrdered } from 'shared/utils'
 import ErrorWrapper from '../ErrorWrapper'
 import Expression from '../Expression'
-import ValidateDeps from '../ValidateDeps'
 import styles from './Styles.module.scss'
 
 const bem = BEMHelper(styles)
@@ -76,6 +75,11 @@ type NodeProps = {
   node: OptionalExcept<PageContent, 'id' | 'type'>
   page: WizardPage | Intro
   sourceRef: SourceRef
+}
+
+type FieldProps = NodeProps & {
+  id: Props['id']
+  path: Props['path']
 }
 
 function inRef(sourceRef: SourceRef, ...path: string[]): SourceRef {
@@ -665,15 +669,20 @@ function NegativeResult({
   )
 }
 
-function Node({ node, page, allNodes, sourceRef }: NodeProps) {
+function Node({ id, path, node, page, allNodes, sourceRef }: FieldProps) {
   const { patchNode, addNodes, getNodeRef } = useVersion()
   const isEditable = useEditable()
 
   if (node.type === 'Text' || node.type === 'Number' || node.type === 'Input') {
     return (
-      <Fragment key={node.id}>
-        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
-        <Main>
+      <NodeSection id={id} path={path} type={node.type}>
+        <NodeSection.Header
+          type={node.type}
+          node={node}
+          sourceRef={sourceRef}
+          title={node.heading}
+        />
+        <NodeSection.Main>
           {/**
            * Text on result pages does not have a heading, so we show it only if the node
            * is not a Text node or if the page is not a Result page 🙃
@@ -709,8 +718,8 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               </ErrorWrapper>
             </Form.Split>
           )}
-        </Main>
-        <Aside>
+        </NodeSection.Main>
+        <NodeSection.Sidebar>
           <Help description={getTypeDescription(node.type)} />
           <ButtonBar hideMarginTop list>
             {(node.type === 'Number' || node.type === 'Input') && (
@@ -766,22 +775,22 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
             )}
           </ButtonBar>
-        </Aside>
-      </Fragment>
+        </NodeSection.Sidebar>
+      </NodeSection>
     )
   }
 
   if (node.type === 'Radio') {
     return (
-      <Fragment key={node.id}>
-        <Header
+      <NodeSection id={id} path={path} type={node.type}>
+        <NodeSection.Header
           type={node.type}
           title={node.heading || 'Hva er det til middag i dag?'}
           node={node}
           sourceRef={sourceRef}
         />
 
-        <Main>
+        <NodeSection.Main>
           <ErrorWrapper slice={['heading']}>
             <Input
               label="Tittel"
@@ -841,30 +850,30 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             )}
           </div>
           <Options node={node} pageId={page.id} />
-        </Main>
+        </NodeSection.Main>
 
-        <Aside>
+        <NodeSection.Sidebar>
           <Help description={getTypeDescription(node.type)} />
 
           <ButtonBar hideMarginTop list>
             <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
           </ButtonBar>
-        </Aside>
-      </Fragment>
+        </NodeSection.Sidebar>
+      </NodeSection>
     )
   }
 
   if (node.type === 'Checkbox') {
     return (
-      <Fragment key={node.id}>
-        <Header
+      <NodeSection id={id} path={path} type={node.type}>
+        <NodeSection.Header
           type={node.type}
           title={node.heading || 'Hva er det til middag i dag?'}
           node={node}
           sourceRef={sourceRef}
         />
 
-        <Main>
+        <NodeSection.Main>
           <ErrorWrapper slice={['heading']}>
             <Input
               label="Tittel"
@@ -915,9 +924,9 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             )}
           </div>
           <Options node={node} pageId={page.id} />
-        </Main>
+        </NodeSection.Main>
 
-        <Aside>
+        <NodeSection.Sidebar>
           <Help description={getTypeDescription(node.type)} />
           <ButtonBar hideMarginTop list>
             <FieldProperties label="Feltegenskaper">
@@ -931,16 +940,21 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             </FieldProperties>
             <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
           </ButtonBar>
-        </Aside>
-      </Fragment>
+        </NodeSection.Sidebar>
+      </NodeSection>
     )
   }
 
   if (node.type === 'Sum') {
     return (
-      <Fragment key={node.id}>
-        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
-        <Main>
+      <NodeSection id={id} path={path} type={node.type}>
+        <NodeSection.Header
+          type={node.type}
+          node={node}
+          sourceRef={sourceRef}
+          title={node.heading}
+        />
+        <NodeSection.Main>
           <ErrorWrapper slice={['heading']}>
             <Input
               label="Ledetekst"
@@ -969,8 +983,8 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             </ErrorWrapper>
           </Form.Split>
           <SumFields node={node} nodes={allNodes} />
-        </Main>
-        <Aside>
+        </NodeSection.Main>
+        <NodeSection.Sidebar>
           <Help description={getTypeDescription(node.type)} />
           <ButtonBar hideMarginTop list>
             <FieldProperties label="Feltegenskaper">
@@ -988,9 +1002,9 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             </FieldProperties>
             <AccordionFields node={node} getNodeRef={getNodeRef} patchNode={patchNode} />
           </ButtonBar>
-        </Aside>
+        </NodeSection.Sidebar>
         {/* TODO: show */}
-      </Fragment>
+      </NodeSection>
     )
   }
 
@@ -1010,9 +1024,14 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
       ],
     ]*/
     return (
-      <Fragment key={node.id}>
-        <Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
-        <Main full>
+      <NodeSection id={id} path={path} type={node.type}>
+        <NodeSection.Header
+          type={node.type}
+          node={node}
+          sourceRef={sourceRef}
+          title={node.heading}
+        />
+        <NodeSection.Main full>
           <ErrorWrapper slice={['heading']}>
             <Input
               label="Tittel"
@@ -1032,17 +1051,20 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
           <ErrorWrapper slice={['cells']}>
             <TableEditor nodeId={node.id} pageId={page.id} cells={node.cells} nodes={allNodes} />
           </ErrorWrapper>
-        </Main>
-      </Fragment>
+        </NodeSection.Main>
+      </NodeSection>
     )
   }
 
   if (node.type === 'Branch') {
     return (
-      <Fragment key={node.id}>
-        <Header type={node.preset || node.type} node={node} sourceRef={sourceRef} />
+      <NodeSection id={id} path={path} type={node.preset || node.type}>
+        <NodeSection.Header type={node.preset || node.type} node={node} sourceRef={sourceRef} />
 
-        <Main branch={node.preset == 'NewQuestions'} full={node.preset == 'NewQuestions'}>
+        <NodeSection.Main
+          branch={node.preset == 'NewQuestions'}
+          full={node.preset == 'NewQuestions'}
+        >
           <ErrorWrapper>
             <Expression expression={node.test} nodes={allNodes} nodeId={node.id} />
           </ErrorWrapper>
@@ -1061,18 +1083,18 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
                 const childNode = allNodes[nodeRef?.node?.id]
 
                 return (
-                  <>
-                    <Node
-                      node={{ ...childNode, id: nodeRef.node.id }}
-                      page={page}
-                      allNodes={allNodes}
-                      key={nodeRef.id}
-                      sourceRef={{
-                        doc: getNodeRef(node.id),
-                        path: ['content', nodeRef.id, 'node'],
-                      }}
-                    />
-                  </>
+                  <Node
+                    id={nodeRef.id}
+                    path={[...path, 'content', nodeRef.id]}
+                    node={{ ...childNode, id: nodeRef.node.id }}
+                    page={page}
+                    allNodes={allNodes}
+                    key={nodeRef.id}
+                    sourceRef={{
+                      doc: getNodeRef(node.id),
+                      path: ['content', nodeRef.id, 'node'],
+                    }}
+                  />
                 )
               })}
 
@@ -1086,19 +1108,19 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
               />
             </div>
           )}
-        </Main>
+        </NodeSection.Main>
         {node.preset !== 'NewQuestions' && (
-          <Aside>
+          <NodeSection.Sidebar>
             <Help description={getTypeDescription(node.preset || node.type)} />
-          </Aside>
+          </NodeSection.Sidebar>
         )}
-      </Fragment>
+      </NodeSection>
     )
   }
 
   if (node.type === 'Error') {
     return (
-      <Fragment key={node.id}>
+      <NodeSection id={id} path={path} type={node.type}>
         <ErrorWrapper slice={['heading']}>
           <Input
             label="Tittel"
@@ -1116,13 +1138,13 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             sourceRef={inRef(sourceRef, 'text')}
           />
         </ErrorWrapper>
-      </Fragment>
+      </NodeSection>
     )
   }
 
   if (node.type === 'Information') {
     return (
-      <Fragment key={node.id}>
+      <NodeSection id={id} path={path} type={node.type}>
         <ErrorWrapper slice={['heading']}>
           <Input
             label="Tittel"
@@ -1139,119 +1161,24 @@ function Node({ node, page, allNodes, sourceRef }: NodeProps) {
             sourceRef={inRef(sourceRef, 'text')}
           />
         </ErrorWrapper>
-      </Fragment>
+      </NodeSection>
     )
   }
 
   return null
 }
 
-const Header = ({
-  type,
-  title,
-  node,
-  sourceRef,
-}: {
-  type: PageContent['type'] | Branch['preset']
-  node: NodeProps['node']
-  title?: string
-  /**
-   * The document in which the node is referenced, and the path inside
-   * the document where this refrence is located.
-   */
-  sourceRef: {
-    doc: DocumentReference
-    path: string[]
-  }
-}) => {
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false)
-  const { deleteNode } = useVersion()
-  const { setModal } = useModal()
-
-  const contentActions: DropdownOptions = [
-    {
-      value: '0',
-      icon: 'ArrowRight',
-      label: 'Flytt til annen side',
-      onClick: () => setModal({ key: 'move-node', data: { nodeId: node.id } }),
-    },
-    /* TODO
-    {
-      value: '0',
-      icon: 'Copy',
-      label: 'Dupliser',
-      onClick: () => console.log('Dupliser direkte og legg under med "[Header] (kopi)"')
-    }*/
-    {
-      value: '0',
-      icon: 'Trash',
-      label: 'Fjern innhold',
-      onClick: () => setShowConfirmDelete(true),
-      styled: 'delete',
-    },
-  ]
-
-  return (
-    <header {...bem('header', { negative: type === 'NegativeResult' })}>
-      <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
-      <h2 {...bem('title')}>{title || 'Uten tittel'}</h2>
-      <Dropdown
-        icon="Ellipsis"
-        direction="right"
-        options={contentActions}
-        label="Flytt eller fjern"
-        iconOnly
-      />
-
-      <Modal
-        title="Fjern innhold"
-        expanded={showConfirmDelete}
-        onClose={() => setShowConfirmDelete(false)}
-      >
-        <ValidateDeps node={node} sourceRef={sourceRef} title={title || getTypeText(type)}>
-          <ButtonBar>
-            <Button
-              type="button"
-              warning
-              onClick={async () => {
-                await deleteNode(node.id, sourceRef)
-                setShowConfirmDelete(false)
-              }}
-            >
-              Slett
-            </Button>
-
-            <Button type="button" onClick={() => setShowConfirmDelete(false)}>
-              Avbryt
-            </Button>
-          </ButtonBar>
-        </ValidateDeps>
-      </Modal>
-    </header>
-  )
-}
-
-const Main = ({
-  children,
-  full,
-  branch,
-}: {
-  children: ReactNode
-  full?: boolean
-  branch?: boolean
-}) => <div {...bem('main', { full, branch })}>{children}</div>
-
-const Aside = ({ children }: { children: ReactNode }) => <div {...bem('aside')}>{children}</div>
-
 export default function Content({ id, nodeId, allNodes, page, path }: Props) {
   const node = allNodes?.[nodeId]
   const { getVersionRef, getNodeRef } = useVersion()
 
   return (
-    <section {...bem('')} id={id} data-path={path.join('.')}>
+    <>
       {node ? (
         <ValidationProvider slice={{ doc: getNodeRef(nodeId) }}>
           <Node
+            id={id}
+            path={path}
             node={{ ...node, id: nodeId }}
             page={page}
             allNodes={allNodes}
@@ -1262,10 +1189,10 @@ export default function Content({ id, nodeId, allNodes, page, path }: Props) {
           />
         </ValidationProvider>
       ) : (
-        <>
+        <NodeSection id={id} path={path}>
           <p {...bem('error')}>Fant ikke node med id: {nodeId}</p>
-        </>
+        </NodeSection>
       )}
-    </section>
+    </>
   )
 }
