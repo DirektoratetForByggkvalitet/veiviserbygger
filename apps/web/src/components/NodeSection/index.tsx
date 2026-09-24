@@ -133,3 +133,12 @@ NodeSection.Main = function Main({
 NodeSection.Sidebar = function Sidebar({ children }: { children: ReactNode }) {
   return <div {...bem('aside')}>{children}</div>
 }
+
+NodeSection.Error = function Error({ children }: { children: ReactNode }) {
+  return (
+    <div {...bem('error')}>
+      <Icon name={'Info'} size="20" {...bem('header-icon')} />
+      {children}
+    </div>
+  )
+}

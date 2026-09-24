@@ -15,7 +15,6 @@
         'aside aside aside';
     width: 100%;
     max-width: map.get(vars.$container-width, base);
-    margin-bottom: vars.$spacing--small;
     background-color: colors.$light;
 
     &--NewQuestions {
@@ -95,5 +94,15 @@
         font-weight: normal;
         flex-grow: 2;
         color: colors.$muted;
+    }
+
+    &__error {
+        grid-area: header;
+        display: flex;
+        align-items: center;
+        gap: vars.$spacing--xsmall;
+        color: colors.$muted;
+        padding: vars.$spacing--xsmall;
+        border: vars.$border-style;
     }
 }
