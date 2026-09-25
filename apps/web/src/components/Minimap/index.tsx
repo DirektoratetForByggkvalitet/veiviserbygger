@@ -1,5 +1,12 @@
-import { DndContext, DragEndEvent } from '@dnd-kit/core'
-import { SortableContext, useSortable } from '@dnd-kit/sortable'
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import { SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable'
 import { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDraggable } from 'react-use-draggable-scroll'
 
@@ -166,6 +173,11 @@ function PageMap({
 
   const content = getOrdered(page?.content)
   const isEditable = useEditable()
+  // Require some pointer movement before starting a drag, so a plain click still fires onClick
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
   /* TODO: Implement reordering of content */
   const { value, onSort, inSync } = useSortableList(content, (list) =>
     page.id ? reorderNodes(page.id, list) : undefined,
@@ -220,7 +232,7 @@ function PageMap({
         </div>
       )}
 
-      <DndContext onDragEnd={handleSortingDragEnd}>
+      <DndContext sensors={sensors} onDragEnd={handleSortingDragEnd}>
         {value && (
           <SortableContext items={value} disabled={!selected}>
             <ul {...bem('content')}>
@@ -275,7 +287,11 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
     (id: string): MouseEventHandler =>
     (e) => {
       e.stopPropagation()
-      handlePageClick(pageId)()
+
+      // onClick toggles selection, so only open the page if it isn't already open
+      if (pageId !== selected) {
+        handlePageClick(pageId)()
+      }
 
       // wait for 100ms to ensure the page has opened before we scroll
       setTimeout(() => {
