@@ -77,6 +77,9 @@
         padding: 0;
         border-bottom: vars.$border-style;
         z-index: vars.$level-1;
+        position: sticky;
+        top: -15px;
+        background-color: colors.$light;
 
         opacity: 0;
         max-height: 0px;
