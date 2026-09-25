@@ -11,7 +11,10 @@ import { getTypeDescription, getTypeFieldProperties } from '@/lib/content'
 import ErrorWrapper from '../ErrorWrapper'
 import AccordionFields from './shared/AccordionFields'
 import FieldProperties from './shared/FieldProperties'
-import InputWithSuggestions, { UNIT_SUGGESTIONS } from './shared/InputWithSuggestions'
+import InputWithSuggestions, {
+  STEP_SUGGESTIONS,
+  UNIT_SUGGESTIONS,
+} from './shared/InputWithSuggestions'
 import { FieldProps } from './types'
 
 export default function TextField({
@@ -100,9 +103,11 @@ export default function TextField({
                   </Form.Split>
                   <Form.Split>
                     <ErrorWrapper slice={['step']}>
-                      <Input
+                      <InputWithSuggestions
                         label="Stegverdi"
                         placeholder="1, 0.1, 0.01, osv."
+                        suggestions={STEP_SUGGESTIONS}
+                        suggestionsLabel="Forslag til stegverdi"
                         type="number"
                         value={node.step}
                         onChange={(v) => patchNode(node.id, { type: 'Number', step: v })}
