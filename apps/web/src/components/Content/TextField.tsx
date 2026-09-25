@@ -8,6 +8,7 @@ import NodeSection from '@/components/NodeSection'
 
 import { useVersion } from '@/hooks/useVersion'
 import { getTypeDescription, getTypeFieldProperties } from '@/lib/content'
+import { unset } from '@/lib/merge'
 import ErrorWrapper from '../ErrorWrapper'
 import AccordionFields from './shared/AccordionFields'
 import FieldProperties from './shared/FieldProperties'
@@ -89,7 +90,9 @@ export default function TextField({
                         placeholder="0"
                         type="number"
                         value={node.minimum}
-                        onChange={(v) => patchNode(node.id, { type: 'Number', minimum: v })}
+                        onChange={(v) =>
+                          patchNode(node.id, { type: 'Number', minimum: v ?? unset })
+                        }
                       />
                     </ErrorWrapper>
                     <ErrorWrapper slice={['maximum']}>
@@ -97,7 +100,9 @@ export default function TextField({
                         label="Maksimumsverdi"
                         type="number"
                         value={node.maximum}
-                        onChange={(v) => patchNode(node.id, { type: 'Number', maximum: v })}
+                        onChange={(v) =>
+                          patchNode(node.id, { type: 'Number', maximum: v ?? unset })
+                        }
                       />
                     </ErrorWrapper>
                   </Form.Split>
@@ -110,7 +115,7 @@ export default function TextField({
                         suggestionsLabel="Forslag til stegverdi"
                         type="number"
                         value={node.step}
-                        onChange={(v) => patchNode(node.id, { type: 'Number', step: v })}
+                        onChange={(v) => patchNode(node.id, { type: 'Number', step: v ?? unset })}
                       />
                     </ErrorWrapper>
                   </Form.Split>

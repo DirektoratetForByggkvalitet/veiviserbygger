@@ -338,7 +338,7 @@ export default function Expression({
       return patch(patchDocRef, path, {
         clauses: {
           [clauseId]: {
-            [key]: val,
+            [key]: val ?? unset,
             ...(key === 'field' ? { operator: unset, value: unset } : {}),
           },
         },
@@ -346,7 +346,7 @@ export default function Expression({
     }
 
     patch(patchDocRef, path, {
-      [key]: val,
+      [key]: val ?? unset,
       ...(key === 'field' ? { operator: unset, value: unset } : {}),
     })
   }

@@ -8,6 +8,7 @@ import SumFields from '@/components/SumFields'
 
 import { useVersion } from '@/hooks/useVersion'
 import { getTypeDescription } from '@/lib/content'
+import { unset } from '@/lib/merge'
 import ErrorWrapper from '../ErrorWrapper'
 import AccordionFields from './shared/AccordionFields'
 import FieldProperties from './shared/FieldProperties'
@@ -68,7 +69,7 @@ export default function SumField({
                   placeholder="0"
                   type="number"
                   value={node.minimum}
-                  onChange={(v) => patchNode(node.id, { type: 'Sum', minimum: v })}
+                  onChange={(v) => patchNode(node.id, { type: 'Sum', minimum: v ?? unset })}
                 />
               </ErrorWrapper>
             </Form.Split>
