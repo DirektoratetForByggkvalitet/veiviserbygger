@@ -28,7 +28,7 @@ type Props = {
   children: ReactNode
 }
 
-export default function NodeSection({ id, path, type, children }: Props) {
+function NodeSection({ id, path, type, children }: Props) {
   return (
     <section {...bem('', type ? { [type]: true } : undefined)} id={id} data-path={path.join('.')}>
       {children}
@@ -50,7 +50,7 @@ type HeaderProps = {
   }
 }
 
-NodeSection.Header = function Header({ type, title, node, sourceRef }: HeaderProps) {
+function NodeSectionHeader({ type, title, node, sourceRef }: HeaderProps) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const { deleteNode } = useVersion()
   const { setModal } = useModal()
@@ -79,9 +79,9 @@ NodeSection.Header = function Header({ type, title, node, sourceRef }: HeaderPro
   ]
 
   return (
-    <header {...bem('header', { negative: type === 'NegativeResult' })}>
+    <header {...bem('header')}>
       <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
-      <h2 {...bem('title')}>{title || 'Uten tittel'}</h2>
+      <h2 {...bem('title')}>{title || getTypeText(type) || 'Uten tittel'}</h2>
       <Dropdown
         icon="Ellipsis"
         direction="right"
@@ -118,19 +118,19 @@ NodeSection.Header = function Header({ type, title, node, sourceRef }: HeaderPro
   )
 }
 
-NodeSection.Main = function Main({ children }: { children: ReactNode }) {
+function NodeSectionMain({ children }: { children: ReactNode }) {
   return <div {...bem('main')}>{children}</div>
 }
 
-NodeSection.Sidebar = function Sidebar({ children }: { children: ReactNode }) {
+function NodeSectionSidebar({ children }: { children: ReactNode }) {
   return <div {...bem('aside')}>{children}</div>
 }
 
-NodeSection.Branch = function Branch({ children }: { children: ReactNode }) {
+function NodeSectionBranch({ children }: { children: ReactNode }) {
   return <div {...bem('branch')}>{children}</div>
 }
 
-NodeSection.Error = function Error({ children }: { children: ReactNode }) {
+function NodeSectionError({ children }: { children: ReactNode }) {
   return (
     <div {...bem('error')}>
       <Icon name={'Info'} size="20" {...bem('header-icon')} />
@@ -138,3 +138,11 @@ NodeSection.Error = function Error({ children }: { children: ReactNode }) {
     </div>
   )
 }
+
+export default Object.assign(NodeSection, {
+  Header: NodeSectionHeader,
+  Main: NodeSectionMain,
+  Sidebar: NodeSectionSidebar,
+  Branch: NodeSectionBranch,
+  Error: NodeSectionError,
+})
