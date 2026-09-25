@@ -23,7 +23,7 @@ interface Props {
   options?: DropdownOptions
 }
 
-export default function Panel({
+function Panel({
   children,
   open,
   onClose,
@@ -109,6 +109,10 @@ export default function Panel({
   )
 }
 
-Panel.Header = function PanelHeader() {
+function PanelHeader() {
   return <h1>Hej grabban!</h1>
 }
+
+export default Object.assign(Panel, {
+  Header: PanelHeader,
+})

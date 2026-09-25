@@ -10,7 +10,7 @@ interface Props {
   onSubmit?: (event: any) => void
 }
 
-export default function Form({ children, gap, ...props }: Props) {
+function Form({ children, gap, ...props }: Props) {
   return (
     <form {...props} {...bem('', { large: gap == 'large' })}>
       <div {...bem('content')}>{children}</div>
@@ -22,11 +22,11 @@ interface FormSplitProps {
   children: ReactNode
 }
 
-Form.Split = function FormSplit({ children }: FormSplitProps) {
+function FormSplit({ children }: FormSplitProps) {
   return <div {...bem('split')}>{children}</div>
 }
 
-Form.Presentational = function FormPresentational({
+function FormPresentational({
   children,
   marginBottom,
 }: {
@@ -35,3 +35,8 @@ Form.Presentational = function FormPresentational({
 }) {
   return <div {...bem('content', { marginBottom })}>{children}</div>
 }
+
+export default Object.assign(Form, {
+  Split: FormSplit,
+  Presentational: FormPresentational,
+})
