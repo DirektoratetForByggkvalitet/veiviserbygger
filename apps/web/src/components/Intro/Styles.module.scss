@@ -21,6 +21,17 @@
         margin-bottom: 24px;
     }
 
+    ol,
+    ul {
+        margin-top: 0;
+        margin-bottom: 24px;
+        padding-left: 24px;
+    }
+
+    li {
+        margin-bottom: 8px;
+    }
+
     li > p {
         margin-bottom: 0;
     }
