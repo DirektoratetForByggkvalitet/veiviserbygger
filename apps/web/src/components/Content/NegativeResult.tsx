@@ -1,5 +1,6 @@
 import Editor from '@/components/Editor'
 import Input from '@/components/Input'
+import NodeSection from '@/components/NodeSection'
 import { Error as ErrorNode, Result } from 'types'
 import { values } from 'lodash'
 
@@ -33,41 +34,49 @@ export default function NegativeResult({
 
   return (
     <>
-      <h3 {...bem('sub-title')}>Vises følgende</h3>
+      <h3 {...bem('sub-title')}>Da vises følgende</h3>
 
       {errorNodeId && errorNode && (
-        <ValidationProvider slice={{ doc: getNodeRef(errorNodeId) }}>
-          <ErrorWrapper slice={['heading']}>
-            <Input
-              label="Overskrift på feilmelding"
-              header
-              value={errorNode.heading || ''}
-              onChange={(v) => patchNode(errorNodeId, { heading: v })}
-            />
-          </ErrorWrapper>
+        <NodeSection.Presentational title="Resultat i skjema" type="NegativeResult">
+          <NodeSection.Branch>
+            <ValidationProvider slice={{ doc: getNodeRef(errorNodeId) }}>
+              <ErrorWrapper slice={['heading']}>
+                <Input
+                  label="Overskrift"
+                  header
+                  value={errorNode.heading || ''}
+                  onChange={(v) => patchNode(errorNodeId, { heading: v })}
+                />
+              </ErrorWrapper>
 
-          <ErrorWrapper slice={['text']}>
-            <Editor
-              label="Feilforklaring"
-              value={errorNode.text || ''}
-              onChange={(v) => patchNode(errorNodeId, { text: v })}
-              sourceRef={inRef({ doc: getNodeRef(errorNodeId), path: ['text'] })}
-            />
-          </ErrorWrapper>
-        </ValidationProvider>
+              <ErrorWrapper slice={['text']}>
+                <Editor
+                  label="Feilforklaring"
+                  value={errorNode.text || ''}
+                  onChange={(v) => patchNode(errorNodeId, { text: v })}
+                  sourceRef={inRef({ doc: getNodeRef(errorNodeId), path: ['text'] })}
+                />
+              </ErrorWrapper>
+            </ValidationProvider>
+          </NodeSection.Branch>
+        </NodeSection.Presentational>
       )}
 
       {resultNodeId && resultNode && (
-        <ValidationProvider slice={{ doc: getNodeRef(resultNodeId) }}>
-          <ErrorWrapper slice={['heading']}>
-            <Input
-              label="Overskrift på resultatside"
-              header
-              value={resultNode.heading || ''}
-              onChange={(v) => patchNode(resultNodeId, { heading: v })}
-            />
-          </ErrorWrapper>
-        </ValidationProvider>
+        <NodeSection.Presentational title="Resultatside" type="NegativeResult">
+          <NodeSection.Branch>
+            <ValidationProvider slice={{ doc: getNodeRef(resultNodeId) }}>
+              <ErrorWrapper slice={['heading']}>
+                <Input
+                  label="Overskrift på resultatside"
+                  header
+                  value={resultNode.heading || ''}
+                  onChange={(v) => patchNode(resultNodeId, { heading: v })}
+                />
+              </ErrorWrapper>
+            </ValidationProvider>
+          </NodeSection.Branch>
+        </NodeSection.Presentational>
       )}
     </>
   )

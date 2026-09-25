@@ -139,10 +139,31 @@ function NodeSectionError({ children }: { children: ReactNode }) {
   )
 }
 
+function NodeSectionPresentational({
+  children,
+  title,
+  type,
+}: {
+  children: ReactNode
+  type?: PageContent['type'] | Branch['preset']
+  title: string
+}) {
+  return (
+    <section {...bem('', type ? { [type]: true } : undefined)}>
+      <header {...bem('header')}>
+        {type && <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />}
+        <h2 {...bem('title')}>{title || 'Uten tittel'}</h2>
+      </header>
+      {children}
+    </section>
+  )
+}
+
 export default Object.assign(NodeSection, {
   Header: NodeSectionHeader,
   Main: NodeSectionMain,
   Sidebar: NodeSectionSidebar,
   Branch: NodeSectionBranch,
   Error: NodeSectionError,
+  Presentational: NodeSectionPresentational,
 })

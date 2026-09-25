@@ -2,6 +2,7 @@ import Editor from '@/components/Editor'
 import Input from '@/components/Input'
 import { Information } from 'types'
 import { values } from 'lodash'
+import NodeSection from '@/components/NodeSection'
 
 import { useVersion } from '@/hooks/useVersion'
 import BEMHelper from '@/lib/bem'
@@ -32,24 +33,28 @@ export default function ExtraInformation({
 
   return (
     <ValidationProvider slice={{ doc: getNodeRef(informationNodeId) }}>
-      <h3 {...bem('sub-title')}>Vises følgende</h3>
-      <ErrorWrapper slice={['heading']}>
-        <Input
-          label="Overskrift på tilleggsinfo"
-          header
-          value={informationNode.heading || ''}
-          onChange={(v) => patchNode(informationNodeId, { heading: v })}
-        />
-      </ErrorWrapper>
+      <h3 {...bem('sub-title')}>Da vises følgende</h3>
+      <NodeSection.Presentational title="Veiledningsboks" type="ExtraInformation">
+        <NodeSection.Branch>
+          <ErrorWrapper slice={['heading']}>
+            <Input
+              label="Overskrift på tilleggsinfo"
+              header
+              value={informationNode.heading || ''}
+              onChange={(v) => patchNode(informationNodeId, { heading: v })}
+            />
+          </ErrorWrapper>
 
-      <ErrorWrapper slice={['text']}>
-        <Editor
-          label="Tilleggsinfo"
-          value={informationNode.text || ''}
-          onChange={(v) => patchNode(informationNodeId, { text: v })}
-          sourceRef={{ doc: getNodeRef(informationNodeId), path: ['text'] }}
-        />
-      </ErrorWrapper>
+          <ErrorWrapper slice={['text']}>
+            <Editor
+              label="Tilleggsinfo"
+              value={informationNode.text || ''}
+              onChange={(v) => patchNode(informationNodeId, { text: v })}
+              sourceRef={{ doc: getNodeRef(informationNodeId), path: ['text'] }}
+            />
+          </ErrorWrapper>
+        </NodeSection.Branch>
+      </NodeSection.Presentational>
     </ValidationProvider>
   )
 }

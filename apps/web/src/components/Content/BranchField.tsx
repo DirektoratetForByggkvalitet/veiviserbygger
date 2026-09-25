@@ -6,6 +6,7 @@ import NodeSection from '@/components/NodeSection'
 import { useVersion } from '@/hooks/useVersion'
 import { getTypeDescription } from '@/lib/content'
 import { getOrdered } from 'shared/utils'
+import BEMHelper from '@/lib/bem'
 import ErrorWrapper from '../ErrorWrapper'
 import Expression from '../Expression'
 import ExtraInformation from './ExtraInformation'
@@ -13,6 +14,9 @@ import NegativeResult from './NegativeResult'
 import { Node } from './'
 import { addNodeContentOptions } from './shared/addNodeContentOptions'
 import { FieldProps } from './types'
+import styles from './Styles.module.scss'
+
+const bem = BEMHelper(styles)
 
 export default function BranchField({
   id,
@@ -25,7 +29,7 @@ export default function BranchField({
   const { addNodes, getNodeRef } = useVersion()
 
   return (
-    <NodeSection id={id} path={path} type={node.preset || node.type}>
+    <NodeSection id={id} path={path} type={node.type}>
       <NodeSection.Header type={node.preset || node.type} node={node} sourceRef={sourceRef} />
 
       <NodeSection.Main>
@@ -47,6 +51,7 @@ export default function BranchField({
        */}
       {node.preset === 'NewQuestions' && (
         <NodeSection.Branch>
+          <h3 {...bem('sub-title')}>Da vises følgende</h3>
           {getOrdered(node?.content)?.map((nodeRef) => {
             const childNode = allNodes[nodeRef?.node?.id]
 
