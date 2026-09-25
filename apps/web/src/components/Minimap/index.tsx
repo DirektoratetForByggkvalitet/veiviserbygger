@@ -105,6 +105,7 @@ const ContentItem = ({
       <li
         {...bem('item', {
           branch: true,
+          info: node.preset == 'ExtraInformation',
           negative: node.preset == 'NegativeResult',
           draggable: isEditable && draggable,
         })}
