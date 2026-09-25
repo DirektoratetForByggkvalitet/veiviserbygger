@@ -11,6 +11,7 @@ import { getTypeDescription } from '@/lib/content'
 import ErrorWrapper from '../ErrorWrapper'
 import AccordionFields from './shared/AccordionFields'
 import FieldProperties from './shared/FieldProperties'
+import InputWithSuggestions, { UNIT_SUGGESTIONS } from './shared/InputWithSuggestions'
 import { FieldProps } from './types'
 
 export default function SumField({
@@ -45,9 +46,10 @@ export default function SumField({
         </ErrorWrapper>
         <Form.Split>
           <ErrorWrapper slice={['unit']}>
-            <Input
+            <InputWithSuggestions
               label="Enhet"
               placeholder="m², år, kg, osv."
+              suggestions={UNIT_SUGGESTIONS}
               value={node.unit || ''}
               onChange={(v) => patchNode(node.id, { type: 'Sum', unit: v })}
             />

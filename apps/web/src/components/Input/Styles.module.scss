@@ -117,6 +117,16 @@
         animation: inputFadeIn 200ms vars.$ease-out-quart both;
     }
 
+    &__suffix {
+        position: absolute;
+        right: vars.$spacing--xsmall;
+        bottom: vars.$spacing--xsmall;
+    }
+
+    &--has-suffix #{$this}__input {
+        padding-right: calc(35px + vars.$spacing--xsmall);
+    }
+
     &--read-only {
         border: none;
         background: none;

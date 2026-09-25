@@ -11,6 +11,7 @@ import { getTypeDescription, getTypeFieldProperties } from '@/lib/content'
 import ErrorWrapper from '../ErrorWrapper'
 import AccordionFields from './shared/AccordionFields'
 import FieldProperties from './shared/FieldProperties'
+import InputWithSuggestions, { UNIT_SUGGESTIONS } from './shared/InputWithSuggestions'
 import { FieldProps } from './types'
 
 export default function TextField({
@@ -52,9 +53,10 @@ export default function TextField({
         {node.type === 'Number' && (
           <Form.Split>
             <ErrorWrapper slice={['unit']}>
-              <Input
+              <InputWithSuggestions
                 label="Enhet"
                 placeholder="m², år, kg, osv."
+                suggestions={UNIT_SUGGESTIONS}
                 value={node.unit || ''}
                 onChange={(v) => patchNode(node.id, { type: 'Number', unit: v })}
               />
