@@ -6,7 +6,7 @@ const bem = BEMHelper(styles)
 
 interface Props {
   children: ReactNode
-  gap: 'large' | 'small'
+  gap?: 'large' | 'small'
   onSubmit?: (event: any) => void
 }
 

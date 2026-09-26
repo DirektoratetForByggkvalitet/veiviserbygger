@@ -25,9 +25,9 @@
 
     &--large {
         > #{$this}__content {
-            gap: vars.$spacing--small;
+            gap: vars.$margin;
             > #{$this}__split {
-                gap: vars.$spacing--small;
+                gap: vars.$margin;
             }
         }
     }
