@@ -36,7 +36,7 @@ interface Props {
 
 const contentCleanup = (value?: string) => {
   const regex = /(<([^>]+)>)/gi
-  return value?.substring(0, 80).replace(regex, ' ') || ''
+  return value?.replace(regex, ' ').substring(0, 80) || ''
 }
 
 const ContentItem = ({
