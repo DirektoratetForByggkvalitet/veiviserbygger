@@ -94,16 +94,19 @@
         @include mixins.font-size(small);
         border: none;
         border-radius: vars.$border-radius;
-        background-color: colors.get(neutral, xlight);
+        background-color: colors.get(neutral-transparent, xlight);
         padding: 4px 4px;
         height: 35px;
         width: auto;
         &:hover,
         &:focus {
-            background-color: colors.get(neutral, light);
+            background-color: colors.get(neutral-transparent, light);
         }
         #{$this}__input {
             min-width: 0;
+            @include mixins.input-placeholder {
+                color: colors.get(neutral, dark);
+            }
         }
     }
 
