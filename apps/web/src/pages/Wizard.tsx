@@ -140,9 +140,6 @@ export const addPageContentActions = (
           addNodes,
           pageId,
           type: 'Number',
-          defaultContent: {
-            step: 1,
-          },
         }),
         contentAction({
           addNodes,
