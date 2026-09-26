@@ -34,7 +34,7 @@ export default function TableField({
   return (
     <NodeSection id={id} path={path} type={node.type}>
       <NodeSection.Header type={node.type} node={node} sourceRef={sourceRef} title={node.heading} />
-      <NodeSection.Main full>
+      <NodeSection.Branch>
         <ErrorWrapper slice={['heading']}>
           <Input
             label="Tittel"
@@ -54,7 +54,7 @@ export default function TableField({
         <ErrorWrapper slice={['cells']}>
           <TableEditor nodeId={node.id} pageId={page.id} cells={node.cells} nodes={allNodes} />
         </ErrorWrapper>
-      </NodeSection.Main>
+      </NodeSection.Branch>
     </NodeSection>
   )
 }
