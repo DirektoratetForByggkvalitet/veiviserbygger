@@ -9,6 +9,7 @@
     width: 100%;
     border: vars.$border-style;
     background-color: colors.$light;
+    overflow: hidden;
 
     --delay: 440ms;
     $transition: 320ms vars.$ease-out-quart;
