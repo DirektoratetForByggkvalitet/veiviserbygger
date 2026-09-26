@@ -5,13 +5,9 @@ import { values } from 'lodash'
 import NodeSection from '@/components/NodeSection'
 
 import { useVersion } from '@/hooks/useVersion'
-import BEMHelper from '@/lib/bem'
 import ValidationProvider from '@/context/ValidationProvider'
 import ErrorWrapper from '../ErrorWrapper'
 import { NodeProps, Props } from './types'
-import styles from './Styles.module.scss'
-
-const bem = BEMHelper(styles)
 
 export default function ExtraInformation({
   node,
@@ -33,7 +29,6 @@ export default function ExtraInformation({
 
   return (
     <ValidationProvider slice={{ doc: getNodeRef(informationNodeId) }}>
-      <h3 {...bem('sub-title')}>Da vises følgende</h3>
       <NodeSection.Presentational title="Veiledningsboks" type="ExtraInformation">
         <NodeSection.Branch>
           <ErrorWrapper slice={['heading']}>

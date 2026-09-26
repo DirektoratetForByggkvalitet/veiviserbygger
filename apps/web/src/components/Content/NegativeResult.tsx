@@ -5,13 +5,9 @@ import { Error as ErrorNode, Result } from 'types'
 import { values } from 'lodash'
 
 import { useVersion } from '@/hooks/useVersion'
-import BEMHelper from '@/lib/bem'
 import ValidationProvider from '@/context/ValidationProvider'
 import ErrorWrapper from '../ErrorWrapper'
 import { inRef, NodeProps, Props } from './types'
-import styles from './Styles.module.scss'
-
-const bem = BEMHelper(styles)
 
 export default function NegativeResult({
   node,
@@ -34,8 +30,6 @@ export default function NegativeResult({
 
   return (
     <>
-      <h3 {...bem('sub-title')}>Da vises følgende</h3>
-
       {errorNodeId && errorNode && (
         <NodeSection.Presentational title="Resultat i skjema" type="NegativeResult">
           <NodeSection.Branch>

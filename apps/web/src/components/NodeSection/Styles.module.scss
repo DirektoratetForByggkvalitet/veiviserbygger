@@ -93,11 +93,6 @@
 
     &__branch {
         grid-area: branch;
-        border-top: vars.$border-style;
-    }
-
-    #{$this}__header + #{$this}__branch {
-        border-top: none;
     }
 
     &__inline-main {
