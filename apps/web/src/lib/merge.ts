@@ -1,5 +1,5 @@
 import { DocumentReference, FieldValue, deleteField } from 'firebase/firestore'
-import { concat, isArray, isObject, keys, set, uniq } from 'lodash'
+import { concat, fromPairs, isArray, isObject, keys, set, uniq } from 'lodash'
 
 function isUnmergeable(value: any) {
   if (value instanceof Date) return true
@@ -21,8 +21,8 @@ export function merge<T extends Record<string, any>, P extends Record<string, an
 
       keys(current).forEach((key) => {
         // explicitly unset a value using the unset symbol
-        if (current[key]?.toString() === 'Symbol(unset)') {
-          set(result, key, deleteField())
+        if (isUnset(current[key])) {
+          delete result[key]
           return
         }
 
@@ -58,3 +58,23 @@ export function merge<T extends Record<string, any>, P extends Record<string, an
  * Symbol used to unset a destination value in a merge operation
  */
 export const unset = Symbol('unset')
+
+function isUnset(value: any) {
+  return value?.toString() === 'Symbol(unset)'
+}
+
+/**
+ * Build Firestore deleteField() sentinels for the top-level keys that are unset in a patch.
+ *
+ * Firestore's update() leaves fields that are omitted untouched, so dropping a key in merge()
+ * is not enough to remove a top-level field. deleteField() is only allowed at the top level of
+ * update data though, so nested unsets are handled by merge() dropping the key (update()
+ * replaces nested maps wholesale).
+ */
+export function topLevelDeletes(patch: Record<string, any>) {
+  return fromPairs(
+    keys(patch)
+      .filter((key) => isUnset(patch[key]))
+      .map((key) => [key, deleteField()]),
+  )
+}
