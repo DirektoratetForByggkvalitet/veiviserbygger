@@ -8,6 +8,7 @@ import Dropdown, { DropdownOptions } from '@/components/Dropdown'
 import Icon from '@/components/Icon'
 import Modal from '@/components/Modal'
 import ValidateDeps from '@/components/ValidateDeps'
+import { useEditable } from '@/hooks/useEditable'
 import { useModal } from '@/hooks/useModal'
 import { useVersion } from '@/hooks/useVersion'
 import BEMHelper from '@/lib/bem'
@@ -53,6 +54,7 @@ type HeaderProps = {
 function NodeSectionHeader({ type, title, node, sourceRef }: HeaderProps) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const { deleteNode } = useVersion()
+  const isEditable = useEditable()
   const { setModal } = useModal()
 
   const contentActions: DropdownOptions = [
@@ -82,17 +84,19 @@ function NodeSectionHeader({ type, title, node, sourceRef }: HeaderProps) {
     <header {...bem('header')}>
       <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
       <h2 {...bem('title')}>{title || getTypeText(type) || 'Uten tittel'}</h2>
-      <Dropdown
-        icon="Ellipsis"
-        direction="right"
-        options={contentActions}
-        label="Flytt eller fjern"
-        iconOnly
-      />
+      {isEditable && (
+        <Dropdown
+          icon="Ellipsis"
+          direction="right"
+          options={contentActions}
+          label="Flytt eller fjern"
+          iconOnly
+        />
+      )}
 
       <Modal
         title="Fjern innhold"
-        expanded={showConfirmDelete}
+        expanded={isEditable && showConfirmDelete}
         onClose={() => setShowConfirmDelete(false)}
       >
         <ValidateDeps node={node} sourceRef={sourceRef} title={title || getTypeText(type)}>

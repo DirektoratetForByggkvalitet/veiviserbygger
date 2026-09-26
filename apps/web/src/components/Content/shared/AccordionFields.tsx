@@ -7,6 +7,7 @@ import Form from '@/components/Form'
 import Modal from '@/components/Modal'
 import { useState } from 'react'
 
+import { useEditable } from '@/hooks/useEditable'
 import { useVersion } from '@/hooks/useVersion'
 import { unset } from '@/lib/merge'
 import { trimText } from 'shared/utils'
@@ -21,13 +22,15 @@ export default function AccordionFields({
   getNodeRef: ReturnType<typeof useVersion>['getNodeRef']
   patchNode: ReturnType<typeof useVersion>['patchNode']
 }) {
+  const isEditable = useEditable()
   const [expanded, setExpanded] = useState(false)
   const [showMissingSummaryError, setShowMissingSummaryError] = useState(false)
 
   const missingSummary = !!trimText(node.details) && !node.summary
 
   const closeModal = () => {
-    if (missingSummary) {
+    // read-only users can't fix the error, so don't trap them in the modal
+    if (isEditable && missingSummary) {
       setShowMissingSummaryError(true)
       return
     }
@@ -90,7 +93,7 @@ export default function AccordionFields({
           <Button type="button" onClick={closeModal}>
             Lukk
           </Button>
-          {(node.summary || node.details) && (
+          {isEditable && (node.summary || node.details) && (
             <Button type="button" icon="Trash" subtle onClick={() => deleteAccordion(node.id)}>
               Fjern faktaboks
             </Button>
