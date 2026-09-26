@@ -9,6 +9,7 @@ import { useState } from 'react'
 
 import { useVersion } from '@/hooks/useVersion'
 import { unset } from '@/lib/merge'
+import { trimText } from 'shared/utils'
 import ErrorWrapper from '../../ErrorWrapper'
 
 export default function AccordionFields({
@@ -23,7 +24,7 @@ export default function AccordionFields({
   const [expanded, setExpanded] = useState(false)
   const [showMissingSummaryError, setShowMissingSummaryError] = useState(false)
 
-  const missingSummary = !!node.details && !node.summary
+  const missingSummary = !!trimText(node.details) && !node.summary
 
   const closeModal = () => {
     if (missingSummary) {
@@ -43,15 +44,18 @@ export default function AccordionFields({
 
   return (
     <>
-      <Button
-        type="button"
-        list
-        size="small"
-        icon="MessageSquareText"
-        onClick={() => setExpanded(true)}
-      >
-        Faktaboks
-      </Button>
+      {/* surface validation errors outside the modal, since they block publishing */}
+      <ErrorWrapper slice={['summary']}>
+        <Button
+          type="button"
+          list
+          size="small"
+          icon="MessageSquareText"
+          onClick={() => setExpanded(true)}
+        >
+          Faktaboks
+        </Button>
+      </ErrorWrapper>
       <Modal title="Faktaboks" expanded={expanded} onClose={closeModal}>
         <Form.Presentational marginBottom>
           <ErrorWrapper

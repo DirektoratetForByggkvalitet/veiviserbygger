@@ -3,7 +3,7 @@ import { getDependencyTree } from '..'
 import { buildTree, getContentDeps, Reference } from './refs'
 import { Intro, OptionalExcept, PageContent, WizardPage, WizardVersion } from 'types'
 import { values } from 'lodash'
-import { getOrdered } from 'shared/utils'
+import { getOrdered, trimText } from 'shared/utils'
 
 type Reason = 'unreferenced' | 'unreferenced-after-delete' | 'orphaned' | 'referenced'
 
@@ -197,7 +197,8 @@ export function validateNode(
     }
   }
 
-  if ('details' in doc && doc.details && !doc.summary) {
+  // an emptied rich text editor leaves `<p></p>` behind, which the API trims away
+  if ('details' in doc && trimText(doc.details) && !doc.summary) {
     errors.push({
       doc: doc.doc,
       path: ['summary'],

@@ -525,6 +525,21 @@ describe('validator util', () => {
       expect(errors.some((e) => e.path[0] === 'summary')).toBe(false)
     })
 
+    it('should not error when details is an empty paragraph', () => {
+      const firestore = getFirestore()
+      const a = doc(firestore, 'wizards', 'acc', 'nodes', 'node-a')
+
+      const errors = validateNode({
+        doc: a,
+        id: 'node-a',
+        type: 'Radio',
+        heading: 'Heading',
+        details: '<p></p>',
+      })
+
+      expect(errors.some((e) => e.path[0] === 'summary')).toBe(false)
+    })
+
     it('should not error when only summary is set', () => {
       const firestore = getFirestore()
       const a = doc(firestore, 'wizards', 'acc', 'nodes', 'node-a')
