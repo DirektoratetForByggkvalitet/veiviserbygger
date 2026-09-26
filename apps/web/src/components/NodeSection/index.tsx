@@ -83,7 +83,7 @@ function NodeSectionHeader({ type, title, node, sourceRef }: HeaderProps) {
   return (
     <header {...bem('header')}>
       <Icon name={getTypeIcon(type)} size="20" {...bem('header-icon')} />
-      <h2 {...bem('title')}>{title || getTypeText(type) || 'Uten tittel'}</h2>
+      <h2 {...bem('title')}>{getTypeText(type) || ''}</h2>
       {isEditable && (
         <Dropdown
           icon="Ellipsis"
