@@ -237,7 +237,10 @@
             @include mixins.font-size(small);
             border-radius: vars.$border-radius;
             background-color: transparent;
-            padding: 4px 4px;
+            padding: 4px 12px 4px 4px;
+            #{$this}__icon {
+                right: 12px;
+            }
         }
     }
 
