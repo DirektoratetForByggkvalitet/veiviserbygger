@@ -860,12 +860,14 @@ export async function duplicateWizard({
 
   // Base the new wizard on the original, but:
   // - drop version references
+  // - never carry over template status (copies of templates are regular wizards)
   // - override with any provided data (typically a new title)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { draftVersion, publishedVersion, ...rest } = originalData as any
 
   const newWizardData = {
     ...rest,
+    isTemplate: false,
     ...(data || {}),
   } as Wizard
 
