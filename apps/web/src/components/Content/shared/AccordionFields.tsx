@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { useEditable } from '@/hooks/useEditable'
 import { useVersion } from '@/hooks/useVersion'
 import { unset } from '@/lib/merge'
+import { getValuesBadge, stripHtml } from '@/lib/utils'
 import { trimText } from 'shared/utils'
 import ErrorWrapper from '../../ErrorWrapper'
 
@@ -54,6 +55,7 @@ export default function AccordionFields({
           list
           size="small"
           icon="MessageSquareText"
+          badge={getValuesBadge([node.summary, stripHtml(node.details)])}
           onClick={() => setExpanded(true)}
         >
           Faktaboks

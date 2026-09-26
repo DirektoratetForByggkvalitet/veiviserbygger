@@ -95,7 +95,7 @@ export default function CheckboxField({
       <NodeSection.Sidebar>
         <Help description={getTypeDescription(node.type)} />
         <ButtonBar hideMarginTop list>
-          <FieldProperties label="Feltegenskaper">
+          <FieldProperties label="Feltegenskaper" values={[node.optional && 'Valgfritt']}>
             <ErrorWrapper slice={['optional']}>
               <Checkbox
                 label="Valgfritt felt"

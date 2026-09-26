@@ -9,6 +9,7 @@ import NodeSection from '@/components/NodeSection'
 import { useVersion } from '@/hooks/useVersion'
 import { getTypeDescription, getTypeFieldProperties } from '@/lib/content'
 import { unset } from '@/lib/merge'
+import { isNil } from 'lodash'
 import ErrorWrapper from '../ErrorWrapper'
 import AccordionFields from './shared/AccordionFields'
 import FieldProperties from './shared/FieldProperties'
@@ -72,7 +73,16 @@ export default function TextField({
         <Help description={getTypeDescription(node.type)} />
         <ButtonBar hideMarginTop list>
           {(node.type === 'Number' || node.type === 'Input') && (
-            <FieldProperties label="Feltegenskaper" description={getTypeFieldProperties(node.type)}>
+            <FieldProperties
+              label="Feltegenskaper"
+              description={getTypeFieldProperties(node.type)}
+              values={[
+                node.optional && 'Valgfritt',
+                node.type === 'Number' && !isNil(node.minimum) && `Min ${node.minimum}`,
+                node.type === 'Number' && !isNil(node.maximum) && `Maks ${node.maximum}`,
+                node.type === 'Number' && !isNil(node.step) && `Steg ${node.step}`,
+              ]}
+            >
               <ErrorWrapper slice={['optional']}>
                 <Checkbox
                   label="Feltet er valgfritt"

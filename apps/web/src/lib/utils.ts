@@ -92,3 +92,34 @@ export function formatBigNumber(n: number): string | undefined {
 
   return undefined
 }
+
+/**
+ * Summarize a list of values as a short badge: the first value (truncated) followed by
+ * a count of the remaining values, e.g. "Valgfritt +2". Empty values are ignored.
+ */
+export function getValuesBadge(
+  values: Array<string | number | false | null | undefined>,
+  maxLength = 20,
+): string | undefined {
+  const present = values
+    .filter((value) => !isNil(value) && value !== false)
+    .map((value) => `${value}`.trim())
+    .filter(Boolean)
+
+  if (!present.length) {
+    return undefined
+  }
+
+  const [first] = present
+  const text = first.length > maxLength ? `${first.slice(0, maxLength).trimEnd()}…` : first
+
+  return present.length > 1 ? `${text} +${present.length - 1}` : text
+}
+
+export function stripHtml(html?: string): string {
+  return (html ?? '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}

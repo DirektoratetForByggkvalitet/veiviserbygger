@@ -9,6 +9,7 @@ import SumFields from '@/components/SumFields'
 import { useVersion } from '@/hooks/useVersion'
 import { getTypeDescription } from '@/lib/content'
 import { unset } from '@/lib/merge'
+import { isNil } from 'lodash'
 import ErrorWrapper from '../ErrorWrapper'
 import AccordionFields from './shared/AccordionFields'
 import FieldProperties from './shared/FieldProperties'
@@ -61,7 +62,10 @@ export default function SumField({
       <NodeSection.Sidebar>
         <Help description={getTypeDescription(node.type)} />
         <ButtonBar hideMarginTop list>
-          <FieldProperties label="Feltegenskaper">
+          <FieldProperties
+            label="Feltegenskaper"
+            values={[!isNil(node.minimum) && `Min ${node.minimum}`]}
+          >
             <Form.Split>
               <ErrorWrapper slice={['minimum']}>
                 <Input
