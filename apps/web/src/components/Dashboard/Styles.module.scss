@@ -22,4 +22,8 @@
         @include mixins.font-size(heading);
         margin-bottom: vars.$spacing;
     }
+
+    &__error {
+        color: colors.$warning;
+    }
 }
