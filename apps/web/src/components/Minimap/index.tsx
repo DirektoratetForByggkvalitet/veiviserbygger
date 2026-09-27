@@ -2,6 +2,7 @@ import {
   DndContext,
   DragEndEvent,
   KeyboardSensor,
+  Modifier,
   PointerSensor,
   useSensor,
   useSensors,
@@ -33,6 +34,9 @@ interface Props {
   data: WizardVersion
   allNodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
 }
+
+// Content is only sorted vertically; ignoring x also keeps dnd-kit from auto-scrolling sideways
+const restrictToVerticalAxis: Modifier = ({ transform }) => ({ ...transform, x: 0 })
 
 const contentCleanup = (value?: string) => {
   const regex = /(<([^>]+)>)/gi
@@ -232,7 +236,13 @@ function PageMap({
         </div>
       )}
 
-      <DndContext sensors={sensors} onDragEnd={handleSortingDragEnd}>
+      <DndContext
+        sensors={sensors}
+        onDragEnd={handleSortingDragEnd}
+        modifiers={[restrictToVerticalAxis]}
+        // Only auto-scroll vertically; horizontal auto-scroll would slide the minimap under the panel
+        autoScroll={{ threshold: { x: 0, y: 0.2 } }}
+      >
         {value && (
           <SortableContext items={value} disabled={!selected}>
             <ul {...bem('content')}>
@@ -278,7 +288,8 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
     safeDisplacement: 30, // px
   })
 
-  const draggableEvents = draggable.events
+  // Disable drag-to-pan while a page is selected, so it doesn't fight dnd-kit's content sorting
+  const draggableEvents = selected ? {} : draggable.events
 
   const handlePageClick = useCallback((id: string) => () => onClick(id), [onClick])
 
