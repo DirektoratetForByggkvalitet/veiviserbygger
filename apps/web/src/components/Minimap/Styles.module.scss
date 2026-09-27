@@ -4,7 +4,9 @@
 
 .minimap {
     $this: &;
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
     width: 100%;
     height: calc(100vh - #{vars.$header-height});
     overflow: auto;
@@ -31,6 +33,7 @@
         height: vars.$header-height;
         flex-shrink: 0;
         position: sticky;
+        z-index: vars.$level-1;
         top: 0;
         transition: background-color 200ms vars.$ease-in-out-quint--custom;
         background-color: colors.get(neutral, xlight);
@@ -274,10 +277,10 @@
     }
 
     &--selected {
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
         overscroll-behavior: contain;
         transition: none;
-
         width: calc(100vw - vars.$panel-width);
     }
 
