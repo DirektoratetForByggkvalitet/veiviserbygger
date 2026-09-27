@@ -187,7 +187,29 @@ function PageMap({
     page.id ? reorderNodes(page.id, list) : undefined,
   )
 
+  // The browser fires a click on the common ancestor when a drag is released, which would
+  // otherwise close the page (or trigger an item click) right after sorting
+  const justDragged = useRef(false)
+
+  const handleDragStart = () => {
+    justDragged.current = true
+  }
+
+  const handleDragStop = () => {
+    setTimeout(() => {
+      justDragged.current = false
+    })
+  }
+
+  const handleClickCapture: MouseEventHandler = (e) => {
+    if (justDragged.current) {
+      e.stopPropagation()
+    }
+  }
+
   const handleSortingDragEnd = (event: DragEndEvent) => {
+    handleDragStop()
+
     const { active, over } = event
 
     if (active.id !== over?.id) {
@@ -208,7 +230,9 @@ function PageMap({
       role="button"
       tabIndex={0}
       id={`page-${page?.id}`}
-      onClick={!selected ? onPageClick : undefined}
+      // Clicking a selected page outside its items closes it (the parent toggles selection)
+      onClick={onPageClick}
+      onClickCapture={handleClickCapture}
     >
       <h2 {...bem('title')} title={page?.heading}>
         {page?.type === 'Page' ? (
@@ -238,7 +262,9 @@ function PageMap({
 
       <DndContext
         sensors={sensors}
+        onDragStart={handleDragStart}
         onDragEnd={handleSortingDragEnd}
+        onDragCancel={handleDragStop}
         modifiers={[restrictToVerticalAxis]}
         // Only auto-scroll vertically; horizontal auto-scroll would slide the minimap under the panel
         autoScroll={{ threshold: { x: 0, y: 0.2 } }}
