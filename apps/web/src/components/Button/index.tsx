@@ -12,6 +12,7 @@ interface Props {
   type?: 'button' | 'submit'
   primary?: boolean
   subtle?: boolean
+  list?: boolean
   warning?: boolean
   disabled?: boolean
   loading?: boolean
@@ -28,12 +29,14 @@ interface Props {
   size?: 'small' | 'large' | 'full'
   className?: string
   tooltip?: string
+  badge?: string
 }
 
 export default function Button({
   children,
   type = 'button',
   primary,
+  list,
   loading,
   subtle,
   warning,
@@ -50,6 +53,7 @@ export default function Button({
   disabled,
   className,
   tooltip,
+  badge,
   ...props
 }: Props) {
   const Element = to ? Link : href ? 'a' : 'button'
@@ -70,6 +74,7 @@ export default function Button({
         {
           primary,
           subtle,
+          list,
           warning,
           [size ?? '']: size,
           'icon-only': iconOnly,
@@ -98,6 +103,11 @@ export default function Button({
         </span>
       )}
       {!iconOnly && children && <span {...bem('text')}>{children}</span>}
+      {!iconOnly && badge && (
+        <span {...bem('badge')} title={badge}>
+          {badge}
+        </span>
+      )}
 
       {tooltip && <span {...bem('tooltip')}>{tooltip}</span>}
     </Element>

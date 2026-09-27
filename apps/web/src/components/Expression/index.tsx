@@ -338,7 +338,7 @@ export default function Expression({
       return patch(patchDocRef, path, {
         clauses: {
           [clauseId]: {
-            [key]: val,
+            [key]: val ?? unset,
             ...(key === 'field' ? { operator: unset, value: unset } : {}),
           },
         },
@@ -346,7 +346,7 @@ export default function Expression({
     }
 
     patch(patchDocRef, path, {
-      [key]: val,
+      [key]: val ?? unset,
       ...(key === 'field' ? { operator: unset, value: unset } : {}),
     })
   }
@@ -370,8 +370,9 @@ export default function Expression({
         <div {...bem('head')}>
           <div {...bem('string')}>
             {!child && !type && 'Hvis'}
-            {child && !first && type == 'or' && 'Eller hvis'}
-            {child && !first && type == 'and' && 'Og hvis'}
+            {child && first && 'Hvis'}
+            {child && !first && type == 'or' && 'Eller hvis'}
+            {child && !first && type == 'and' && 'Og hvis'}
             <Dropdown
               options={TYPES}
               value={expression.type}
@@ -380,6 +381,7 @@ export default function Expression({
               sentence
               onChange={handleExpressionChange('type')}
             />
+            er oppfylt:
           </div>
         </div>
 
@@ -416,8 +418,9 @@ export default function Expression({
       <div {...bem('item')}>
         <div {...bem('string')}>
           {!child && !type && 'Hvis'}
-          {child && !first && type == 'or' && 'Eller hvis'}
-          {child && !first && type == 'and' && 'Og hvis'}
+          {child && first && 'Hvis'}
+          {child && !first && type == 'or' && 'Eller hvis'}
+          {child && !first && type == 'and' && 'Og hvis'}
 
           <Dropdown
             options={fieldOptions}
@@ -464,7 +467,9 @@ export default function Expression({
                 ? [
                     {
                       value: '0',
+                      icon: 'Trash' as const,
                       label: 'Slett',
+                      styled: 'delete' as const,
                       onClick: () => handleDeleteClause(clauseId),
                     },
                   ]

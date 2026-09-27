@@ -140,9 +140,6 @@ export const addPageContentActions = (
           addNodes,
           pageId,
           type: 'Number',
-          defaultContent: {
-            step: 1,
-          },
         }),
         contentAction({
           addNodes,
@@ -210,7 +207,7 @@ function PageForm({
   }, [page])
 
   return (
-    <Form>
+    <Form gap="large">
       <ErrorWrapper slice={['heading']}>
         <Input
           label="Sidetittel"

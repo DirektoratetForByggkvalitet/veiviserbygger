@@ -107,11 +107,20 @@ export type Content = {
   id: string
   heading?: string
   text?: string // HTML
-  summary?: string
-  details?: string
   image?: ImageRef
   show?: Expression // Vi har også hide, men tenker vi kan forenkle det til kun vis i første runde.
   flow?: 'stop' | 'continue' | null
+}
+
+/**
+ * Adds the accordion fields losen renders below a question: `summary` is the trigger
+ * label, `details` is the expanded HTML content. Not every Content-based type supports
+ * this in losen (e.g. Text, Table), so it's opted into per type rather than living on
+ * `Content` itself.
+ */
+export type WithAccordion = {
+  summary?: string
+  details?: string // HTML
 }
 
 export type Text = PageNode<
@@ -121,30 +130,33 @@ export type Text = PageNode<
 >
 
 export type Radio = PageNode<
-  Content & {
-    type: 'Radio'
-    allMandatory?: boolean // Required user to check all the options in the list, in order for it to be "valid".
-    grid: boolean // Display options in a three column grid.
-    options?: OrderedMap<Answer>
-  }
+  Content &
+    WithAccordion & {
+      type: 'Radio'
+      allMandatory?: boolean // Required user to check all the options in the list, in order for it to be "valid".
+      grid: boolean // Display options in a three column grid.
+      options?: OrderedMap<Answer>
+    }
 >
 
 export type Select = PageNode<
-  Content & {
-    type: 'Select'
-    optional?: boolean // By default all fields are required.
-    options?: OrderedMap<Answer>
-  }
+  Content &
+    WithAccordion & {
+      type: 'Select'
+      optional?: boolean // By default all fields are required.
+      options?: OrderedMap<Answer>
+    }
 >
 
 export type Checkbox = PageNode<
-  Content & {
-    type: 'Checkbox'
-    allMandatory?: boolean // Required user to check all the options in the list, in order for it to be "valid".
-    grid: boolean // Display options in a three column grid.
-    optional?: boolean // By default all fields are required.
-    options?: OrderedMap<Answer>
-  }
+  Content &
+    WithAccordion & {
+      type: 'Checkbox'
+      allMandatory?: boolean // Required user to check all the options in the list, in order for it to be "valid".
+      grid: boolean // Display options in a three column grid.
+      optional?: boolean // By default all fields are required.
+      options?: OrderedMap<Answer>
+    }
 >
 
 export type PageContentWithOptions<Creation = false> = Extract<
@@ -154,6 +166,7 @@ export type PageContentWithOptions<Creation = false> = Extract<
 
 export type Input = PageNode<
   Content &
+    WithAccordion &
     WithValidator & {
       type: 'Input'
       optional?: boolean // By default all fields are required.
@@ -161,14 +174,15 @@ export type Input = PageNode<
 >
 
 export type NumberInput = PageNode<
-  Content & {
-    type: 'Number'
-    minimum?: number
-    maximum?: number
-    unit?: string
-    step?: number // Defaults to 1
-    optional?: boolean // By default all fields are required.
-  }
+  Content &
+    WithAccordion & {
+      type: 'Number'
+      minimum?: number
+      maximum?: number
+      unit?: string
+      step?: number // Defaults to 1
+      optional?: boolean // By default all fields are required.
+    }
 >
 
 export type SumField = {
@@ -178,12 +192,13 @@ export type SumField = {
 }
 
 export type Sum = PageNode<
-  Content & {
-    type: 'Sum'
-    fields?: OrderedMap<SumField>
-    unit?: string
-    minimum?: number
-  }
+  Content &
+    WithAccordion & {
+      type: 'Sum'
+      fields?: OrderedMap<SumField>
+      unit?: string
+      minimum?: number
+    }
 >
 
 export type TableCell = {

@@ -9,11 +9,17 @@ const bem = BEMHelper(styles)
 type Props = {
   children: ReactNode
   slice?: string[]
+  /**
+   * Additional error messages to show alongside any errors from the validation
+   * context, e.g. for validation that is local to a component and not part of
+   * the schema-driven validation.
+   */
+  messages?: string[]
 }
 
-export default function ErrorWrapper({ children, slice = [] }: Props) {
+export default function ErrorWrapper({ children, slice = [], messages = [] }: Props) {
   const { getErrors } = useErrors()
-  const errors = getErrors(slice)
+  const errors = [...messages.map((message) => ({ message })), ...getErrors(slice)]
 
   const hasErrors = errors.length > 0
 

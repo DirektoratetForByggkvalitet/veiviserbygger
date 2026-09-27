@@ -73,7 +73,7 @@ export default function NewPage({ open, closeModal }: Props) {
           onChange={(heading) => setNewPage((v) => ({ ...v, heading }))}
           forwardedRef={titleInput}
         />
-        <ButtonBar margins>
+        <ButtonBar marginBottom>
           <Button
             toggle
             subtle

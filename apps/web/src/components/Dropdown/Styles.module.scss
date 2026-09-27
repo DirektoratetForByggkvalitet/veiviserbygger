@@ -56,7 +56,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         overflow: hidden;
-        verti &--placeholder {
+        &--placeholder {
             color: colors.$muted;
         }
     }
@@ -237,7 +237,10 @@
             @include mixins.font-size(small);
             border-radius: vars.$border-radius;
             background-color: transparent;
-            padding: 4px 4px;
+            padding: 4px 12px 4px 4px;
+            #{$this}__icon {
+                right: 12px;
+            }
         }
     }
 
@@ -277,14 +280,14 @@
         #{$this}__trigger {
             @include mixins.font-size(small);
             border-radius: vars.$border-radius;
-            background-color: colors.get(neutral, xlight);
+            background-color: colors.get(neutral-transparent, xlight);
             padding: 4px 4px;
             height: 35px;
         }
 
         #{$this}__trigger:hover,
         #{$this}__trigger:focus {
-            background-color: colors.get(neutral, light);
+            background-color: colors.get(neutral-transparent, light);
         }
 
         #{$this}__label {
@@ -318,7 +321,7 @@
 
         #{$this}__trigger:hover,
         #{$this}__trigger:focus {
-            background-color: colors.get(neutral, xlight);
+            background-color: colors.get(neutral-transparent, xlight);
         }
 
         #{$this}__icon {

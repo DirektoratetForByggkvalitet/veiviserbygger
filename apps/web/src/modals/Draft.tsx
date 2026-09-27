@@ -85,7 +85,7 @@ export default function DraftModal() {
               <p>{apiError}</p>
             </Message>
           )}
-          <ButtonBar margins>
+          <ButtonBar marginBottom>
             <Button
               type="button"
               primary

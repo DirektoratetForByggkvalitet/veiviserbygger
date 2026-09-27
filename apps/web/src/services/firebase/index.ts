@@ -18,7 +18,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 
-import { merge } from '@/lib/merge'
+import { merge, topLevelDeletes } from '@/lib/merge'
 import { rewriteRefs } from '@/lib/rewrite'
 import { connectStorageEmulator, FirebaseStorage, getStorage, ref } from 'firebase/storage'
 import { get, maxBy, pick, set, values } from 'lodash'
@@ -207,7 +207,12 @@ export async function patch(
       throw new Error(`Document with id ${ref.id} not found`)
     }
 
-    await transaction.update(ref, merge(current.data(), set({}, path, patchData)))
+    const patchObject = set({}, path, patchData)
+
+    await transaction.update(ref, {
+      ...merge(current.data(), patchObject),
+      ...topLevelDeletes(patchObject),
+    })
   })
 }
 
@@ -453,7 +458,10 @@ export async function patchNode(
       throw new Error(`Node with id ${nodeId} not found`)
     }
 
-    await transaction.update(ref, merge(patchedNode as any, patch))
+    await transaction.update(ref, {
+      ...merge(patchedNode as any, patch),
+      ...topLevelDeletes(patch),
+    })
   })
 }
 
@@ -852,12 +860,14 @@ export async function duplicateWizard({
 
   // Base the new wizard on the original, but:
   // - drop version references
+  // - never carry over template status (copies of templates are regular wizards)
   // - override with any provided data (typically a new title)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { draftVersion, publishedVersion, ...rest } = originalData as any
 
   const newWizardData = {
     ...rest,
+    isTemplate: false,
     ...(data || {}),
   } as Wizard
 

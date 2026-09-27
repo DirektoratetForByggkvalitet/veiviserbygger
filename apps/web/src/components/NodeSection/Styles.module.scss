@@ -1,0 +1,111 @@
+@use 'sass:map';
+@use '@/styles/1_settings/mixins';
+@use '@/styles/1_settings/colors';
+@use '@/styles/1_settings/vars';
+
+.node-section {
+    $this: &;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+        'header header header'
+        'main main main'
+        'aside aside aside'
+        'branch branch branch';
+    width: 100%;
+    max-width: map.get(vars.$container-width, base);
+    background-color: colors.$light;
+    border: vars.$border-style;
+    border-radius: 0;
+
+    &--Branch {
+        background-color: colors.get(neutral, xlight);
+    }
+
+    &--ExtraInformation #{$this}__header {
+        #{$this}__header-icon {
+            color: colors.get(primary, base);
+        }
+        #{$this}__title {
+            color: colors.get(primary, base);
+        }
+    }
+
+    &--NegativeResult #{$this}__header {
+        #{$this}__header-icon {
+            color: colors.$warning;
+        }
+        #{$this}__title {
+            color: colors.$warning;
+        }
+    }
+
+    @include mixins.min-width(lg) {
+        grid-template-areas:
+            'header header header'
+            'main main aside'
+            'branch branch branch';
+    }
+
+    &__header {
+        grid-area: header;
+        display: flex;
+        align-items: center;
+        gap: vars.$spacing--xsmall;
+        padding: 6px vars.$spacing--xsmall;
+        border-bottom: vars.$border-style;
+        min-height: 48px;
+    }
+
+    &__header-icon {
+        color: colors.$muted;
+    }
+
+    &__title {
+        @include mixins.font-size(small);
+        font-weight: normal;
+        flex-grow: 2;
+        color: colors.$muted;
+    }
+
+    &__main,
+    &__aside,
+    &__inline-main,
+    &__branch {
+        display: flex;
+        flex-direction: column;
+        gap: vars.$spacing--small;
+        padding: vars.$spacing--small;
+    }
+
+    &__main {
+        grid-area: main;
+    }
+
+    &__aside {
+        grid-area: aside;
+
+        @include mixins.min-width(lg) {
+            padding-left: vars.$spacing--small;
+        }
+    }
+
+    &__branch {
+        grid-area: branch;
+    }
+
+    &__inline-main {
+        padding: 0;
+    }
+
+    &__error {
+        grid-area: header;
+        display: flex;
+        align-items: center;
+        gap: vars.$spacing--xsmall;
+        color: colors.$muted;
+        padding: vars.$spacing--xsmall;
+        border: vars.$border-style;
+    }
+}

@@ -10,7 +10,7 @@ import styles from './Styles.module.scss'
 const bem = BEMHelper(styles)
 
 export default function Dashboard() {
-  const { wizards } = useWizards(true)
+  const { wizards, error } = useWizards(true)
   const [modal, setModal] = useState(false)
   const toggleModal = (value: boolean) => () => {
     setModal(value)
@@ -24,6 +24,16 @@ export default function Dashboard() {
   return (
     <div {...bem('')}>
       <NewWizard open={modal} toggleModal={toggleModal} />
+
+      {error && (
+        <section {...bem('section')}>
+          <p {...bem('error')} role="alert">
+            {error.code === 'permission-denied'
+              ? copy.dashboard.permissionDenied
+              : copy.dashboard.loadError}
+          </p>
+        </section>
+      )}
 
       {publisedWizards.length > 0 && (
         <section {...bem('section')}>

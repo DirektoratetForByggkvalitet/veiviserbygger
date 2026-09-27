@@ -4,9 +4,8 @@
 
 .expression {
     &__clauses {
-        padding-left: vars.$spacing--small;
-        border-left: vars.$border-style;
-        margin-bottom: vars.$spacing--small;
+        padding: vars.$spacing--xsmall vars.$spacing--xsmall 0 vars.$spacing--xsmall;
+        border: vars.$border-style;
     }
 
     &__clause {
@@ -18,11 +17,9 @@
         align-items: center;
         gap: vars.$spacing--xsmall;
         padding-bottom: vars.$spacing--xsmall;
-        margin-bottom: vars.$spacing--small;
     }
 
     &__head {
-        padding-bottom: 0;
     }
 
     &__string {

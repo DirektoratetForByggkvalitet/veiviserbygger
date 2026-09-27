@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
-import { merge, unset } from '../merge'
-import { deleteField, doc, getFirestore, serverTimestamp } from 'firebase/firestore'
+import { merge, topLevelDeletes, unset } from '../merge'
+import { deleteField, doc, getFirestore, serverTimestamp, writeBatch } from 'firebase/firestore'
 
 beforeEach(() => {
   initializeApp({ projectId: 'ci' })
@@ -104,5 +104,24 @@ describe('merge', () => {
     const refB = doc(db, 'collection', 'docB')
 
     expect(merge({ myRef: refA }, { myRef: refB })).toEqual({ myRef: refB })
+  })
+})
+
+describe('topLevelDeletes', () => {
+  it('should return deleteField() for top-level unset keys only', () => {
+    expect(topLevelDeletes({ a: unset, b: 1, c: { d: unset } })).toEqual({ a: deleteField() })
+  })
+
+  it('should produce update data that Firestore accepts for nested and top-level unsets', () => {
+    const db = getFirestore()
+    const ref = doc(db, 'collection', 'doc')
+    const current = { summary: 'a', test: { field: 'x', operator: 'eq', value: 1 } }
+    const patch = { summary: unset, test: { field: 'y', operator: unset, value: unset } }
+
+    const data = { ...merge(current, patch), ...topLevelDeletes(patch) }
+
+    expect(data).toEqual({ summary: deleteField(), test: { field: 'y' } })
+    // update() validates the data synchronously, and throws on nested deleteField()
+    expect(() => writeBatch(db).update(ref, data)).not.toThrow()
   })
 })

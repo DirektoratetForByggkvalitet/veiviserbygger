@@ -77,9 +77,6 @@
         border: vars.$border-style;
         padding: vars.$spacing--small;
         margin-bottom: 0;
-        #{$this}__label {
-            @include mixins.font-size(base);
-        }
     }
 
     &--toggle {

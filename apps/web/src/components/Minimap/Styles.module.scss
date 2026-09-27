@@ -4,15 +4,25 @@
 
 .minimap {
     $this: &;
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
     width: 100%;
     height: calc(100vh - #{vars.$header-height});
     overflow: auto;
-    transition: width 500ms vars.$ease-in-out-quint--custom;
+    transition:
+        width 500ms vars.$ease-in-out-quint--custom,
+        background-color 200ms vars.$ease-in-out-quint--custom;
     background-color: colors.get(primary, xlight);
     margin-left: 0;
 
     @include mixins.no-select;
+
+    &__pages {
+        display: flex;
+        width: 100%;
+        min-height: 100%;
+    }
 
     &__title {
         @include mixins.font(base, normal);
@@ -21,6 +31,12 @@
         align-items: center;
         gap: vars.$spacing--xsmall;
         height: vars.$header-height;
+        flex-shrink: 0;
+        position: sticky;
+        z-index: vars.$level-1;
+        top: 0;
+        transition: background-color 200ms vars.$ease-in-out-quint--custom;
+        background-color: colors.get(neutral, xlight);
     }
 
     &__error {
@@ -73,14 +89,18 @@
         &:hover,
         &:focus:focus-visible {
             background-color: colors.get(neutral, light);
+            #{$this}__title {
+                background-color: colors.get(neutral, light);
+            }
         }
 
         &--placeholder {
-            // background-color: colors.$light;
-
             &:hover,
             &:focus:focus-visible {
                 background-color: colors.get(neutral, light);
+                #{$this}__title {
+                    background-color: colors.get(neutral, light);
+                }
             }
         }
 
@@ -88,7 +108,10 @@
             &,
             &:hover,
             &:focus:focus-visible {
-                background-color: colors.get(primary, light);
+                background-color: colors.get(neutral, light);
+                #{$this}__title {
+                    background-color: colors.get(neutral, light);
+                }
             }
         }
 
@@ -122,7 +145,7 @@
         @include mixins.line-clamp(2);
         text-wrap: balance;
         flex-grow: 1;
-        height: (1em * 2) * $line-height;
+        max-height: (1em * 2) * $line-height;
 
         &--placeholder {
             color: colors.$muted;
@@ -155,9 +178,27 @@
                 height: auto;
                 max-width: calc(100% - 24px);
             }
+
+            > #{$this}__icon {
+                color: colors.$muted;
+            }
+        }
+
+        &--info {
+            background-color: transparent;
+            border: vars.$border-style--dashed;
+            #{$this}__icon {
+                //   color: colors.$warning;
+                color: colors.get(primary, base);
+            }
+            #{$this}__sub-title {
+                color: colors.get(primary, base);
+            }
         }
 
         &--negative {
+            background-color: transparent;
+            border: vars.$border-style--dashed;
             #{$this}__icon {
                 color: colors.$warning;
             }
@@ -172,7 +213,7 @@
 
             &:hover,
             &:focus-visible {
-                #{$this}__icon {
+                > #{$this}__icon {
                     background-color: colors.get(neutral-transparent, light);
                 }
             }
@@ -197,13 +238,14 @@
         flex-shrink: 0;
         width: 16px;
         padding: 2px 0;
-        color: colors.$muted;
+        color: colors.$dark;
         transition: background-color 200ms vars.$ease-in-out-quint--custom;
         border-radius: 4px;
     }
 
     &__content {
         flex-grow: 1;
+        margin-bottom: vars.$spacing;
 
         &--placeholder {
             border-radius: vars.$border-radius;
@@ -235,10 +277,10 @@
     }
 
     &--selected {
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
         overscroll-behavior: contain;
         transition: none;
-
         width: calc(100vw - vars.$panel-width);
     }
 

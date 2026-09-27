@@ -262,6 +262,8 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         onClick={toggle('bold')}
         disabled={!editor.can().chain().focus().toggleBold().run()}
         tabIndex={-1}
+        title="Fet tekst"
+        aria-label="Fet tekst"
         {...bem('control', { active: editor.isActive('bold') })}
       >
         <Icon name="Bold" />
@@ -272,6 +274,8 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         onClick={toggle('italic')}
         disabled={!editor.can().chain().focus().toggleItalic().run()}
         tabIndex={-1}
+        title="Kursiv tekst"
+        aria-label="Kursiv tekst"
         {...bem('control', { active: editor.isActive('italic') })}
       >
         <Icon name="Italic" />
@@ -283,6 +287,8 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         disabled={!editor.can().chain().focus().toggleSuperscript().run()}
         {...bem('control', { active: editor.isActive('superscript') })}
         tabIndex={-1}
+        title="Superscript"
+        aria-label="Superscript"
       >
         <Icon name="Superscript" />
       </button>
@@ -292,10 +298,24 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         onClick={toggle('subscript')}
         disabled={!editor.can().chain().focus().toggleSubscript().run()}
         tabIndex={-1}
+        title="Subscript"
+        aria-label="Subscript"
         {...bem('control', { active: editor.isActive('subscript') })}
       >
         <Icon name="Subscript" />
       </button>
+
+      <hr {...bem('separator')} />
+
+      <Dropdown
+        label="Teksttype"
+        hideLabel
+        value={textStyle}
+        options={textStyles}
+        onChange={handleStyleChange}
+        simple
+        tabIndex={-1}
+      />
 
       <hr {...bem('separator')} />
 
@@ -304,6 +324,7 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         onClick={() => setIsLinkModalOpen(true)}
         tabIndex={-1}
         title="Legg til lenke"
+        aria-label="Legg til lenke"
         {...bem('control', { active: editor.isActive('link') })}
       >
         <Icon name="Link" />
@@ -314,6 +335,8 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         onClick={toggle('bulletList')}
         {...bem('control', { active: editor.isActive('bulletList') })}
         tabIndex={-1}
+        title="Liste"
+        aria-label="List"
       >
         <Icon name="List" />
       </button>
@@ -323,28 +346,30 @@ function MenuBar({ storageRefPath }: { storageRefPath: StorageReference }) {
         onClick={toggle('orderedList')}
         {...bem('control', { active: editor.isActive('orderedList') })}
         tabIndex={-1}
+        title="Nummerert liste"
+        aria-label="Nummerert liste"
       >
         <Icon name="ListOrdered" />
       </button>
 
-      <button type="button" onClick={handleImageUpload} {...bem('control')} tabIndex={-1}>
-        Bilde
+      <button
+        type="button"
+        onClick={handleImageUpload}
+        {...bem('control')}
+        tabIndex={-1}
+        title="Bilde"
+        aria-label="Bilde"
+      >
+        <Icon name="Image" />
       </button>
+
       <input
         type="file"
         accept="image/*"
         style={{ display: 'none' }}
         ref={fileInputRef}
         onChange={handleFileSelect}
-      />
-      <hr {...bem('separator')} />
-
-      <Dropdown
-        value={textStyle}
-        options={textStyles}
-        onChange={handleStyleChange}
-        simple
-        tabIndex={-1}
+        aria-label="Last opp fil"
       />
 
       <LinkModal editor={editor} open={isLinkModalOpen} onClose={() => setIsLinkModalOpen(false)} />

@@ -3,7 +3,7 @@ import { getDependencyTree } from '..'
 import { buildTree, getContentDeps, Reference } from './refs'
 import { Intro, OptionalExcept, PageContent, WizardPage, WizardVersion } from 'types'
 import { values } from 'lodash'
-import { getOrdered } from 'shared/utils'
+import { getOrdered, trimText } from 'shared/utils'
 
 type Reason = 'unreferenced' | 'unreferenced-after-delete' | 'orphaned' | 'referenced'
 
@@ -172,7 +172,7 @@ function validateVersion(doc: WithDocRef<WizardVersion>): ValidationError[] {
   return errors
 }
 
-function validateNode(
+export function validateNode(
   doc: WithDocRef<OptionalExcept<PageContent, 'type' | 'id'>>,
 ): ValidationError[] {
   const errors: ValidationError[] = []
@@ -195,6 +195,15 @@ function validateNode(
         message: 'Minimum to alternativer med tittel er påkrevd',
       })
     }
+  }
+
+  // an emptied rich text editor leaves `<p></p>` behind, which the API trims away
+  if ('details' in doc && trimText(doc.details) && !doc.summary) {
+    errors.push({
+      doc: doc.doc,
+      path: ['summary'],
+      message: 'Tittel på utvidbar seksjon er påkrevd når innhold er fylt ut',
+    })
   }
 
   if (doc.type === 'Branch') {

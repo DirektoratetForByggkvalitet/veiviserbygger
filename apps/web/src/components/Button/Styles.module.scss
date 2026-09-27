@@ -43,6 +43,22 @@
         }
     }
 
+    &__text {
+        flex-shrink: 0;
+    }
+
+    &__badge {
+        @include mixins.font-size(xsmall);
+        min-width: 0;
+        margin-left: vars.$spacing--xsmall;
+        padding: 1px 8px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        border-radius: 999px;
+        background-color: colors.get(primary, light);
+    }
+
     &__tooltip {
         opacity: 0;
         transform: translateY(-10px);
@@ -118,6 +134,22 @@
     &--subtle {
         background-color: transparent;
         width: fit-content;
+
+        &:hover,
+        &:focus:focus-visible {
+            background-color: colors.get(neutral-transparent, xlight);
+        }
+    }
+
+    &--list {
+        background-color: transparent;
+        width: 100%;
+        border-top: vars.$border-style;
+        justify-content: flex-start;
+        border-radius: 0;
+        &:last-child {
+            border-bottom: vars.$border-style;
+        }
 
         &:hover,
         &:focus:focus-visible {

@@ -1,4 +1,4 @@
-import { ChangeEvent, HTMLInputTypeAttribute, RefObject, useRef } from 'react'
+import { ChangeEvent, HTMLInputTypeAttribute, ReactNode, RefObject, useRef } from 'react'
 
 import { useEditable } from '@/hooks/useEditable'
 import { useValue } from '@/hooks/useValue'
@@ -21,6 +21,11 @@ type Props<T extends HTMLInputTypeAttribute = 'text'> = {
   hideIfEmpty?: boolean
   forwardedRef?: RefObject<HTMLInputElement>
   forceAllowEdit?: boolean
+  /**
+   * Element rendered inside the right side of the input, e.g. a Dropdown with
+   * suggested values. Only shown when the input is editable.
+   */
+  suffixAction?: ReactNode
   onChange: (v: T extends 'number' ? number | undefined : string | undefined) => void
 
   /**
@@ -43,6 +48,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
   forwardedRef,
   inputDebounceMs,
   forceAllowEdit,
+  suffixAction,
   ...props
 }: Props<T>) {
   const internalRef = useRef<HTMLInputElement>(null)
@@ -77,6 +83,7 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
         'hide-if-empty': hideIfEmpty && !value,
         dirty: !inSync,
         'read-only': !isEditable,
+        'has-suffix': isEditable && !!suffixAction,
       })}
     >
       {!hideLabel && <span {...bem('label')}>{label}</span>}
@@ -92,6 +99,8 @@ export default function Input<T extends HTMLInputTypeAttribute = 'text'>({
         ref={ref}
         aria-label={(hideLabel && label) || undefined}
       />
+
+      {isEditable && suffixAction && <span {...bem('suffix')}>{suffixAction}</span>}
     </label>
   )
 }

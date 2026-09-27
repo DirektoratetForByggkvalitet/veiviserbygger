@@ -1,5 +1,13 @@
-import { DndContext, DragEndEvent } from '@dnd-kit/core'
-import { SortableContext, useSortable } from '@dnd-kit/sortable'
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  Modifier,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import { SortableContext, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable'
 import { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDraggable } from 'react-use-draggable-scroll'
 
@@ -27,9 +35,12 @@ interface Props {
   allNodes: Record<string, OptionalExcept<PageContent, 'type' | 'id'>>
 }
 
+// Content is only sorted vertically; ignoring x also keeps dnd-kit from auto-scrolling sideways
+const restrictToVerticalAxis: Modifier = ({ transform }) => ({ ...transform, x: 0 })
+
 const contentCleanup = (value?: string) => {
   const regex = /(<([^>]+)>)/gi
-  return value?.substring(0, 80).replace(regex, ' ') || ''
+  return value?.replace(regex, ' ').substring(0, 80) || ''
 }
 
 const ContentItem = ({
@@ -105,6 +116,7 @@ const ContentItem = ({
       <li
         {...bem('item', {
           branch: true,
+          info: node.preset == 'ExtraInformation',
           negative: node.preset == 'NegativeResult',
           draggable: isEditable && draggable,
         })}
@@ -165,12 +177,39 @@ function PageMap({
 
   const content = getOrdered(page?.content)
   const isEditable = useEditable()
+  // Require some pointer movement before starting a drag, so a plain click still fires onClick
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
   /* TODO: Implement reordering of content */
   const { value, onSort, inSync } = useSortableList(content, (list) =>
     page.id ? reorderNodes(page.id, list) : undefined,
   )
 
+  // The browser fires a click on the common ancestor when a drag is released, which would
+  // otherwise close the page (or trigger an item click) right after sorting
+  const justDragged = useRef(false)
+
+  const handleDragStart = () => {
+    justDragged.current = true
+  }
+
+  const handleDragStop = () => {
+    setTimeout(() => {
+      justDragged.current = false
+    })
+  }
+
+  const handleClickCapture: MouseEventHandler = (e) => {
+    if (justDragged.current) {
+      e.stopPropagation()
+    }
+  }
+
   const handleSortingDragEnd = (event: DragEndEvent) => {
+    handleDragStop()
+
     const { active, over } = event
 
     if (active.id !== over?.id) {
@@ -191,7 +230,9 @@ function PageMap({
       role="button"
       tabIndex={0}
       id={`page-${page?.id}`}
-      onClick={!selected ? onPageClick : undefined}
+      // Clicking a selected page outside its items closes it (the parent toggles selection)
+      onClick={onPageClick}
+      onClickCapture={handleClickCapture}
     >
       <h2 {...bem('title')} title={page?.heading}>
         {page?.type === 'Page' ? (
@@ -219,7 +260,15 @@ function PageMap({
         </div>
       )}
 
-      <DndContext onDragEnd={handleSortingDragEnd}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleSortingDragEnd}
+        onDragCancel={handleDragStop}
+        modifiers={[restrictToVerticalAxis]}
+        // Only auto-scroll vertically; horizontal auto-scroll would slide the minimap under the panel
+        autoScroll={{ threshold: { x: 0, y: 0.2 } }}
+      >
         {value && (
           <SortableContext items={value} disabled={!selected}>
             <ul {...bem('content')}>
@@ -265,7 +314,8 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
     safeDisplacement: 30, // px
   })
 
-  const draggableEvents = draggable.events
+  // Disable drag-to-pan while a page is selected, so it doesn't fight dnd-kit's content sorting
+  const draggableEvents = selected ? {} : draggable.events
 
   const handlePageClick = useCallback((id: string) => () => onClick(id), [onClick])
 
@@ -274,7 +324,11 @@ export default function Minimap({ onClick, selected, data, allNodes }: Props) {
     (id: string): MouseEventHandler =>
     (e) => {
       e.stopPropagation()
-      handlePageClick(pageId)()
+
+      // onClick toggles selection, so only open the page if it isn't already open
+      if (pageId !== selected) {
+        handlePageClick(pageId)()
+      }
 
       // wait for 100ms to ensure the page has opened before we scroll
       setTimeout(() => {
